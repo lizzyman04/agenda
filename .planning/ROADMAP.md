@@ -52,15 +52,15 @@ Plans:
   3. User can classify any task into an Eisenhower quadrant and plan their day using the 1-3-5 Rule (exactly 1 big + 3 medium + 5 small slots); constraints are enforced in the UI
   4. User can tag tasks with GTD attributes (next action, context, waiting for) and create recurring tasks that auto-regenerate on the configured interval
   5. User can search tasks by keyword and filter the task list by project, Eisenhower quadrant, GTD context, or due date range; results update immediately
-**Plans**: TBD
+**Plans**: 5 plans
 **UI hint**: yes
 
 Plans:
-- [ ] 02-01: Task domain — entities (Task, Project, Subtask), repository interfaces, domain services (recurrence engine, GTD state)
-- [ ] 02-02: Task data layer — Isar schemas, model mappers, repository implementation, query indexes
-- [ ] 02-03: Task application layer — TaskCubit, ProjectCubit, states, error handling
-- [ ] 02-04: Task presentation — task list, project view, task form, Eisenhower board, 1-3-5 day planner
-- [ ] 02-05: GTD + search + filter — GTD tag UI, keyword search, multi-criteria filter, recurring task UI
+- [ ] 02-01-PLAN.md — Task domain layer: Item entity, EisenhowerQuadrant getter, enums, ItemRepository interface, RecurrenceEngine interface
+- [ ] 02-02-PLAN.md — Task data layer: ItemModel @Collection, ItemMapper, ItemDao, ItemRepositoryImpl, RecurrenceEngineImpl, migration v1→v2
+- [ ] 02-03-PLAN.md — Task application layer: TaskListCubit, ProjectCubit, DayPlannerCubit + all states (Equatable)
+- [ ] 02-04-PLAN.md — Task presentation (core): task list screen, project screen, task form, Eisenhower board, 1-3-5 day planner + checkpoint
+- [ ] 02-05-PLAN.md — GTD + search + filter + recurring UI + DI wiring: complete tasks_module.dart, ARB keys, injection.config.dart regenerated
 
 ---
 
