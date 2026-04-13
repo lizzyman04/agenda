@@ -30,15 +30,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. All Isar-persisted enums are annotated with `@enumerated(EnumType.name)` — reordering any enum does not corrupt existing records
   4. GetIt + injectable DI graph resolves without errors; swapping a repository implementation requires changing only the registration, not call sites
   5. `flutter gen-l10n` produces ARB files with parity keys for both `en` and `pt_BR`; the app renders PT-BR strings by default
-**Plans**: TBD
+**Plans**: 5 plans
 **UI hint**: no
 
 Plans:
-- [ ] 01-01: Project bootstrap — pubspec, layer directories, linting, CI smoke test
-- [ ] 01-02: Isar + migration runner — IsarService, schemaVersion, MigrationRunner, enum convention
-- [ ] 01-03: DI scaffold — GetIt + injectable registration, module wiring, environment configs
-- [ ] 01-04: l10n scaffold — ARB files, flutter gen-l10n, locale switching infrastructure
-- [ ] 01-05: Offline guarantee + core layer — constants, extensions, failure hierarchy, network check assertion
+- [ ] 01-01-PLAN.md — Project bootstrap: pubspec (all versions locked), layer directories, very_good_analysis linting, FlutterFragmentActivity, AppConfig, core constants
+- [ ] 01-02-PLAN.md — Isar + migration runner: IsarService singleton, MigrationRunner (schemaVersion in SharedPreferences), MigrationRunner unit tests
+- [ ] 01-03-PLAN.md — DI scaffold: GetIt + injectable, four domain modules (CoreModule/TasksModule/FinanceModule/InfrastructureModule), main.dart wiring, DI smoke test
+- [ ] 01-04-PLAN.md — l10n scaffold: ARB files (EN + PT-BR), flutter gen-l10n, LocaleCubit with PT-BR default, app.dart locale wiring, ARB parity test
+- [ ] 01-05-PLAN.md — Failure hierarchy + offline guarantee: sealed Failure types, Result typedefs, Failure/AppConfig tests, CI workflow (analyze + test + offline check)
 
 ---
 
