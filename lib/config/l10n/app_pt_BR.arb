@@ -1,0 +1,27 @@
+{
+  "@@locale": "pt_BR",
+  "appName": "AGENDA",
+  "@appName": {
+    "description": "Nome da aplicação exibido na barra de título"
+  },
+  "settingsTitle": "Configurações",
+  "@settingsTitle": {
+    "description": "Título da tela de configurações"
+  },
+  "languageLabel": "Idioma",
+  "@languageLabel": {
+    "description": "Rótulo para o seletor de idioma nas configurações"
+  },
+  "privacyStatement": "Os seus dados nunca saem deste dispositivo.",
+  "@privacyStatement": {
+    "description": "Declaração de privacidade exibida no primeiro lançamento (UX-03)"
+  },
+  "emptyStateTitle": "Nenhum item ainda",
+  "@emptyStateTitle": {
+    "description": "Título genérico para estados vazios (UX-04)"
+  },
+  "emptyStateAction": "Toque para adicionar",
+  "@emptyStateAction": {
+    "description": "Ação genérica para estados vazios (UX-04)"
+  }
+}
