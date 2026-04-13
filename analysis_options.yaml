@@ -1,0 +1,15 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - lib/generated/**
+    - lib/config/di/injection.config.dart
+    - "**/*.g.dart"
+  errors:
+    missing_required_param: error
+    missing_return: error
+    todo: ignore
+
+linter:
+  rules:
+    public_member_api_docs: false
