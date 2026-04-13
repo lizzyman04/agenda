@@ -53,6 +53,12 @@ Recent decisions affecting current work:
 - **Architecture**: core/ → domain/ → data/ → infrastructure/ → application/ → presentation/ → config/; strict outer-depends-on-inner rule
 - **Language**: All code/comments/enums in English; UI text in PT-BR by default with EN toggle
 
+### Quick Tasks Completed
+
+| ID | Description | Date | Commit |
+|----|-------------|------|--------|
+| 260413-ss1 | Set up GitHub Pages landing page for AGENDA | 2026-04-13 | d8072b2 |
+
 ### Pending Todos
 
 None yet.
