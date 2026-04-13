@@ -94,21 +94,57 @@
 
 ## Traceability
 
-*Populated during roadmap creation.*
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TASK-01 through TASK-12 | — | Pending |
-| FIN-01 through FIN-10 | — | Pending |
-| NOTF-01 through NOTF-11 | — | Pending |
-| DATA-01 through DATA-06 | — | Pending |
-| UX-01 through UX-04 | — | Pending |
+| DATA-01 | Phase 1: Foundation | Pending |
+| UX-02 | Phase 1: Foundation | Pending |
+| TASK-01 | Phase 2: Task Core | Pending |
+| TASK-02 | Phase 2: Task Core | Pending |
+| TASK-03 | Phase 2: Task Core | Pending |
+| TASK-04 | Phase 2: Task Core | Pending |
+| TASK-05 | Phase 2: Task Core | Pending |
+| TASK-06 | Phase 2: Task Core | Pending |
+| TASK-07 | Phase 2: Task Core | Pending |
+| TASK-08 | Phase 2: Task Core | Pending |
+| TASK-09 | Phase 2: Task Core | Pending |
+| TASK-10 | Phase 2: Task Core | Pending |
+| TASK-11 | Phase 2: Task Core | Pending |
+| TASK-12 | Phase 2: Task Core | Pending |
+| FIN-01 | Phase 3: Finance Core | Pending |
+| FIN-02 | Phase 3: Finance Core | Pending |
+| FIN-03 | Phase 3: Finance Core | Pending |
+| FIN-04 | Phase 3: Finance Core | Pending |
+| FIN-05 | Phase 3: Finance Core | Pending |
+| FIN-06 | Phase 3: Finance Core | Pending |
+| FIN-07 | Phase 3: Finance Core | Pending |
+| FIN-08 | Phase 3: Finance Core | Pending |
+| FIN-09 | Phase 3: Finance Core | Pending |
+| FIN-10 | Phase 3: Finance Core | Pending |
+| UX-04 | Phase 3: Finance Core | Pending |
+| NOTF-01 | Phase 4: Notifications + Backup | Pending |
+| NOTF-02 | Phase 4: Notifications + Backup | Pending |
+| NOTF-03 | Phase 4: Notifications + Backup | Pending |
+| NOTF-04 | Phase 4: Notifications + Backup | Pending |
+| NOTF-05 | Phase 4: Notifications + Backup | Pending |
+| NOTF-06 | Phase 4: Notifications + Backup | Pending |
+| NOTF-07 | Phase 4: Notifications + Backup | Pending |
+| NOTF-08 | Phase 4: Notifications + Backup | Pending |
+| NOTF-09 | Phase 4: Notifications + Backup | Pending |
+| NOTF-10 | Phase 4: Notifications + Backup | Pending |
+| NOTF-11 | Phase 4: Notifications + Backup | Pending |
+| DATA-02 | Phase 4: Notifications + Backup | Pending |
+| DATA-03 | Phase 4: Notifications + Backup | Pending |
+| DATA-04 | Phase 4: Notifications + Backup | Pending |
+| DATA-05 | Phase 5: App Lock + Settings + Polish | Pending |
+| DATA-06 | Phase 5: App Lock + Settings + Polish | Pending |
+| UX-01 | Phase 5: App Lock + Settings + Polish | Pending |
+| UX-03 | Phase 5: App Lock + Settings + Polish | Pending |
 
 **Coverage:**
 - v1 requirements: 44 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 44 ⚠️
+- Mapped to phases: 44
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-13*
-*Last updated: 2026-04-13 after initial definition*
+*Last updated: 2026-04-13 after roadmap creation — traceability fully populated*
