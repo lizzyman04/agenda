@@ -1,6 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:agenda/core/config/app_config.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('AppConfig constants', () {

@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-and-test:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.38.1"
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Generate l10n
+        run: flutter gen-l10n
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos --fatal-warnings
+
+      - name: Test
+        run: flutter test --no-pub --coverage
+
+      - name: Verify offline guarantee
+        run: |
+          echo "Checking for forbidden network packages..."
+          if grep -E "^\s+(http:|dio:|firebase_|sentry_flutter|connectivity_plus)" pubspec.yaml; then
+            echo "ERROR: Forbidden network package found in pubspec.yaml"
+            exit 1
+          fi
+          echo "Offline guarantee verified — no network packages found."
