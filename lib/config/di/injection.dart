@@ -1,7 +1,16 @@
+import 'package:agenda/config/di/injection.config.dart';
 import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 
-/// Global service locator instance.
+/// The global service locator instance.
 ///
-/// Fully configured by configureDependencies() in Plan 03.
-/// This stub exports [getIt] so app.dart can reference it before Plan 03 runs.
+/// Use getIt&lt;T&gt;() to resolve dependencies at call sites.
+/// Never call GetIt.instance directly — always use this exported reference
+/// so tests can reset the locator without touching global state.
 final GetIt getIt = GetIt.instance;
+
+/// Registers all dependencies and runs async pre-resolved singletons.
+///
+/// Must be awaited in main() before runApp() is called (D-17).
+@InjectableInit()
+Future<void> configureDependencies() async => getIt.init();
