@@ -34,11 +34,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 **UI hint**: no
 
 Plans:
-- [ ] 01-01-PLAN.md — Project bootstrap: pubspec (all versions locked), layer directories, very_good_analysis linting, FlutterFragmentActivity, AppConfig, core constants
-- [ ] 01-02-PLAN.md — Isar + migration runner: IsarService singleton, MigrationRunner (schemaVersion in SharedPreferences), MigrationRunner unit tests
-- [ ] 01-03-PLAN.md — DI scaffold: GetIt + injectable, four domain modules (CoreModule/TasksModule/FinanceModule/InfrastructureModule), main.dart wiring, DI smoke test
-- [ ] 01-04-PLAN.md — l10n scaffold: ARB files (EN + PT-BR), flutter gen-l10n, LocaleCubit with PT-BR default, app.dart locale wiring, ARB parity test
-- [ ] 01-05-PLAN.md — Failure hierarchy + offline guarantee: sealed Failure types, Result typedefs, Failure/AppConfig tests, CI workflow (analyze + test + offline check)
+- [x] 01-01-PLAN.md — Project bootstrap: pubspec (all versions locked), layer directories, very_good_analysis linting, FlutterFragmentActivity, AppConfig, core constants
+- [x] 01-02-PLAN.md — Isar + migration runner: IsarService singleton, MigrationRunner (schemaVersion in SharedPreferences), MigrationRunner unit tests
+- [x] 01-03-PLAN.md — DI scaffold: GetIt + injectable, four domain modules (CoreModule/TasksModule/FinanceModule/InfrastructureModule), main.dart wiring, DI smoke test
+- [x] 01-04-PLAN.md — l10n scaffold: ARB files (EN + PT-BR), flutter gen-l10n, LocaleCubit with PT-BR default, app.dart locale wiring, ARB parity test
+- [x] 01-05-PLAN.md — Failure hierarchy + offline guarantee: sealed Failure types, Result typedefs, Failure/AppConfig tests, CI workflow (analyze + test + offline check)
 
 ---
 
