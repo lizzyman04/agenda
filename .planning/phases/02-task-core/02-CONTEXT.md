@@ -46,15 +46,28 @@ Currency code is stored as a plain string (ISO 4217, e.g., "MZN", "USD"). No cur
 - `dueTime` (nullable TimeOfDay — stored as minutes-since-midnight int)
 - `recurrenceRule` (nullable — see Recurrence section)
 
+### Priority
+
+**LOCKED:** `Priority` enum with five values:
+```dart
+enum Priority { low, medium, high, critical, urgent }
+```
+Stored on `ItemModel` as a non-nullable field with default `Priority.medium`. Annotated with `@enumerated(EnumType.name)` per Phase 1 convention. Priority is independent of Eisenhower — a task can be `Priority.high` in Q2 (schedule, not urgent but important).
+
 ### Eisenhower Matrix
 
-**LOCKED:** Two boolean fields on Item: `isUrgent` and `isImportant`. Quadrant is derived at the application layer from the combination — not stored as an enum.
+**LOCKED:** Two boolean fields on Item: `isUrgent` (default false) and `isImportant` (default false). Quadrant is not stored — it is exposed as a computed getter on the domain entity:
 
-Quadrants:
-- Q1 (Do): urgent + important
-- Q2 (Schedule): not urgent + important
-- Q3 (Delegate): urgent + not important
-- Q4 (Eliminate): not urgent + not important
+```dart
+EisenhowerQuadrant get eisenhowerQuadrant => switch ((isUrgent, isImportant)) {
+  (true, true)   => EisenhowerQuadrant.doNow,       // Q1
+  (false, true)  => EisenhowerQuadrant.schedule,    // Q2
+  (true, false)  => EisenhowerQuadrant.delegate,    // Q3
+  (false, false) => EisenhowerQuadrant.eliminate,   // Q4
+};
+```
+
+`EisenhowerQuadrant` is a sealed enum in `lib/domain/tasks/`. It is never persisted to Isar.
 
 ### 1-3-5 Rule
 
@@ -90,10 +103,26 @@ GTD is additive — items without GTD tags are unaffected.
 - One repository interface per bounded concern: `ItemRepository` (single interface for all Item types, discriminated by type)
 - Cubits receive the repository via GetIt injection; `TasksModule` in DI graph is populated in this phase
 
+### 7-Layer Architecture (Phase 1 Contract — Enforced)
+
+**LOCKED:** Phase 2 strictly follows the 7-layer directory structure established in Phase 1. No layer may reach across its boundary:
+
+| Layer | Path | Phase 2 Contents |
+|-------|------|-----------------|
+| `core/` | `lib/core/` | No changes — reuse AppConstants, Failure types, Result typedefs |
+| `domain/` | `lib/domain/tasks/` | Item entity, EisenhowerQuadrant enum, Priority enum, ItemRepository interface, RecurrenceEngine interface |
+| `data/` | `lib/data/tasks/` | ItemModel (Isar schema), ItemMapper, ItemDao |
+| `infrastructure/` | `lib/infrastructure/tasks/` | ItemRepositoryImpl (implements domain interface) |
+| `application/` | `lib/application/tasks/` | TaskListCubit, ProjectCubit, DayPlannerCubit + states |
+| `presentation/` | `lib/presentation/tasks/` | Task list screen, project view, task form, Eisenhower board, 1-3-5 planner, GTD/search/filter UI |
+| `config/` | `lib/config/di/tasks_module.dart` | Register ItemRepositoryImpl, populate TasksModule |
+
+Dependency direction: `presentation` → `application` → `domain` ← `infrastructure` → `data`. The domain layer has zero Flutter/Isar imports.
+
 ### Isar Schema Conventions (from Phase 1 Patterns)
 
 **LOCKED (from Phase 1):**
-- All enums annotated with `@enumerated(EnumType.name)` — safe to reorder
+- All enums annotated with `@enumerated(EnumType.name)` — safe to reorder (applies to `Priority`, `ItemType`, `SizeCategory`)
 - All repository methods return `Result<T>` / `AsyncResult<T>` (never throw)
 - Package imports only (`package:agenda/...`)
 - No synchronous Isar calls (no `findSync`, `putSync`, etc.)
