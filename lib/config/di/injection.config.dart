@@ -65,7 +65,10 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i646.ProjectCubit(gh<_i565.ItemRepository>()),
     );
     gh.factory<_i726.TaskListCubit>(
-      () => _i726.TaskListCubit(gh<_i565.ItemRepository>()),
+      () => _i726.TaskListCubit(
+        gh<_i565.ItemRepository>(),
+        gh<_i44.RecurrenceEngine>(),
+      ),
     );
     return this;
   }

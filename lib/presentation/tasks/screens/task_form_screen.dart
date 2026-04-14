@@ -41,6 +41,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   late bool _isNextAction;
   DateTime? _dueDate;
   TimeOfDay? _dueTime;
+  String? _recurrenceRule;
 
   bool get _isEditing => widget.item != null;
 
@@ -73,6 +74,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       final minutes = item!.dueTimeMinutes!;
       _dueTime = TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
     }
+    _recurrenceRule = item?.recurrenceRule;
   }
 
   @override
@@ -141,6 +143,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             : null,
         dueDate: _dueDate,
         dueTimeMinutes: dueTimeMinutes,
+        recurrenceRule: _recurrenceRule,
         amount: amount,
         currencyCode: _currencyController.text.trim().isNotEmpty
             ? _currencyController.text.trim()
@@ -169,6 +172,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             : null,
         dueDate: _dueDate,
         dueTimeMinutes: dueTimeMinutes,
+        recurrenceRule: _recurrenceRule,
         amount: amount,
         currencyCode: _currencyController.text.trim().isNotEmpty
             ? _currencyController.text.trim()
@@ -309,7 +313,52 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               ),
             ),
 
-            // 7. Urgent
+            // 7. Recurrence rule picker — shown only when dueDate is set (TASK-10)
+            if (_dueDate != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                l10n.recurrence,
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+              RadioListTile<String?>(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.noRecurrence),
+                value: null,
+                groupValue: _recurrenceRule,
+                onChanged: (v) => setState(() => _recurrenceRule = v),
+              ),
+              RadioListTile<String?>(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.daily),
+                value: 'FREQ=DAILY',
+                groupValue: _recurrenceRule,
+                onChanged: (v) => setState(() => _recurrenceRule = v),
+              ),
+              RadioListTile<String?>(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.weekly),
+                value: 'FREQ=WEEKLY',
+                groupValue: _recurrenceRule,
+                onChanged: (v) => setState(() => _recurrenceRule = v),
+              ),
+              RadioListTile<String?>(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.monthly),
+                value:
+                    'FREQ=MONTHLY;BYMONTHDAY=${_dueDate!.day}',
+                groupValue: _recurrenceRule,
+                onChanged: (v) => setState(() => _recurrenceRule = v),
+              ),
+              RadioListTile<String?>(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.yearly),
+                value: 'FREQ=YEARLY',
+                groupValue: _recurrenceRule,
+                onChanged: (v) => setState(() => _recurrenceRule = v),
+              ),
+            ],
+
+            // 8. Urgent
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(l10n.fieldUrgent),

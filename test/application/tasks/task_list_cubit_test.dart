@@ -6,11 +6,14 @@ import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_repository.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
+import 'package:agenda/domain/tasks/recurrence_engine.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockItemRepository extends Mock implements ItemRepository {}
+
+class MockRecurrenceEngine extends Mock implements RecurrenceEngine {}
 
 class FakeItem extends Fake implements Item {}
 
@@ -27,6 +30,7 @@ Item makeItem({required int id, String title = 'Task'}) {
 
 void main() {
   late MockItemRepository repository;
+  late MockRecurrenceEngine recurrenceEngine;
 
   setUpAll(() {
     registerFallbackValue(FakeItem());
@@ -35,6 +39,7 @@ void main() {
 
   setUp(() {
     repository = MockItemRepository();
+    recurrenceEngine = MockRecurrenceEngine();
     when(() => repository.watchChanges())
         .thenAnswer((_) => const Stream.empty());
     when(
@@ -52,7 +57,7 @@ void main() {
 
   group('TaskListCubit', () {
     test('initial state is TaskListInitial', () async {
-      final cubit = TaskListCubit(repository);
+      final cubit = TaskListCubit(repository, recurrenceEngine);
       expect(cubit.state, const TaskListInitial());
       await cubit.close();
     });
@@ -72,7 +77,7 @@ void main() {
             showCompleted: any(named: 'showCompleted'),
           ),
         ).thenAnswer((_) async => Success<List<Item>>(items));
-        return TaskListCubit(repository);
+        return TaskListCubit(repository, recurrenceEngine);
       },
       act: (cubit) => cubit.start(),
       expect: () => [
@@ -89,7 +94,7 @@ void main() {
       build: () {
         when(() => repository.searchByTitle(any()))
             .thenAnswer((_) async => Success<List<Item>>([]));
-        return TaskListCubit(repository);
+        return TaskListCubit(repository, recurrenceEngine);
       },
       act: (cubit) async {
         await cubit.start();
@@ -102,7 +107,7 @@ void main() {
 
     blocTest<TaskListCubit, TaskListState>(
       'applyFilter() calls repository.filterItems with correct params',
-      build: () => TaskListCubit(repository),
+      build: () => TaskListCubit(repository, recurrenceEngine),
       act: (cubit) async {
         await cubit.start();
         await cubit.applyFilter(
@@ -141,7 +146,7 @@ void main() {
         ).thenAnswer((_) async => Success<List<Item>>(items));
         when(() => repository.softDelete(any()))
             .thenAnswer((_) async => Success<Item>(makeItem(id: 1)));
-        return TaskListCubit(repository);
+        return TaskListCubit(repository, recurrenceEngine);
       },
       act: (cubit) async {
         await cubit.start();
@@ -162,7 +167,7 @@ void main() {
             .thenAnswer((_) async => Success<Item>(makeItem(id: 1)));
         when(() => repository.restoreItem(any()))
             .thenAnswer((_) async => Success<Item>(makeItem(id: 1)));
-        return TaskListCubit(repository);
+        return TaskListCubit(repository, recurrenceEngine);
       },
       act: (cubit) async {
         await cubit.start();
@@ -184,7 +189,7 @@ void main() {
       build: () {
         when(() => repository.updateItem(any()))
             .thenAnswer((_) async => Success<Item>(makeItem(id: 1)));
-        return TaskListCubit(repository);
+        return TaskListCubit(repository, recurrenceEngine);
       },
       act: (cubit) async {
         await cubit.start();
@@ -214,7 +219,7 @@ void main() {
         ).thenAnswer(
           (_) async => const Err<List<Item>>(DatabaseFailure('db error')),
         );
-        return TaskListCubit(repository);
+        return TaskListCubit(repository, recurrenceEngine);
       },
       act: (cubit) => cubit.start(),
       expect: () => [isA<TaskListError>()],

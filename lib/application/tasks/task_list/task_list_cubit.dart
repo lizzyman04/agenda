@@ -6,6 +6,7 @@ import 'package:agenda/core/constants/app_constants.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_repository.dart';
+import 'package:agenda/domain/tasks/recurrence_engine.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
@@ -18,9 +19,11 @@ import 'package:injectable/injectable.dart';
 /// task list screen is opened.
 @injectable
 class TaskListCubit extends Cubit<TaskListState> {
-  TaskListCubit(this._repository) : super(const TaskListInitial());
+  TaskListCubit(this._repository, this._recurrenceEngine)
+      : super(const TaskListInitial());
 
   final ItemRepository _repository;
+  final RecurrenceEngine _recurrenceEngine;
 
   StreamSubscription<void>? _watchSubscription;
   Timer? _undoTimer;
@@ -116,20 +119,54 @@ class TaskListCubit extends Cubit<TaskListState> {
 
   /// Marks an item as completed (TASK-06).
   ///
-  /// For recurring items, the repository creates the next occurrence
-  /// automatically. The watch stream fires and triggers _reload().
+  /// For recurring tasks (TASK-10): creates a new Item with the next
+  /// occurrence's dueDate computed by [RecurrenceEngine].
+  /// The watch stream fires and triggers _reload() automatically.
   Future<void> completeItem(Item item) async {
+    final now = DateTime.now();
     final updated = item.copyWith(
       isCompleted: true,
-      completedAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+      completedAt: now,
+      updatedAt: now,
     );
     final result = await _repository.updateItem(updated);
     if (result is Err<Item>) {
       emit(TaskListError(result.failure));
+      return;
     }
-    // watchChanges() stream fires automatically;
-    // _reload() is called by the listener.
+
+    // Recurring task: create next occurrence (TASK-10)
+    if (item.recurrenceRule != null && item.dueDate != null) {
+      final rule = _recurrenceEngine.parse(item.recurrenceRule);
+      if (rule != null) {
+        final nextDate =
+            _recurrenceEngine.nextOccurrence(item.dueDate!, rule);
+        final nextItem = Item(
+          id: 0, // Isar auto-increment assigns a new id
+          type: item.type,
+          title: item.title,
+          description: item.description,
+          parentId: item.parentId,
+          priority: item.priority,
+          isUrgent: item.isUrgent,
+          isImportant: item.isImportant,
+          sizeCategory: item.sizeCategory,
+          isNextAction: item.isNextAction,
+          gtdContext: item.gtdContext,
+          waitingFor: item.waitingFor,
+          dueDate: nextDate,
+          dueTimeMinutes: item.dueTimeMinutes,
+          recurrenceRule: item.recurrenceRule,
+          amount: item.amount,
+          currencyCode: item.currencyCode,
+          createdAt: now,
+          updatedAt: now,
+        );
+        await _repository.createItem(nextItem);
+        // watchChanges() stream fires; _reload() called by listener
+      }
+    }
+    // watchChanges() fires reload for the completed item update
   }
 
   // --- Private ---
