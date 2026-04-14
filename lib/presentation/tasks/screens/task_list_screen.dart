@@ -3,6 +3,7 @@ import 'package:agenda/application/tasks/task_list/task_list_state.dart';
 import 'package:agenda/core/constants/app_constants.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/tasks/screens/gtd_filter_screen.dart';
 import 'package:agenda/presentation/tasks/screens/task_form_screen.dart';
 import 'package:agenda/presentation/tasks/widgets/task_card.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +49,17 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
+  void _navigateToGtdFilter() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => BlocProvider.value(
+          value: context.read<TaskListCubit>(),
+          child: const GtdFilterScreen(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -55,6 +67,25 @@ class _TaskListScreenState extends State<TaskListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.tasksScreenTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            tooltip: l10n.gtdFilterTitle,
+            onPressed: _navigateToGtdFilter,
+          ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SearchBar(
+              hintText: l10n.searchTasks,
+              leading: const Icon(Icons.search),
+              onChanged: (query) =>
+                  context.read<TaskListCubit>().search(query),
+            ),
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreate,
