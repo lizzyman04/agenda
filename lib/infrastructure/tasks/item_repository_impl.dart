@@ -34,8 +34,8 @@ class ItemRepositoryImpl implements ItemRepository {
         if (parentResult is Err<Item>) return parentResult;
         final parent = (parentResult as Success<Item>).value;
         if (parent.type != ItemType.project) {
-          return Err<Item>(
-            const ValidationFailure(
+          return const Err<Item>(
+            ValidationFailure(
               'parentId must reference an item of type project',
             ),
           );

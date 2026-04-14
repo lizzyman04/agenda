@@ -86,7 +86,7 @@ class ItemModel {
   @Index()
   DateTime? deletedAt;
 
-  // --- Time (dueDate top-level for @Index; timeInfo holds remaining fields) ---
+  // --- Time (dueDate top-level for @Index; timeInfo holds remaining) ---
   @Index()
   DateTime? dueDate;
 

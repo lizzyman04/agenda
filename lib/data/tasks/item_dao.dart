@@ -55,32 +55,51 @@ class ItemDao {
     // Always start with active (non-deleted) items.
     // Use .optional() to conditionally chain each filter — preserves the
     // Isar QueryBuilder phantom-type invariant without dynamic reassignment.
+    // Promote nullable params to non-nullable locals so Dart flow analysis
+    // can prove non-null inside the lambda closures.
+    final resolvedType = type;
+    final resolvedIsUrgent = isUrgent;
+    final resolvedIsImportant = isImportant;
+    final resolvedGtdContext = gtdContext;
+    final resolvedDateFrom = dueDateFrom;
+    final resolvedDateTo = dueDateTo;
+    final resolvedParentId = parentId;
     return _collection
         .filter()
         .deletedAtIsNull()
-        .optional(type != null, (q) => q.and().typeEqualTo(type!))
-        .optional(isUrgent != null, (q) => q.and().isUrgentEqualTo(isUrgent!))
         .optional(
-          isImportant != null,
-          (q) => q.and().isImportantEqualTo(isImportant!),
+          resolvedType != null,
+          (q) => q.and().typeEqualTo(resolvedType!),
         )
         .optional(
-          gtdContext != null,
-          (q) => q.and().gtdContextEqualTo(gtdContext!),
+          resolvedIsUrgent != null,
+          (q) => q.and().isUrgentEqualTo(resolvedIsUrgent!),
         )
         .optional(
-          dueDateFrom != null && dueDateTo != null,
-          (q) => q.and().dueDateBetween(dueDateFrom!, dueDateTo!),
+          resolvedIsImportant != null,
+          (q) => q.and().isImportantEqualTo(resolvedIsImportant!),
         )
         .optional(
-          dueDateFrom != null && dueDateTo == null,
-          (q) => q.and().dueDateGreaterThan(dueDateFrom!, include: true),
+          resolvedGtdContext != null,
+          (q) => q.and().gtdContextEqualTo(resolvedGtdContext!),
         )
         .optional(
-          dueDateTo != null && dueDateFrom == null,
-          (q) => q.and().dueDateLessThan(dueDateTo!, include: true),
+          resolvedDateFrom != null && resolvedDateTo != null,
+          (q) => q.and().dueDateBetween(resolvedDateFrom!, resolvedDateTo!),
         )
-        .optional(parentId != null, (q) => q.and().parentIdEqualTo(parentId!))
+        .optional(
+          resolvedDateFrom != null && resolvedDateTo == null,
+          (q) =>
+              q.and().dueDateGreaterThan(resolvedDateFrom!, include: true),
+        )
+        .optional(
+          resolvedDateTo != null && resolvedDateFrom == null,
+          (q) => q.and().dueDateLessThan(resolvedDateTo!, include: true),
+        )
+        .optional(
+          resolvedParentId != null,
+          (q) => q.and().parentIdEqualTo(resolvedParentId!),
+        )
         .optional(
           !showCompleted,
           (q) => q.and().isCompletedEqualTo(false),
