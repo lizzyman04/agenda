@@ -18,7 +18,7 @@ abstract final class AppConfig {
   ///
   /// Bump this constant AND add a corresponding migration block in
   /// MigrationRunner._runMigration every time the Isar schema changes.
-  static const int schemaVersion = 1;
+  static const int schemaVersion = 2;
 
   // ---------------------------------------------------------------------------
   // Notification ID namespaces

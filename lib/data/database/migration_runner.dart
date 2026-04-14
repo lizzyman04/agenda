@@ -36,7 +36,10 @@ class MigrationRunner {
     switch (toVersion) {
       case 1:
         // Initial schema — no data migration needed.
-        // Future migrations: case 2: await _migrateV1ToV2(isar);
+        return;
+      case 2:
+        // Add ItemModel collection (tasks, projects, subtasks).
+        // No data migration needed — new empty collection.
         return;
     }
   }

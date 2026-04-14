@@ -12,6 +12,13 @@
 import 'package:agenda/application/shared/locale/locale_cubit.dart' as _i101;
 import 'package:agenda/config/di/core_module.dart' as _i84;
 import 'package:agenda/data/database/isar_service.dart' as _i43;
+import 'package:agenda/data/tasks/item_dao.dart' as _i409;
+import 'package:agenda/data/tasks/item_mapper.dart' as _i546;
+import 'package:agenda/domain/tasks/item_repository.dart' as _i565;
+import 'package:agenda/domain/tasks/recurrence_engine.dart' as _i44;
+import 'package:agenda/infrastructure/tasks/item_repository_impl.dart' as _i215;
+import 'package:agenda/infrastructure/tasks/recurrence_engine_impl.dart'
+    as _i317;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
@@ -29,8 +36,18 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.singleton<_i43.IsarService>(() => coreModule.isarService);
+    gh.lazySingleton<_i44.RecurrenceEngine>(
+      () => const _i317.RecurrenceEngineImpl(),
+    );
     gh.factory<_i101.LocaleCubit>(
       () => _i101.LocaleCubit(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i565.ItemRepository>(
+      () => _i215.ItemRepositoryImpl(
+        gh<_i409.ItemDao>(),
+        gh<_i546.ItemMapper>(),
+        gh<_i44.RecurrenceEngine>(),
+      ),
     );
     return this;
   }
