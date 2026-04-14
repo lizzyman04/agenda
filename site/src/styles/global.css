@@ -66,7 +66,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.5rem}
 .card{background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);transition:transform var(--ease),box-shadow var(--ease)}
 .card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
-.card-icon{width:48px;height:48px;background:var(--primary-glow);border-radius:.625rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1.25rem}
+.card-icon{width:48px;height:48px;background:var(--primary-glow);border-radius:.625rem;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:1.25rem;color:var(--primary)}
 .card h3{font-size:1.1rem;font-weight:700;margin-bottom:.6rem}
 .card > p{color:var(--text-2);font-size:.9rem;line-height:1.65;margin-bottom:1rem}
 .card ul{list-style:none;padding:0}
@@ -76,7 +76,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 /* PRINCIPLES */
 .principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-top:1.5rem}
 .principle{background:var(--surface);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);text-align:center}
-.principle .p-icon{font-size:2rem;margin-bottom:.6rem;display:block}
+.principle .p-icon{font-size:1.375rem;margin-bottom:.6rem;display:flex;align-items:center;justify-content:center;color:var(--primary);height:2rem}
 .principle h4{font-weight:700;font-size:.9rem;margin-bottom:.3rem}
 .principle p{font-size:.8rem;color:var(--text-2)}
 

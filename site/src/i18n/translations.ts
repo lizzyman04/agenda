@@ -9,7 +9,7 @@ export const translations = {
 
     "hero-tagline": "Uma tarefa espera por você!",
     "hero-sub": "Organize tarefas e finanças em um app mobile privado e offline. Sem internet. Sem servidores. Seus dados, só seus.",
-    "hero-privacy": "🔒 Privacidade em primeiro lugar",
+    "hero-privacy": "Privacidade em primeiro lugar",
     "hero-cta": "Em breve na Play Store",
 
     "screenshots-title": "Screenshots",
@@ -111,7 +111,7 @@ export const translations = {
 
     "hero-tagline": "A task is waiting for you!",
     "hero-sub": "Organize tasks and finances in one private, offline mobile app. No internet. No servers. Your data, yours alone.",
-    "hero-privacy": "🔒 Privacy first",
+    "hero-privacy": "Privacy first",
     "hero-cta": "Coming soon on Play Store",
 
     "screenshots-title": "Screenshots",
