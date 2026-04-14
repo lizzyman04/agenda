@@ -27,28 +27,33 @@ void main() {
 
   group('MigrationRunner.run', () {
     test(
-      'runs migration v1 and writes version when prefs has no stored '
+      'runs migrations v1→v2 and writes each version when prefs has no stored '
       'version (fresh install)',
       () async {
-        // Arrange — no version stored yet
+        // Arrange — no version stored yet; target is AppConfig.schemaVersion (2)
         when(() => mockPrefs.getInt('schema_version')).thenReturn(null);
         when(() => mockPrefs.setInt('schema_version', 1))
+            .thenAnswer((_) async => true);
+        when(() => mockPrefs.setInt('schema_version', 2))
             .thenAnswer((_) async => true);
 
         // Act
         await MigrationRunner.run(mockIsar, mockPrefs);
 
-        // Assert — version 1 written to prefs
+        // Assert — versions 1 and 2 both written to prefs
         verify(() => mockPrefs.setInt('schema_version', 1)).called(1);
+        verify(() => mockPrefs.setInt('schema_version', 2)).called(1);
       },
     );
 
     test(
-      'runs migration v1 and writes version when stored version is 0',
+      'runs migrations v1→v2 and writes each version when stored version is 0',
       () async {
         // Arrange
         when(() => mockPrefs.getInt('schema_version')).thenReturn(0);
         when(() => mockPrefs.setInt('schema_version', 1))
+            .thenAnswer((_) async => true);
+        when(() => mockPrefs.setInt('schema_version', 2))
             .thenAnswer((_) async => true);
 
         // Act
@@ -56,12 +61,13 @@ void main() {
 
         // Assert
         verify(() => mockPrefs.setInt('schema_version', 1)).called(1);
+        verify(() => mockPrefs.setInt('schema_version', 2)).called(1);
       },
     );
 
-    test('is a no-op when stored version equals current target (1)', () async {
+    test('is a no-op when stored version equals current target (2)', () async {
       // Arrange — already at target version
-      when(() => mockPrefs.getInt('schema_version')).thenReturn(1);
+      when(() => mockPrefs.getInt('schema_version')).thenReturn(2);
 
       // Act
       await MigrationRunner.run(mockIsar, mockPrefs);
