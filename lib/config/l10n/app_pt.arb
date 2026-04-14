@@ -23,5 +23,191 @@
   "emptyStateAction": "Toque para adicionar",
   "@emptyStateAction": {
     "description": "Ação genérica para estados vazios (UX-04)"
-  }
+  },
+  "tasksScreenTitle": "Tarefas",
+  "@tasksScreenTitle": {
+    "description": "Título da tela de lista de tarefas"
+  },
+  "noTasks": "Nenhuma tarefa",
+  "@noTasks": {
+    "description": "Texto de estado vazio na tela de lista de tarefas"
+  },
+  "taskDeleted": "Tarefa excluída",
+  "@taskDeleted": {
+    "description": "Conteúdo da SnackBar após exclusão suave"
+  },
+  "undo": "Desfazer",
+  "@undo": {
+    "description": "Rótulo da ação de desfazer na SnackBar"
+  },
+  "quadrantEmpty": "Vazia",
+  "@quadrantEmpty": {
+    "description": "Texto de estado vazio dentro de um quadrante"
+  },
+  "slotLimitExceeded": "Limite excedido",
+  "@slotLimitExceeded": {
+    "description": "Texto do banner de aviso quando um slot 1-3-5 está acima da capacidade"
+  },
+  "slotLimitWarning": "Limite de slot excedido",
+  "@slotLimitWarning": {
+    "description": "Banner de aviso global na tela do planejador diário"
+  },
+  "addTask": "Adicionar",
+  "@addTask": {
+    "description": "Rótulo da ação de adicionar na seção de slot"
+  },
+  "bigTask": "1 Grande Tarefa",
+  "@bigTask": {
+    "description": "Rótulo para o slot de tarefa grande no planejador 1-3-5"
+  },
+  "mediumTasks": "3 Tarefas Médias",
+  "@mediumTasks": {
+    "description": "Rótulo para o slot de tarefas médias no planejador 1-3-5"
+  },
+  "smallTasks": "5 Tarefas Pequenas",
+  "@smallTasks": {
+    "description": "Rótulo para o slot de tarefas pequenas no planejador 1-3-5"
+  },
+  "dayPlannerTitle": "Planejamento 1-3-5",
+  "@dayPlannerTitle": {
+    "description": "Título da AppBar para a tela do planejador diário"
+  },
+  "eisenhowerTitle": "Matriz Eisenhower",
+  "@eisenhowerTitle": {
+    "description": "Título da AppBar para a tela do quadro Eisenhower"
+  },
+  "eisenhowerDoNow": "Fazer Agora",
+  "@eisenhowerDoNow": {
+    "description": "Rótulo do quadrante Q1 — Urgente + Importante"
+  },
+  "eisenhowerSchedule": "Agendar",
+  "@eisenhowerSchedule": {
+    "description": "Rótulo do quadrante Q2 — Não urgente + Importante"
+  },
+  "eisenhowerDelegate": "Delegar",
+  "@eisenhowerDelegate": {
+    "description": "Rótulo do quadrante Q3 — Urgente + Não importante"
+  },
+  "eisenhowerEliminate": "Eliminar",
+  "@eisenhowerEliminate": {
+    "description": "Rótulo do quadrante Q4 — Não urgente + Não importante"
+  },
+  "taskFormTitleCreate": "Nova Tarefa",
+  "@taskFormTitleCreate": {
+    "description": "Título da AppBar ao criar uma nova tarefa"
+  },
+  "taskFormTitleEdit": "Editar Tarefa",
+  "@taskFormTitleEdit": {
+    "description": "Título da AppBar ao editar uma tarefa existente"
+  },
+  "fieldTitle": "Título",
+  "@fieldTitle": {
+    "description": "Rótulo do campo de título no formulário de tarefa"
+  },
+  "fieldTitleRequired": "Título é obrigatório",
+  "@fieldTitleRequired": {
+    "description": "Erro de validação quando o título está vazio"
+  },
+  "fieldDescription": "Descrição",
+  "@fieldDescription": {
+    "description": "Rótulo do campo de descrição"
+  },
+  "fieldPriority": "Prioridade",
+  "@fieldPriority": {
+    "description": "Rótulo do dropdown de prioridade"
+  },
+  "fieldDueDate": "Prazo",
+  "@fieldDueDate": {
+    "description": "Rótulo do campo de data de vencimento"
+  },
+  "fieldDueTime": "Horário",
+  "@fieldDueTime": {
+    "description": "Rótulo do campo de hora de vencimento"
+  },
+  "noDueDate": "Sem prazo",
+  "@noDueDate": {
+    "description": "Placeholder quando nenhuma data de vencimento está definida"
+  },
+  "noDueTime": "Sem hora",
+  "@noDueTime": {
+    "description": "Placeholder quando nenhum horário está definido"
+  },
+  "fieldUrgent": "Urgente",
+  "@fieldUrgent": {
+    "description": "Rótulo do switch isUrgent"
+  },
+  "fieldImportant": "Importante",
+  "@fieldImportant": {
+    "description": "Rótulo do switch isImportant"
+  },
+  "fieldSize": "Tamanho",
+  "@fieldSize": {
+    "description": "Rótulo do botão segmentado de categoria de tamanho"
+  },
+  "fieldNextAction": "Próxima ação",
+  "@fieldNextAction": {
+    "description": "Rótulo da checkbox isNextAction"
+  },
+  "fieldGtdContext": "Contexto GTD",
+  "@fieldGtdContext": {
+    "description": "Rótulo do campo de contexto GTD"
+  },
+  "fieldWaitingFor": "Aguardando",
+  "@fieldWaitingFor": {
+    "description": "Rótulo do campo de aguardando"
+  },
+  "fieldAmount": "Valor",
+  "@fieldAmount": {
+    "description": "Rótulo do campo de valor"
+  },
+  "fieldCurrency": "Moeda",
+  "@fieldCurrency": {
+    "description": "Rótulo do campo de moeda"
+  },
+  "saveButton": "Salvar",
+  "@saveButton": {
+    "description": "Rótulo do botão salvar"
+  },
+  "projectScreenTitle": "Projeto",
+  "@projectScreenTitle": {
+    "description": "Título padrão da AppBar para a tela de projeto"
+  },
+  "subtasksProgress": "{completed}/{total} subtarefas",
+  "@subtasksProgress": {
+    "description": "Rótulo de progresso de conclusão de subtarefas",
+    "placeholders": {
+      "completed": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "addSubtask": "Adicionar subtarefa",
+  "@addSubtask": {
+    "description": "Rótulo para o FAB/botão de adicionar subtarefa"
+  },
+  "subtaskTitleHint": "Título da subtarefa",
+  "@subtaskTitleHint": {
+    "description": "Texto de dica no campo de texto da folha de adicionar subtarefa"
+  },
+  "priorityLow": "Baixa",
+  "@priorityLow": {"description": "Prioridade: baixa"},
+  "priorityMedium": "Média",
+  "@priorityMedium": {"description": "Prioridade: média"},
+  "priorityHigh": "Alta",
+  "@priorityHigh": {"description": "Prioridade: alta"},
+  "priorityCritical": "Crítica",
+  "@priorityCritical": {"description": "Prioridade: crítica"},
+  "priorityUrgent": "Urgente",
+  "@priorityUrgent": {"description": "Prioridade: urgente"},
+  "sizeBig": "Grande",
+  "@sizeBig": {"description": "Tamanho: grande"},
+  "sizeMedium": "Médio",
+  "@sizeMedium": {"description": "Tamanho: médio"},
+  "sizeSmall": "Pequeno",
+  "@sizeSmall": {"description": "Tamanho: pequeno"},
+  "sizeNone": "Nenhum",
+  "@sizeNone": {"description": "Tamanho: nenhum"},
+  "typeTask": "Tarefa",
+  "@typeTask": {"description": "Tipo de item: tarefa"},
+  "typeProject": "Projeto",
+  "@typeProject": {"description": "Tipo de item: projeto"}
 }

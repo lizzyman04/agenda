@@ -23,5 +23,191 @@
   "emptyStateAction": "Tap to add",
   "@emptyStateAction": {
     "description": "Generic empty state action (UX-04)"
-  }
+  },
+  "tasksScreenTitle": "Tasks",
+  "@tasksScreenTitle": {
+    "description": "Title for the task list screen"
+  },
+  "noTasks": "No tasks",
+  "@noTasks": {
+    "description": "Empty state text on the task list screen"
+  },
+  "taskDeleted": "Task deleted",
+  "@taskDeleted": {
+    "description": "SnackBar content after soft delete"
+  },
+  "undo": "Undo",
+  "@undo": {
+    "description": "SnackBar undo action label"
+  },
+  "quadrantEmpty": "Empty",
+  "@quadrantEmpty": {
+    "description": "Empty state label inside a quadrant card"
+  },
+  "slotLimitExceeded": "Limit exceeded",
+  "@slotLimitExceeded": {
+    "description": "Warning banner text when a 1-3-5 slot is over capacity"
+  },
+  "slotLimitWarning": "Slot limit exceeded",
+  "@slotLimitWarning": {
+    "description": "Global warning banner on the day planner screen"
+  },
+  "addTask": "Add",
+  "@addTask": {
+    "description": "Add action label in slot section"
+  },
+  "bigTask": "1 Big Task",
+  "@bigTask": {
+    "description": "Label for the big task slot in the 1-3-5 planner"
+  },
+  "mediumTasks": "3 Medium Tasks",
+  "@mediumTasks": {
+    "description": "Label for the medium tasks slot in the 1-3-5 planner"
+  },
+  "smallTasks": "5 Small Tasks",
+  "@smallTasks": {
+    "description": "Label for the small tasks slot in the 1-3-5 planner"
+  },
+  "dayPlannerTitle": "1-3-5 Day Planner",
+  "@dayPlannerTitle": {
+    "description": "AppBar title for the day planner screen"
+  },
+  "eisenhowerTitle": "Eisenhower Matrix",
+  "@eisenhowerTitle": {
+    "description": "AppBar title for the Eisenhower board screen"
+  },
+  "eisenhowerDoNow": "Do Now",
+  "@eisenhowerDoNow": {
+    "description": "Q1 quadrant label — Urgent + Important"
+  },
+  "eisenhowerSchedule": "Schedule",
+  "@eisenhowerSchedule": {
+    "description": "Q2 quadrant label — Not Urgent + Important"
+  },
+  "eisenhowerDelegate": "Delegate",
+  "@eisenhowerDelegate": {
+    "description": "Q3 quadrant label — Urgent + Not Important"
+  },
+  "eisenhowerEliminate": "Eliminate",
+  "@eisenhowerEliminate": {
+    "description": "Q4 quadrant label — Not Urgent + Not Important"
+  },
+  "taskFormTitleCreate": "New Task",
+  "@taskFormTitleCreate": {
+    "description": "AppBar title when creating a new task"
+  },
+  "taskFormTitleEdit": "Edit Task",
+  "@taskFormTitleEdit": {
+    "description": "AppBar title when editing an existing task"
+  },
+  "fieldTitle": "Title",
+  "@fieldTitle": {
+    "description": "Label for the title field in the task form"
+  },
+  "fieldTitleRequired": "Title is required",
+  "@fieldTitleRequired": {
+    "description": "Validation error when title is empty"
+  },
+  "fieldDescription": "Description",
+  "@fieldDescription": {
+    "description": "Label for the description field"
+  },
+  "fieldPriority": "Priority",
+  "@fieldPriority": {
+    "description": "Label for the priority dropdown"
+  },
+  "fieldDueDate": "Due date",
+  "@fieldDueDate": {
+    "description": "Label for the due date field"
+  },
+  "fieldDueTime": "Due time",
+  "@fieldDueTime": {
+    "description": "Label for the due time field"
+  },
+  "noDueDate": "No due date",
+  "@noDueDate": {
+    "description": "Placeholder when no due date is set"
+  },
+  "noDueTime": "No time",
+  "@noDueTime": {
+    "description": "Placeholder when no due time is set"
+  },
+  "fieldUrgent": "Urgent",
+  "@fieldUrgent": {
+    "description": "Label for the isUrgent switch"
+  },
+  "fieldImportant": "Important",
+  "@fieldImportant": {
+    "description": "Label for the isImportant switch"
+  },
+  "fieldSize": "Size",
+  "@fieldSize": {
+    "description": "Label for the size category segmented button"
+  },
+  "fieldNextAction": "Next action",
+  "@fieldNextAction": {
+    "description": "Label for the isNextAction checkbox"
+  },
+  "fieldGtdContext": "GTD Context",
+  "@fieldGtdContext": {
+    "description": "Label for the GTD context field"
+  },
+  "fieldWaitingFor": "Waiting for",
+  "@fieldWaitingFor": {
+    "description": "Label for the waiting for field"
+  },
+  "fieldAmount": "Amount",
+  "@fieldAmount": {
+    "description": "Label for the amount field"
+  },
+  "fieldCurrency": "Currency",
+  "@fieldCurrency": {
+    "description": "Label for the currency field"
+  },
+  "saveButton": "Save",
+  "@saveButton": {
+    "description": "Label for the save button"
+  },
+  "projectScreenTitle": "Project",
+  "@projectScreenTitle": {
+    "description": "Default AppBar title for project screen"
+  },
+  "subtasksProgress": "{completed}/{total} subtasks",
+  "@subtasksProgress": {
+    "description": "Subtask completion progress label",
+    "placeholders": {
+      "completed": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "addSubtask": "Add subtask",
+  "@addSubtask": {
+    "description": "Label for add subtask FAB/button"
+  },
+  "subtaskTitleHint": "Subtask title",
+  "@subtaskTitleHint": {
+    "description": "Hint text in the add subtask bottom sheet text field"
+  },
+  "priorityLow": "Low",
+  "@priorityLow": {"description": "Priority: low"},
+  "priorityMedium": "Medium",
+  "@priorityMedium": {"description": "Priority: medium"},
+  "priorityHigh": "High",
+  "@priorityHigh": {"description": "Priority: high"},
+  "priorityCritical": "Critical",
+  "@priorityCritical": {"description": "Priority: critical"},
+  "priorityUrgent": "Urgent",
+  "@priorityUrgent": {"description": "Priority: urgent"},
+  "sizeBig": "Big",
+  "@sizeBig": {"description": "Size: big"},
+  "sizeMedium": "Medium",
+  "@sizeMedium": {"description": "Size: medium"},
+  "sizeSmall": "Small",
+  "@sizeSmall": {"description": "Size: small"},
+  "sizeNone": "None",
+  "@sizeNone": {"description": "Size: none"},
+  "typeTask": "Task",
+  "@typeTask": {"description": "Item type: task"},
+  "typeProject": "Project",
+  "@typeProject": {"description": "Item type: project"}
 }
