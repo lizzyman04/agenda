@@ -56,11 +56,11 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 02-01-PLAN.md — Task domain layer: Item entity, EisenhowerQuadrant getter, enums, ItemRepository interface, RecurrenceEngine interface
-- [ ] 02-02-PLAN.md — Task data layer: ItemModel @Collection, ItemMapper, ItemDao, ItemRepositoryImpl, RecurrenceEngineImpl, migration v1→v2
-- [ ] 02-03-PLAN.md — Task application layer: TaskListCubit, ProjectCubit, DayPlannerCubit + all states (Equatable)
-- [ ] 02-04-PLAN.md — Task presentation (core): task list screen, project screen, task form, Eisenhower board, 1-3-5 day planner + checkpoint
-- [ ] 02-05-PLAN.md — GTD + search + filter + recurring UI + DI wiring: complete tasks_module.dart, ARB keys, injection.config.dart regenerated
+- [x] 02-01-PLAN.md — Task domain layer: Item entity, EisenhowerQuadrant getter, enums, ItemRepository interface, RecurrenceEngine interface
+- [x] 02-02-PLAN.md — Task data layer: ItemModel @Collection, ItemMapper, ItemDao, ItemRepositoryImpl, RecurrenceEngineImpl, migration v1→v2
+- [x] 02-03-PLAN.md — Task application layer: TaskListCubit, ProjectCubit, DayPlannerCubit + all states (Equatable)
+- [x] 02-04-PLAN.md — Task presentation (core): task list screen, project screen, task form, Eisenhower board, 1-3-5 day planner + checkpoint
+- [x] 02-05-PLAN.md — GTD + search + filter + recurring UI + DI wiring: complete tasks_module.dart, ARB keys, injection.config.dart regenerated
 
 ---
 
