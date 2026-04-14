@@ -1,0 +1,61 @@
+---
+import '../styles/global.css';
+interface Props { title: string; description?: string; }
+const { title, description = 'AGENDA — Privacy-first task and finance app for Android and iOS' } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content="/assets/img/agenda.png" />
+  <meta property="og:url" content="https://agenda.omeu.space" />
+  <title>{title}</title>
+  <link rel="shortcut icon" href="/assets/img/agenda-logo.png" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/assets/img/agenda-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <slot />
+  <script>
+    import { translations } from '../i18n/translations';
+    type Lang = 'pt' | 'en';
+
+    function applyLang(lang: Lang) {
+      const t = translations[lang] as Record<string, string>;
+      document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+      // Apply data-i18n text
+      document.querySelectorAll<HTMLElement>('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n')!;
+        if (t[key] !== undefined) el.innerHTML = t[key];
+      });
+      // Show/hide data-lang blocks (for terms page)
+      document.querySelectorAll<HTMLElement>('[data-lang]').forEach(el => {
+        el.style.display = el.getAttribute('data-lang') === lang ? '' : 'none';
+      });
+      // Update toggle label
+      const btn = document.getElementById('lang-btn');
+      if (btn) btn.textContent = t['lang-label'] ?? (lang === 'pt' ? 'EN' : 'PT');
+    }
+
+    const stored = localStorage.getItem('agenda-lang') as Lang | null;
+    const lang: Lang = stored === 'en' ? 'en' : 'pt';
+    applyLang(lang);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyLang(lang);
+      document.getElementById('lang-btn')?.addEventListener('click', () => {
+        const cur = (localStorage.getItem('agenda-lang') as Lang) ?? 'pt';
+        const next: Lang = cur === 'pt' ? 'en' : 'pt';
+        localStorage.setItem('agenda-lang', next);
+        applyLang(next);
+      });
+    });
+  </script>
+</body>
+</html>
