@@ -93,6 +93,27 @@ class TaskListCubit extends Cubit<TaskListState> {
     await _reload();
   }
 
+  /// Creates a new item (TASK-01, TASK-03).
+  ///
+  /// The watchChanges() stream fires automatically after the write,
+  /// triggering _reload() via the listener.
+  Future<void> createItem(Item item) async {
+    final result = await _repository.createItem(item);
+    if (result is Err<Item>) {
+      emit(TaskListError(result.failure));
+    }
+    // watchChanges() fires reload automatically
+  }
+
+  /// Updates an existing item (edit flow — TASK-03).
+  Future<void> updateItem(Item item) async {
+    final result = await _repository.updateItem(item);
+    if (result is Err<Item>) {
+      emit(TaskListError(result.failure));
+    }
+    // watchChanges() fires reload automatically
+  }
+
   /// Marks an item as completed (TASK-06).
   ///
   /// For recurring items, the repository creates the next occurrence
