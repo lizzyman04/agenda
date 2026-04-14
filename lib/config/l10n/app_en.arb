@@ -209,5 +209,53 @@
   "typeTask": "Task",
   "@typeTask": {"description": "Item type: task"},
   "typeProject": "Project",
-  "@typeProject": {"description": "Item type: project"}
+  "@typeProject": {"description": "Item type: project"},
+  "searchTasks": "Search tasks",
+  "@searchTasks": {
+    "description": "Hint text in the task list search bar"
+  },
+  "recurrence": "Recurrence",
+  "@recurrence": {
+    "description": "Label for the recurrence rule picker section"
+  },
+  "noRecurrence": "Does not repeat",
+  "@noRecurrence": {
+    "description": "Radio option: no recurrence"
+  },
+  "daily": "Daily",
+  "@daily": {
+    "description": "Radio option: daily recurrence"
+  },
+  "weekly": "Weekly",
+  "@weekly": {
+    "description": "Radio option: weekly recurrence"
+  },
+  "monthly": "Monthly",
+  "@monthly": {
+    "description": "Radio option: monthly recurrence"
+  },
+  "yearly": "Yearly",
+  "@yearly": {
+    "description": "Radio option: yearly recurrence"
+  },
+  "titleRequired": "Title is required",
+  "@titleRequired": {
+    "description": "Validation error when title is empty (alias key)"
+  },
+  "gtdFilterTitle": "GTD Filter",
+  "@gtdFilterTitle": {
+    "description": "AppBar title for the GTD filter screen"
+  },
+  "noGtdContexts": "No GTD contexts found",
+  "@noGtdContexts": {
+    "description": "Empty state text on the GTD filter screen"
+  },
+  "applyFilter": "Apply",
+  "@applyFilter": {
+    "description": "Apply button label on the GTD filter screen"
+  },
+  "clearFilter": "Clear",
+  "@clearFilter": {
+    "description": "Clear filter button label on the GTD filter screen"
+  }
 }

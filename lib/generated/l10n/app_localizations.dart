@@ -440,6 +440,78 @@ abstract class AppLocalizations {
   /// In pt_BR, this message translates to:
   /// **'Projeto'**
   String get typeProject;
+
+  /// Texto de dica na barra de pesquisa da lista de tarefas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Pesquisar tarefas'**
+  String get searchTasks;
+
+  /// Rótulo para a seção do seletor de regra de recorrência
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Recorrência'**
+  String get recurrence;
+
+  /// Opção de rádio: sem recorrência
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não repete'**
+  String get noRecurrence;
+
+  /// Opção de rádio: recorrência diária
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Diário'**
+  String get daily;
+
+  /// Opção de rádio: recorrência semanal
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Semanal'**
+  String get weekly;
+
+  /// Opção de rádio: recorrência mensal
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Mensal'**
+  String get monthly;
+
+  /// Opção de rádio: recorrência anual
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Anual'**
+  String get yearly;
+
+  /// Erro de validação quando o título está vazio (chave alternativa)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Título é obrigatório'**
+  String get titleRequired;
+
+  /// Título da AppBar para a tela de filtro GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Filtro GTD'**
+  String get gtdFilterTitle;
+
+  /// Texto de estado vazio na tela de filtro GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Nenhum contexto GTD encontrado'**
+  String get noGtdContexts;
+
+  /// Rótulo do botão aplicar na tela de filtro GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Aplicar'**
+  String get applyFilter;
+
+  /// Rótulo do botão limpar filtro na tela de filtro GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Limpar'**
+  String get clearFilter;
 }
 
 class _AppLocalizationsDelegate

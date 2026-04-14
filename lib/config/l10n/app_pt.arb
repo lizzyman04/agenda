@@ -209,5 +209,53 @@
   "typeTask": "Tarefa",
   "@typeTask": {"description": "Tipo de item: tarefa"},
   "typeProject": "Projeto",
-  "@typeProject": {"description": "Tipo de item: projeto"}
+  "@typeProject": {"description": "Tipo de item: projeto"},
+  "searchTasks": "Pesquisar tarefas",
+  "@searchTasks": {
+    "description": "Texto de dica na barra de pesquisa da lista de tarefas"
+  },
+  "recurrence": "Recorrência",
+  "@recurrence": {
+    "description": "Rótulo para a seção do seletor de regra de recorrência"
+  },
+  "noRecurrence": "Não repete",
+  "@noRecurrence": {
+    "description": "Opção de rádio: sem recorrência"
+  },
+  "daily": "Diário",
+  "@daily": {
+    "description": "Opção de rádio: recorrência diária"
+  },
+  "weekly": "Semanal",
+  "@weekly": {
+    "description": "Opção de rádio: recorrência semanal"
+  },
+  "monthly": "Mensal",
+  "@monthly": {
+    "description": "Opção de rádio: recorrência mensal"
+  },
+  "yearly": "Anual",
+  "@yearly": {
+    "description": "Opção de rádio: recorrência anual"
+  },
+  "titleRequired": "Título é obrigatório",
+  "@titleRequired": {
+    "description": "Erro de validação quando o título está vazio (chave alternativa)"
+  },
+  "gtdFilterTitle": "Filtro GTD",
+  "@gtdFilterTitle": {
+    "description": "Título da AppBar para a tela de filtro GTD"
+  },
+  "noGtdContexts": "Nenhum contexto GTD encontrado",
+  "@noGtdContexts": {
+    "description": "Texto de estado vazio na tela de filtro GTD"
+  },
+  "applyFilter": "Aplicar",
+  "@applyFilter": {
+    "description": "Rótulo do botão aplicar na tela de filtro GTD"
+  },
+  "clearFilter": "Limpar",
+  "@clearFilter": {
+    "description": "Rótulo do botão limpar filtro na tela de filtro GTD"
+  }
 }

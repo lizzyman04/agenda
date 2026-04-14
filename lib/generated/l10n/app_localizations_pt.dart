@@ -180,6 +180,42 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get typeProject => 'Projeto';
+
+  @override
+  String get searchTasks => 'Pesquisar tarefas';
+
+  @override
+  String get recurrence => 'Recorrência';
+
+  @override
+  String get noRecurrence => 'Não repete';
+
+  @override
+  String get daily => 'Diário';
+
+  @override
+  String get weekly => 'Semanal';
+
+  @override
+  String get monthly => 'Mensal';
+
+  @override
+  String get yearly => 'Anual';
+
+  @override
+  String get titleRequired => 'Título é obrigatório';
+
+  @override
+  String get gtdFilterTitle => 'Filtro GTD';
+
+  @override
+  String get noGtdContexts => 'Nenhum contexto GTD encontrado';
+
+  @override
+  String get applyFilter => 'Aplicar';
+
+  @override
+  String get clearFilter => 'Limpar';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -358,4 +394,40 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get typeProject => 'Projeto';
+
+  @override
+  String get searchTasks => 'Pesquisar tarefas';
+
+  @override
+  String get recurrence => 'Recorrência';
+
+  @override
+  String get noRecurrence => 'Não repete';
+
+  @override
+  String get daily => 'Diário';
+
+  @override
+  String get weekly => 'Semanal';
+
+  @override
+  String get monthly => 'Mensal';
+
+  @override
+  String get yearly => 'Anual';
+
+  @override
+  String get titleRequired => 'Título é obrigatório';
+
+  @override
+  String get gtdFilterTitle => 'Filtro GTD';
+
+  @override
+  String get noGtdContexts => 'Nenhum contexto GTD encontrado';
+
+  @override
+  String get applyFilter => 'Aplicar';
+
+  @override
+  String get clearFilter => 'Limpar';
 }

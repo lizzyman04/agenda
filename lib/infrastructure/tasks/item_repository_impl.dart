@@ -179,6 +179,28 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Stream<void> watchChanges() => _dao.watchLazy();
 
+  @override
+  AsyncResult<List<String>> getDistinctGtdContexts() async {
+    try {
+      final allResult = await filterItems();
+      if (allResult is Err<List<Item>>) {
+        return Err<List<String>>(allResult.failure);
+      }
+      final items = (allResult as Success<List<Item>>).value;
+      final contexts = items
+          .map((i) => i.gtdContext)
+          .whereType<String>()
+          .toSet()
+          .toList()
+        ..sort();
+      return Success<List<String>>(contexts);
+    } on Object catch (e) {
+      return Err<List<String>>(
+        DatabaseFailure('getDistinctGtdContexts failed: $e'),
+      );
+    }
+  }
+
   // --- Private helpers ---
 
   model_enums.ItemType _toModelType(ItemType t) => switch (t) {

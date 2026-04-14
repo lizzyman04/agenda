@@ -57,4 +57,10 @@ abstract class ItemRepository {
   /// Stream that fires when the ItemModel collection changes.
   /// Cubits subscribe via start() and call _reload() on each event.
   Stream<void> watchChanges();
+
+  /// Returns a sorted list of distinct, non-null GTD context strings
+  /// from all active (non-deleted) items (TASK-09).
+  ///
+  /// Used by GtdFilterScreen to populate the chip list.
+  AsyncResult<List<String>> getDistinctGtdContexts();
 }

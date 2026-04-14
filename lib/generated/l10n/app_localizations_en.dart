@@ -180,4 +180,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get typeProject => 'Project';
+
+  @override
+  String get searchTasks => 'Search tasks';
+
+  @override
+  String get recurrence => 'Recurrence';
+
+  @override
+  String get noRecurrence => 'Does not repeat';
+
+  @override
+  String get daily => 'Daily';
+
+  @override
+  String get weekly => 'Weekly';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get yearly => 'Yearly';
+
+  @override
+  String get titleRequired => 'Title is required';
+
+  @override
+  String get gtdFilterTitle => 'GTD Filter';
+
+  @override
+  String get noGtdContexts => 'No GTD contexts found';
+
+  @override
+  String get applyFilter => 'Apply';
+
+  @override
+  String get clearFilter => 'Clear';
 }
