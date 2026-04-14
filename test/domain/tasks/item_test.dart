@@ -6,9 +6,9 @@ import 'package:agenda/domain/tasks/size_category.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final _now = DateTime(2026, 4, 14);
+  final now = DateTime(2026, 4, 14);
 
-  Item _makeItem({
+  Item makeItem({
     int id = 0,
     ItemType type = ItemType.task,
     String title = 'Test item',
@@ -20,8 +20,8 @@ void main() {
       id: id,
       type: type,
       title: title,
-      createdAt: _now,
-      updatedAt: _now,
+      createdAt: now,
+      updatedAt: now,
       isUrgent: isUrgent,
       isImportant: isImportant,
       parentId: parentId,
@@ -32,7 +32,7 @@ void main() {
     late Item item;
 
     setUp(() {
-      item = _makeItem();
+      item = makeItem();
     });
 
     test('priority defaults to Priority.medium', () {
@@ -74,29 +74,29 @@ void main() {
 
   group('Item — EisenhowerQuadrant getter', () {
     test('returns doNow when isUrgent=true, isImportant=true', () {
-      final item = _makeItem(isUrgent: true, isImportant: true);
+      final item = makeItem(isUrgent: true, isImportant: true);
       expect(item.eisenhowerQuadrant, EisenhowerQuadrant.doNow);
     });
 
     test('returns schedule when isUrgent=false, isImportant=true', () {
-      final item = _makeItem(isUrgent: false, isImportant: true);
+      final item = makeItem(isImportant: true);
       expect(item.eisenhowerQuadrant, EisenhowerQuadrant.schedule);
     });
 
     test('returns delegate when isUrgent=true, isImportant=false', () {
-      final item = _makeItem(isUrgent: true, isImportant: false);
+      final item = makeItem(isUrgent: true);
       expect(item.eisenhowerQuadrant, EisenhowerQuadrant.delegate);
     });
 
     test('returns eliminate when isUrgent=false, isImportant=false', () {
-      final item = _makeItem(isUrgent: false, isImportant: false);
+      final item = makeItem();
       expect(item.eisenhowerQuadrant, EisenhowerQuadrant.eliminate);
     });
   });
 
   group('Item — subtask with parentId', () {
     test('ItemType.subtask with non-null parentId is valid', () {
-      final subtask = _makeItem(
+      final subtask = makeItem(
         type: ItemType.subtask,
         parentId: 42,
       );

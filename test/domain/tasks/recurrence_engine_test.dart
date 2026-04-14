@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// Minimal concrete implementation of RecurrenceEngine for domain tests.
 ///
 /// Tests the parse() contract documented on the abstract interface.
-/// nextOccurrence() implementation tests live in Plan 02 (RecurrenceEngineImpl).
+/// nextOccurrence() tests live in Plan 02 (RecurrenceEngineImpl).
 class _TestRecurrenceEngine implements RecurrenceEngine {
   @override
   ParsedRrule? parse(String? rrule) {
