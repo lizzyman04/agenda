@@ -1,7 +1,9 @@
 import 'package:agenda/application/shared/locale/locale_cubit.dart';
 import 'package:agenda/application/shared/locale/locale_state.dart';
+import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/tasks/screens/task_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -11,8 +13,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 /// Provides [LocaleCubit] to the widget tree and drives [MaterialApp]
 /// locale from cubit state (D-23).
 ///
-/// Routing (go_router) is wired in Phase 5. For now, a placeholder
-/// home widget is used.
+/// Routing (go_router) is wired in Phase 5. For Phase 2, [TaskListScreen]
+/// is wired directly as home.
 class AgendaApp extends StatelessWidget {
   const AgendaApp({super.key});
 
@@ -36,8 +38,9 @@ class AgendaApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
               useMaterial3: true,
             ),
-            home: const Scaffold(
-              body: Center(child: Text('AGENDA')),
+            home: BlocProvider<TaskListCubit>(
+              create: (_) => getIt<TaskListCubit>(),
+              child: const TaskListScreen(),
             ),
           );
         },
