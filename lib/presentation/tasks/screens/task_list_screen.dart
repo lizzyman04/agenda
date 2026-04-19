@@ -1,9 +1,13 @@
+import 'package:agenda/application/tasks/project/project_cubit.dart';
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/application/tasks/task_list/task_list_state.dart';
+import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/constants/app_constants.dart';
 import 'package:agenda/domain/tasks/item.dart';
+import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/tasks/screens/gtd_filter_screen.dart';
+import 'package:agenda/presentation/tasks/screens/project_screen.dart';
 import 'package:agenda/presentation/tasks/screens/task_form_screen.dart';
 import 'package:agenda/presentation/tasks/widgets/task_card.dart';
 import 'package:flutter/material.dart';
@@ -38,15 +42,26 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  void _navigateToEdit(Item item) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => BlocProvider.value(
-          value: context.read<TaskListCubit>(),
-          child: TaskFormScreen(item: item),
+  void _navigateToItem(Item item) {
+    if (item.type == ItemType.project) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => BlocProvider<ProjectCubit>(
+            create: (_) => getIt<ProjectCubit>(),
+            child: ProjectScreen(projectId: item.id),
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => BlocProvider.value(
+            value: context.read<TaskListCubit>(),
+            child: TaskFormScreen(item: item),
+          ),
+        ),
+      );
+    }
   }
 
   void _navigateToGtdFilter() {
@@ -121,11 +136,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
               _EmptyState(l10n: l10n),
             TaskListLoaded(:final items) => _TaskList(
                 items: items,
-                onEdit: _navigateToEdit,
+                onEdit: _navigateToItem,
               ),
             TaskListWithPendingUndo(:final items) => _TaskList(
                 items: items,
-                onEdit: _navigateToEdit,
+                onEdit: _navigateToItem,
               ),
           };
         },
