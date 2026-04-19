@@ -30,8 +30,10 @@ class DayPlannerCubit extends Cubit<DayPlannerState> {
 
   /// Assigns [item] to the medium tasks slot list.
   ///
+  /// No-op if the item is already assigned (prevents duplicates).
   /// Soft warning when already at AppConstants.rule135MediumTasks (3).
   void assignMedium(Item item) {
+    if (state.mediumTasks.any((i) => i.id == item.id)) return;
     final updated = [...state.mediumTasks, item];
     final warning = state.areMediumSlotsFull;
     emit(DayPlannerState(
@@ -44,8 +46,10 @@ class DayPlannerCubit extends Cubit<DayPlannerState> {
 
   /// Assigns [item] to the small tasks slot list.
   ///
+  /// No-op if the item is already assigned (prevents duplicates).
   /// Soft warning when already at AppConstants.rule135SmallTasks (5).
   void assignSmall(Item item) {
+    if (state.smallTasks.any((i) => i.id == item.id)) return;
     final updated = [...state.smallTasks, item];
     final warning = state.areSmallSlotsFull;
     emit(DayPlannerState(
