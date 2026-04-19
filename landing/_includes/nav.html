@@ -1,0 +1,19 @@
+<nav class="nav">
+  <a href="{{ '/' | relative_url }}" class="nav-brand">
+    <img src="{{ '/assets/img/agenda-logo.png' | relative_url }}" alt="AGENDA" />
+    <span class="nav-brand-name">AGENDA</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="{{ '/' | relative_url }}" data-i18n="nav-home" {% if page.url=='/' %} class="active" {% endif
+        %}>Início</a></li>
+    <li><a href="{{ '/blog/' | relative_url }}" data-i18n="nav-blog" {% if page.url contains '/blog' %} class="active"
+        {% endif %}>Blog</a></li>
+    <li><a href="{{ '/terms/' | relative_url }}" data-i18n="nav-terms" {% if page.url contains '/terms' %}
+        class="active" {% endif %}>Termos</a></li>
+    <li><a href="{{ '/dev/' | relative_url }}" data-i18n="nav-dev" {% if page.url contains '/dev' %} class="active" {%
+        endif %}>Desenvolvedores</a></li>
+  </ul>
+  <div class="nav-right">
+    <button id="lang-btn" class="lang-btn" aria-label="Switch language">EN</button>
+  </div>
+</nav>

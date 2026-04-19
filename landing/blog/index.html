@@ -1,0 +1,43 @@
+---
+layout: default
+title: "Blog — AGENDA"
+description: "Atualizações de desenvolvimento, decisões técnicas e reflexões sobre privacidade no AGENDA."
+permalink: /blog/
+---
+
+<div class="blog-hero">
+  <div class="inner">
+    <p class="section-label" data-i18n="blog-label">Blog</p>
+    <h1 class="section-title" data-i18n="blog-title">Novidades do AGENDA</h1>
+    <p class="section-sub" style="margin-bottom:0" data-i18n="blog-sub">Atualizações de desenvolvimento, decisões técnicas e reflexões sobre privacidade.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="inner">
+    {% if site.posts.size > 0 %}
+    <div class="posts-grid">
+      {% for post in site.posts %}
+      <article class="post-card">
+        <div class="post-card-meta">
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%d %b %Y" }}</time>
+          {% assign words = post.content | number_of_words %}
+          {% assign rt = words | divided_by: 200 | plus: 1 %}
+          <span class="reading-time"><i class="fa-regular fa-clock"></i> {{ rt }} min</span>
+        </div>
+        {% if post.tags %}
+        <div class="post-tags">
+          {% for tag in post.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        <h2 class="post-card-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+        <p class="post-card-excerpt">{{ post.excerpt | strip_html | truncatewords: 35 }}</p>
+        <a href="{{ post.url | relative_url }}" class="post-card-link" data-i18n="blog-read-more">Ler mais</a>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p style="color:var(--text-3);text-align:center;padding:3rem 0" data-i18n="blog-empty">Nenhuma postagem ainda.</p>
+    {% endif %}
+  </div>
+</section>

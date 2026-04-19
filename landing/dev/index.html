@@ -1,0 +1,201 @@
+---
+layout: default
+title: "Desenvolvedores — AGENDA"
+description: "Documentação técnica do AGENDA para desenvolvedores e contribuidores."
+permalink: /dev/
+---
+
+<!-- DEV HERO -->
+<section class="dev-hero">
+  <div class="dev-hero-icon"><i class="fa-solid fa-code"></i></div>
+  <h1 data-i18n="nav-dev">Desenvolvedores</h1>
+  <p data-i18n="start-sub">Para desenvolvedores que queiram contribuir ou explorar o código.</p>
+  <a href="https://github.com/lizzyman04/agenda" target="_blank" rel="noopener" class="dev-hero-badge">
+    <i class="fa-brands fa-github"></i> github.com/lizzyman04/agenda
+  </a>
+</section>
+
+<!-- TECH STACK -->
+<section class="section" id="tech">
+  <div class="inner">
+    <p class="section-label" data-i18n="tech-label">Stack</p>
+    <h2 class="section-title" data-i18n="tech-title">Tecnologia</h2>
+    <p class="section-sub" data-i18n="tech-sub">Stack escolhida para privacidade, performance e manutenibilidade.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-i18n="tech-col-pkg">Pacote</th>
+            <th data-i18n="tech-col-ver">Versão</th>
+            <th data-i18n="tech-col-purpose">Propósito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>flutter_bloc</code></td><td>9.1.1</td><td>State management (BLoC/Cubit)</td></tr>
+          <tr><td><code>isar_community</code></td><td>3.3.2</td><td>Local database — community fork, actively maintained</td></tr>
+          <tr><td><code>get_it</code> + <code>injectable</code></td><td>9.2.1 / 2.7.1</td><td>Dependency injection</td></tr>
+          <tr><td><code>go_router</code></td><td>17.2.0</td><td>Declarative navigation + deep links</td></tr>
+          <tr><td><code>flutter_local_notifications</code></td><td>21.0.0</td><td>Scheduled local notifications</td></tr>
+          <tr><td><code>fl_chart</code></td><td>1.2.0</td><td>Finance charts (line, bar, pie)</td></tr>
+          <tr><td><code>flutter_screen_lock</code></td><td>9.2.2</td><td>PIN lock screen UI</td></tr>
+          <tr><td><code>local_auth</code></td><td>3.0.1</td><td>Biometric auth (Face ID, fingerprint)</td></tr>
+          <tr><td><code>flutter_secure_storage</code></td><td>10.0.0</td><td>Secure PIN hash (Keychain / Encrypted SharedPrefs)</td></tr>
+          <tr><td><code>csv</code></td><td>8.0.0</td><td>RFC-compliant CSV export/import</td></tr>
+          <tr><td><code>intl</code></td><td>0.20.2</td><td>Internationalization (PT-BR + EN)</td></tr>
+          <tr><td><code>shared_preferences</code></td><td>2.5.5</td><td>Non-sensitive settings persistence</td></tr>
+          <tr><td><code>equatable</code></td><td>2.0.8</td><td>Value equality for BLoC states and events</td></tr>
+          <tr><td><code>mocktail</code></td><td>1.0.5</td><td>Mock creation for unit tests (no code gen)</td></tr>
+          <tr><td><code>bloc_test</code></td><td>10.0.0</td><td>BLoC/Cubit unit testing utilities</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECT STRUCTURE -->
+<section class="section" id="structure">
+  <div class="inner">
+    <p class="section-label" data-i18n="struct-label">Arquitetura</p>
+    <h2 class="section-title" data-i18n="struct-title">Estrutura do Projeto</h2>
+    <p class="section-sub" data-i18n="struct-sub">Seis camadas — dependências sempre de fora para dentro.</p>
+    <div class="tree"><span class="t-dir">lib/</span>
+├── <span class="t-dir">core/</span>            <span class="t-comment"># Shared utilities, constants, base classes</span>
+├── <span class="t-dir">domain/</span>          <span class="t-comment"># Entities, repo interfaces, failures</span>
+│   ├── <span class="t-dir">tasks/</span>
+│   └── <span class="t-dir">finance/</span>
+├── <span class="t-dir">data/</span>            <span class="t-comment"># Isar models, mappers, repo implementations</span>
+│   ├── <span class="t-dir">tasks/</span>
+│   └── <span class="t-dir">finance/</span>
+├── <span class="t-dir">infrastructure/</span>  <span class="t-comment"># Notification, backup, app lock services</span>
+├── <span class="t-dir">application/</span>     <span class="t-comment"># BLoC/Cubit state management</span>
+│   ├── <span class="t-dir">tasks/</span>
+│   └── <span class="t-dir">finance/</span>
+├── <span class="t-dir">presentation/</span>    <span class="t-comment"># Screens, widgets, themes</span>
+│   ├── <span class="t-dir">tasks/</span>
+│   └── <span class="t-dir">finance/</span>
+└── <span class="t-dir">config/</span>          <span class="t-comment"># DI wiring, routing, app entry point</span></div>
+  </div>
+</section>
+
+<!-- GETTING STARTED -->
+<section class="section" id="start">
+  <div class="inner">
+    <p class="section-label" data-i18n="start-label">Desenvolvimento</p>
+    <h2 class="section-title" data-i18n="start-title">Como Começar</h2>
+    <p class="section-sub" data-i18n="start-sub">Para desenvolvedores que queiram contribuir ou explorar o código.</p>
+
+    <h3 data-i18n="start-prereq">Pré-requisitos</h3>
+    <div class="code-block"><span class="c-comment"># Necessário</span>
+Flutter SDK >= 3.38.1
+Dart >= 3.5.0
+Android Studio ou Xcode</div>
+
+    <h3 style="margin-top:2rem" data-i18n="start-setup">Setup</h3>
+    <div class="code-block"><span class="c-cmd">git clone</span> https://github.com/lizzyman04/agenda.git
+<span class="c-cmd">cd</span> agenda
+<span class="c-cmd">flutter pub get</span>
+<span class="c-cmd">flutter pub run build_runner build --delete-conflicting-outputs</span>
+<span class="c-cmd">flutter gen-l10n</span>
+<span class="c-cmd">flutter run</span></div>
+
+    <h3 style="margin-top:2rem" data-i18n="start-tests">Testes</h3>
+    <div class="code-block"><span class="c-cmd">flutter test</span></div>
+
+    <h3 style="margin-top:2rem" data-i18n="start-lint">Lint</h3>
+    <div class="code-block"><span class="c-cmd">flutter analyze</span></div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="section" id="roadmap">
+  <div class="inner">
+    <p class="section-label" data-i18n="roadmap-label">Planejamento</p>
+    <h2 class="section-title" data-i18n="roadmap-title">Roadmap</h2>
+    <p class="section-sub" data-i18n="roadmap-sub">Cinco fases construídas em ordem de dependência.</p>
+    <div class="roadmap">
+      <div class="rm-item">
+        <div class="rm-num">1</div>
+        <div class="rm-content">
+          <h4><span data-i18n="roadmap-p1-title">Fase 1 — Foundation</span> <span class="badge badge-done" data-i18n="badge-active">Concluída</span></h4>
+          <p data-i18n="roadmap-p1-desc">Scaffold de arquitetura, Isar + migration runner, DI, l10n, garantia offline</p>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-num">2</div>
+        <div class="rm-content">
+          <h4><span data-i18n="roadmap-p2-title">Fase 2 — Task Core</span> <span class="badge badge-done" data-i18n="badge-active">Concluída</span></h4>
+          <p data-i18n="roadmap-p2-desc">Projetos, subtarefas, CRUD, Eisenhower, 1-3-5, GTD, busca e filtros</p>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-num">3</div>
+        <div class="rm-content">
+          <h4><span data-i18n="roadmap-p3-title">Fase 3 — Finance Core</span> <span class="badge badge-planned" data-i18n="badge-planned">Planejada</span></h4>
+          <p data-i18n="roadmap-p3-desc">Transações, orçamentos, metas, dívidas, dashboard com gráficos</p>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-num">4</div>
+        <div class="rm-content">
+          <h4><span data-i18n="roadmap-p4-title">Fase 4 — Notifications + Backup</span> <span class="badge badge-planned" data-i18n="badge-planned">Planejada</span></h4>
+          <p data-i18n="roadmap-p4-desc">Notificações nativas com boot-safe rescheduling; export/import JSON + CSV</p>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-num">5</div>
+        <div class="rm-content">
+          <h4><span data-i18n="roadmap-p5-title">Fase 5 — App Lock + Settings + Polish</span> <span class="badge badge-planned" data-i18n="badge-planned">Planejada</span></h4>
+          <p data-i18n="roadmap-p5-desc">PIN + biometria, tela de configurações, onboarding, estados vazios</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTRIBUTING -->
+<section class="section" id="contributing">
+  <div class="inner">
+    <p class="section-label" data-i18n="contrib-label">Open Source</p>
+    <h2 class="section-title" data-i18n="contrib-title">Como Contribuir</h2>
+    <p class="section-sub" data-i18n="contrib-desc">AGENDA é open source. Issues, pull requests e sugestões são bem-vindos.</p>
+    <ol style="list-style:none;padding:0;display:grid;gap:.75rem;margin-bottom:2rem">
+      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">1.</span><span data-i18n="contrib-li1" style="color:var(--text-2)">Abra uma issue descrevendo o bug ou a melhoria</span></li>
+      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">2.</span><span data-i18n="contrib-li2" style="color:var(--text-2)">Faça um fork e crie uma branch a partir de main</span></li>
+      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">3.</span><span data-i18n="contrib-li3" style="color:var(--text-2)">Siga as convenções de código e escreva testes</span></li>
+      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">4.</span><span data-i18n="contrib-li4" style="color:var(--text-2)">Abra um pull request com descrição detalhada</span></li>
+    </ol>
+    <div class="contrib-box">
+      <h3>AGENDA</h3>
+      <p data-i18n="contrib-desc">AGENDA é open source. Issues, pull requests e sugestões são bem-vindos.</p>
+      <a href="https://github.com/lizzyman04/agenda" target="_blank" rel="noopener" class="btn-primary">
+        <i class="fa-brands fa-github"></i> <span data-i18n="contrib-cta">Ver no GitHub</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- LICENSE -->
+<section class="section" id="license">
+  <div class="inner">
+    <p class="section-label" data-i18n="license-label">Licença</p>
+    <h2 class="section-title" data-i18n="license-title">MIT License</h2>
+    <p class="section-sub" data-i18n="license-desc">AGENDA é distribuído sob a licença MIT. Uso livre para projetos pessoais e comerciais.</p>
+    <div class="code-block">MIT License
+
+Copyright (c) 2025 lizzyman04
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</div>
+  </div>
+</section>
