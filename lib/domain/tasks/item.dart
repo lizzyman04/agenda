@@ -3,6 +3,21 @@ import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/domain/tasks/priority.dart';
 import 'package:agenda/domain/tasks/size_category.dart';
 
+/// Sentinel value used by [Item.copyWith] to distinguish "not provided"
+/// from "explicitly set to null" for nullable fields.
+///
+/// Pass [clearField] as the named argument to explicitly null out a field:
+/// ```dart
+/// item.copyWith(dueDate: clearField); // sets dueDate to null
+/// item.copyWith(dueDate: someDate);   // sets dueDate to someDate
+/// item.copyWith();                    // keeps existing dueDate
+/// ```
+const Object clearField = _Absent();
+
+final class _Absent {
+  const _Absent();
+}
+
 /// Domain entity representing a project, task, or subtask
 /// (TASK-01, TASK-02, TASK-03).
 ///
@@ -118,61 +133,87 @@ class Item {
 
   /// Returns a copy with the specified fields replaced.
   ///
-  /// Note: nullable fields (description, parentId, dueDate, deletedAt, etc.)
-  /// cannot be explicitly set to null via copyWith — passing null is ignored.
-  /// For operations like restoreItem (set deletedAt = null), use the
-  /// ItemRepository directly (Isar write), which handles nulling correctly.
+  /// Nullable fields use the [clearField] sentinel to distinguish
+  /// "not provided" (keep existing value) from "explicitly set to null".
+  ///
+  /// ```dart
+  /// // Keep existing dueDate:
+  /// item.copyWith(title: 'New title');
+  ///
+  /// // Clear dueDate (set to null):
+  /// item.copyWith(dueDate: clearField);
+  /// ```
   Item copyWith({
     int? id,
     ItemType? type,
     String? title,
-    String? description,
-    int? parentId,
+    Object? description = clearField,
+    Object? parentId = clearField,
     Priority? priority,
     bool? isUrgent,
     bool? isImportant,
     SizeCategory? sizeCategory,
     bool? isNextAction,
-    String? gtdContext,
-    String? waitingFor,
-    DateTime? dueDate,
-    int? dueTimeMinutes,
-    String? recurrenceRule,
+    Object? gtdContext = clearField,
+    Object? waitingFor = clearField,
+    Object? dueDate = clearField,
+    Object? dueTimeMinutes = clearField,
+    Object? recurrenceRule = clearField,
     bool? isCompleted,
-    DateTime? completedAt,
-    DateTime? deletedAt,
+    Object? completedAt = clearField,
+    Object? deletedAt = clearField,
     DateTime? createdAt,
     DateTime? updatedAt,
-    double? amount,
-    String? currencyCode,
-    int? linkedGoalId,
-    int? linkedDebtId,
+    Object? amount = clearField,
+    Object? currencyCode = clearField,
+    Object? linkedGoalId = clearField,
+    Object? linkedDebtId = clearField,
   }) {
     return Item(
       id: id ?? this.id,
       type: type ?? this.type,
       title: title ?? this.title,
-      description: description ?? this.description,
-      parentId: parentId ?? this.parentId,
+      description: description is _Absent
+          ? this.description
+          : description as String?,
+      parentId: parentId is _Absent
+          ? this.parentId
+          : parentId as int?,
       priority: priority ?? this.priority,
       isUrgent: isUrgent ?? this.isUrgent,
       isImportant: isImportant ?? this.isImportant,
       sizeCategory: sizeCategory ?? this.sizeCategory,
       isNextAction: isNextAction ?? this.isNextAction,
-      gtdContext: gtdContext ?? this.gtdContext,
-      waitingFor: waitingFor ?? this.waitingFor,
-      dueDate: dueDate ?? this.dueDate,
-      dueTimeMinutes: dueTimeMinutes ?? this.dueTimeMinutes,
-      recurrenceRule: recurrenceRule ?? this.recurrenceRule,
+      gtdContext: gtdContext is _Absent
+          ? this.gtdContext
+          : gtdContext as String?,
+      waitingFor: waitingFor is _Absent
+          ? this.waitingFor
+          : waitingFor as String?,
+      dueDate: dueDate is _Absent ? this.dueDate : dueDate as DateTime?,
+      dueTimeMinutes: dueTimeMinutes is _Absent
+          ? this.dueTimeMinutes
+          : dueTimeMinutes as int?,
+      recurrenceRule: recurrenceRule is _Absent
+          ? this.recurrenceRule
+          : recurrenceRule as String?,
       isCompleted: isCompleted ?? this.isCompleted,
-      completedAt: completedAt ?? this.completedAt,
-      deletedAt: deletedAt ?? this.deletedAt,
+      completedAt: completedAt is _Absent
+          ? this.completedAt
+          : completedAt as DateTime?,
+      deletedAt: deletedAt is _Absent ? this.deletedAt : deletedAt as DateTime?,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      amount: amount ?? this.amount,
-      currencyCode: currencyCode ?? this.currencyCode,
-      linkedGoalId: linkedGoalId ?? this.linkedGoalId,
-      linkedDebtId: linkedDebtId ?? this.linkedDebtId,
+      amount: amount is _Absent ? this.amount : amount as double?,
+      currencyCode: currencyCode is _Absent
+          ? this.currencyCode
+          : currencyCode as String?,
+      linkedGoalId: linkedGoalId is _Absent
+          ? this.linkedGoalId
+          : linkedGoalId as int?,
+      linkedDebtId: linkedDebtId is _Absent
+          ? this.linkedDebtId
+          : linkedDebtId as int?,
     );
   }
 }
