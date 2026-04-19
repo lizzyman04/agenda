@@ -111,7 +111,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     }
   }
 
-  void _save() {
+  Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
     final now = DateTime.now();
@@ -150,7 +150,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             : null,
         updatedAt: now,
       );
-      context.read<TaskListCubit>().updateItem(saved);
+      await context.read<TaskListCubit>().updateItem(saved);
     } else {
       saved = Item(
         id: 0,
@@ -180,9 +180,10 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
         createdAt: now,
         updatedAt: now,
       );
-      context.read<TaskListCubit>().createItem(saved);
+      await context.read<TaskListCubit>().createItem(saved);
     }
 
+    if (!mounted) return;
     Navigator.of(context).pop();
   }
 
@@ -198,7 +199,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: _save,
+            onPressed: () => _save(),
             child: Text(l10n.saveButton),
           ),
         ],
