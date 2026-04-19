@@ -376,7 +376,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               onChanged: (val) => setState(() => _isUrgent = val),
             ),
 
-            // 8. Important
+            // 9. Important
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(l10n.fieldImportant),
@@ -384,7 +384,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               onChanged: (val) => setState(() => _isImportant = val),
             ),
 
-            // 9. Size — SegmentedButton
+            // 10. Size — SegmentedButton
             const SizedBox(height: 8),
             Text(
               l10n.fieldSize,
@@ -417,7 +417,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             ),
             const SizedBox(height: 8),
 
-            // 10. Next Action
+            // 11. Next Action
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(l10n.fieldNextAction),
@@ -426,7 +426,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   setState(() => _isNextAction = val ?? false),
             ),
 
-            // 11. GTD Context
+            // 12. GTD Context
             TextFormField(
               controller: _gtdContextController,
               decoration: InputDecoration(
@@ -437,7 +437,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             ),
             const SizedBox(height: 16),
 
-            // 12. Waiting For
+            // 13. Waiting For
             TextFormField(
               controller: _waitingForController,
               decoration: InputDecoration(
@@ -447,7 +447,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             ),
             const SizedBox(height: 16),
 
-            // 13. Amount
+            // 14. Amount
             TextFormField(
               controller: _amountController,
               decoration: InputDecoration(
@@ -459,7 +459,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             ),
             const SizedBox(height: 16),
 
-            // 14. Currency
+            // 15. Currency
             TextFormField(
               controller: _currencyController,
               decoration: InputDecoration(
