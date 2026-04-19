@@ -96,7 +96,16 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       lastDate: DateTime(2100),
     );
     if (picked != null) {
-      setState(() => _dueDate = picked);
+      setState(() {
+        _dueDate = picked;
+        // Reset monthly recurrence rule so BYMONTHDAY reflects the new day.
+        // The rule is frozen at build time, so any change to dueDate would
+        // leave it pointing at the old day without this reset.
+        if (_recurrenceRule != null &&
+            _recurrenceRule!.startsWith('FREQ=MONTHLY')) {
+          _recurrenceRule = null;
+        }
+      });
     }
   }
 
