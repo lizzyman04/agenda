@@ -31,8 +31,13 @@ class ItemRepositoryImpl implements ItemRepository {
       // T-02-04: validate parentId points to a project
       if (item.parentId != null) {
         final parentResult = await getItem(item.parentId!);
-        if (parentResult is Err<Item>) return parentResult;
-        final parent = (parentResult as Success<Item>).value;
+        final Item parent;
+        switch (parentResult) {
+          case Err<Item>():
+            return parentResult;
+          case Success<Item>(:final value):
+            parent = value;
+        }
         if (parent.type != ItemType.project) {
           return const Err<Item>(
             ValidationFailure(

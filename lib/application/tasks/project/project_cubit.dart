@@ -19,11 +19,14 @@ class ProjectCubit extends Cubit<ProjectState> {
   Future<void> loadProject(int projectId) async {
     emit(const ProjectLoading());
     final projectResult = await _repository.getItem(projectId);
-    if (projectResult is Err<Item>) {
-      emit(ProjectError(projectResult.failure));
-      return;
+    final Item project;
+    switch (projectResult) {
+      case Err<Item>():
+        emit(ProjectError(projectResult.failure));
+        return;
+      case Success<Item>(:final value):
+        project = value;
     }
-    final project = (projectResult as Success<Item>).value;
     await _refreshSubtasks(project);
   }
 
@@ -86,17 +89,23 @@ class ProjectCubit extends Cubit<ProjectState> {
     final countsResult = await _repository.getSubtaskCounts(project.id);
     final subtasksResult = await _repository.getSubtasks(project.id);
 
-    if (countsResult is Err<(int, int)>) {
-      emit(ProjectError(countsResult.failure));
-      return;
-    }
-    if (subtasksResult is Err<List<Item>>) {
-      emit(ProjectError(subtasksResult.failure));
-      return;
+    final (int completed, int total);
+    switch (countsResult) {
+      case Err<(int, int)>():
+        emit(ProjectError(countsResult.failure));
+        return;
+      case Success<(int, int)>(:final value):
+        (completed, total) = value;
     }
 
-    final (completed, total) = (countsResult as Success<(int, int)>).value;
-    final subtasks = (subtasksResult as Success<List<Item>>).value;
+    final List<Item> subtasks;
+    switch (subtasksResult) {
+      case Err<List<Item>>():
+        emit(ProjectError(subtasksResult.failure));
+        return;
+      case Success<List<Item>>(:final value):
+        subtasks = value;
+    }
 
     emit(ProjectLoaded(
       project: project,
