@@ -1,6 +1,7 @@
 ---
 layout: default
 ---
+{% assign t = site.data.translations[site.active_lang] %}
 <article class="post-page">
   <header class="post-header">
     <div class="inner">
@@ -29,13 +30,15 @@ layout: default
 
   <nav class="post-nav">
     {% if page.previous.url %}
-    <a href="{{ page.previous.url | relative_url }}"><i class="fa-solid fa-arrow-left"></i> {{ page.previous.title | truncatewords: 6 }}</a>
+    <a href="{{ page.previous.url | relative_url }}"><i class="fa-solid fa-arrow-left"></i> {{ page.previous.title |
+      truncatewords: 6 }}</a>
     {% else %}
     <span></span>
     {% endif %}
-    <a href="{{ '/blog/' | relative_url }}" data-i18n="blog-back"><i class="fa-solid fa-newspaper"></i> Voltar ao Blog</a>
+    <a href="{{ '/blog/' | relative_url }}"><i class="fa-solid fa-newspaper"></i> {{ t["blog-back"] }}</a>
     {% if page.next.url %}
-    <a href="{{ page.next.url | relative_url }}">{{ page.next.title | truncatewords: 6 }} <i class="fa-solid fa-arrow-right"></i></a>
+    <a href="{{ page.next.url | relative_url }}">{{ page.next.title | truncatewords: 6 }} <i
+        class="fa-solid fa-arrow-right"></i></a>
     {% else %}
     <span></span>
     {% endif %}

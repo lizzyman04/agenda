@@ -2,6 +2,9 @@
 layout: post
 title: "Por que Privacidade em Primeiro Lugar Importa para Apps de Produtividade"
 date: 2025-04-20 10:00:00 -0300
+lang: pt
+ref: privacy-first
+permalink: /blog/2025/04/20/privacidade-em-primeiro-lugar/
 tags: [privacidade, filosofia, arquitetura, offline]
 excerpt: "Em um mundo onde apps de produtividade são vetores de coleta de dados, o AGENDA escolhe um caminho diferente: seus dados nunca saem do dispositivo."
 ---

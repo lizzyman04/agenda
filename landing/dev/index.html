@@ -1,15 +1,18 @@
 ---
 layout: default
-title: "Desenvolvedores — AGENDA"
-description: "Documentação técnica do AGENDA para desenvolvedores e contribuidores."
+title: "Developers — AGENDA"
+title_pt: "Desenvolvedores — AGENDA"
+description: "Technical documentation for AGENDA developers and contributors."
+description_pt: "Documentação técnica do AGENDA para desenvolvedores e contribuidores."
 permalink: /dev/
 ---
+{% assign t = site.data.translations[site.active_lang] %}
 
 <!-- DEV HERO -->
 <section class="dev-hero">
   <div class="dev-hero-icon"><i class="fa-solid fa-code"></i></div>
-  <h1 data-i18n="nav-dev">Desenvolvedores</h1>
-  <p data-i18n="start-sub">Para desenvolvedores que queiram contribuir ou explorar o código.</p>
+  <h1>{{ t["nav-dev"] }}</h1>
+  <p>{{ t["start-sub"] }}</p>
   <a href="https://github.com/lizzyman04/agenda" target="_blank" rel="noopener" class="dev-hero-badge">
     <i class="fa-brands fa-github"></i> github.com/lizzyman04/agenda
   </a>
@@ -18,16 +21,16 @@ permalink: /dev/
 <!-- TECH STACK -->
 <section class="section" id="tech">
   <div class="inner">
-    <p class="section-label" data-i18n="tech-label">Stack</p>
-    <h2 class="section-title" data-i18n="tech-title">Tecnologia</h2>
-    <p class="section-sub" data-i18n="tech-sub">Stack escolhida para privacidade, performance e manutenibilidade.</p>
+    <p class="section-label">{{ t["tech-label"] }}</p>
+    <h2 class="section-title">{{ t["tech-title"] }}</h2>
+    <p class="section-sub">{{ t["tech-sub"] }}</p>
     <div class="tbl-wrap">
       <table>
         <thead>
           <tr>
-            <th data-i18n="tech-col-pkg">Pacote</th>
-            <th data-i18n="tech-col-ver">Versão</th>
-            <th data-i18n="tech-col-purpose">Propósito</th>
+            <th>{{ t["tech-col-pkg"] }}</th>
+            <th>{{ t["tech-col-ver"] }}</th>
+            <th>{{ t["tech-col-purpose"] }}</th>
           </tr>
         </thead>
         <tbody>
@@ -55,9 +58,9 @@ permalink: /dev/
 <!-- PROJECT STRUCTURE -->
 <section class="section" id="structure">
   <div class="inner">
-    <p class="section-label" data-i18n="struct-label">Arquitetura</p>
-    <h2 class="section-title" data-i18n="struct-title">Estrutura do Projeto</h2>
-    <p class="section-sub" data-i18n="struct-sub">Seis camadas — dependências sempre de fora para dentro.</p>
+    <p class="section-label">{{ t["struct-label"] }}</p>
+    <h2 class="section-title">{{ t["struct-title"] }}</h2>
+    <p class="section-sub">{{ t["struct-sub"] }}</p>
     <div class="tree"><span class="t-dir">lib/</span>
 ├── <span class="t-dir">core/</span>            <span class="t-comment"># Shared utilities, constants, base classes</span>
 ├── <span class="t-dir">domain/</span>          <span class="t-comment"># Entities, repo interfaces, failures</span>
@@ -80,17 +83,17 @@ permalink: /dev/
 <!-- GETTING STARTED -->
 <section class="section" id="start">
   <div class="inner">
-    <p class="section-label" data-i18n="start-label">Desenvolvimento</p>
-    <h2 class="section-title" data-i18n="start-title">Como Começar</h2>
-    <p class="section-sub" data-i18n="start-sub">Para desenvolvedores que queiram contribuir ou explorar o código.</p>
+    <p class="section-label">{{ t["start-label"] }}</p>
+    <h2 class="section-title">{{ t["start-title"] }}</h2>
+    <p class="section-sub">{{ t["start-sub"] }}</p>
 
-    <h3 data-i18n="start-prereq">Pré-requisitos</h3>
-    <div class="code-block"><span class="c-comment"># Necessário</span>
+    <h3>{{ t["start-prereq"] }}</h3>
+    <div class="code-block"><span class="c-comment"># {% if site.active_lang == 'pt' %}Necessário{% else %}Required{% endif %}</span>
 Flutter SDK >= 3.38.1
 Dart >= 3.5.0
-Android Studio ou Xcode</div>
+Android Studio {% if site.active_lang == 'pt' %}ou{% else %}or{% endif %} Xcode</div>
 
-    <h3 style="margin-top:2rem" data-i18n="start-setup">Setup</h3>
+    <h3 style="margin-top:2rem">{{ t["start-setup"] }}</h3>
     <div class="code-block"><span class="c-cmd">git clone</span> https://github.com/lizzyman04/agenda.git
 <span class="c-cmd">cd</span> agenda
 <span class="c-cmd">flutter pub get</span>
@@ -98,10 +101,10 @@ Android Studio ou Xcode</div>
 <span class="c-cmd">flutter gen-l10n</span>
 <span class="c-cmd">flutter run</span></div>
 
-    <h3 style="margin-top:2rem" data-i18n="start-tests">Testes</h3>
+    <h3 style="margin-top:2rem">{{ t["start-tests"] }}</h3>
     <div class="code-block"><span class="c-cmd">flutter test</span></div>
 
-    <h3 style="margin-top:2rem" data-i18n="start-lint">Lint</h3>
+    <h3 style="margin-top:2rem">{{ t["start-lint"] }}</h3>
     <div class="code-block"><span class="c-cmd">flutter analyze</span></div>
   </div>
 </section>
@@ -109,43 +112,43 @@ Android Studio ou Xcode</div>
 <!-- ROADMAP -->
 <section class="section" id="roadmap">
   <div class="inner">
-    <p class="section-label" data-i18n="roadmap-label">Planejamento</p>
-    <h2 class="section-title" data-i18n="roadmap-title">Roadmap</h2>
-    <p class="section-sub" data-i18n="roadmap-sub">Cinco fases construídas em ordem de dependência.</p>
+    <p class="section-label">{{ t["roadmap-label"] }}</p>
+    <h2 class="section-title">{{ t["roadmap-title"] }}</h2>
+    <p class="section-sub">{{ t["roadmap-sub"] }}</p>
     <div class="roadmap">
       <div class="rm-item">
         <div class="rm-num">1</div>
         <div class="rm-content">
-          <h4><span data-i18n="roadmap-p1-title">Fase 1 — Foundation</span> <span class="badge badge-done" data-i18n="badge-active">Concluída</span></h4>
-          <p data-i18n="roadmap-p1-desc">Scaffold de arquitetura, Isar + migration runner, DI, l10n, garantia offline</p>
+          <h4>{{ t["roadmap-p1-title"] }} <span class="badge badge-done">{{ t["badge-active"] }}</span></h4>
+          <p>{{ t["roadmap-p1-desc"] }}</p>
         </div>
       </div>
       <div class="rm-item">
         <div class="rm-num">2</div>
         <div class="rm-content">
-          <h4><span data-i18n="roadmap-p2-title">Fase 2 — Task Core</span> <span class="badge badge-done" data-i18n="badge-active">Concluída</span></h4>
-          <p data-i18n="roadmap-p2-desc">Projetos, subtarefas, CRUD, Eisenhower, 1-3-5, GTD, busca e filtros</p>
+          <h4>{{ t["roadmap-p2-title"] }} <span class="badge badge-done">{{ t["badge-active"] }}</span></h4>
+          <p>{{ t["roadmap-p2-desc"] }}</p>
         </div>
       </div>
       <div class="rm-item">
         <div class="rm-num">3</div>
         <div class="rm-content">
-          <h4><span data-i18n="roadmap-p3-title">Fase 3 — Finance Core</span> <span class="badge badge-planned" data-i18n="badge-planned">Planejada</span></h4>
-          <p data-i18n="roadmap-p3-desc">Transações, orçamentos, metas, dívidas, dashboard com gráficos</p>
+          <h4>{{ t["roadmap-p3-title"] }} <span class="badge badge-planned">{{ t["badge-planned"] }}</span></h4>
+          <p>{{ t["roadmap-p3-desc"] }}</p>
         </div>
       </div>
       <div class="rm-item">
         <div class="rm-num">4</div>
         <div class="rm-content">
-          <h4><span data-i18n="roadmap-p4-title">Fase 4 — Notifications + Backup</span> <span class="badge badge-planned" data-i18n="badge-planned">Planejada</span></h4>
-          <p data-i18n="roadmap-p4-desc">Notificações nativas com boot-safe rescheduling; export/import JSON + CSV</p>
+          <h4>{{ t["roadmap-p4-title"] }} <span class="badge badge-planned">{{ t["badge-planned"] }}</span></h4>
+          <p>{{ t["roadmap-p4-desc"] }}</p>
         </div>
       </div>
       <div class="rm-item">
         <div class="rm-num">5</div>
         <div class="rm-content">
-          <h4><span data-i18n="roadmap-p5-title">Fase 5 — App Lock + Settings + Polish</span> <span class="badge badge-planned" data-i18n="badge-planned">Planejada</span></h4>
-          <p data-i18n="roadmap-p5-desc">PIN + biometria, tela de configurações, onboarding, estados vazios</p>
+          <h4>{{ t["roadmap-p5-title"] }} <span class="badge badge-planned">{{ t["badge-planned"] }}</span></h4>
+          <p>{{ t["roadmap-p5-desc"] }}</p>
         </div>
       </div>
     </div>
@@ -155,20 +158,20 @@ Android Studio ou Xcode</div>
 <!-- CONTRIBUTING -->
 <section class="section" id="contributing">
   <div class="inner">
-    <p class="section-label" data-i18n="contrib-label">Open Source</p>
-    <h2 class="section-title" data-i18n="contrib-title">Como Contribuir</h2>
-    <p class="section-sub" data-i18n="contrib-desc">AGENDA é open source. Issues, pull requests e sugestões são bem-vindos.</p>
+    <p class="section-label">{{ t["contrib-label"] }}</p>
+    <h2 class="section-title">{{ t["contrib-title"] }}</h2>
+    <p class="section-sub">{{ t["contrib-desc"] }}</p>
     <ol style="list-style:none;padding:0;display:grid;gap:.75rem;margin-bottom:2rem">
-      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">1.</span><span data-i18n="contrib-li1" style="color:var(--text-2)">Abra uma issue descrevendo o bug ou a melhoria</span></li>
-      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">2.</span><span data-i18n="contrib-li2" style="color:var(--text-2)">Faça um fork e crie uma branch a partir de main</span></li>
-      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">3.</span><span data-i18n="contrib-li3" style="color:var(--text-2)">Siga as convenções de código e escreva testes</span></li>
-      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">4.</span><span data-i18n="contrib-li4" style="color:var(--text-2)">Abra um pull request com descrição detalhada</span></li>
+      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">1.</span><span style="color:var(--text-2)">{{ t["contrib-li1"] }}</span></li>
+      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">2.</span><span style="color:var(--text-2)">{{ t["contrib-li2"] }}</span></li>
+      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">3.</span><span style="color:var(--text-2)">{{ t["contrib-li3"] }}</span></li>
+      <li style="display:flex;gap:1rem;align-items:baseline"><span style="min-width:1.5rem;font-weight:700;color:var(--primary)">4.</span><span style="color:var(--text-2)">{{ t["contrib-li4"] }}</span></li>
     </ol>
     <div class="contrib-box">
       <h3>AGENDA</h3>
-      <p data-i18n="contrib-desc">AGENDA é open source. Issues, pull requests e sugestões são bem-vindos.</p>
+      <p>{{ t["contrib-desc"] }}</p>
       <a href="https://github.com/lizzyman04/agenda" target="_blank" rel="noopener" class="btn-primary">
-        <i class="fa-brands fa-github"></i> <span data-i18n="contrib-cta">Ver no GitHub</span>
+        <i class="fa-brands fa-github"></i> {{ t["contrib-cta"] }}
       </a>
     </div>
   </div>
@@ -177,9 +180,9 @@ Android Studio ou Xcode</div>
 <!-- LICENSE -->
 <section class="section" id="license">
   <div class="inner">
-    <p class="section-label" data-i18n="license-label">Licença</p>
-    <h2 class="section-title" data-i18n="license-title">MIT License</h2>
-    <p class="section-sub" data-i18n="license-desc">AGENDA é distribuído sob a licença MIT. Uso livre para projetos pessoais e comerciais.</p>
+    <p class="section-label">{{ t["license-label"] }}</p>
+    <h2 class="section-title">{{ t["license-title"] }}</h2>
+    <p class="section-sub">{{ t["license-desc"] }}</p>
     <div class="code-block">MIT License
 
 Copyright (c) 2025 lizzyman04

@@ -1,15 +1,18 @@
 ---
 layout: default
 title: "Blog — AGENDA"
-description: "Atualizações de desenvolvimento, decisões técnicas e reflexões sobre privacidade no AGENDA."
+title_pt: "Blog — AGENDA"
+description: "Development updates, technical decisions, and thoughts on privacy."
+description_pt: "Atualizações de desenvolvimento, decisões técnicas e reflexões sobre privacidade."
 permalink: /blog/
 ---
+{% assign t = site.data.translations[site.active_lang] %}
 
 <div class="blog-hero">
   <div class="inner">
-    <p class="section-label" data-i18n="blog-label">Blog</p>
-    <h1 class="section-title" data-i18n="blog-title">Novidades do AGENDA</h1>
-    <p class="section-sub" style="margin-bottom:0" data-i18n="blog-sub">Atualizações de desenvolvimento, decisões técnicas e reflexões sobre privacidade.</p>
+    <p class="section-label">{{ t["blog-label"] }}</p>
+    <h1 class="section-title">{{ t["blog-title"] }}</h1>
+    <p class="section-sub" style="margin-bottom:0">{{ t["blog-sub"] }}</p>
   </div>
 </div>
 
@@ -32,12 +35,12 @@ permalink: /blog/
         {% endif %}
         <h2 class="post-card-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
         <p class="post-card-excerpt">{{ post.excerpt | strip_html | truncatewords: 35 }}</p>
-        <a href="{{ post.url | relative_url }}" class="post-card-link" data-i18n="blog-read-more">Ler mais</a>
+        <a href="{{ post.url | relative_url }}" class="post-card-link">{{ t["blog-read-more"] }}</a>
       </article>
       {% endfor %}
     </div>
     {% else %}
-    <p style="color:var(--text-3);text-align:center;padding:3rem 0" data-i18n="blog-empty">Nenhuma postagem ainda.</p>
+    <p style="color:var(--text-3);text-align:center;padding:3rem 0">{{ t["blog-empty"] }}</p>
     {% endif %}
   </div>
 </section>

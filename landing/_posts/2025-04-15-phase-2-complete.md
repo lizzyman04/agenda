@@ -2,6 +2,9 @@
 layout: post
 title: "Fase 2 Completa: Gerenciamento de Tarefas está Aqui"
 date: 2025-04-15 12:00:00 -0300
+lang: pt
+ref: phase-2-complete
+permalink: /blog/2025/04/15/fase-2-completa/
 tags: [desenvolvimento, flutter, tarefas, fase-2]
 excerpt: "A Fase 2 do AGENDA está completa com 138 testes passando. O módulo de tarefas inclui Eisenhower, 1-3-5, GTD, subtarefas, projetos, recorrência e muito mais."
 ---

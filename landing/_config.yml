@@ -1,15 +1,19 @@
 title: AGENDA
-description: App mobile privado para gestão de tarefas e finanças pessoais. 100% offline. Seus dados nunca saem do dispositivo.
+description: "Private mobile app for task management and personal finances. 100% offline."
 url: "https://agenda.omeu.space"
 baseurl: ""
-lang: pt-BR
+
+# jekyll-polyglot
+languages: ["en", "pt"]
+default_lang: "en"
+exclude_from_localization: ["assets", "CNAME", "feed.xml"]
+parallel_localization: false
 
 author:
   name: lizzyman04
   github: https://github.com/lizzyman04/agenda
   email: arlindoabdullm@gmail.com
 
-# Build
 markdown: kramdown
 highlighter: rouge
 permalink: /blog/:year/:month/:day/:title/
@@ -19,27 +23,23 @@ kramdown:
   hard_wrap: false
   syntax_highlighter: rouge
 
-# Sass
 sass:
   sass_dir: _sass
   style: compressed
 
-# Feed (jekyll-feed)
 feed:
   path: feed.xml
   title: AGENDA Blog
 
-# Plugins (GitHub Pages safe list)
 plugins:
+  - jekyll-polyglot
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
 
-# SEO
 twitter:
   username: lizzyman04
 
-# Exclude from build
 exclude:
   - Gemfile
   - Gemfile.lock

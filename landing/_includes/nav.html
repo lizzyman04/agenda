@@ -1,19 +1,23 @@
+{% assign t = site.data.translations[site.active_lang] %}
 <nav class="nav">
   <a href="{{ '/' | relative_url }}" class="nav-brand">
-    <img src="{{ '/assets/img/agenda-logo.png' | relative_url }}" alt="AGENDA" />
+    <img src="/assets/img/agenda-logo.png" alt="AGENDA" />
     <span class="nav-brand-name">AGENDA</span>
   </a>
   <ul class="nav-links">
-    <li><a href="{{ '/' | relative_url }}" data-i18n="nav-home" {% if page.url=='/' %} class="active" {% endif
-        %}>Início</a></li>
-    <li><a href="{{ '/blog/' | relative_url }}" data-i18n="nav-blog" {% if page.url contains '/blog' %} class="active"
-        {% endif %}>Blog</a></li>
-    <li><a href="{{ '/terms/' | relative_url }}" data-i18n="nav-terms" {% if page.url contains '/terms' %}
-        class="active" {% endif %}>Termos</a></li>
-    <li><a href="{{ '/dev/' | relative_url }}" data-i18n="nav-dev" {% if page.url contains '/dev' %} class="active" {%
-        endif %}>Desenvolvedores</a></li>
+    <li><a href="{{ '/' | relative_url }}" {% if page.url=='/' or page.url=='/pt/' %}class="active" {% endif %}>{{
+        t["nav-home"] }}</a></li>
+    <li><a href="{{ '/blog/' | relative_url }}" {% if page.url contains '/blog' %}class="active" {% endif %}>{{
+        t["nav-blog"] }}</a></li>
+    <li><a href="{{ '/terms/' | relative_url }}" {% if page.url contains '/terms' %}class="active" {% endif %}>{{
+        t["nav-terms"] }}</a></li>
+    <li><a href="{{ '/dev/' | relative_url }}" {% if page.url contains '/dev' %}class="active" {% endif %}>{{
+        t["nav-dev"] }}</a></li>
   </ul>
   <div class="nav-right">
-    <button id="lang-btn" class="lang-btn" aria-label="Switch language">EN</button>
+    {% comment %} alt_url is set in default.html layout and available here via shared scope {% endcomment %}
+    <a href="{{ alt_url }}" class="lang-btn" id="lang-btn" aria-label="Switch language">
+      {% if site.active_lang == 'pt' %}EN{% else %}PT{% endif %}
+    </a>
   </div>
 </nav>

@@ -1,35 +1,82 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+{% assign t = site.data.translations[site.active_lang] %}
+{% comment %} Compute the alternate-language URL for hreflang + JS redirect {% endcomment %}
+{% if site.active_lang == 'pt' %}
+{% if page.ref %}
+{% assign _xlated = site.posts | where: "ref", page.ref | where_exp: "p", "p.lang == 'en'" %}
+{% if _xlated.size > 0 %}
+{% assign alt_url = _xlated[0].url %}
+{% else %}
+{% assign alt_url = page.url | remove_first: '/pt' %}
+{% if alt_url == "" %}{% assign alt_url = "/" %}{% endif %}
+{% endif %}
+{% else %}
+{% assign alt_url = page.url | remove_first: '/pt' %}
+{% if alt_url == "" %}{% assign alt_url = "/" %}{% endif %}
+{% endif %}
+{% assign en_url = site.url | append: alt_url %}
+{% assign pt_url = site.url | append: page.url %}
+{% else %}
+{% if page.ref %}
+{% assign _xlated = site.posts | where: "ref", page.ref | where_exp: "p", "p.lang == 'pt'" %}
+{% if _xlated.size > 0 %}
+{% assign alt_url = _xlated[0].url %}
+{% else %}
+{% assign alt_url = '/pt' | append: page.url %}
+{% endif %}
+{% else %}
+{% assign alt_url = '/pt' | append: page.url %}
+{% endif %}
+{% assign en_url = site.url | append: page.url %}
+{% assign pt_url = site.url | append: alt_url %}
+{% endif %}
+{% comment %} Per-language title and description {% endcomment %}
+{% if site.active_lang == 'pt' %}
+{% assign meta_title = page.title_pt | default: page.title %}
+{% assign meta_desc = page.description_pt | default: page.description | default: t["site-description"] %}
+{% else %}
+{% assign meta_title = page.title %}
+{% assign meta_desc = page.description | default: t["site-description"] %}
+{% endif %}
+<html lang="{% if site.active_lang == 'pt' %}pt-BR{% else %}en{% endif %}">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="{{ page.description | default: site.description }}" />
-  <meta property="og:title"       content="{{ page.title | default: site.title }}" />
-  <meta property="og:description" content="{{ page.description | default: site.description }}" />
-  <meta property="og:image"       content="{{ '/assets/img/agenda.png' | absolute_url }}" />
-  <meta property="og:url"         content="{{ page.url | absolute_url }}" />
-  <meta property="og:type"        content="{% if page.layout == 'post' %}article{% else %}website{% endif %}" />
+  <meta name="description" content="{{ meta_desc }}" />
+  <meta property="og:title" content="{{ meta_title | default: site.title }}" />
+  <meta property="og:description" content="{{ meta_desc }}" />
+  <meta property="og:image" content="{{ site.url }}/assets/img/agenda.png" />
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}" />
+  <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}" />
   {% if page.layout == 'post' %}
   <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}" />
   {% for tag in page.tags %}
   <meta property="article:tag" content="{{ tag }}" />
   {% endfor %}
   {% endif %}
-  <title>{{ page.title | default: site.title }}{% unless page.title == nil or page.title == site.title %} — {{ site.title }}{% endunless %}</title>
-  <link rel="shortcut icon"    href="{{ '/assets/img/agenda-logo.png' | relative_url }}" type="image/png" />
-  <link rel="apple-touch-icon" href="{{ '/assets/img/agenda-logo.png' | relative_url }}" />
-  <link rel="alternate" type="application/rss+xml" title="{{ site.title }} Blog" href="{{ '/feed.xml' | relative_url }}" />
+  <link rel="alternate" hreflang="en" href="{{ en_url }}" />
+  <link rel="alternate" hreflang="pt-BR" href="{{ pt_url }}" />
+  <link rel="alternate" hreflang="x-default" href="{{ en_url }}" />
+  <title>{{ meta_title | default: site.title }}{% unless meta_title == nil or meta_title == site.title %} — {{
+    site.title }}{% endunless %}</title>
+  <link rel="shortcut icon" href="/assets/img/agenda-logo.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/assets/img/agenda-logo.png" />
+  <link rel="alternate" type="application/rss+xml" title="{{ site.title }} Blog" href="/feed.xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}" />
-  {% seo %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
-<body>
+
+<body data-lang="{{ site.active_lang }}" data-alt-url="{{ alt_url }}">
   {% include nav.html %}
   {{ content }}
   {% include footer.html %}
-  <script src="{{ '/assets/js/i18n.js' | relative_url }}"></script>
+  <script src="/assets/js/i18n.js"></script>
 </body>
+
 </html>
