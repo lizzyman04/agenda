@@ -27,10 +27,13 @@ jobs:
           bundler-cache: true
           working-directory: landing
       - name: Build Jekyll
-        run: bundle exec jekyll build --source landing --destination _site
+        run: bundle exec jekyll build --source . --destination ../_site
+        working-directory: landing
         env:
           JEKYLL_ENV: production
       - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
 
   deploy:
     needs: build
