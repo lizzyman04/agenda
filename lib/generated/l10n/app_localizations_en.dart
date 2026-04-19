@@ -301,4 +301,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterApplied => 'Filter applied';
+
+  @override
+  String get taskDetailTitle => 'Task';
+
+  @override
+  String get editButton => 'Edit';
+
+  @override
+  String get deleteButton => 'Delete';
+
+  @override
+  String get deleteConfirmTitle => 'Delete task?';
+
+  @override
+  String get deleteConfirmBody =>
+      'The task will be removed. You\'ll have a few seconds to undo.';
+
+  @override
+  String get cancelButton => 'Cancel';
+
+  @override
+  String get labelStatus => 'Status';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get statusPending => 'Pending';
 }

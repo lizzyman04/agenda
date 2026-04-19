@@ -680,6 +680,60 @@ abstract class AppLocalizations {
   /// In pt_BR, this message translates to:
   /// **'Filtro aplicado'**
   String get filterApplied;
+
+  /// Título da barra de apps na tela de detalhes da tarefa
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Tarefa'**
+  String get taskDetailTitle;
+
+  /// Rótulo do botão de editar
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Editar'**
+  String get editButton;
+
+  /// Rótulo do botão de excluir
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Excluir'**
+  String get deleteButton;
+
+  /// Título do diálogo de confirmação de exclusão
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Excluir tarefa?'**
+  String get deleteConfirmTitle;
+
+  /// Texto do diálogo de confirmação de exclusão
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'A tarefa será removida. Você terá alguns segundos para desfazer.'**
+  String get deleteConfirmBody;
+
+  /// Rótulo do botão cancelar
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Cancelar'**
+  String get cancelButton;
+
+  /// Rótulo de status na tela de detalhes da tarefa
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Status'**
+  String get labelStatus;
+
+  /// Valor de status quando a tarefa está concluída
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Concluída'**
+  String get statusCompleted;
+
+  /// Valor de status quando a tarefa está pendente
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Pendente'**
+  String get statusPending;
 }
 
 class _AppLocalizationsDelegate

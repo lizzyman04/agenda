@@ -301,6 +301,34 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get filterApplied => 'Filtro aplicado';
+
+  @override
+  String get taskDetailTitle => 'Tarefa';
+
+  @override
+  String get editButton => 'Editar';
+
+  @override
+  String get deleteButton => 'Excluir';
+
+  @override
+  String get deleteConfirmTitle => 'Excluir tarefa?';
+
+  @override
+  String get deleteConfirmBody =>
+      'A tarefa será removida. Você terá alguns segundos para desfazer.';
+
+  @override
+  String get cancelButton => 'Cancelar';
+
+  @override
+  String get labelStatus => 'Status';
+
+  @override
+  String get statusCompleted => 'Concluída';
+
+  @override
+  String get statusPending => 'Pendente';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -600,4 +628,32 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get filterApplied => 'Filtro aplicado';
+
+  @override
+  String get taskDetailTitle => 'Tarefa';
+
+  @override
+  String get editButton => 'Editar';
+
+  @override
+  String get deleteButton => 'Excluir';
+
+  @override
+  String get deleteConfirmTitle => 'Excluir tarefa?';
+
+  @override
+  String get deleteConfirmBody =>
+      'A tarefa será removida. Você terá alguns segundos para desfazer.';
+
+  @override
+  String get cancelButton => 'Cancelar';
+
+  @override
+  String get labelStatus => 'Status';
+
+  @override
+  String get statusCompleted => 'Concluída';
+
+  @override
+  String get statusPending => 'Pendente';
 }
