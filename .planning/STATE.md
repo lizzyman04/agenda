@@ -53,13 +53,6 @@ Recent decisions affecting current work:
 - **Architecture**: core/ → domain/ → data/ → infrastructure/ → application/ → presentation/ → config/; strict outer-depends-on-inner rule
 - **Language**: All code/comments/enums in English; UI text in PT-BR by default with EN toggle
 
-### Quick Tasks Completed
-
-| ID | Description | Date | Commit |
-|----|-------------|------|--------|
-| 260413-ss1 | Set up GitHub Pages landing page for AGENDA | 2026-04-13 | d8072b2 |
-| 260413-ty6 | Rebuild GitHub Pages with Astro — indigo theme, full i18n, all sections | 2026-04-14 | 1a8134c |
-
 ### Pending Todos
 
 None yet.
@@ -72,6 +65,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-14
-Stopped at: Completed quick task 260413-ty6 — Astro GitHub Pages rebuild
+Last session: 2026-04-19
+Stopped at: Roadmap written; REQUIREMENTS.md traceability updated; ready to plan Phase 1
 Resume file: None

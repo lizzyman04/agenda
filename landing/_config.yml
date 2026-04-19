@@ -12,7 +12,7 @@ parallel_localization: false
 author:
   name: lizzyman04
   github: https://github.com/lizzyman04/agenda
-  email: arlindoabdullm@gmail.com
+  email: admin+agenda@omeu.space
 
 markdown: kramdown
 highlighter: rouge

@@ -20,7 +20,7 @@
 {% if page.ref %}
 {% assign _xlated = site.posts | where: "ref", page.ref | where_exp: "p", "p.lang == 'pt'" %}
 {% if _xlated.size > 0 %}
-{% assign alt_url = _xlated[0].url %}
+{% assign alt_url = '/pt' | append: _xlated[0].url %}
 {% else %}
 {% assign alt_url = '/pt' | append: page.url %}
 {% endif %}
