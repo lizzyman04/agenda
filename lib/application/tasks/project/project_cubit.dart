@@ -89,13 +89,15 @@ class ProjectCubit extends Cubit<ProjectState> {
     final countsResult = await _repository.getSubtaskCounts(project.id);
     final subtasksResult = await _repository.getSubtasks(project.id);
 
-    final (int completed, int total);
+    final int completed;
+    final int total;
     switch (countsResult) {
       case Err<(int, int)>():
         emit(ProjectError(countsResult.failure));
         return;
       case Success<(int, int)>(:final value):
-        (completed, total) = value;
+        completed = value.$1;
+        total = value.$2;
     }
 
     final List<Item> subtasks;
