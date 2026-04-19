@@ -153,6 +153,24 @@ class ItemDao {
     });
   }
 
+  /// Returns a sorted list of distinct, non-null GTD context strings
+  /// from all active (non-deleted) items.
+  ///
+  /// Queries only the gtdContext field — avoids loading full ItemModel
+  /// objects for what is logically a projection query.
+  Future<List<String>> findDistinctGtdContexts() async {
+    final models = await _collection
+        .filter()
+        .deletedAtIsNull()
+        .gtdContextIsNotNull()
+        .findAll();
+    return models
+        .map((m) => m.gtdContext!)
+        .toSet()
+        .toList()
+      ..sort();
+  }
+
   // --- Watch ---
 
   Stream<void> watchLazy() =>

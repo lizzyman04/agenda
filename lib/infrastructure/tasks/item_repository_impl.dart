@@ -201,17 +201,9 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   AsyncResult<List<String>> getDistinctGtdContexts() async {
     try {
-      final allResult = await filterItems();
-      if (allResult is Err<List<Item>>) {
-        return Err<List<String>>(allResult.failure);
-      }
-      final items = (allResult as Success<List<Item>>).value;
-      final contexts = items
-          .map((i) => i.gtdContext)
-          .whereType<String>()
-          .toSet()
-          .toList()
-        ..sort();
+      // Use a dedicated DAO method that queries only the gtdContext field
+      // instead of loading up to 500 full ItemModel objects into memory.
+      final contexts = await _dao.findDistinctGtdContexts();
       return Success<List<String>>(contexts);
     } on Object catch (e) {
       return Err<List<String>>(
