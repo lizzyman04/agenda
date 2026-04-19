@@ -216,4 +216,89 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clearFilter => 'Clear';
+
+  @override
+  String get navTasks => 'Tasks';
+
+  @override
+  String get navEisenhower => 'Matrix';
+
+  @override
+  String get navDayPlanner => 'Planner';
+
+  @override
+  String get navGtd => 'GTD';
+
+  @override
+  String get advancedOptions => 'Advanced options';
+
+  @override
+  String get gtdGuide => 'GTD Guide';
+
+  @override
+  String get gtdQ1 => 'What needs to be done?';
+
+  @override
+  String get gtdQ2 => 'Does this task absolutely need to be done?';
+
+  @override
+  String get gtdQ3 => 'Can someone else do this for you?';
+
+  @override
+  String get gtdQ4 => 'Can it be done in under 10 minutes?';
+
+  @override
+  String get gtdQ5 => 'Is this important for your long-term goals?';
+
+  @override
+  String get gtdQ6 => 'What\'s the deadline?';
+
+  @override
+  String get gtdQ7 => 'What\'s the impact if not done?';
+
+  @override
+  String get gtdAnswerYes => 'Yes';
+
+  @override
+  String get gtdAnswerNo => 'No';
+
+  @override
+  String get gtdDiscardMessage => 'Good. If it\'s not necessary, let it go.';
+
+  @override
+  String get gtdDelegateMessage =>
+      'Delegate it. Add a \'Waiting for\' note if needed.';
+
+  @override
+  String get gtdDoItNowMessage => 'Do it now! Under 10 minutes — just do it.';
+
+  @override
+  String get gtdDeadlineToday => 'Today';
+
+  @override
+  String get gtdDeadlineThisWeek => 'This week';
+
+  @override
+  String get gtdDeadlineThisMonth => 'This month';
+
+  @override
+  String get gtdDeadlineCustom => 'Custom date';
+
+  @override
+  String get gtdImpactCritical => 'Critical — everything depends on it';
+
+  @override
+  String get gtdImpactHigh => 'High — major consequences';
+
+  @override
+  String get gtdImpactMedium => 'Medium — noticeable consequences';
+
+  @override
+  String get gtdImpactLow => 'Low — minor consequences';
+
+  @override
+  String get gtdImpactNone => 'None — can be dropped';
+
+  @override
+  String get filterApplied => 'Filter applied';
 }

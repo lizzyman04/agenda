@@ -216,6 +216,91 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get clearFilter => 'Limpar';
+
+  @override
+  String get navTasks => 'Tarefas';
+
+  @override
+  String get navEisenhower => 'Matriz';
+
+  @override
+  String get navDayPlanner => 'Planner';
+
+  @override
+  String get navGtd => 'GTD';
+
+  @override
+  String get advancedOptions => 'Opções avançadas';
+
+  @override
+  String get gtdGuide => 'Guia GTD';
+
+  @override
+  String get gtdQ1 => 'O que precisa ser feito?';
+
+  @override
+  String get gtdQ2 => 'Essa tarefa precisa absolutamente ser feita?';
+
+  @override
+  String get gtdQ3 => 'Outra pessoa pode fazer isso por você?';
+
+  @override
+  String get gtdQ4 => 'Pode ser feito em menos de 10 minutos?';
+
+  @override
+  String get gtdQ5 => 'Isso é importante para seus objetivos de longo prazo?';
+
+  @override
+  String get gtdQ6 => 'Qual é o prazo?';
+
+  @override
+  String get gtdQ7 => 'Qual é o impacto se não for feito?';
+
+  @override
+  String get gtdAnswerYes => 'Sim';
+
+  @override
+  String get gtdAnswerNo => 'Não';
+
+  @override
+  String get gtdDiscardMessage => 'Ótimo. Se não é necessário, deixe para lá.';
+
+  @override
+  String get gtdDelegateMessage =>
+      'Delegue. Adicione uma nota \'Aguardando\' se precisar.';
+
+  @override
+  String get gtdDoItNowMessage => 'Faça agora! Menos de 10 minutos — só faça.';
+
+  @override
+  String get gtdDeadlineToday => 'Hoje';
+
+  @override
+  String get gtdDeadlineThisWeek => 'Esta semana';
+
+  @override
+  String get gtdDeadlineThisMonth => 'Este mês';
+
+  @override
+  String get gtdDeadlineCustom => 'Data personalizada';
+
+  @override
+  String get gtdImpactCritical => 'Crítico — tudo depende disso';
+
+  @override
+  String get gtdImpactHigh => 'Alto — grandes consequências';
+
+  @override
+  String get gtdImpactMedium => 'Médio — consequências visíveis';
+
+  @override
+  String get gtdImpactLow => 'Baixo — consequências menores';
+
+  @override
+  String get gtdImpactNone => 'Nenhum — pode ser descartado';
+
+  @override
+  String get filterApplied => 'Filtro aplicado';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -430,4 +515,89 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get clearFilter => 'Limpar';
+
+  @override
+  String get navTasks => 'Tarefas';
+
+  @override
+  String get navEisenhower => 'Matriz';
+
+  @override
+  String get navDayPlanner => 'Planner';
+
+  @override
+  String get navGtd => 'GTD';
+
+  @override
+  String get advancedOptions => 'Opções avançadas';
+
+  @override
+  String get gtdGuide => 'Guia GTD';
+
+  @override
+  String get gtdQ1 => 'O que precisa ser feito?';
+
+  @override
+  String get gtdQ2 => 'Essa tarefa precisa absolutamente ser feita?';
+
+  @override
+  String get gtdQ3 => 'Outra pessoa pode fazer isso por você?';
+
+  @override
+  String get gtdQ4 => 'Pode ser feito em menos de 10 minutos?';
+
+  @override
+  String get gtdQ5 => 'Isso é importante para seus objetivos de longo prazo?';
+
+  @override
+  String get gtdQ6 => 'Qual é o prazo?';
+
+  @override
+  String get gtdQ7 => 'Qual é o impacto se não for feito?';
+
+  @override
+  String get gtdAnswerYes => 'Sim';
+
+  @override
+  String get gtdAnswerNo => 'Não';
+
+  @override
+  String get gtdDiscardMessage => 'Ótimo. Se não é necessário, deixe para lá.';
+
+  @override
+  String get gtdDelegateMessage =>
+      'Delegue. Adicione uma nota \'Aguardando\' se precisar.';
+
+  @override
+  String get gtdDoItNowMessage => 'Faça agora! Menos de 10 minutos — só faça.';
+
+  @override
+  String get gtdDeadlineToday => 'Hoje';
+
+  @override
+  String get gtdDeadlineThisWeek => 'Esta semana';
+
+  @override
+  String get gtdDeadlineThisMonth => 'Este mês';
+
+  @override
+  String get gtdDeadlineCustom => 'Data personalizada';
+
+  @override
+  String get gtdImpactCritical => 'Crítico — tudo depende disso';
+
+  @override
+  String get gtdImpactHigh => 'Alto — grandes consequências';
+
+  @override
+  String get gtdImpactMedium => 'Médio — consequências visíveis';
+
+  @override
+  String get gtdImpactLow => 'Baixo — consequências menores';
+
+  @override
+  String get gtdImpactNone => 'Nenhum — pode ser descartado';
+
+  @override
+  String get filterApplied => 'Filtro aplicado';
 }

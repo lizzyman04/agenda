@@ -17,7 +17,10 @@ import 'package:get_it/get_it.dart';
 /// as [GtdChip] widgets, and applies the selected context to [TaskListCubit]
 /// when the user taps "Aplicar" / "Apply".
 class GtdFilterScreen extends StatefulWidget {
-  const GtdFilterScreen({super.key});
+  const GtdFilterScreen({super.key, this.usedAsTab = false});
+
+  /// When true, the screen is embedded as a nav tab — skip Navigator.pop().
+  final bool usedAsTab;
 
   @override
   State<GtdFilterScreen> createState() => _GtdFilterScreenState();
@@ -53,12 +56,22 @@ class _GtdFilterScreenState extends State<GtdFilterScreen> {
     await context.read<TaskListCubit>().applyFilter(
           TaskListFilter(gtdContext: _selectedContext),
         );
-    if (mounted) Navigator.of(context).pop();
+    if (!mounted) return;
+    if (widget.usedAsTab) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).filterApplied),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _clear() async {
     await context.read<TaskListCubit>().applyFilter(TaskListFilter.empty);
-    if (mounted) Navigator.of(context).pop();
+    if (mounted && !widget.usedAsTab) Navigator.of(context).pop();
   }
 
   @override

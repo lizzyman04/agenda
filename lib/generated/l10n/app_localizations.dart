@@ -512,6 +512,174 @@ abstract class AppLocalizations {
   /// In pt_BR, this message translates to:
   /// **'Limpar'**
   String get clearFilter;
+
+  /// Rótulo da nav inferior para lista de tarefas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Tarefas'**
+  String get navTasks;
+
+  /// Rótulo da nav inferior para matriz Eisenhower
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Matriz'**
+  String get navEisenhower;
+
+  /// Rótulo da nav inferior para planner diário
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Planner'**
+  String get navDayPlanner;
+
+  /// Rótulo da nav inferior para filtro GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'GTD'**
+  String get navGtd;
+
+  /// Rótulo da seção expansível no formulário de tarefa
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Opções avançadas'**
+  String get advancedOptions;
+
+  /// Rótulo do botão para abrir o fluxo guiado GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Guia GTD'**
+  String get gtdGuide;
+
+  /// Pergunta 1 do guia GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'O que precisa ser feito?'**
+  String get gtdQ1;
+
+  /// Pergunta 2 do guia GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Essa tarefa precisa absolutamente ser feita?'**
+  String get gtdQ2;
+
+  /// Pergunta 3 do guia GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Outra pessoa pode fazer isso por você?'**
+  String get gtdQ3;
+
+  /// Pergunta 4 do guia GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Pode ser feito em menos de 10 minutos?'**
+  String get gtdQ4;
+
+  /// Pergunta 5 do guia GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Isso é importante para seus objetivos de longo prazo?'**
+  String get gtdQ5;
+
+  /// Pergunta 6 do guia GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Qual é o prazo?'**
+  String get gtdQ6;
+
+  /// Pergunta 7 do guia GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Qual é o impacto se não for feito?'**
+  String get gtdQ7;
+
+  /// Resposta sim do guia GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Sim'**
+  String get gtdAnswerYes;
+
+  /// Resposta não do guia GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não'**
+  String get gtdAnswerNo;
+
+  /// Mensagem GTD quando a tarefa não é necessária
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Ótimo. Se não é necessário, deixe para lá.'**
+  String get gtdDiscardMessage;
+
+  /// Mensagem GTD quando a tarefa pode ser delegada
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Delegue. Adicione uma nota \'Aguardando\' se precisar.'**
+  String get gtdDelegateMessage;
+
+  /// Mensagem GTD quando a tarefa é rápida
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Faça agora! Menos de 10 minutos — só faça.'**
+  String get gtdDoItNowMessage;
+
+  /// Opção de prazo GTD: hoje
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Hoje'**
+  String get gtdDeadlineToday;
+
+  /// Opção de prazo GTD: esta semana
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Esta semana'**
+  String get gtdDeadlineThisWeek;
+
+  /// Opção de prazo GTD: este mês
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Este mês'**
+  String get gtdDeadlineThisMonth;
+
+  /// Opção de prazo GTD: personalizada
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Data personalizada'**
+  String get gtdDeadlineCustom;
+
+  /// Nível de impacto GTD 1
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Crítico — tudo depende disso'**
+  String get gtdImpactCritical;
+
+  /// Nível de impacto GTD 2
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Alto — grandes consequências'**
+  String get gtdImpactHigh;
+
+  /// Nível de impacto GTD 3
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Médio — consequências visíveis'**
+  String get gtdImpactMedium;
+
+  /// Nível de impacto GTD 4
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Baixo — consequências menores'**
+  String get gtdImpactLow;
+
+  /// Nível de impacto GTD 5
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Nenhum — pode ser descartado'**
+  String get gtdImpactNone;
+
+  /// Confirmação após aplicar filtro GTD pela aba
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Filtro aplicado'**
+  String get filterApplied;
 }
 
 class _AppLocalizationsDelegate
