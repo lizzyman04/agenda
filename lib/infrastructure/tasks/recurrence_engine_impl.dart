@@ -59,6 +59,8 @@ class RecurrenceEngineImpl implements RecurrenceEngine {
           from.hour,
           from.minute,
           from.second,
+          from.millisecond,
+          from.microsecond,
         ),
     };
   }
@@ -85,6 +87,7 @@ class RecurrenceEngineImpl implements RecurrenceEngine {
     final daysInNextMonth =
         DateTime(nextMonth.year, nextMonth.month + 1, 0).day;
     final clampedDay = day.clamp(1, daysInNextMonth);
+    // Preserve full sub-second precision from the original DateTime.
     return DateTime(
       nextMonth.year,
       nextMonth.month,
@@ -92,6 +95,8 @@ class RecurrenceEngineImpl implements RecurrenceEngine {
       from.hour,
       from.minute,
       from.second,
+      from.millisecond,
+      from.microsecond,
     );
   }
 }
