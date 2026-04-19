@@ -106,7 +106,14 @@ class ItemRepositoryImpl implements ItemRepository {
   AsyncResult<Item> softDelete(int id) async {
     try {
       await _dao.softDelete(id);
-      return getItem(id);
+      // Read model directly by raw id (bypasses deletedAtIsNull filter) so
+      // the result is consistent even if a future refactor adds that filter
+      // to findById. Do NOT call getItem() — it may exclude soft-deleted rows.
+      final model = await _dao.findById(id);
+      if (model == null) {
+        return Err<Item>(DatabaseFailure('Item $id not found after softDelete'));
+      }
+      return Success<Item>(_mapper.toDomain(model));
     } on Object catch (e) {
       return Err<Item>(DatabaseFailure('softDelete failed: $e'));
     }
@@ -116,7 +123,14 @@ class ItemRepositoryImpl implements ItemRepository {
   AsyncResult<Item> restoreItem(int id) async {
     try {
       await _dao.restoreItem(id);
-      return getItem(id);
+      // Read model directly by raw id — same reason as softDelete above.
+      final model = await _dao.findById(id);
+      if (model == null) {
+        return Err<Item>(
+          DatabaseFailure('Item $id not found after restoreItem'),
+        );
+      }
+      return Success<Item>(_mapper.toDomain(model));
     } on Object catch (e) {
       return Err<Item>(DatabaseFailure('restoreItem failed: $e'));
     }
