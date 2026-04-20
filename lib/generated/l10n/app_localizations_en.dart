@@ -239,22 +239,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gtdQ1 => 'What needs to be done?';
 
   @override
-  String get gtdQ2 => 'Does this task absolutely need to be done?';
+  String get gtdQ2 => 'Is it actionable?';
 
   @override
-  String get gtdQ3 => 'Can someone else do this for you?';
+  String get gtdQ3 => 'What\'s the very next physical action?';
 
   @override
-  String get gtdQ4 => 'Can it be done in under 10 minutes?';
+  String get gtdQ3Hint => 'e.g. Send email, Call back, Draft report';
 
   @override
-  String get gtdQ5 => 'Is this important for your long-term goals?';
+  String get gtdQ4 => 'Can it be done in under 2 minutes?';
 
   @override
-  String get gtdQ6 => 'What\'s the deadline?';
+  String get gtdQ5 => 'Should this be delegated?';
 
   @override
-  String get gtdQ7 => 'What\'s the impact if not done?';
+  String get gtdQ6 => 'When does it need to be done by?';
+
+  @override
+  String get gtdQ7 => 'How important is this for your long-term goals?';
+
+  @override
+  String get gtdQ8 => 'What context does this task belong to?';
+
+  @override
+  String get gtdQ8Hint => '@home, @computer, @office';
 
   @override
   String get gtdAnswerYes => 'Yes';
@@ -263,23 +272,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gtdAnswerNo => 'No';
 
   @override
-  String get gtdDiscardMessage => 'Good. If it\'s not necessary, let it go.';
+  String get gtdSkip => 'Skip';
+
+  @override
+  String get gtdDiscardMessage =>
+      'Parked in Someday/Maybe. Come back to it later.';
 
   @override
   String get gtdDelegateMessage =>
-      'Delegate it. Add a \'Waiting for\' note if needed.';
+      'Delegated. A \'Waiting For\' note has been added.';
 
   @override
-  String get gtdDoItNowMessage => 'Do it now! Under 10 minutes — just do it.';
+  String get gtdDoItNowMessage => 'Do it now! Under 2 minutes — just do it.';
 
   @override
   String get gtdDeadlineToday => 'Today';
+
+  @override
+  String get gtdDeadlineTomorrow => 'Tomorrow';
 
   @override
   String get gtdDeadlineThisWeek => 'This week';
 
   @override
   String get gtdDeadlineThisMonth => 'This month';
+
+  @override
+  String get gtdDeadlineNoDeadline => 'No deadline';
 
   @override
   String get gtdDeadlineCustom => 'Custom date';

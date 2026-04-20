@@ -8,10 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-/// Task form — Quick Add by default, with Advanced options expandable section
-/// and an optional GTD Guide conversational flow.
-///
-/// Pass [item] = null for create mode; non-null for edit mode.
 class TaskFormScreen extends StatefulWidget {
   const TaskFormScreen({super.key, this.item});
 
@@ -21,7 +17,8 @@ class TaskFormScreen extends StatefulWidget {
   State<TaskFormScreen> createState() => _TaskFormScreenState();
 }
 
-class _TaskFormScreenState extends State<TaskFormScreen> {
+class _TaskFormScreenState extends State<TaskFormScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController _titleController;
@@ -38,6 +35,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   DateTime? _dueDate;
   TimeOfDay? _dueTime;
   String? _recurrenceRule;
+  bool _advancedExpanded = false;
 
   bool get _isEditing => widget.item != null;
 
@@ -173,270 +171,340 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     final result = await showModalBottomSheet<_GtdResult>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (_) => _GtdGuideSheet(l10n: l10n),
     );
     if (result == null || !mounted) return;
     setState(() {
-      if (result.title.isNotEmpty) _titleController.text = result.title;
+      // Use next action as title (more specific), original title as context
+      if (result.nextAction.isNotEmpty) {
+        _titleController.text = result.nextAction;
+        if (_descriptionController.text.isEmpty && result.title.isNotEmpty) {
+          _descriptionController.text = result.title;
+        }
+      } else if (result.title.isNotEmpty) {
+        _titleController.text = result.title;
+      }
       _priority = result.priority;
       _isUrgent = result.isUrgent;
       _isImportant = result.isImportant;
+      _isNextAction = result.nextAction.isNotEmpty;
       _dueDate = result.dueDate;
+      if (result.waitingFor != null) {
+        _waitingForController.text = result.waitingFor!;
+      }
+      if (result.gtdContext != null) {
+        _gtdContextController.text = result.gtdContext!;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     final dateFormat = DateFormat('dd/MM/yyyy');
 
     return Scaffold(
+      backgroundColor: cs.surface,
       appBar: AppBar(
         title: Text(
           _isEditing ? l10n.taskFormTitleEdit : l10n.taskFormTitleCreate,
+          style: theme.textTheme.titleLarge,
         ),
+        centerTitle: false,
+        elevation: 0,
+        scrolledUnderElevation: 1,
         actions: [
-          TextButton(
-            onPressed: _save,
-            child: Text(l10n.saveButton),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: FilledButton(
+              onPressed: _save,
+              child: Text(l10n.saveButton),
+            ),
           ),
         ],
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           children: [
-            // Title — required
-            TextFormField(
-              controller: _titleController,
-              autofocus: !_isEditing,
-              decoration: InputDecoration(
-                labelText: l10n.fieldTitle,
-                hintText: l10n.gtdQ1,
-                border: const OutlineInputBorder(),
+            // Title field
+            _FormCard(
+              child: TextFormField(
+                controller: _titleController,
+                autofocus: !_isEditing,
+                style: theme.textTheme.bodyLarge,
+                decoration: InputDecoration(
+                  labelText: l10n.fieldTitle,
+                  hintText: l10n.gtdQ1,
+                  prefixIcon: const Icon(Icons.title_outlined),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+                textCapitalization: TextCapitalization.sentences,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return l10n.fieldTitleRequired;
+                  }
+                  return null;
+                },
               ),
-              textCapitalization: TextCapitalization.sentences,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return l10n.fieldTitleRequired;
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 12),
 
             // Type toggle
-            SegmentedButton<ItemType>(
-              segments: [
-                ButtonSegment(
-                  value: ItemType.task,
-                  label: Text(l10n.typeTask),
-                  icon: const Icon(Icons.task_alt),
+            _FormCard(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: SegmentedButton<ItemType>(
+                  segments: [
+                    ButtonSegment(
+                      value: ItemType.task,
+                      label: Text(l10n.typeTask),
+                      icon: const Icon(Icons.task_alt_outlined),
+                    ),
+                    ButtonSegment(
+                      value: ItemType.project,
+                      label: Text(l10n.typeProject),
+                      icon: const Icon(Icons.folder_outlined),
+                    ),
+                  ],
+                  selected: {_itemType},
+                  onSelectionChanged: (s) =>
+                      setState(() => _itemType = s.first),
                 ),
-                ButtonSegment(
-                  value: ItemType.project,
-                  label: Text(l10n.typeProject),
-                  icon: const Icon(Icons.folder_outlined),
-                ),
-              ],
-              selected: {_itemType},
-              onSelectionChanged: (s) =>
-                  setState(() => _itemType = s.first),
+              ),
             ),
             const SizedBox(height: 12),
 
-            // GTD Guide button (create mode only)
-            if (!_isEditing)
-              OutlinedButton.icon(
-                onPressed: _openGtdGuide,
-                icon: const Icon(Icons.psychology_outlined),
-                label: Text(l10n.gtdGuide),
+            // GTD Guide card (create mode only)
+            if (!_isEditing) ...[
+              _GtdGuideCard(
+                onTap: _openGtdGuide,
+                colorScheme: cs,
+                theme: theme,
+                label: l10n.gtdGuide,
               ),
+              const SizedBox(height: 12),
+            ],
 
-            const SizedBox(height: 4),
-
-            // Advanced options (expandable)
-            ExpansionTile(
-              title: Text(l10n.advancedOptions),
-              tilePadding: EdgeInsets.zero,
-              childrenPadding: const EdgeInsets.only(bottom: 8),
+            // Advanced options
+            _AdvancedOptionsCard(
+              expanded: _advancedExpanded,
+              onToggle: () =>
+                  setState(() => _advancedExpanded = !_advancedExpanded),
+              label: l10n.advancedOptions,
+              theme: theme,
+              cs: cs,
               children: [
                 // Priority
-                DropdownButtonFormField<Priority>(
-                  value: _priority,
-                  decoration: InputDecoration(
-                    labelText: l10n.fieldPriority,
-                    border: const OutlineInputBorder(),
+                _FieldRow(
+                  icon: Icons.flag_outlined,
+                  child: DropdownButtonFormField<Priority>(
+                    value: _priority,
+                    decoration: InputDecoration(
+                      labelText: l10n.fieldPriority,
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                    items: Priority.values
+                        .map(
+                          (p) => DropdownMenuItem(
+                            value: p,
+                            child: Text(_priorityLabel(l10n, p)),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (val) {
+                      if (val != null) setState(() => _priority = val);
+                    },
                   ),
-                  items: Priority.values
-                      .map(
-                        (p) => DropdownMenuItem(
-                          value: p,
-                          child: Text(_priorityLabel(l10n, p)),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) {
-                    if (val != null) setState(() => _priority = val);
-                  },
                 ),
-                const SizedBox(height: 12),
+                const _FieldDivider(),
 
                 // Due Date
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(l10n.fieldDueDate),
-                  subtitle: Text(
-                    _dueDate != null
-                        ? dateFormat.format(_dueDate!)
-                        : l10n.noDueDate,
-                  ),
-                  trailing: TextButton(
-                    onPressed: _pickDate,
-                    child: const Icon(Icons.calendar_today),
+                _FieldRow(
+                  icon: Icons.calendar_today_outlined,
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    title: Text(l10n.fieldDueDate,
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: cs.onSurfaceVariant)),
+                    subtitle: Text(
+                      _dueDate != null
+                          ? dateFormat.format(_dueDate!)
+                          : l10n.noDueDate,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    trailing: _dueDate != null
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 18),
+                            onPressed: () => setState(() {
+                              _dueDate = null;
+                              _dueTime = null;
+                              _recurrenceRule = null;
+                            }),
+                          )
+                        : IconButton(
+                            icon: const Icon(Icons.edit_calendar_outlined),
+                            onPressed: _pickDate,
+                          ),
+                    onTap: _pickDate,
                   ),
                 ),
 
-                // Due Time
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(l10n.fieldDueTime),
-                  subtitle: Text(
-                    _dueTime != null
-                        ? '${_dueTime!.hour.toString().padLeft(2, '0')}:'
-                            '${_dueTime!.minute.toString().padLeft(2, '0')}'
-                        : l10n.noDueTime,
-                  ),
-                  trailing: TextButton(
-                    onPressed: _dueDate != null ? _pickTime : null,
-                    child: const Icon(Icons.access_time),
-                  ),
-                ),
-
-                // Recurrence (only when dueDate set)
+                // Due Time (only when date set)
                 if (_dueDate != null) ...[
-                  Text(
-                    l10n.recurrence,
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  RadioListTile<String?>(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l10n.noRecurrence),
-                    value: null,
-                    groupValue: _recurrenceRule,
-                    onChanged: (v) => setState(() => _recurrenceRule = v),
-                  ),
-                  RadioListTile<String?>(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l10n.daily),
-                    value: 'FREQ=DAILY',
-                    groupValue: _recurrenceRule,
-                    onChanged: (v) => setState(() => _recurrenceRule = v),
-                  ),
-                  RadioListTile<String?>(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l10n.weekly),
-                    value: 'FREQ=WEEKLY',
-                    groupValue: _recurrenceRule,
-                    onChanged: (v) => setState(() => _recurrenceRule = v),
-                  ),
-                  RadioListTile<String?>(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l10n.monthly),
-                    value: 'FREQ=MONTHLY;BYMONTHDAY=${_dueDate!.day}',
-                    groupValue: _recurrenceRule,
-                    onChanged: (v) => setState(() => _recurrenceRule = v),
-                  ),
-                  RadioListTile<String?>(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l10n.yearly),
-                    value: 'FREQ=YEARLY',
-                    groupValue: _recurrenceRule,
-                    onChanged: (v) => setState(() => _recurrenceRule = v),
+                  const _FieldDivider(),
+                  _FieldRow(
+                    icon: Icons.access_time_outlined,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      title: Text(l10n.fieldDueTime,
+                          style: theme.textTheme.bodySmall
+                              ?.copyWith(color: cs.onSurfaceVariant)),
+                      subtitle: Text(
+                        _dueTime != null
+                            ? '${_dueTime!.hour.toString().padLeft(2, '0')}:'
+                                '${_dueTime!.minute.toString().padLeft(2, '0')}'
+                            : l10n.noDueTime,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.schedule_outlined),
+                        onPressed: _pickTime,
+                      ),
+                      onTap: _pickTime,
+                    ),
                   ),
                 ],
 
+                // Recurrence
+                if (_dueDate != null) ...[
+                  const _FieldDivider(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Text(
+                      l10n.recurrence,
+                      style: theme.textTheme.labelMedium
+                          ?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                  ),
+                  ...[null, 'FREQ=DAILY', 'FREQ=WEEKLY',
+                    'FREQ=MONTHLY;BYMONTHDAY=${_dueDate!.day}',
+                    'FREQ=YEARLY']
+                      .map((rule) => RadioListTile<String?>(
+                            dense: true,
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 16),
+                            title: Text(_recurrenceLabel(l10n, rule)),
+                            value: rule,
+                            groupValue: _recurrenceRule,
+                            onChanged: (v) =>
+                                setState(() => _recurrenceRule = v),
+                          )),
+                ],
+
+                const _FieldDivider(),
+
                 // Urgent / Important
                 SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                  secondary: Icon(Icons.bolt_outlined, color: cs.error),
                   title: Text(l10n.fieldUrgent),
+                  dense: true,
                   value: _isUrgent,
                   onChanged: (val) => setState(() => _isUrgent = val),
                 ),
                 SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                  secondary: Icon(Icons.star_outline, color: cs.primary),
                   title: Text(l10n.fieldImportant),
+                  dense: true,
                   value: _isImportant,
                   onChanged: (val) => setState(() => _isImportant = val),
                 ),
 
+                const _FieldDivider(),
+
                 // Size
-                Text(
-                  l10n.fieldSize,
-                  style: Theme.of(context).textTheme.labelLarge,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                  child: Text(
+                    l10n.fieldSize,
+                    style: theme.textTheme.labelMedium
+                        ?.copyWith(color: cs.onSurfaceVariant),
+                  ),
                 ),
-                const SizedBox(height: 8),
-                SegmentedButton<SizeCategory>(
-                  segments: [
-                    ButtonSegment(
-                        value: SizeCategory.big, label: Text(l10n.sizeBig)),
-                    ButtonSegment(
-                        value: SizeCategory.medium,
-                        label: Text(l10n.sizeMedium)),
-                    ButtonSegment(
-                        value: SizeCategory.small,
-                        label: Text(l10n.sizeSmall)),
-                    ButtonSegment(
-                        value: SizeCategory.none, label: Text(l10n.sizeNone)),
-                  ],
-                  selected: {_sizeCategory},
-                  onSelectionChanged: (s) =>
-                      setState(() => _sizeCategory = s.first),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SegmentedButton<SizeCategory>(
+                    segments: [
+                      ButtonSegment(
+                          value: SizeCategory.big, label: Text(l10n.sizeBig)),
+                      ButtonSegment(
+                          value: SizeCategory.medium,
+                          label: Text(l10n.sizeMedium)),
+                      ButtonSegment(
+                          value: SizeCategory.small,
+                          label: Text(l10n.sizeSmall)),
+                      ButtonSegment(
+                          value: SizeCategory.none,
+                          label: Text(l10n.sizeNone)),
+                    ],
+                    selected: {_sizeCategory},
+                    onSelectionChanged: (s) =>
+                        setState(() => _sizeCategory = s.first),
+                  ),
                 ),
                 const SizedBox(height: 12),
 
-                // Next Action
-                CheckboxListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(l10n.fieldNextAction),
-                  value: _isNextAction,
-                  onChanged: (val) =>
-                      setState(() => _isNextAction = val ?? false),
-                ),
+                const _FieldDivider(),
 
                 // Description
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: InputDecoration(
-                    labelText: l10n.fieldDescription,
-                    border: const OutlineInputBorder(),
-                  ),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 12),
-
-                // GTD Context
-                TextFormField(
-                  controller: _gtdContextController,
-                  decoration: InputDecoration(
-                    labelText: l10n.fieldGtdContext,
-                    hintText: '@casa',
-                    border: const OutlineInputBorder(),
+                _FieldRow(
+                  icon: Icons.notes_outlined,
+                  child: TextFormField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                      labelText: l10n.fieldDescription,
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                    maxLines: 3,
+                    minLines: 1,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const _FieldDivider(),
 
                 // Waiting For
-                TextFormField(
-                  controller: _waitingForController,
-                  decoration: InputDecoration(
-                    labelText: l10n.fieldWaitingFor,
-                    border: const OutlineInputBorder(),
+                _FieldRow(
+                  icon: Icons.hourglass_empty_outlined,
+                  child: TextFormField(
+                    controller: _waitingForController,
+                    decoration: InputDecoration(
+                      labelText: l10n.fieldWaitingFor,
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
                   ),
                 ),
+                const SizedBox(height: 8),
               ],
             ),
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -452,6 +520,198 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       Priority.urgent => l10n.priorityUrgent,
     };
   }
+
+  String _recurrenceLabel(AppLocalizations l10n, String? rule) {
+    if (rule == null) return l10n.noRecurrence;
+    if (rule.contains('DAILY')) return l10n.daily;
+    if (rule.contains('WEEKLY')) return l10n.weekly;
+    if (rule.contains('MONTHLY')) return l10n.monthly;
+    if (rule.contains('YEARLY')) return l10n.yearly;
+    return rule;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Small layout helpers
+// ---------------------------------------------------------------------------
+
+class _FormCard extends StatelessWidget {
+  const _FormCard({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Card(
+      elevation: 0,
+      color: cs.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: child,
+    );
+  }
+}
+
+class _FieldRow extends StatelessWidget {
+  const _FieldRow({required this.icon, required this.child});
+  final IconData icon;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, size: 20, color: cs.onSurfaceVariant),
+          const SizedBox(width: 12),
+          Expanded(child: child),
+        ],
+      ),
+    );
+  }
+}
+
+class _FieldDivider extends StatelessWidget {
+  const _FieldDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Divider(height: 1, indent: 48, endIndent: 16);
+  }
+}
+
+class _GtdGuideCard extends StatelessWidget {
+  const _GtdGuideCard({
+    required this.onTap,
+    required this.colorScheme,
+    required this.theme,
+    required this.label,
+  });
+
+  final VoidCallback onTap;
+  final ColorScheme colorScheme;
+  final ThemeData theme;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      color: colorScheme.primaryContainer,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(10),
+                child: Icon(Icons.psychology,
+                    color: colorScheme.onPrimary, size: 22),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '8 questions to clarify & prioritize',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onPrimaryContainer.withValues(
+                          alpha: 0.75,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios,
+                  size: 16, color: colorScheme.onPrimaryContainer),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AdvancedOptionsCard extends StatelessWidget {
+  const _AdvancedOptionsCard({
+    required this.expanded,
+    required this.onToggle,
+    required this.label,
+    required this.theme,
+    required this.cs,
+    required this.children,
+  });
+
+  final bool expanded;
+  final VoidCallback onToggle;
+  final String label;
+  final ThemeData theme;
+  final ColorScheme cs;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      color: cs.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          InkWell(
+            onTap: onToggle,
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Icon(Icons.tune_outlined, size: 20, color: cs.onSurfaceVariant),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(label,
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(color: cs.onSurfaceVariant)),
+                  ),
+                  AnimatedRotation(
+                    turns: expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(Icons.keyboard_arrow_down,
+                        color: cs.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            child: expanded
+                ? Column(children: children)
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -461,17 +721,23 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
 class _GtdResult {
   const _GtdResult({
     required this.title,
+    required this.nextAction,
     required this.priority,
     required this.isUrgent,
     required this.isImportant,
     this.dueDate,
+    this.waitingFor,
+    this.gtdContext,
   });
 
   final String title;
+  final String nextAction;
   final Priority priority;
   final bool isUrgent;
   final bool isImportant;
   final DateTime? dueDate;
+  final String? waitingFor;
+  final String? gtdContext;
 }
 
 class _GtdGuideSheet extends StatefulWidget {
@@ -484,144 +750,444 @@ class _GtdGuideSheet extends StatefulWidget {
 
 class _GtdGuideSheetState extends State<_GtdGuideSheet> {
   int _step = 0;
+  static const int _totalSteps = 8;
+
   final _titleCtrl = TextEditingController();
-  bool _isImportant = false;
+  final _nextActionCtrl = TextEditingController();
+  final _contextCtrl = TextEditingController();
+
   DateTime? _dueDate;
+  Priority _priority = Priority.medium;
+  bool _isUrgent = false;
+  bool _isImportant = false;
+  String? _waitingFor;
 
   AppLocalizations get l10n => widget.l10n;
 
   @override
   void dispose() {
     _titleCtrl.dispose();
+    _nextActionCtrl.dispose();
+    _contextCtrl.dispose();
     super.dispose();
   }
 
   void _endWithMessage(String message) {
     Navigator.of(context).pop(null);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 4)),
-    );
-  }
-
-  void _finish(int impactLevel) {
-    final priority = switch (impactLevel) {
-      0 => Priority.urgent,
-      1 => Priority.critical,
-      2 => Priority.high,
-      3 => Priority.medium,
-      _ => Priority.low,
-    };
-    Navigator.of(context).pop(
-      _GtdResult(
-        title: _titleCtrl.text.trim(),
-        priority: priority,
-        isUrgent: impactLevel <= 1,
-        isImportant: _isImportant,
-        dueDate: _dueDate,
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
+
+  void _finish() {
+    Navigator.of(context).pop(
+      _GtdResult(
+        title: _titleCtrl.text.trim(),
+        nextAction: _nextActionCtrl.text.trim(),
+        priority: _priority,
+        isUrgent: _isUrgent,
+        isImportant: _isImportant,
+        dueDate: _dueDate,
+        waitingFor: _waitingFor,
+        gtdContext:
+            _contextCtrl.text.trim().isNotEmpty ? _contextCtrl.text.trim() : null,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.92,
+        expand: false,
+        builder: (_, scrollController) => Column(
+          children: [
+            // Handle
+            Padding(
+              padding: const EdgeInsets.only(top: 12, bottom: 4),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: cs.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // Header
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Row(
+                children: [
+                  if (_step > 0)
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () => setState(() => _step--),
+                      visualDensity: VisualDensity.compact,
+                    )
+                  else
+                    const SizedBox(width: 40),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(
+                          'Step ${_step + 1} of $_totalSteps',
+                          style: theme.textTheme.labelSmall
+                              ?.copyWith(color: cs.onSurfaceVariant),
+                        ),
+                        const SizedBox(height: 6),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: (_step + 1) / _totalSteps,
+                            minHeight: 6,
+                            backgroundColor: cs.surfaceContainerHighest,
+                            color: cs.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(null),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ],
+              ),
+            ),
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                child: _buildStep(theme, cs),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStep(ThemeData theme, ColorScheme cs) {
+    return switch (_step) {
+      // Q1: What needs to be done?
+      0 => _TextStep(
+          question: l10n.gtdQ1,
+          controller: _titleCtrl,
+          hint: null,
+          theme: theme,
+          cs: cs,
+          onNext: () {
+            if (_titleCtrl.text.trim().isNotEmpty) {
+              setState(() => _step = 1);
+            }
+          },
+        ),
+
+      // Q2: Is it actionable?
+      1 => _YesNoStep(
+          question: l10n.gtdQ2,
+          subtitle: 'If not, it goes to Someday/Maybe or Trash.',
+          theme: theme,
+          cs: cs,
+          onYes: () => setState(() => _step = 2),
+          onNo: () => _endWithMessage(l10n.gtdDiscardMessage),
+        ),
+
+      // Q3: What's the very next physical action?
+      2 => _TextStep(
+          question: l10n.gtdQ3,
+          controller: _nextActionCtrl,
+          hint: l10n.gtdQ3Hint,
+          theme: theme,
+          cs: cs,
+          onNext: () => setState(() => _step = 3),
+          canSkip: true,
+          onSkip: () => setState(() => _step = 3),
+          skipLabel: l10n.gtdSkip,
+        ),
+
+      // Q4: Can it be done in under 2 minutes?
+      3 => _YesNoStep(
+          question: l10n.gtdQ4,
+          subtitle: 'The 2-minute rule: if yes, do it immediately.',
+          theme: theme,
+          cs: cs,
+          onYes: () => _endWithMessage(l10n.gtdDoItNowMessage),
+          onNo: () => setState(() => _step = 4),
+        ),
+
+      // Q5: Should this be delegated?
+      4 => _YesNoStep(
+          question: l10n.gtdQ5,
+          subtitle: 'If yes, who should own this?',
+          theme: theme,
+          cs: cs,
+          onYes: () {
+            _waitingFor = 'delegated';
+            _endWithMessage(l10n.gtdDelegateMessage);
+          },
+          onNo: () => setState(() => _step = 5),
+        ),
+
+      // Q6: Deadline
+      5 => _DeadlineStep(
+          question: l10n.gtdQ6,
+          theme: theme,
+          cs: cs,
+          options: [
+            (l10n.gtdDeadlineToday, 0),
+            (l10n.gtdDeadlineTomorrow, 1),
+            (l10n.gtdDeadlineThisWeek, 2),
+            (l10n.gtdDeadlineThisMonth, 3),
+          ],
+          noDeadlineLabel: l10n.gtdDeadlineNoDeadline,
+          customLabel: l10n.gtdDeadlineCustom,
+          onSelected: (date) {
+            _dueDate = date;
+            setState(() => _step = 6);
+          },
+        ),
+
+      // Q7: Importance / priority
+      6 => _ImportanceStep(
+          question: l10n.gtdQ7,
+          theme: theme,
+          cs: cs,
+          options: [
+            (l10n.gtdImpactCritical, Priority.urgent, true, true),
+            (l10n.gtdImpactHigh, Priority.high, false, true),
+            (l10n.gtdImpactMedium, Priority.medium, false, false),
+            (l10n.gtdImpactLow, Priority.low, false, false),
+          ],
+          onSelected: (priority, isUrgent, isImportant) {
+            _priority = priority;
+            _isUrgent = isUrgent;
+            _isImportant = isImportant;
+            setState(() => _step = 7);
+          },
+        ),
+
+      // Q8: Context
+      _ => _TextStep(
+          question: l10n.gtdQ8,
+          controller: _contextCtrl,
+          hint: l10n.gtdQ8Hint,
+          theme: theme,
+          cs: cs,
+          onNext: _finish,
+          nextLabel: 'Done',
+          canSkip: true,
+          onSkip: _finish,
+          skipLabel: l10n.gtdSkip,
+        ),
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// GTD Step widgets
+// ---------------------------------------------------------------------------
+
+class _TextStep extends StatelessWidget {
+  const _TextStep({
+    required this.question,
+    required this.controller,
+    required this.hint,
+    required this.theme,
+    required this.cs,
+    required this.onNext,
+    this.nextLabel,
+    this.canSkip = false,
+    this.onSkip,
+    this.skipLabel,
+  });
+
+  final String question;
+  final TextEditingController controller;
+  final String? hint;
+  final ThemeData theme;
+  final ColorScheme cs;
+  final VoidCallback onNext;
+  final String? nextLabel;
+  final bool canSkip;
+  final VoidCallback? onSkip;
+  final String? skipLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(question, style: theme.textTheme.headlineSmall),
+        const SizedBox(height: 20),
+        TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: InputDecoration(
+            hintText: hint,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            filled: true,
+            fillColor: cs.surfaceContainerLow,
+          ),
+          onSubmitted: (_) => onNext(),
+        ),
+        const SizedBox(height: 20),
+        FilledButton(
+          onPressed: onNext,
+          child: Text(nextLabel ?? '→'),
+        ),
+        if (canSkip && onSkip != null) ...[
+          const SizedBox(height: 8),
+          TextButton(
+            onPressed: onSkip,
+            child: Text(skipLabel ?? 'Skip'),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _YesNoStep extends StatelessWidget {
+  const _YesNoStep({
+    required this.question,
+    required this.theme,
+    required this.cs,
+    required this.onYes,
+    required this.onNo,
+    this.subtitle,
+  });
+
+  final String question;
+  final String? subtitle;
+  final ThemeData theme;
+  final ColorScheme cs;
+  final VoidCallback onYes;
+  final VoidCallback onNo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(question, style: theme.textTheme.headlineSmall),
+        if (subtitle != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            subtitle!,
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(color: cs.onSurfaceVariant),
+          ),
+        ],
+        const SizedBox(height: 28),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: onNo,
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: const Text('No'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton(
+                onPressed: onYes,
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: const Text('Yes'),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _DeadlineStep extends StatelessWidget {
+  const _DeadlineStep({
+    required this.question,
+    required this.theme,
+    required this.cs,
+    required this.options,
+    required this.noDeadlineLabel,
+    required this.customLabel,
+    required this.onSelected,
+  });
+
+  final String question;
+  final ThemeData theme;
+  final ColorScheme cs;
+  final List<(String, int)> options;
+  final String noDeadlineLabel;
+  final String customLabel;
+  final void Function(DateTime?) onSelected;
 
   DateTime _deadlineDate(int option) {
     final now = DateTime.now();
     return switch (option) {
       0 => now,
-      1 => now.add(const Duration(days: 7)),
-      2 => DateTime(now.year, now.month + 1, now.day),
+      1 => now.add(const Duration(days: 1)),
+      2 => now.add(const Duration(days: 7)),
+      3 => DateTime(now.year, now.month + 1, now.day),
       _ => now,
     };
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildStep(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStep() {
-    return switch (_step) {
-      0 => _questionStep(
-          question: l10n.gtdQ1,
-          child: Column(
-            children: [
-              TextField(
-                controller: _titleCtrl,
-                autofocus: true,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(border: OutlineInputBorder()),
-                onSubmitted: (_) => setState(() => _step = 1),
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () {
-                  if (_titleCtrl.text.trim().isNotEmpty) {
-                    setState(() => _step = 1);
-                  }
-                },
-                child: const Text('→'),
-              ),
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(question, style: theme.textTheme.headlineSmall),
+        const SizedBox(height: 20),
+        Card(
+          elevation: 0,
+          color: cs.surfaceContainerLow,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ),
-      1 => _yesNoStep(
-          question: l10n.gtdQ2,
-          onYes: () => setState(() => _step = 2),
-          onNo: () => _endWithMessage(l10n.gtdDiscardMessage),
-        ),
-      2 => _yesNoStep(
-          question: l10n.gtdQ3,
-          onYes: () => _endWithMessage(l10n.gtdDelegateMessage),
-          onNo: () => setState(() => _step = 3),
-        ),
-      3 => _yesNoStep(
-          question: l10n.gtdQ4,
-          onYes: () => _endWithMessage(l10n.gtdDoItNowMessage),
-          onNo: () => setState(() => _step = 4),
-        ),
-      4 => _yesNoStep(
-          question: l10n.gtdQ5,
-          onYes: () => setState(() {
-            _isImportant = true;
-            _step = 5;
-          }),
-          onNo: () => setState(() {
-            _isImportant = false;
-            _step = 5;
-          }),
-        ),
-      5 => _questionStep(
-          question: l10n.gtdQ6,
           child: Column(
             children: [
-              ...List.generate(3, (i) {
-                final labels = [
-                  l10n.gtdDeadlineToday,
-                  l10n.gtdDeadlineThisWeek,
-                  l10n.gtdDeadlineThisMonth,
-                ];
-                return ListTile(
-                  title: Text(labels[i]),
-                  onTap: () => setState(() {
-                    _dueDate = _deadlineDate(i);
-                    _step = 6;
-                  }),
-                );
-              }),
+              ...options.map(
+                (opt) => ListTile(
+                  title: Text(opt.$1),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => onSelected(_deadlineDate(opt.$2)),
+                ),
+              ),
               ListTile(
-                title: Text(l10n.gtdDeadlineCustom),
+                title: Text(noDeadlineLabel),
+                trailing: const Icon(Icons.block_outlined),
+                onTap: () => onSelected(null),
+              ),
+              ListTile(
+                title: Text(customLabel),
+                trailing: const Icon(Icons.calendar_month_outlined),
                 onTap: () async {
                   final picked = await showDatePicker(
                     context: context,
@@ -629,77 +1195,74 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
                     firstDate: DateTime.now(),
                     lastDate: DateTime(2100),
                   );
-                  if (picked != null && mounted) {
-                    setState(() {
-                      _dueDate = picked;
-                      _step = 6;
-                    });
+                  if (picked != null && context.mounted) {
+                    onSelected(picked);
                   }
                 },
               ),
             ],
           ),
         ),
-      _ => _questionStep(
-          question: l10n.gtdQ7,
-          child: Column(
-            children: [
-              l10n.gtdImpactCritical,
-              l10n.gtdImpactHigh,
-              l10n.gtdImpactMedium,
-              l10n.gtdImpactLow,
-              l10n.gtdImpactNone,
-            ]
-                .asMap()
-                .entries
-                .map(
-                  (e) => ListTile(
-                    title: Text(e.value),
-                    onTap: () => _finish(e.key),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-    };
+      ],
+    );
   }
+}
 
-  Widget _questionStep({required String question, required Widget child}) {
+class _ImportanceStep extends StatelessWidget {
+  const _ImportanceStep({
+    required this.question,
+    required this.theme,
+    required this.cs,
+    required this.options,
+    required this.onSelected,
+  });
+
+  final String question;
+  final ThemeData theme;
+  final ColorScheme cs;
+  final List<(String, Priority, bool, bool)> options;
+  final void Function(Priority, bool isUrgent, bool isImportant) onSelected;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(question, style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 16),
-        child,
+        Text(question, style: theme.textTheme.headlineSmall),
+        const SizedBox(height: 20),
+        Card(
+          elevation: 0,
+          color: cs.surfaceContainerLow,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: options.map((opt) {
+              final (label, priority, isUrgent, isImportant) = opt;
+              return ListTile(
+                title: Text(label),
+                leading: _priorityDot(priority, cs),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => onSelected(priority, isUrgent, isImportant),
+              );
+            }).toList(),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _yesNoStep({
-    required String question,
-    required VoidCallback onYes,
-    required VoidCallback onNo,
-  }) {
-    return _questionStep(
-      question: question,
-      child: Row(
-        children: [
-          Expanded(
-            child: OutlinedButton(
-              onPressed: onNo,
-              child: Text(l10n.gtdAnswerNo),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: FilledButton(
-              onPressed: onYes,
-              child: Text(l10n.gtdAnswerYes),
-            ),
-          ),
-        ],
-      ),
+  Widget _priorityDot(Priority p, ColorScheme cs) {
+    final color = switch (p) {
+      Priority.urgent || Priority.critical => cs.error,
+      Priority.high => Colors.orange,
+      Priority.medium => cs.primary,
+      Priority.low => cs.outline,
+    };
+    return Container(
+      width: 12,
+      height: 12,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }

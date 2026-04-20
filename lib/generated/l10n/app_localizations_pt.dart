@@ -239,22 +239,33 @@ class AppLocalizationsPt extends AppLocalizations {
   String get gtdQ1 => 'O que precisa ser feito?';
 
   @override
-  String get gtdQ2 => 'Essa tarefa precisa absolutamente ser feita?';
+  String get gtdQ2 => 'É uma ação?';
 
   @override
-  String get gtdQ3 => 'Outra pessoa pode fazer isso por você?';
+  String get gtdQ3 => 'Qual é a próxima ação física concreta?';
 
   @override
-  String get gtdQ4 => 'Pode ser feito em menos de 10 minutos?';
+  String get gtdQ3Hint =>
+      'ex: Enviar e-mail, Ligar de volta, Redigir relatório';
 
   @override
-  String get gtdQ5 => 'Isso é importante para seus objetivos de longo prazo?';
+  String get gtdQ4 => 'Pode ser feito em menos de 2 minutos?';
 
   @override
-  String get gtdQ6 => 'Qual é o prazo?';
+  String get gtdQ5 => 'Isso deve ser delegado?';
 
   @override
-  String get gtdQ7 => 'Qual é o impacto se não for feito?';
+  String get gtdQ6 => 'Quando precisa ser feito?';
+
+  @override
+  String get gtdQ7 =>
+      'Qual é a importância para seus objetivos de longo prazo?';
+
+  @override
+  String get gtdQ8 => 'Qual é o contexto desta tarefa?';
+
+  @override
+  String get gtdQ8Hint => '@casa, @computador, @escritório';
 
   @override
   String get gtdAnswerYes => 'Sim';
@@ -263,23 +274,33 @@ class AppLocalizationsPt extends AppLocalizations {
   String get gtdAnswerNo => 'Não';
 
   @override
-  String get gtdDiscardMessage => 'Ótimo. Se não é necessário, deixe para lá.';
+  String get gtdSkip => 'Pular';
+
+  @override
+  String get gtdDiscardMessage =>
+      'Adicionado à lista Algum Dia/Talvez. Volte quando estiver pronto.';
 
   @override
   String get gtdDelegateMessage =>
-      'Delegue. Adicione uma nota \'Aguardando\' se precisar.';
+      'Delegado. Uma nota \'Aguardando\' foi adicionada.';
 
   @override
-  String get gtdDoItNowMessage => 'Faça agora! Menos de 10 minutos — só faça.';
+  String get gtdDoItNowMessage => 'Faça agora! Menos de 2 minutos — só faça.';
 
   @override
   String get gtdDeadlineToday => 'Hoje';
+
+  @override
+  String get gtdDeadlineTomorrow => 'Amanhã';
 
   @override
   String get gtdDeadlineThisWeek => 'Esta semana';
 
   @override
   String get gtdDeadlineThisMonth => 'Este mês';
+
+  @override
+  String get gtdDeadlineNoDeadline => 'Sem prazo';
 
   @override
   String get gtdDeadlineCustom => 'Data personalizada';
@@ -566,22 +587,33 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get gtdQ1 => 'O que precisa ser feito?';
 
   @override
-  String get gtdQ2 => 'Essa tarefa precisa absolutamente ser feita?';
+  String get gtdQ2 => 'É uma ação?';
 
   @override
-  String get gtdQ3 => 'Outra pessoa pode fazer isso por você?';
+  String get gtdQ3 => 'Qual é a próxima ação física concreta?';
 
   @override
-  String get gtdQ4 => 'Pode ser feito em menos de 10 minutos?';
+  String get gtdQ3Hint =>
+      'ex: Enviar e-mail, Ligar de volta, Redigir relatório';
 
   @override
-  String get gtdQ5 => 'Isso é importante para seus objetivos de longo prazo?';
+  String get gtdQ4 => 'Pode ser feito em menos de 2 minutos?';
 
   @override
-  String get gtdQ6 => 'Qual é o prazo?';
+  String get gtdQ5 => 'Isso deve ser delegado?';
 
   @override
-  String get gtdQ7 => 'Qual é o impacto se não for feito?';
+  String get gtdQ6 => 'Quando precisa ser feito?';
+
+  @override
+  String get gtdQ7 =>
+      'Qual é a importância para seus objetivos de longo prazo?';
+
+  @override
+  String get gtdQ8 => 'Qual é o contexto desta tarefa?';
+
+  @override
+  String get gtdQ8Hint => '@casa, @computador, @escritório';
 
   @override
   String get gtdAnswerYes => 'Sim';
@@ -590,23 +622,33 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get gtdAnswerNo => 'Não';
 
   @override
-  String get gtdDiscardMessage => 'Ótimo. Se não é necessário, deixe para lá.';
+  String get gtdSkip => 'Pular';
+
+  @override
+  String get gtdDiscardMessage =>
+      'Adicionado à lista Algum Dia/Talvez. Volte quando estiver pronto.';
 
   @override
   String get gtdDelegateMessage =>
-      'Delegue. Adicione uma nota \'Aguardando\' se precisar.';
+      'Delegado. Uma nota \'Aguardando\' foi adicionada.';
 
   @override
-  String get gtdDoItNowMessage => 'Faça agora! Menos de 10 minutos — só faça.';
+  String get gtdDoItNowMessage => 'Faça agora! Menos de 2 minutos — só faça.';
 
   @override
   String get gtdDeadlineToday => 'Hoje';
+
+  @override
+  String get gtdDeadlineTomorrow => 'Amanhã';
 
   @override
   String get gtdDeadlineThisWeek => 'Esta semana';
 
   @override
   String get gtdDeadlineThisMonth => 'Este mês';
+
+  @override
+  String get gtdDeadlineNoDeadline => 'Sem prazo';
 
   @override
   String get gtdDeadlineCustom => 'Data personalizada';

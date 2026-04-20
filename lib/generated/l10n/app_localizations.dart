@@ -555,41 +555,59 @@ abstract class AppLocalizations {
   /// **'O que precisa ser feito?'**
   String get gtdQ1;
 
-  /// Pergunta 2 do guia GTD
+  /// Pergunta 2 do guia GTD — verificação de ação
   ///
   /// In pt_BR, this message translates to:
-  /// **'Essa tarefa precisa absolutamente ser feita?'**
+  /// **'É uma ação?'**
   String get gtdQ2;
 
-  /// Pergunta 3 do guia GTD
+  /// Pergunta 3 do guia GTD — clarificar próxima ação
   ///
   /// In pt_BR, this message translates to:
-  /// **'Outra pessoa pode fazer isso por você?'**
+  /// **'Qual é a próxima ação física concreta?'**
   String get gtdQ3;
 
-  /// Pergunta 4 do guia GTD
+  /// Dica para o campo de texto Q3
   ///
   /// In pt_BR, this message translates to:
-  /// **'Pode ser feito em menos de 10 minutos?'**
+  /// **'ex: Enviar e-mail, Ligar de volta, Redigir relatório'**
+  String get gtdQ3Hint;
+
+  /// Pergunta 4 do guia GTD — regra dos 2 minutos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Pode ser feito em menos de 2 minutos?'**
   String get gtdQ4;
 
-  /// Pergunta 5 do guia GTD
+  /// Pergunta 5 do guia GTD — verificação de delegação
   ///
   /// In pt_BR, this message translates to:
-  /// **'Isso é importante para seus objetivos de longo prazo?'**
+  /// **'Isso deve ser delegado?'**
   String get gtdQ5;
 
-  /// Pergunta 6 do guia GTD
+  /// Pergunta 6 do guia GTD — prazo
   ///
   /// In pt_BR, this message translates to:
-  /// **'Qual é o prazo?'**
+  /// **'Quando precisa ser feito?'**
   String get gtdQ6;
 
-  /// Pergunta 7 do guia GTD
+  /// Pergunta 7 do guia GTD — importância
   ///
   /// In pt_BR, this message translates to:
-  /// **'Qual é o impacto se não for feito?'**
+  /// **'Qual é a importância para seus objetivos de longo prazo?'**
   String get gtdQ7;
+
+  /// Pergunta 8 do guia GTD — contexto
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Qual é o contexto desta tarefa?'**
+  String get gtdQ8;
+
+  /// Dica para o campo de contexto Q8
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'@casa, @computador, @escritório'**
+  String get gtdQ8Hint;
 
   /// Resposta sim do guia GTD
   ///
@@ -603,22 +621,28 @@ abstract class AppLocalizations {
   /// **'Não'**
   String get gtdAnswerNo;
 
-  /// Mensagem GTD quando a tarefa não é necessária
+  /// Rótulo do botão pular no guia GTD
   ///
   /// In pt_BR, this message translates to:
-  /// **'Ótimo. Se não é necessário, deixe para lá.'**
+  /// **'Pular'**
+  String get gtdSkip;
+
+  /// Mensagem GTD quando a tarefa não é acionável
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Adicionado à lista Algum Dia/Talvez. Volte quando estiver pronto.'**
   String get gtdDiscardMessage;
 
-  /// Mensagem GTD quando a tarefa pode ser delegada
+  /// Mensagem GTD quando a tarefa é delegada
   ///
   /// In pt_BR, this message translates to:
-  /// **'Delegue. Adicione uma nota \'Aguardando\' se precisar.'**
+  /// **'Delegado. Uma nota \'Aguardando\' foi adicionada.'**
   String get gtdDelegateMessage;
 
-  /// Mensagem GTD quando a tarefa é rápida
+  /// Mensagem GTD quando a tarefa leva menos de 2 min
   ///
   /// In pt_BR, this message translates to:
-  /// **'Faça agora! Menos de 10 minutos — só faça.'**
+  /// **'Faça agora! Menos de 2 minutos — só faça.'**
   String get gtdDoItNowMessage;
 
   /// Opção de prazo GTD: hoje
@@ -626,6 +650,12 @@ abstract class AppLocalizations {
   /// In pt_BR, this message translates to:
   /// **'Hoje'**
   String get gtdDeadlineToday;
+
+  /// Opção de prazo GTD: amanhã
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Amanhã'**
+  String get gtdDeadlineTomorrow;
 
   /// Opção de prazo GTD: esta semana
   ///
@@ -638,6 +668,12 @@ abstract class AppLocalizations {
   /// In pt_BR, this message translates to:
   /// **'Este mês'**
   String get gtdDeadlineThisMonth;
+
+  /// Opção de prazo GTD: sem prazo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Sem prazo'**
+  String get gtdDeadlineNoDeadline;
 
   /// Opção de prazo GTD: personalizada
   ///
