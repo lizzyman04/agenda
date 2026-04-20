@@ -3,6 +3,7 @@ import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_type.dart' as domain;
 import 'package:agenda/domain/tasks/priority.dart' as domain;
 import 'package:agenda/domain/tasks/size_category.dart' as domain;
+import 'package:isar_community/isar.dart';
 
 /// Converts between [ItemModel] (data layer) and [Item] (domain layer).
 ///
@@ -42,9 +43,20 @@ class ItemMapper {
   }
 
   /// Converts a domain [Item] to an [ItemModel] for Isar storage.
+  ///
+  /// When [item.id] is 0 the model id is left at [Isar.autoIncrement] so that
+  /// Isar assigns a new unique id on the next write transaction. Setting it to
+  /// 0 explicitly would make every new item overwrite the same record (id=0).
   ItemModel toModel(Item item) {
-    final model = ItemModel()
-      ..id = item.id
+    final model = ItemModel();
+
+    // Only set the id for existing records. For new items (id == 0) leave the
+    // Isar.autoIncrement sentinel so Isar auto-assigns the next available id.
+    if (item.id != 0) {
+      model.id = item.id;
+    }
+
+    model
       ..type = _toModelType(item.type)
       ..title = item.title
       ..description = item.description
