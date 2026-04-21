@@ -2,24 +2,24 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-12)
+See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Open AGENDA at any moment and immediately see what needs doing and where the money stands — no internet connection ever required.
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 3 — Finance Core
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation)
+Phase: 3 of 5 (Finance Core)
 Plan: 0 of 5 in current phase
 Status: Ready to plan
-Last activity: 2026-04-13 — Roadmap created; phases derived from 44 v1 requirements
+Last activity: 2026-04-21 — Phase 2 complete (10/10 plans); documentation generated
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
+- Total plans completed: 10
 - Average duration: —
 - Total execution time: —
 
@@ -27,11 +27,12 @@ Progress: [░░░░░░░░░░] 0%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1. Foundation | 5 | — | — |
+| 2. Task Core | 5 | — | — |
 
 **Recent Trend:**
-- Last 5 plans: —
-- Trend: —
+- Last 5 plans: 02-01, 02-02, 02-03, 02-04, 02-05
+- Trend: On track
 
 *Updated after each plan completion*
 
@@ -52,10 +53,13 @@ Recent decisions affecting current work:
 - **Stack**: Flutter + isar_community + BLoC/Cubit + GetIt + injectable; minimum Flutter SDK 3.38.1
 - **Architecture**: core/ → domain/ → data/ → infrastructure/ → application/ → presentation/ → config/; strict outer-depends-on-inner rule
 - **Language**: All code/comments/enums in English; UI text in PT-BR by default with EN toggle
+- **Phase 2**: EisenhowerQuadrant computed from isUrgent + isImportant flags at domain layer — not stored in Isar
+- **Phase 2**: Soft delete via `deletedAt` field on ItemModel; 500-item query cap on active items
+- **Phase 2**: `go_router` declared in pubspec but routing handled via `IndexedStack` + modal routes in Phase 2; go_router guard wired in Phase 5
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
@@ -65,6 +69,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19
-Stopped at: Roadmap written; REQUIREMENTS.md traceability updated; ready to plan Phase 1
+Last session: 2026-04-21
+Stopped at: Phase 2 complete; project documentation generated (docs/); ready to plan Phase 3
 Resume file: None

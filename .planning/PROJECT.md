@@ -12,18 +12,22 @@ A user should be able to open AGENDA at any moment — morning, midday, or night
 
 ### Validated
 
-(None yet — ship to validate)
+**Task Management (Phase 2 — complete)**
+- [x] User can create projects and break them down into subtasks
+- [x] User can classify tasks using the Eisenhower Matrix (urgent/important quadrants)
+- [x] User can apply the 1-3-5 Rule to plan their day (1 big + 3 medium + 5 small tasks)
+- [x] User can tag tasks with GTD attributes (next action, context, waiting for)
+- [x] User can set due dates and times on tasks
+- [x] User can create recurring tasks
+- [x] User can mark tasks as complete
+- [x] User can search tasks by keyword
+- [x] User can filter tasks by project, Eisenhower quadrant, GTD context, or due date range
+
+**Foundation (Phase 1 — complete)**
+- [x] All data stored locally on device using Isar (no cloud, no accounts)
+- [x] App works fully offline (no internet required for any feature)
 
 ### Active
-
-**Task Management**
-- [ ] User can create projects and break them down into subtasks
-- [ ] User can classify tasks using the Eisenhower Matrix (urgent/important quadrants)
-- [ ] User can apply the 1-3-5 Rule to plan their day (1 big + 3 medium + 5 small tasks)
-- [ ] User can tag tasks with GTD attributes (next action, context, waiting for)
-- [ ] User can set due dates and times on tasks
-- [ ] User can create recurring tasks
-- [ ] User can mark tasks as complete
 
 **Finance Management**
 - [ ] User can log income and expenses with categories
@@ -43,14 +47,12 @@ A user should be able to open AGENDA at any moment — morning, midday, or night
 - [ ] App sends motivational quote notifications on a recurring schedule
 
 **Data & Privacy**
-- [ ] All data stored locally on device using Isar (no cloud, no accounts)
 - [ ] User can export all data as JSON and/or CSV
 - [ ] User can import data from JSON/CSV backup
 - [ ] User can set an optional password to lock access to the app
 
 **Experience**
 - [ ] App supports English and Portuguese (user-toggled)
-- [ ] App works fully offline (no internet required for any feature)
 
 ### Out of Scope
 
@@ -68,20 +70,20 @@ The project already reached v1.0.0 and completed two beta tests on the web. The 
 
 **Technology decisions are final (pre-decided by owner):**
 - Flutter for cross-platform mobile (Android + iOS)
-- Isar for local embedded database
+- Isar Community for local embedded database
 - BLoC/Cubit for state management
-- GetIt for dependency injection
+- GetIt + injectable for dependency injection
 - flutter_local_notifications for native push
 - file_picker + path_provider for backup
 
-**Architecture:** Clean Architecture with layers: `core/`, `data/`, `domain/`, `application/`, `presentation/`, `config/`
+**Architecture:** Clean Architecture with layers: `core/`, `domain/`, `data/`, `infrastructure/`, `application/`, `presentation/`, `config/`
 
 **Language convention:** All code, comments, variables, and enums in English. UI text in Portuguese by default, with English toggle.
 
 ## Constraints
 
 - **Privacy**: No data may leave the device — no analytics, no crash reporting to external services, no cloud sync in MVP
-- **Tech Stack**: Flutter + Isar + BLoC/Cubit + GetIt — these are decided, not up for debate
+- **Tech Stack**: Flutter + Isar Community + BLoC/Cubit + GetIt — these are decided, not up for debate
 - **Platform**: Mobile only (Android + iOS) — no web, no desktop in MVP
 - **Connectivity**: App must be 100% functional offline — no feature may require internet
 - **Language**: All code in English; UI text in PT-BR with EN toggle
@@ -90,12 +92,15 @@ The project already reached v1.0.0 and completed two beta tests on the web. The 
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Rebuild in Flutter (not improve web app) | Native notifications require platform-level access unavailable in web | — Pending |
-| Isar as local database | Offline-first, fast embedded DB with Flutter-native bindings | — Pending |
-| BLoC/Cubit for state management | Clean separation of UI and business logic; testable | — Pending |
-| Local-only in MVP (no cloud sync) | Privacy-first; simplifies architecture; backup via export/import | — Pending |
-| Clean Architecture with modular layers | Maintainability and testability as codebase grows | — Pending |
-| Productivity frameworks (Eisenhower + 1-3-5 + GTD) | Differentiates from basic to-do apps; matches original AGENDA vision | — Pending |
+| Rebuild in Flutter (not improve web app) | Native notifications require platform-level access unavailable in web | Validated — Phase 1 complete |
+| Isar Community as local database | Original `isar` abandoned April 2023; community fork is drop-in compatible and actively maintained | Validated — used throughout Phase 1 and 2 |
+| BLoC/Cubit for state management | Clean separation of UI and business logic; testable | Validated — TaskListCubit, ProjectCubit, DayPlannerCubit all proven in Phase 2 |
+| Local-only in MVP (no cloud sync) | Privacy-first; simplifies architecture; backup via export/import | Validated — no network permission declared |
+| Clean Architecture with 7 modular layers | Maintainability and testability as codebase grows | Validated — layer boundaries held cleanly through Phase 2 |
+| Productivity frameworks (Eisenhower + 1-3-5 + GTD) | Differentiates from basic to-do apps; matches original AGENDA vision | Validated — all three frameworks implemented in Phase 2 |
+| EisenhowerQuadrant computed at domain layer, not stored | Prevents stale quadrant data when urgency/importance flags change | Applied in Phase 2; no issues |
+| Soft delete via `deletedAt` field | Enables 5-second undo snackbar without transactional complexity | Applied in Phase 2; works correctly |
+| `go_router` declared now, wired in Phase 5 | Routing is currently `IndexedStack` + modal; go_router guard required for PIN lock screen | Deferred — Phase 5 |
 
 ## Evolution
 
@@ -115,4 +120,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-12 after initialization*
+*Last updated: 2026-04-21 — Phase 2 complete*

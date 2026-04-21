@@ -7,18 +7,18 @@
 
 ### Task Management
 
-- [ ] **TASK-01**: User can create projects with a title and optional description
-- [ ] **TASK-02**: User can create subtasks within a project
-- [ ] **TASK-03**: User can create standalone tasks with title, due date, and time
-- [ ] **TASK-04**: User can edit any task or project
-- [ ] **TASK-05**: User can delete tasks with a 5-second undo snackbar (soft delete)
-- [ ] **TASK-06**: User can mark tasks as complete
-- [ ] **TASK-07**: User can classify tasks using the Eisenhower Matrix (urgent/important quadrants)
-- [ ] **TASK-08**: User can plan their day using the 1-3-5 Rule (1 big + 3 medium + 5 small tasks)
-- [ ] **TASK-09**: User can tag tasks with GTD attributes (next action, context, waiting for)
-- [ ] **TASK-10**: User can create recurring tasks (daily, weekly, monthly, custom interval)
-- [ ] **TASK-11**: User can search tasks by keyword
-- [ ] **TASK-12**: User can filter tasks by project, Eisenhower quadrant, GTD context, or due date
+- [x] **TASK-01**: User can create projects with a title and optional description
+- [x] **TASK-02**: User can create subtasks within a project
+- [x] **TASK-03**: User can create standalone tasks with title, due date, and time
+- [x] **TASK-04**: User can edit any task or project
+- [x] **TASK-05**: User can delete tasks with a 5-second undo snackbar (soft delete)
+- [x] **TASK-06**: User can mark tasks as complete
+- [x] **TASK-07**: User can classify tasks using the Eisenhower Matrix (urgent/important quadrants)
+- [x] **TASK-08**: User can plan their day using the 1-3-5 Rule (1 big + 3 medium + 5 small tasks)
+- [x] **TASK-09**: User can tag tasks with GTD attributes (next action, context, waiting for)
+- [x] **TASK-10**: User can create recurring tasks (daily, weekly, monthly, custom interval)
+- [x] **TASK-11**: User can search tasks by keyword
+- [x] **TASK-12**: User can filter tasks by project, Eisenhower quadrant, GTD context, or due date
 
 ### Finance Management
 
@@ -49,7 +49,7 @@
 
 ### Data & Privacy
 
-- [ ] **DATA-01**: All data is stored locally on the device using Isar; no data is transmitted externally
+- [x] **DATA-01**: All data is stored locally on the device using Isar; no data is transmitted externally
 - [ ] **DATA-02**: User can export all data as a JSON backup file
 - [ ] **DATA-03**: User can export all data as a CSV backup file
 - [ ] **DATA-04**: User can import data from a JSON or CSV backup file (with pre-import safety backup and atomic transaction)
@@ -59,7 +59,7 @@
 ### Experience
 
 - [ ] **UX-01**: App supports English and Portuguese (user-toggled in Settings)
-- [ ] **UX-02**: App is fully functional offline — no feature requires internet access
+- [x] **UX-02**: App is fully functional offline — no feature requires internet access
 - [ ] **UX-03**: App displays a privacy statement on first launch ("Your data never leaves this device")
 - [ ] **UX-04**: All screens display meaningful empty states with action prompts when no data exists
 
@@ -96,20 +96,20 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | Phase 1: Foundation | Pending |
-| UX-02 | Phase 1: Foundation | Pending |
-| TASK-01 | Phase 2: Task Core | Pending |
-| TASK-02 | Phase 2: Task Core | Pending |
-| TASK-03 | Phase 2: Task Core | Pending |
-| TASK-04 | Phase 2: Task Core | Pending |
-| TASK-05 | Phase 2: Task Core | Pending |
-| TASK-06 | Phase 2: Task Core | Pending |
-| TASK-07 | Phase 2: Task Core | Pending |
-| TASK-08 | Phase 2: Task Core | Pending |
-| TASK-09 | Phase 2: Task Core | Pending |
-| TASK-10 | Phase 2: Task Core | Pending |
-| TASK-11 | Phase 2: Task Core | Pending |
-| TASK-12 | Phase 2: Task Core | Pending |
+| DATA-01 | Phase 1: Foundation | Complete |
+| UX-02 | Phase 1: Foundation | Complete |
+| TASK-01 | Phase 2: Task Core | Complete |
+| TASK-02 | Phase 2: Task Core | Complete |
+| TASK-03 | Phase 2: Task Core | Complete |
+| TASK-04 | Phase 2: Task Core | Complete |
+| TASK-05 | Phase 2: Task Core | Complete |
+| TASK-06 | Phase 2: Task Core | Complete |
+| TASK-07 | Phase 2: Task Core | Complete |
+| TASK-08 | Phase 2: Task Core | Complete |
+| TASK-09 | Phase 2: Task Core | Complete |
+| TASK-10 | Phase 2: Task Core | Complete |
+| TASK-11 | Phase 2: Task Core | Complete |
+| TASK-12 | Phase 2: Task Core | Complete |
 | FIN-01 | Phase 3: Finance Core | Pending |
 | FIN-02 | Phase 3: Finance Core | Pending |
 | FIN-03 | Phase 3: Finance Core | Pending |
@@ -144,7 +144,8 @@
 - v1 requirements: 44 total
 - Mapped to phases: 44
 - Unmapped: 0
+- Complete: 14 (DATA-01, UX-02, TASK-01 through TASK-12)
 
 ---
 *Requirements defined: 2026-04-13*
-*Last updated: 2026-04-13 after roadmap creation — traceability fully populated*
+*Last updated: 2026-04-21 — Phase 2 complete; TASK-01–12, DATA-01, UX-02 marked complete*

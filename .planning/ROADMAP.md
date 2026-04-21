@@ -12,25 +12,26 @@ AGENDA is built in five dependency-ordered phases. Phase 1 lays the architectura
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Architecture scaffold, Isar + migration runner, DI wiring, l10n setup, offline guarantee
-- [ ] **Phase 2: Task Core** - Complete task domain — projects, subtasks, CRUD, recurring, Eisenhower, 1-3-5, GTD, search, filter
+- [x] **Phase 1: Foundation** - Architecture scaffold, Isar + migration runner, DI wiring, l10n setup, offline guarantee
+- [x] **Phase 2: Task Core** - Complete task domain — projects, subtasks, CRUD, recurring, Eisenhower, 1-3-5, GTD, search, filter
 - [ ] **Phase 3: Finance Core** - Complete finance domain — transactions, budgets, goals, debts, recurring payments, dashboard, charts
 - [ ] **Phase 4: Notifications + Backup** - All notification types with boot-safe rescheduling; JSON + CSV export/import
 - [ ] **Phase 5: App Lock + Settings + Polish** - PIN + biometric lock, settings screen, onboarding, empty states
 
 ## Phase Details
 
-### Phase 1: Foundation
+### Phase 1: Foundation ✅ Complete
 **Goal**: A runnable Flutter app with correct architecture, Isar open and migration-safe, DI wired, l10n scaffolded for EN + PT-BR, and the offline guarantee provably in place
 **Depends on**: Nothing (first phase)
 **Requirements**: DATA-01, UX-02
+**Completed**: 2026-04-19
 **Success Criteria** (what must be TRUE):
   1. App launches on Android and iOS without errors; no network calls are made at any point during startup or normal use
   2. Isar database opens successfully with schema version stored in SharedPreferences; a migration runner executes on cold start and no-ops when schema is current
   3. All Isar-persisted enums are annotated with `@enumerated(EnumType.name)` — reordering any enum does not corrupt existing records
   4. GetIt + injectable DI graph resolves without errors; swapping a repository implementation requires changing only the registration, not call sites
   5. `flutter gen-l10n` produces ARB files with parity keys for both `en` and `pt_BR`; the app renders PT-BR strings by default
-**Plans**: 5 plans
+**Plans**: 5/5 complete
 **UI hint**: no
 
 Plans:
@@ -42,17 +43,18 @@ Plans:
 
 ---
 
-### Phase 2: Task Core
+### Phase 2: Task Core ✅ Complete
 **Goal**: Users can manage their entire task workload — create projects and subtasks, classify tasks with Eisenhower/1-3-5/GTD, set recurring due dates, search, and filter — with all data persisted locally
 **Depends on**: Phase 1
 **Requirements**: TASK-01, TASK-02, TASK-03, TASK-04, TASK-05, TASK-06, TASK-07, TASK-08, TASK-09, TASK-10, TASK-11, TASK-12
+**Completed**: 2026-04-21
 **Success Criteria** (what must be TRUE):
   1. User can create a project with title and description, add subtasks to it, and see subtask completion roll up to the project
   2. User can create a standalone task with title, due date, and time; edit it; and delete it with a 5-second undo snackbar that restores the task if tapped
   3. User can classify any task into an Eisenhower quadrant and plan their day using the 1-3-5 Rule (exactly 1 big + 3 medium + 5 small slots); constraints are enforced in the UI
   4. User can tag tasks with GTD attributes (next action, context, waiting for) and create recurring tasks that auto-regenerate on the configured interval
   5. User can search tasks by keyword and filter the task list by project, Eisenhower quadrant, GTD context, or due date range; results update immediately
-**Plans**: 5 plans
+**Plans**: 5/5 complete
 **UI hint**: yes
 
 Plans:
@@ -135,8 +137,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/5 | Not started | - |
-| 2. Task Core | 0/5 | Not started | - |
+| 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
+| 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 0/5 | Not started | - |
 | 4. Notifications + Backup | 0/5 | Not started | - |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |

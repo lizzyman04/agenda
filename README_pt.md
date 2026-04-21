@@ -17,9 +17,9 @@
 
 <br>
 
-> Abra o AGENDA a qualquer momento — de manhã, ao meio-dia ou à noite —  
-> e veja imediatamente **o que precisa ser feito** e **como estão suas finanças**,  
-> sem precisar de internet.
+> Abra o AGENDA a qualquer momento — de manhã, ao meio-dia ou à noite —
+> e veja imediatamente **o que precisa ser feito** e **como estão suas finanças**,
+> sem precisar de conexão com a internet.
 
 </div>
 
@@ -41,21 +41,30 @@
 
 ### Gerenciamento de Tarefas
 
+O AGENDA implementa três frameworks de produtividade complementares sobre um sistema completo de tarefas e projetos.
+
 | Framework | Descrição |
 |-----------|-----------|
-| **Matriz de Eisenhower** | Priorize por urgência × importância — foco no que realmente importa |
-| **Regra 1-3-5** | Planeje cada dia com 1 tarefa grande, 3 médias e 5 pequenas — sem sobrecarga |
-| **GTD** | Capture tudo, clarifique as ações, revise semanalmente e execute com confiança |
+| **Matriz de Eisenhower** | Classifique tarefas por urgência e importância em quatro quadrantes — foco no que realmente importa |
+| **Regra 1-3-5** | Planeje cada dia com exatamente 1 tarefa grande, 3 médias e 5 pequenas — estruturado sem ser rígido |
+| **GTD** | Marque tarefas como próximas ações, atribua contextos, sinalize "aguardando" — fluxo completo de Getting Things Done |
 
-- Tarefas recorrentes com agendamentos flexíveis
-- Lembretes e notificações locais
-- 100% offline — sem sincronização, sem conta, sem dados saindo do dispositivo
+**Capacidades do sistema de tarefas:**
 
-### Controle Financeiro
+- Projetos com subtarefas e acompanhamento de conclusão
+- Tarefas independentes com título, data de vencimento e horário
+- Criar, editar e excluir com desfazer de 5 segundos (exclusão suave)
+- Marcar tarefas como concluídas
+- Tarefas recorrentes com intervalos configuráveis (diário, semanal, mensal, personalizado)
+- Busca de tarefas por palavra-chave
+- Filtrar por projeto, quadrante Eisenhower, contexto GTD ou intervalo de datas
+- Planejador Diário com restrições dos slots 1-3-5
+
+### Controle Financeiro *(Fase 3 — planejado)*
 
 | Funcionalidade | Descrição |
 |----------------|-----------|
-| **Receitas & Despesas** | Registre cada transação com categorias e anotações |
+| **Receitas e Despesas** | Registre cada transação com categorias e anotações |
 | **Orçamentos** | Defina limites mensais por categoria e acompanhe os gastos em tempo real |
 | **Dívidas** | Controle o que você deve e o que lhe devem |
 | **Metas de Economia** | Defina objetivos e acompanhe seu progresso |
@@ -81,16 +90,13 @@ O AGENDA é construído em torno de um princípio inegociável: **seus dados nun
 ## Tecnologias
 
 | Camada | Tecnologia |
-|--------|-----------|
+|--------|------------|
 | **Interface** | Flutter 3.41.4 (Android + iOS) |
 | **Estado** | BLoC / Cubit (`flutter_bloc` 9.1.1) |
 | **Banco de Dados** | Isar Community 3.3.2 (embarcado, no dispositivo) |
 | **Injeção de Dependências** | GetIt 9.2.1 + Injectable 2.7.1 |
 | **Navegação** | go_router 17.2.0 |
 | **Localização** | flutter_localizations + intl (PT-BR padrão, alternância para EN) |
-| **Notificações** | flutter_local_notifications 21.0.0 |
-| **Bloqueio do App** | flutter_screen_lock + local_auth + flutter_secure_storage |
-| **Gráficos** | fl_chart 1.2.0 |
 | **Testes** | bloc_test + mocktail |
 | **Lint** | very_good_analysis (rigoroso) |
 
@@ -101,7 +107,7 @@ O AGENDA é construído em torno de um princípio inegociável: **seus dados nun
 ### Pré-requisitos
 
 - Flutter SDK `>=3.38.1` (testado com `3.41.4`)
-- Dart SDK `>=3.11.0`
+- Dart SDK `>=3.7.0`
 - Android SDK com dispositivo ou emulador conectado
 - Xcode (para builds iOS)
 
@@ -150,11 +156,19 @@ lib/
 ├── core/               # Constantes, extensões, hierarquia de falhas, tipos de resultado
 ├── domain/             # Entidades e interfaces de repositório
 ├── data/               # Modelos Isar, DAOs, serviço de banco de dados
-├── infrastructure/     # Implementações de repositório, serviço de notificações
+├── infrastructure/     # Implementações de repositório
 ├── application/        # Gerenciamento de estado com BLoC/Cubit
 ├── presentation/       # Telas, widgets, navegação
 └── config/             # Grafo de DI, configuração de l10n, roteador
 ```
+
+A documentação detalhada está disponível no diretório [docs/](docs/):
+
+- [Arquitetura](docs/ARCHITECTURE.md) — camadas, fluxo de dados, grafo de DI, gerenciamento de estado
+- [Primeiros Passos](docs/GETTING-STARTED.md) — guia completo de configuração
+- [Desenvolvimento](docs/DEVELOPMENT.md) — adicionando funcionalidades, geração de código, tratamento de erros
+- [Testes](docs/TESTING.md) — executando testes, padrões de teste BLoC, uso do mocktail
+- [Configuração](docs/CONFIGURATION.md) — requisitos de SDK, configuração de build, setup de localização
 
 ---
 
@@ -162,11 +176,11 @@ lib/
 
 | Fase | Objetivo | Status |
 |------|----------|--------|
-| 01 | Fundação (scaffold, BD, DI, l10n, CI) | ✅ Concluído |
-| 02 | Gerenciamento de Tarefas | 🔜 Próximo |
-| 03 | Controle Financeiro | 🔜 Planejado |
-| 04 | Notificações & Backup | 🔜 Planejado |
-| 05 | Bloqueio do App (PIN + Biometria) | 🔜 Planejado |
+| 01 | Fundação (scaffold, BD, DI, l10n, CI) | Concluído |
+| 02 | Gerenciamento de Tarefas | Concluído |
+| 03 | Controle Financeiro | Planejado |
+| 04 | Notificações e Backup | Planejado |
+| 05 | Bloqueio do App (PIN + Biometria) | Planejado |
 
 ---
 

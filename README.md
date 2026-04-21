@@ -17,8 +17,8 @@
 
 <br>
 
-> Open AGENDA at any moment — morning, midday, or night —  
-> and immediately see **what needs doing** and **where your money stands**,  
+> Open AGENDA at any moment — morning, midday, or night —
+> and immediately see **what needs doing** and **where your money stands**,
 > without ever needing an internet connection.
 
 </div>
@@ -41,21 +41,30 @@
 
 ### Task Management
 
+AGENDA implements three complementary productivity frameworks on top of a full task and project system.
+
 | Framework | Description |
 |-----------|-------------|
-| **Eisenhower Matrix** | Prioritize by urgency × importance — focus on what truly matters |
-| **1-3-5 Rule** | Plan each day with 1 big task, 3 medium, 5 small — never overwhelmed |
-| **GTD** | Capture everything, clarify actions, review weekly, engage with confidence |
+| **Eisenhower Matrix** | Classify tasks by urgency and importance into four quadrants — focus on what truly matters |
+| **1-3-5 Rule** | Plan each day with exactly 1 big task, 3 medium, and 5 small — structured without being rigid |
+| **GTD** | Tag tasks as next actions, assign contexts, mark waiting-for — full Getting Things Done workflow |
 
-- Recurring tasks with flexible schedules
-- Reminders and local notifications
-- Full offline — no sync, no account, no data leaving the device
+**Task system capabilities:**
 
-### Financial Tracking
+- Projects with subtasks and completion roll-up
+- Standalone tasks with title, due date, and time
+- Create, edit, and delete with 5-second undo (soft delete)
+- Mark tasks complete
+- Recurring tasks with configurable intervals (daily, weekly, monthly, custom)
+- Search tasks by keyword
+- Filter by project, Eisenhower quadrant, GTD context, or due date range
+- Day Planner view enforcing 1-3-5 slot constraints
+
+### Financial Tracking *(Phase 3 — planned)*
 
 | Feature | Description |
 |---------|-------------|
-| **Income & Expenses** | Log every transaction with categories and notes |
+| **Income and Expenses** | Log every transaction with categories and notes |
 | **Budgets** | Set monthly limits per category and track spending in real time |
 | **Debts** | Track what you owe and what others owe you |
 | **Savings Goals** | Define targets and watch your progress |
@@ -81,16 +90,13 @@ AGENDA is built around a single non-negotiable principle: **your data never leav
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|-------|------------|
 | **UI** | Flutter 3.41.4 (Android + iOS) |
 | **State** | BLoC / Cubit (`flutter_bloc` 9.1.1) |
 | **Database** | Isar Community 3.3.2 (embedded, on-device) |
 | **Dependency Injection** | GetIt 9.2.1 + Injectable 2.7.1 |
 | **Routing** | go_router 17.2.0 |
 | **Localization** | flutter_localizations + intl (PT-BR default, EN toggle) |
-| **Notifications** | flutter_local_notifications 21.0.0 |
-| **App Lock** | flutter_screen_lock + local_auth + flutter_secure_storage |
-| **Charts** | fl_chart 1.2.0 |
 | **Testing** | bloc_test + mocktail |
 | **Linting** | very_good_analysis (strict) |
 
@@ -101,7 +107,7 @@ AGENDA is built around a single non-negotiable principle: **your data never leav
 ### Prerequisites
 
 - Flutter SDK `>=3.38.1` (tested on `3.41.4`)
-- Dart SDK `>=3.11.0`
+- Dart SDK `>=3.7.0`
 - Android SDK with a connected device or emulator
 - Xcode (for iOS builds)
 
@@ -150,11 +156,19 @@ lib/
 ├── core/               # Constants, extensions, failure hierarchy, result types
 ├── domain/             # Entities and repository interfaces
 ├── data/               # Isar models, DAOs, database service
-├── infrastructure/     # Repository implementations, notification service
+├── infrastructure/     # Repository implementations
 ├── application/        # BLoC/Cubit state management
 ├── presentation/       # Screens, widgets, navigation
 └── config/             # DI graph, l10n config, router
 ```
+
+Detailed documentation is available in the [docs/](docs/) directory:
+
+- [Architecture](docs/ARCHITECTURE.md) — layers, data flow, DI graph, state management
+- [Getting Started](docs/GETTING-STARTED.md) — full setup guide
+- [Development](docs/DEVELOPMENT.md) — adding features, code generation, error handling
+- [Testing](docs/TESTING.md) — running tests, BLoC testing patterns, mocktail usage
+- [Configuration](docs/CONFIGURATION.md) — SDK requirements, build config, localization setup
 
 ---
 
@@ -162,11 +176,11 @@ lib/
 
 | Phase | Milestone | Status |
 |-------|-----------|--------|
-| 01 | Foundation (scaffold, DB, DI, l10n, CI) | ✅ Complete |
-| 02 | Task Management | 🔜 Next |
-| 03 | Financial Tracking | 🔜 Planned |
-| 04 | Notifications & Backup | 🔜 Planned |
-| 05 | App Lock (PIN + Biometrics) | 🔜 Planned |
+| 01 | Foundation (scaffold, DB, DI, l10n, CI) | Complete |
+| 02 | Task Management | Complete |
+| 03 | Financial Tracking | Planned |
+| 04 | Notifications and Backup | Planned |
+| 05 | App Lock (PIN + Biometrics) | Planned |
 
 ---
 
