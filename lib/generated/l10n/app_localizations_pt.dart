@@ -239,33 +239,179 @@ class AppLocalizationsPt extends AppLocalizations {
   String get gtdQ1 => 'O que precisa ser feito?';
 
   @override
-  String get gtdQ2 => 'É uma ação?';
+  String get gtdQ2 => 'Esta tarefa precisa realmente ser feita?';
 
   @override
-  String get gtdQ3 => 'Qual é a próxima ação física concreta?';
+  String get gtdQ2bQuestion => 'Por que você quer adicioná-la mesmo assim?';
 
   @override
-  String get gtdQ3Hint =>
-      'ex: Enviar e-mail, Ligar de volta, Redigir relatório';
+  String get gtdQ2bSomedayMaybe =>
+      'É um lembrete para o futuro (Algum Dia/Talvez)';
 
   @override
-  String get gtdQ4 => 'Pode ser feito em menos de 2 minutos?';
+  String get gtdQ2bIdea => 'É uma ideia que não quero esquecer';
 
   @override
-  String get gtdQ5 => 'Isso deve ser delegado?';
+  String get gtdQ2bDelegated =>
+      'Alguém me pediu, mas não é minha responsabilidade';
 
   @override
-  String get gtdQ6 => 'Quando precisa ser feito?';
+  String get gtdQ2bKeepAnyway => 'Quero adicionar mesmo assim';
 
   @override
-  String get gtdQ7 =>
-      'Qual é a importância para seus objetivos de longo prazo?';
+  String get gtdQ3 => 'Outra pessoa pode fazer essa tarefa por você?';
 
   @override
-  String get gtdQ8 => 'Qual é o contexto desta tarefa?';
+  String get gtdQ3DelegateTo => 'Para quem você vai delegar?';
 
   @override
-  String get gtdQ8Hint => '@casa, @computador, @escritório';
+  String get gtdQ3DelegateHint => 'Nome da pessoa';
+
+  @override
+  String get gtdQ3FollowUp => 'Quer um lembrete para cobrar essa pessoa?';
+
+  @override
+  String get gtdQ4 => 'Esta tarefa pode ser feita em menos de 10 minutos?';
+
+  @override
+  String get gtdQ4bQuestion => 'Por que não fazer agora?';
+
+  @override
+  String get gtdQ4bBusy => 'Estou ocupado no momento';
+
+  @override
+  String get gtdQ4bNeedContext => 'Preciso de mais contexto ou informação';
+
+  @override
+  String get gtdQ4bNotRightTime => 'Não é o momento certo';
+
+  @override
+  String get gtdQ4bDoItNow => 'Você tem razão, vou fazer agora';
+
+  @override
+  String get gtdQ4bOther => 'Outro motivo';
+
+  @override
+  String get gtdQ5 =>
+      'Esta tarefa é importante para seus objetivos e projetos?';
+
+  @override
+  String get gtdQ5bQuestion => 'Por que você quer mantê-la?';
+
+  @override
+  String get gtdQ5bObligation => 'É uma obrigação ou tarefa chata';
+
+  @override
+  String get gtdQ5bSomeoneAsking => 'Alguém está me cobrando';
+
+  @override
+  String get gtdQ5bReminder => 'Não quero esquecer';
+
+  @override
+  String get gtdQ5bCancelTask => 'Cancelar tarefa';
+
+  @override
+  String get gtdQ5bOther => 'Outro motivo';
+
+  @override
+  String get gtdQ6 => 'Qual a data limite para esta tarefa ser concluída?';
+
+  @override
+  String get gtdDeadlineNext20Days => 'Próximos 20 dias';
+
+  @override
+  String get gtdQ6bQuestion => 'Por que não tem prazo?';
+
+  @override
+  String get gtdQ6bHabit => 'É algo contínuo ou hábito';
+
+  @override
+  String get gtdQ6bNotUrgent => 'Não é urgente, mas preciso lembrar';
+
+  @override
+  String get gtdQ6bWhenever => 'Pode ser quando der tempo';
+
+  @override
+  String get gtdQ6bOther => 'Outro motivo';
+
+  @override
+  String get gtdQ7 => 'Qual o impacto se esta tarefa não for concluída?';
+
+  @override
+  String get gtdImpactVeryNegative => 'Muito negativo — tudo depende disso';
+
+  @override
+  String get gtdImpactNegative => 'Negativo — objetivos importantes afetados';
+
+  @override
+  String get gtdImpactModerate => 'Moderado — alguns objetivos afetados';
+
+  @override
+  String get gtdImpactLight => 'Leve — poucos objetivos afetados';
+
+  @override
+  String get gtdImpactVeryLight => 'Muito leve — atrasos mínimos';
+
+  @override
+  String get gtdQ7bQuestion => 'Por que manter a tarefa?';
+
+  @override
+  String get gtdQ7bPersonalWish => 'É um desejo pessoal';
+
+  @override
+  String get gtdQ7bSomeoneExpects => 'Alguém espera que eu faça';
+
+  @override
+  String get gtdQ7bCancelTask => 'Cancelar tarefa';
+
+  @override
+  String get gtdQ7bOther => 'Outro motivo';
+
+  @override
+  String get gtdReviewTitle => 'Resumo da tarefa';
+
+  @override
+  String get gtdReviewDeadlineLabel => 'Prazo';
+
+  @override
+  String get gtdReviewPriorityLabel => 'Prioridade';
+
+  @override
+  String get gtdReviewImportantLabel => 'Importante';
+
+  @override
+  String get gtdReviewUrgentLabel => 'Urgente';
+
+  @override
+  String get gtdReviewDelegatedLabel => 'Delegado para';
+
+  @override
+  String get gtdReviewEdit => 'Voltar e editar';
+
+  @override
+  String get gtdReviewSave => 'Salvar tarefa';
+
+  @override
+  String get gtdCancelTitle => 'Cancelar o guia?';
+
+  @override
+  String get gtdCancelMessage => 'O progresso será perdido.';
+
+  @override
+  String get gtdCancelContinue => 'Continuar';
+
+  @override
+  String get gtdCancelDiscard => 'Descartar';
+
+  @override
+  String get gtdSomedayMessage => 'Salvo como Algum Dia/Talvez.';
+
+  @override
+  String get gtdIdeaSavedMessage => 'Salvo como ideia.';
+
+  @override
+  String get gtdDoItNowMessage =>
+      'Faça agora! Menos de 10 minutos — só faça. ✅';
 
   @override
   String get gtdAnswerYes => 'Sim';
@@ -283,9 +429,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get gtdDelegateMessage =>
       'Delegado. Uma nota \'Aguardando\' foi adicionada.';
-
-  @override
-  String get gtdDoItNowMessage => 'Faça agora! Menos de 2 minutos — só faça.';
 
   @override
   String get gtdDeadlineToday => 'Hoje';
@@ -319,6 +462,16 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get gtdImpactNone => 'Nenhum — pode ser descartado';
+
+  @override
+  String get gtdQ3Hint =>
+      'ex: Enviar e-mail, Ligar de volta, Redigir relatório';
+
+  @override
+  String get gtdQ8 => 'Qual é o contexto desta tarefa?';
+
+  @override
+  String get gtdQ8Hint => '@casa, @computador, @escritório';
 
   @override
   String get filterApplied => 'Filtro aplicado';
@@ -587,33 +740,179 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get gtdQ1 => 'O que precisa ser feito?';
 
   @override
-  String get gtdQ2 => 'É uma ação?';
+  String get gtdQ2 => 'Esta tarefa precisa realmente ser feita?';
 
   @override
-  String get gtdQ3 => 'Qual é a próxima ação física concreta?';
+  String get gtdQ2bQuestion => 'Por que você quer adicioná-la mesmo assim?';
 
   @override
-  String get gtdQ3Hint =>
-      'ex: Enviar e-mail, Ligar de volta, Redigir relatório';
+  String get gtdQ2bSomedayMaybe =>
+      'É um lembrete para o futuro (Algum Dia/Talvez)';
 
   @override
-  String get gtdQ4 => 'Pode ser feito em menos de 2 minutos?';
+  String get gtdQ2bIdea => 'É uma ideia que não quero esquecer';
 
   @override
-  String get gtdQ5 => 'Isso deve ser delegado?';
+  String get gtdQ2bDelegated =>
+      'Alguém me pediu, mas não é minha responsabilidade';
 
   @override
-  String get gtdQ6 => 'Quando precisa ser feito?';
+  String get gtdQ2bKeepAnyway => 'Quero adicionar mesmo assim';
 
   @override
-  String get gtdQ7 =>
-      'Qual é a importância para seus objetivos de longo prazo?';
+  String get gtdQ3 => 'Outra pessoa pode fazer essa tarefa por você?';
 
   @override
-  String get gtdQ8 => 'Qual é o contexto desta tarefa?';
+  String get gtdQ3DelegateTo => 'Para quem você vai delegar?';
 
   @override
-  String get gtdQ8Hint => '@casa, @computador, @escritório';
+  String get gtdQ3DelegateHint => 'Nome da pessoa';
+
+  @override
+  String get gtdQ3FollowUp => 'Quer um lembrete para cobrar essa pessoa?';
+
+  @override
+  String get gtdQ4 => 'Esta tarefa pode ser feita em menos de 10 minutos?';
+
+  @override
+  String get gtdQ4bQuestion => 'Por que não fazer agora?';
+
+  @override
+  String get gtdQ4bBusy => 'Estou ocupado no momento';
+
+  @override
+  String get gtdQ4bNeedContext => 'Preciso de mais contexto ou informação';
+
+  @override
+  String get gtdQ4bNotRightTime => 'Não é o momento certo';
+
+  @override
+  String get gtdQ4bDoItNow => 'Você tem razão, vou fazer agora';
+
+  @override
+  String get gtdQ4bOther => 'Outro motivo';
+
+  @override
+  String get gtdQ5 =>
+      'Esta tarefa é importante para seus objetivos e projetos?';
+
+  @override
+  String get gtdQ5bQuestion => 'Por que você quer mantê-la?';
+
+  @override
+  String get gtdQ5bObligation => 'É uma obrigação ou tarefa chata';
+
+  @override
+  String get gtdQ5bSomeoneAsking => 'Alguém está me cobrando';
+
+  @override
+  String get gtdQ5bReminder => 'Não quero esquecer';
+
+  @override
+  String get gtdQ5bCancelTask => 'Cancelar tarefa';
+
+  @override
+  String get gtdQ5bOther => 'Outro motivo';
+
+  @override
+  String get gtdQ6 => 'Qual a data limite para esta tarefa ser concluída?';
+
+  @override
+  String get gtdDeadlineNext20Days => 'Próximos 20 dias';
+
+  @override
+  String get gtdQ6bQuestion => 'Por que não tem prazo?';
+
+  @override
+  String get gtdQ6bHabit => 'É algo contínuo ou hábito';
+
+  @override
+  String get gtdQ6bNotUrgent => 'Não é urgente, mas preciso lembrar';
+
+  @override
+  String get gtdQ6bWhenever => 'Pode ser quando der tempo';
+
+  @override
+  String get gtdQ6bOther => 'Outro motivo';
+
+  @override
+  String get gtdQ7 => 'Qual o impacto se esta tarefa não for concluída?';
+
+  @override
+  String get gtdImpactVeryNegative => 'Muito negativo — tudo depende disso';
+
+  @override
+  String get gtdImpactNegative => 'Negativo — objetivos importantes afetados';
+
+  @override
+  String get gtdImpactModerate => 'Moderado — alguns objetivos afetados';
+
+  @override
+  String get gtdImpactLight => 'Leve — poucos objetivos afetados';
+
+  @override
+  String get gtdImpactVeryLight => 'Muito leve — atrasos mínimos';
+
+  @override
+  String get gtdQ7bQuestion => 'Por que manter a tarefa?';
+
+  @override
+  String get gtdQ7bPersonalWish => 'É um desejo pessoal';
+
+  @override
+  String get gtdQ7bSomeoneExpects => 'Alguém espera que eu faça';
+
+  @override
+  String get gtdQ7bCancelTask => 'Cancelar tarefa';
+
+  @override
+  String get gtdQ7bOther => 'Outro motivo';
+
+  @override
+  String get gtdReviewTitle => 'Resumo da tarefa';
+
+  @override
+  String get gtdReviewDeadlineLabel => 'Prazo';
+
+  @override
+  String get gtdReviewPriorityLabel => 'Prioridade';
+
+  @override
+  String get gtdReviewImportantLabel => 'Importante';
+
+  @override
+  String get gtdReviewUrgentLabel => 'Urgente';
+
+  @override
+  String get gtdReviewDelegatedLabel => 'Delegado para';
+
+  @override
+  String get gtdReviewEdit => 'Voltar e editar';
+
+  @override
+  String get gtdReviewSave => 'Salvar tarefa';
+
+  @override
+  String get gtdCancelTitle => 'Cancelar o guia?';
+
+  @override
+  String get gtdCancelMessage => 'O progresso será perdido.';
+
+  @override
+  String get gtdCancelContinue => 'Continuar';
+
+  @override
+  String get gtdCancelDiscard => 'Descartar';
+
+  @override
+  String get gtdSomedayMessage => 'Salvo como Algum Dia/Talvez.';
+
+  @override
+  String get gtdIdeaSavedMessage => 'Salvo como ideia.';
+
+  @override
+  String get gtdDoItNowMessage =>
+      'Faça agora! Menos de 10 minutos — só faça. ✅';
 
   @override
   String get gtdAnswerYes => 'Sim';
@@ -631,9 +930,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get gtdDelegateMessage =>
       'Delegado. Uma nota \'Aguardando\' foi adicionada.';
-
-  @override
-  String get gtdDoItNowMessage => 'Faça agora! Menos de 2 minutos — só faça.';
 
   @override
   String get gtdDeadlineToday => 'Hoje';
@@ -667,6 +963,16 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get gtdImpactNone => 'Nenhum — pode ser descartado';
+
+  @override
+  String get gtdQ3Hint =>
+      'ex: Enviar e-mail, Ligar de volta, Redigir relatório';
+
+  @override
+  String get gtdQ8 => 'Qual é o contexto desta tarefa?';
+
+  @override
+  String get gtdQ8Hint => '@casa, @computador, @escritório';
 
   @override
   String get filterApplied => 'Filtro aplicado';

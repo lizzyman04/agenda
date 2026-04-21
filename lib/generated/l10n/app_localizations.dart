@@ -555,59 +555,347 @@ abstract class AppLocalizations {
   /// **'O que precisa ser feito?'**
   String get gtdQ1;
 
-  /// Pergunta 2 do guia GTD — verificação de ação
+  /// Pergunta 2 do guia GTD — verificação de necessidade
   ///
   /// In pt_BR, this message translates to:
-  /// **'É uma ação?'**
+  /// **'Esta tarefa precisa realmente ser feita?'**
   String get gtdQ2;
 
-  /// Pergunta 3 do guia GTD — clarificar próxima ação
+  /// Sub-pergunta GTD quando usuário diz que tarefa não é necessária
   ///
   /// In pt_BR, this message translates to:
-  /// **'Qual é a próxima ação física concreta?'**
+  /// **'Por que você quer adicioná-la mesmo assim?'**
+  String get gtdQ2bQuestion;
+
+  /// Opção GTD Q2b: lembrete futuro
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'É um lembrete para o futuro (Algum Dia/Talvez)'**
+  String get gtdQ2bSomedayMaybe;
+
+  /// Opção GTD Q2b: ideia
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'É uma ideia que não quero esquecer'**
+  String get gtdQ2bIdea;
+
+  /// Opção GTD Q2b: delegação de terceiro
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Alguém me pediu, mas não é minha responsabilidade'**
+  String get gtdQ2bDelegated;
+
+  /// Opção GTD Q2b: manter mesmo sem necessidade
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Quero adicionar mesmo assim'**
+  String get gtdQ2bKeepAnyway;
+
+  /// Pergunta 3 do guia GTD — verificação de delegação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Outra pessoa pode fazer essa tarefa por você?'**
   String get gtdQ3;
 
-  /// Dica para o campo de texto Q3
+  /// Sub-pergunta GTD para nome do delegado
   ///
   /// In pt_BR, this message translates to:
-  /// **'ex: Enviar e-mail, Ligar de volta, Redigir relatório'**
-  String get gtdQ3Hint;
+  /// **'Para quem você vai delegar?'**
+  String get gtdQ3DelegateTo;
 
-  /// Pergunta 4 do guia GTD — regra dos 2 minutos
+  /// Dica no campo de texto de delegação
   ///
   /// In pt_BR, this message translates to:
-  /// **'Pode ser feito em menos de 2 minutos?'**
+  /// **'Nome da pessoa'**
+  String get gtdQ3DelegateHint;
+
+  /// Sub-pergunta GTD sobre lembrete de cobrança
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Quer um lembrete para cobrar essa pessoa?'**
+  String get gtdQ3FollowUp;
+
+  /// Pergunta 4 do guia GTD — regra dos 10 minutos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Esta tarefa pode ser feita em menos de 10 minutos?'**
   String get gtdQ4;
 
-  /// Pergunta 5 do guia GTD — verificação de delegação
+  /// Sub-pergunta GTD quando tarefa é rápida mas não será feita agora
   ///
   /// In pt_BR, this message translates to:
-  /// **'Isso deve ser delegado?'**
+  /// **'Por que não fazer agora?'**
+  String get gtdQ4bQuestion;
+
+  /// Opção GTD Q4b: ocupado
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Estou ocupado no momento'**
+  String get gtdQ4bBusy;
+
+  /// Opção GTD Q4b: precisa de contexto
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Preciso de mais contexto ou informação'**
+  String get gtdQ4bNeedContext;
+
+  /// Opção GTD Q4b: momento inadequado
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não é o momento certo'**
+  String get gtdQ4bNotRightTime;
+
+  /// Opção GTD Q4b: decidiu fazer agora
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Você tem razão, vou fazer agora'**
+  String get gtdQ4bDoItNow;
+
+  /// Opção GTD Q4b: outro motivo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Outro motivo'**
+  String get gtdQ4bOther;
+
+  /// Pergunta 5 do guia GTD — verificação de importância
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Esta tarefa é importante para seus objetivos e projetos?'**
   String get gtdQ5;
+
+  /// Sub-pergunta GTD quando tarefa não é importante
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Por que você quer mantê-la?'**
+  String get gtdQ5bQuestion;
+
+  /// Opção GTD Q5b: obrigação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'É uma obrigação ou tarefa chata'**
+  String get gtdQ5bObligation;
+
+  /// Opção GTD Q5b: cobrança externa
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Alguém está me cobrando'**
+  String get gtdQ5bSomeoneAsking;
+
+  /// Opção GTD Q5b: lembrete
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não quero esquecer'**
+  String get gtdQ5bReminder;
+
+  /// Opção GTD Q5b: cancelar
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Cancelar tarefa'**
+  String get gtdQ5bCancelTask;
+
+  /// Opção GTD Q5b: outro motivo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Outro motivo'**
+  String get gtdQ5bOther;
 
   /// Pergunta 6 do guia GTD — prazo
   ///
   /// In pt_BR, this message translates to:
-  /// **'Quando precisa ser feito?'**
+  /// **'Qual a data limite para esta tarefa ser concluída?'**
   String get gtdQ6;
 
-  /// Pergunta 7 do guia GTD — importância
+  /// Opção de prazo GTD: próximos 20 dias
   ///
   /// In pt_BR, this message translates to:
-  /// **'Qual é a importância para seus objetivos de longo prazo?'**
+  /// **'Próximos 20 dias'**
+  String get gtdDeadlineNext20Days;
+
+  /// Sub-pergunta GTD quando não há prazo definido
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Por que não tem prazo?'**
+  String get gtdQ6bQuestion;
+
+  /// Opção GTD Q6b: hábito ou tarefa contínua
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'É algo contínuo ou hábito'**
+  String get gtdQ6bHabit;
+
+  /// Opção GTD Q6b: não urgente, lembrete
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não é urgente, mas preciso lembrar'**
+  String get gtdQ6bNotUrgent;
+
+  /// Opção GTD Q6b: sem pressa
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Pode ser quando der tempo'**
+  String get gtdQ6bWhenever;
+
+  /// Opção GTD Q6b: outro motivo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Outro motivo'**
+  String get gtdQ6bOther;
+
+  /// Pergunta 7 do guia GTD — impacto
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Qual o impacto se esta tarefa não for concluída?'**
   String get gtdQ7;
 
-  /// Pergunta 8 do guia GTD — contexto
+  /// Nível de impacto GTD: muito negativo
   ///
   /// In pt_BR, this message translates to:
-  /// **'Qual é o contexto desta tarefa?'**
-  String get gtdQ8;
+  /// **'Muito negativo — tudo depende disso'**
+  String get gtdImpactVeryNegative;
 
-  /// Dica para o campo de contexto Q8
+  /// Nível de impacto GTD: negativo
   ///
   /// In pt_BR, this message translates to:
-  /// **'@casa, @computador, @escritório'**
-  String get gtdQ8Hint;
+  /// **'Negativo — objetivos importantes afetados'**
+  String get gtdImpactNegative;
+
+  /// Nível de impacto GTD: moderado
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Moderado — alguns objetivos afetados'**
+  String get gtdImpactModerate;
+
+  /// Nível de impacto GTD: leve
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Leve — poucos objetivos afetados'**
+  String get gtdImpactLight;
+
+  /// Nível de impacto GTD: muito leve
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Muito leve — atrasos mínimos'**
+  String get gtdImpactVeryLight;
+
+  /// Sub-pergunta GTD quando impacto é nenhum
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Por que manter a tarefa?'**
+  String get gtdQ7bQuestion;
+
+  /// Opção GTD Q7b: desejo pessoal
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'É um desejo pessoal'**
+  String get gtdQ7bPersonalWish;
+
+  /// Opção GTD Q7b: expectativa de terceiro
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Alguém espera que eu faça'**
+  String get gtdQ7bSomeoneExpects;
+
+  /// Opção GTD Q7b: cancelar
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Cancelar tarefa'**
+  String get gtdQ7bCancelTask;
+
+  /// Opção GTD Q7b: outro motivo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Outro motivo'**
+  String get gtdQ7bOther;
+
+  /// Título do card de revisão final do GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Resumo da tarefa'**
+  String get gtdReviewTitle;
+
+  /// Rótulo de prazo no card de revisão GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Prazo'**
+  String get gtdReviewDeadlineLabel;
+
+  /// Rótulo de prioridade no card de revisão GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Prioridade'**
+  String get gtdReviewPriorityLabel;
+
+  /// Rótulo de importância no card de revisão GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Importante'**
+  String get gtdReviewImportantLabel;
+
+  /// Rótulo de urgência no card de revisão GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Urgente'**
+  String get gtdReviewUrgentLabel;
+
+  /// Rótulo de delegado no card de revisão GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Delegado para'**
+  String get gtdReviewDelegatedLabel;
+
+  /// Botão de editar no card de revisão GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Voltar e editar'**
+  String get gtdReviewEdit;
+
+  /// Botão de salvar no card de revisão GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Salvar tarefa'**
+  String get gtdReviewSave;
+
+  /// Título do diálogo de confirmação de cancelamento GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Cancelar o guia?'**
+  String get gtdCancelTitle;
+
+  /// Mensagem do diálogo de cancelamento GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'O progresso será perdido.'**
+  String get gtdCancelMessage;
+
+  /// Botão de continuar no diálogo de cancelamento GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Continuar'**
+  String get gtdCancelContinue;
+
+  /// Botão de descartar no diálogo de cancelamento GTD
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Descartar'**
+  String get gtdCancelDiscard;
+
+  /// Mensagem GTD quando tarefa é salva como Someday/Maybe
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Salvo como Algum Dia/Talvez.'**
+  String get gtdSomedayMessage;
+
+  /// Mensagem GTD quando tarefa é salva como ideia
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Salvo como ideia.'**
+  String get gtdIdeaSavedMessage;
+
+  /// Mensagem GTD quando usuário decide fazer a tarefa agora
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Faça agora! Menos de 10 minutos — só faça. ✅'**
+  String get gtdDoItNowMessage;
 
   /// Resposta sim do guia GTD
   ///
@@ -638,12 +926,6 @@ abstract class AppLocalizations {
   /// In pt_BR, this message translates to:
   /// **'Delegado. Uma nota \'Aguardando\' foi adicionada.'**
   String get gtdDelegateMessage;
-
-  /// Mensagem GTD quando a tarefa leva menos de 2 min
-  ///
-  /// In pt_BR, this message translates to:
-  /// **'Faça agora! Menos de 2 minutos — só faça.'**
-  String get gtdDoItNowMessage;
 
   /// Opção de prazo GTD: hoje
   ///
@@ -681,35 +963,53 @@ abstract class AppLocalizations {
   /// **'Data personalizada'**
   String get gtdDeadlineCustom;
 
-  /// Nível de impacto GTD 1
+  /// Nível de impacto GTD 1 (legado)
   ///
   /// In pt_BR, this message translates to:
   /// **'Crítico — tudo depende disso'**
   String get gtdImpactCritical;
 
-  /// Nível de impacto GTD 2
+  /// Nível de impacto GTD 2 (legado)
   ///
   /// In pt_BR, this message translates to:
   /// **'Alto — grandes consequências'**
   String get gtdImpactHigh;
 
-  /// Nível de impacto GTD 3
+  /// Nível de impacto GTD 3 (legado)
   ///
   /// In pt_BR, this message translates to:
   /// **'Médio — consequências visíveis'**
   String get gtdImpactMedium;
 
-  /// Nível de impacto GTD 4
+  /// Nível de impacto GTD 4 (legado)
   ///
   /// In pt_BR, this message translates to:
   /// **'Baixo — consequências menores'**
   String get gtdImpactLow;
 
-  /// Nível de impacto GTD 5
+  /// Nível de impacto GTD: nenhum
   ///
   /// In pt_BR, this message translates to:
   /// **'Nenhum — pode ser descartado'**
   String get gtdImpactNone;
+
+  /// Dica para o campo de texto Q3 (legado)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'ex: Enviar e-mail, Ligar de volta, Redigir relatório'**
+  String get gtdQ3Hint;
+
+  /// Pergunta 8 do guia GTD — contexto (legado)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Qual é o contexto desta tarefa?'**
+  String get gtdQ8;
+
+  /// Dica para o campo de contexto Q8 (legado)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'@casa, @computador, @escritório'**
+  String get gtdQ8Hint;
 
   /// Confirmação após aplicar filtro GTD pela aba
   ///
