@@ -81,7 +81,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — Finance domain: Transaction, Budget, SavingsGoal, Debt, RecurringPayment entities + enums + repository interfaces; Currencies constants; FinanceColors; formatAmount utility
-- [ ] 03-02-PLAN.md — Finance data layer: 6 Isar @Collection models, 6 DAOs, finance_mappers.dart, 5 repository impls; AppConfig.schemaVersion → 3; MigrationRunner case 3 (seed 13 categories); FinanceModule populated; main.dart schema list updated
+- [x] 03-02-PLAN.md — Finance data layer: 6 Isar @Collection models, 6 DAOs, finance_mappers.dart, 5 repository impls; AppConfig.schemaVersion → 3; MigrationRunner case 3 (seed 13 categories); FinanceModule populated; main.dart schema list updated
 - [ ] 03-03-PLAN.md — Finance application layer: TransactionCubit, BudgetCubit, GoalCubit + GoalListCubit, DebtCubit, RecurringPaymentCubit, HomeDashboardCubit (single-pass balance + net worth + chart aggregation)
 - [ ] 03-04-PLAN.md — Finance presentation: 10 screens (transaction list/form, budget overview, goal list/detail/form, debt list/form, recurring list/form), 4 widgets (TransactionCard, BudgetProgressBar, GoalProgressCard, FinanceEmptyState), Finance tab in NavigationBar, task↔finance link display + task form picker
 - [ ] 03-05-PLAN.md — Dashboard + charts: DashboardSummaryCard (displaySmall balance), SpendingPieChart + SpendingBarChart (fl_chart 1.2.0), month navigation, empty states for dashboard and no-expenses-in-month
