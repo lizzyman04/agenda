@@ -501,4 +501,179 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusPending => 'Pending';
+
+  @override
+  String get financeTabLabel => 'Finance';
+
+  @override
+  String get dashboardTabLabel => 'Summary';
+
+  @override
+  String get transactionsTabLabel => 'Transactions';
+
+  @override
+  String get budgetsTabLabel => 'Budgets';
+
+  @override
+  String get goalsTabLabel => 'Goals';
+
+  @override
+  String get debtsTabLabel => 'Debts';
+
+  @override
+  String get recurringTabLabel => 'Recurring';
+
+  @override
+  String get addTransaction => 'Add transaction';
+
+  @override
+  String get addGoal => 'Create goal';
+
+  @override
+  String get addDebt => 'Add debt';
+
+  @override
+  String get addRecurring => 'Add payment';
+
+  @override
+  String get addContribution => 'Add contribution';
+
+  @override
+  String get saveTransaction => 'Save transaction';
+
+  @override
+  String get saveGoal => 'Save goal';
+
+  @override
+  String get saveDebt => 'Save debt';
+
+  @override
+  String get saveRecurringPayment => 'Save payment';
+
+  @override
+  String get setBudgetLimit => 'Set limit';
+
+  @override
+  String get emptyTransactions => 'No transactions';
+
+  @override
+  String get emptyTransactionsBody => 'Log your first income or expense.';
+
+  @override
+  String get emptyBudgets => 'No budgets';
+
+  @override
+  String get emptyBudgetsBody => 'Set a monthly limit per category.';
+
+  @override
+  String get emptyGoals => 'No goals';
+
+  @override
+  String get emptyGoalsBody => 'Create your first savings goal.';
+
+  @override
+  String get emptyDebts => 'No debts';
+
+  @override
+  String get emptyDebtsBody => 'Log amounts to pay or receive.';
+
+  @override
+  String get emptyRecurring => 'No recurring payments';
+
+  @override
+  String get emptyRecurringBody => 'Add subscriptions and fixed bills.';
+
+  @override
+  String get emptyDashboard => 'No financial data';
+
+  @override
+  String get emptyDashboardBody => 'Add transactions to see your summary.';
+
+  @override
+  String get errorLoadFailed => 'Could not load data. Please try again.';
+
+  @override
+  String get errorSaveFailed =>
+      'Could not save. Check the fields and try again.';
+
+  @override
+  String get errorAmountRequired => 'Enter an amount greater than zero.';
+
+  @override
+  String get errorTitleRequired => 'Title is required.';
+
+  @override
+  String get errorCategoryRequired => 'Select a category.';
+
+  @override
+  String get fieldNote => 'Note';
+
+  @override
+  String get fieldCategory => 'Category';
+
+  @override
+  String get noLimitSet => 'No limit set';
+
+  @override
+  String get income => 'Income';
+
+  @override
+  String get expense => 'Expense';
+
+  @override
+  String get transactionDeleted => 'Transaction deleted';
+
+  @override
+  String get editTransaction => 'Edit transaction';
+
+  @override
+  String get deleteGoal => 'Delete goal';
+
+  @override
+  String get toPay => 'To pay';
+
+  @override
+  String get toReceive => 'To receive';
+
+  @override
+  String get linkToFinance => 'Link to...';
+
+  @override
+  String get linkedTo => 'Linked to';
+
+  @override
+  String get categoryAlimentacao => 'Food';
+
+  @override
+  String get categoryTransporte => 'Transport';
+
+  @override
+  String get categoryMoradia => 'Housing';
+
+  @override
+  String get categorySaude => 'Health';
+
+  @override
+  String get categoryEducacao => 'Education';
+
+  @override
+  String get categoryLazer => 'Leisure';
+
+  @override
+  String get categoryRoupas => 'Clothes';
+
+  @override
+  String get categoryTecnologia => 'Technology';
+
+  @override
+  String get categoryOutros => 'Other';
+
+  @override
+  String get categorySalario => 'Salary';
+
+  @override
+  String get categoryFreelance => 'Freelance';
+
+  @override
+  String get categoryInvestimentos => 'Investments';
 }

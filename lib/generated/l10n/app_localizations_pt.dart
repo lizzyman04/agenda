@@ -503,6 +503,183 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get statusPending => 'Pendente';
+
+  @override
+  String get financeTabLabel => 'Finanças';
+
+  @override
+  String get dashboardTabLabel => 'Resumo';
+
+  @override
+  String get transactionsTabLabel => 'Transações';
+
+  @override
+  String get budgetsTabLabel => 'Orçamentos';
+
+  @override
+  String get goalsTabLabel => 'Objetivos';
+
+  @override
+  String get debtsTabLabel => 'Dívidas';
+
+  @override
+  String get recurringTabLabel => 'Recorrências';
+
+  @override
+  String get addTransaction => 'Adicionar transação';
+
+  @override
+  String get addGoal => 'Criar objetivo';
+
+  @override
+  String get addDebt => 'Adicionar dívida';
+
+  @override
+  String get addRecurring => 'Adicionar pagamento';
+
+  @override
+  String get addContribution => 'Adicionar contribuição';
+
+  @override
+  String get saveTransaction => 'Salvar transação';
+
+  @override
+  String get saveGoal => 'Salvar objetivo';
+
+  @override
+  String get saveDebt => 'Salvar dívida';
+
+  @override
+  String get saveRecurringPayment => 'Salvar pagamento';
+
+  @override
+  String get setBudgetLimit => 'Definir limite';
+
+  @override
+  String get emptyTransactions => 'Nenhuma transação';
+
+  @override
+  String get emptyTransactionsBody =>
+      'Registre sua primeira receita ou despesa.';
+
+  @override
+  String get emptyBudgets => 'Sem orçamentos';
+
+  @override
+  String get emptyBudgetsBody => 'Defina um limite mensal por categoria.';
+
+  @override
+  String get emptyGoals => 'Nenhum objetivo';
+
+  @override
+  String get emptyGoalsBody => 'Crie sua primeira meta de poupança.';
+
+  @override
+  String get emptyDebts => 'Nenhuma dívida';
+
+  @override
+  String get emptyDebtsBody => 'Registre valores a pagar ou a receber.';
+
+  @override
+  String get emptyRecurring => 'Sem pagamentos recorrentes';
+
+  @override
+  String get emptyRecurringBody => 'Adicione assinaturas e contas fixas.';
+
+  @override
+  String get emptyDashboard => 'Sem dados financeiros';
+
+  @override
+  String get emptyDashboardBody => 'Adicione transações para ver seu resumo.';
+
+  @override
+  String get errorLoadFailed =>
+      'Não foi possível carregar os dados. Tente novamente.';
+
+  @override
+  String get errorSaveFailed =>
+      'Não foi possível salvar. Verifique os campos e tente novamente.';
+
+  @override
+  String get errorAmountRequired => 'Informe um valor maior que zero.';
+
+  @override
+  String get errorTitleRequired => 'O título é obrigatório.';
+
+  @override
+  String get errorCategoryRequired => 'Selecione uma categoria.';
+
+  @override
+  String get fieldNote => 'Nota';
+
+  @override
+  String get fieldCategory => 'Categoria';
+
+  @override
+  String get noLimitSet => 'Sem limite definido';
+
+  @override
+  String get income => 'Receita';
+
+  @override
+  String get expense => 'Despesa';
+
+  @override
+  String get transactionDeleted => 'Transação excluída';
+
+  @override
+  String get editTransaction => 'Editar transação';
+
+  @override
+  String get deleteGoal => 'Excluir objetivo';
+
+  @override
+  String get toPay => 'A pagar';
+
+  @override
+  String get toReceive => 'A receber';
+
+  @override
+  String get linkToFinance => 'Vincular a...';
+
+  @override
+  String get linkedTo => 'Ligado a';
+
+  @override
+  String get categoryAlimentacao => 'Alimentação';
+
+  @override
+  String get categoryTransporte => 'Transporte';
+
+  @override
+  String get categoryMoradia => 'Moradia';
+
+  @override
+  String get categorySaude => 'Saúde';
+
+  @override
+  String get categoryEducacao => 'Educação';
+
+  @override
+  String get categoryLazer => 'Lazer';
+
+  @override
+  String get categoryRoupas => 'Roupas';
+
+  @override
+  String get categoryTecnologia => 'Tecnologia';
+
+  @override
+  String get categoryOutros => 'Outros';
+
+  @override
+  String get categorySalario => 'Salário';
+
+  @override
+  String get categoryFreelance => 'Freelance';
+
+  @override
+  String get categoryInvestimentos => 'Investimentos';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -1004,4 +1181,181 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get statusPending => 'Pendente';
+
+  @override
+  String get financeTabLabel => 'Finanças';
+
+  @override
+  String get dashboardTabLabel => 'Resumo';
+
+  @override
+  String get transactionsTabLabel => 'Transações';
+
+  @override
+  String get budgetsTabLabel => 'Orçamentos';
+
+  @override
+  String get goalsTabLabel => 'Objetivos';
+
+  @override
+  String get debtsTabLabel => 'Dívidas';
+
+  @override
+  String get recurringTabLabel => 'Recorrências';
+
+  @override
+  String get addTransaction => 'Adicionar transação';
+
+  @override
+  String get addGoal => 'Criar objetivo';
+
+  @override
+  String get addDebt => 'Adicionar dívida';
+
+  @override
+  String get addRecurring => 'Adicionar pagamento';
+
+  @override
+  String get addContribution => 'Adicionar contribuição';
+
+  @override
+  String get saveTransaction => 'Salvar transação';
+
+  @override
+  String get saveGoal => 'Salvar objetivo';
+
+  @override
+  String get saveDebt => 'Salvar dívida';
+
+  @override
+  String get saveRecurringPayment => 'Salvar pagamento';
+
+  @override
+  String get setBudgetLimit => 'Definir limite';
+
+  @override
+  String get emptyTransactions => 'Nenhuma transação';
+
+  @override
+  String get emptyTransactionsBody =>
+      'Registre sua primeira receita ou despesa.';
+
+  @override
+  String get emptyBudgets => 'Sem orçamentos';
+
+  @override
+  String get emptyBudgetsBody => 'Defina um limite mensal por categoria.';
+
+  @override
+  String get emptyGoals => 'Nenhum objetivo';
+
+  @override
+  String get emptyGoalsBody => 'Crie sua primeira meta de poupança.';
+
+  @override
+  String get emptyDebts => 'Nenhuma dívida';
+
+  @override
+  String get emptyDebtsBody => 'Registre valores a pagar ou a receber.';
+
+  @override
+  String get emptyRecurring => 'Sem pagamentos recorrentes';
+
+  @override
+  String get emptyRecurringBody => 'Adicione assinaturas e contas fixas.';
+
+  @override
+  String get emptyDashboard => 'Sem dados financeiros';
+
+  @override
+  String get emptyDashboardBody => 'Adicione transações para ver seu resumo.';
+
+  @override
+  String get errorLoadFailed =>
+      'Não foi possível carregar os dados. Tente novamente.';
+
+  @override
+  String get errorSaveFailed =>
+      'Não foi possível salvar. Verifique os campos e tente novamente.';
+
+  @override
+  String get errorAmountRequired => 'Informe um valor maior que zero.';
+
+  @override
+  String get errorTitleRequired => 'O título é obrigatório.';
+
+  @override
+  String get errorCategoryRequired => 'Selecione uma categoria.';
+
+  @override
+  String get fieldNote => 'Nota';
+
+  @override
+  String get fieldCategory => 'Categoria';
+
+  @override
+  String get noLimitSet => 'Sem limite definido';
+
+  @override
+  String get income => 'Receita';
+
+  @override
+  String get expense => 'Despesa';
+
+  @override
+  String get transactionDeleted => 'Transação excluída';
+
+  @override
+  String get editTransaction => 'Editar transação';
+
+  @override
+  String get deleteGoal => 'Excluir objetivo';
+
+  @override
+  String get toPay => 'A pagar';
+
+  @override
+  String get toReceive => 'A receber';
+
+  @override
+  String get linkToFinance => 'Vincular a...';
+
+  @override
+  String get linkedTo => 'Ligado a';
+
+  @override
+  String get categoryAlimentacao => 'Alimentação';
+
+  @override
+  String get categoryTransporte => 'Transporte';
+
+  @override
+  String get categoryMoradia => 'Moradia';
+
+  @override
+  String get categorySaude => 'Saúde';
+
+  @override
+  String get categoryEducacao => 'Educação';
+
+  @override
+  String get categoryLazer => 'Lazer';
+
+  @override
+  String get categoryRoupas => 'Roupas';
+
+  @override
+  String get categoryTecnologia => 'Tecnologia';
+
+  @override
+  String get categoryOutros => 'Outros';
+
+  @override
+  String get categorySalario => 'Salário';
+
+  @override
+  String get categoryFreelance => 'Freelance';
+
+  @override
+  String get categoryInvestimentos => 'Investimentos';
 }

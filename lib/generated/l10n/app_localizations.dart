@@ -1070,6 +1070,354 @@ abstract class AppLocalizations {
   /// In pt_BR, this message translates to:
   /// **'Pendente'**
   String get statusPending;
+
+  /// Rótulo da aba de finanças na barra de navegação inferior
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Finanças'**
+  String get financeTabLabel;
+
+  /// Rótulo da sub-aba Resumo na tela de finanças
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Resumo'**
+  String get dashboardTabLabel;
+
+  /// Rótulo da sub-aba Transações na tela de finanças
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Transações'**
+  String get transactionsTabLabel;
+
+  /// Rótulo da sub-aba Orçamentos na tela de finanças
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Orçamentos'**
+  String get budgetsTabLabel;
+
+  /// Rótulo da sub-aba Objetivos na tela de finanças
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Objetivos'**
+  String get goalsTabLabel;
+
+  /// Rótulo da sub-aba Dívidas na tela de finanças
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Dívidas'**
+  String get debtsTabLabel;
+
+  /// Rótulo da sub-aba Recorrências na tela de finanças
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Recorrências'**
+  String get recurringTabLabel;
+
+  /// Tooltip do FAB na tela de transações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Adicionar transação'**
+  String get addTransaction;
+
+  /// Tooltip do FAB na tela de objetivos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Criar objetivo'**
+  String get addGoal;
+
+  /// Tooltip do FAB na tela de dívidas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Adicionar dívida'**
+  String get addDebt;
+
+  /// Tooltip do FAB na tela de pagamentos recorrentes
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Adicionar pagamento'**
+  String get addRecurring;
+
+  /// Botão de adicionar contribuição na tela de detalhe do objetivo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Adicionar contribuição'**
+  String get addContribution;
+
+  /// Rótulo do FilledButton na AppBar do formulário de transação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Salvar transação'**
+  String get saveTransaction;
+
+  /// Rótulo do FilledButton na AppBar do formulário de objetivo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Salvar objetivo'**
+  String get saveGoal;
+
+  /// Rótulo do FilledButton na AppBar do formulário de dívida
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Salvar dívida'**
+  String get saveDebt;
+
+  /// Rótulo do FilledButton na AppBar do formulário de pagamento recorrente
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Salvar pagamento'**
+  String get saveRecurringPayment;
+
+  /// Botão de salvar no BottomSheet de orçamento
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Definir limite'**
+  String get setBudgetLimit;
+
+  /// Título do estado vazio na tela de transações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Nenhuma transação'**
+  String get emptyTransactions;
+
+  /// Corpo do estado vazio na tela de transações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Registre sua primeira receita ou despesa.'**
+  String get emptyTransactionsBody;
+
+  /// Título do estado vazio na tela de orçamentos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Sem orçamentos'**
+  String get emptyBudgets;
+
+  /// Corpo do estado vazio na tela de orçamentos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Defina um limite mensal por categoria.'**
+  String get emptyBudgetsBody;
+
+  /// Título do estado vazio na tela de objetivos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Nenhum objetivo'**
+  String get emptyGoals;
+
+  /// Corpo do estado vazio na tela de objetivos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Crie sua primeira meta de poupança.'**
+  String get emptyGoalsBody;
+
+  /// Título do estado vazio na tela de dívidas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Nenhuma dívida'**
+  String get emptyDebts;
+
+  /// Corpo do estado vazio na tela de dívidas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Registre valores a pagar ou a receber.'**
+  String get emptyDebtsBody;
+
+  /// Título do estado vazio na tela de pagamentos recorrentes
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Sem pagamentos recorrentes'**
+  String get emptyRecurring;
+
+  /// Corpo do estado vazio na tela de pagamentos recorrentes
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Adicione assinaturas e contas fixas.'**
+  String get emptyRecurringBody;
+
+  /// Título do estado vazio no painel de finanças
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Sem dados financeiros'**
+  String get emptyDashboard;
+
+  /// Corpo do estado vazio no painel de finanças
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Adicione transações para ver seu resumo.'**
+  String get emptyDashboardBody;
+
+  /// Mensagem de erro ao falhar o carregamento
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não foi possível carregar os dados. Tente novamente.'**
+  String get errorLoadFailed;
+
+  /// Mensagem de erro ao falhar o salvamento
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não foi possível salvar. Verifique os campos e tente novamente.'**
+  String get errorSaveFailed;
+
+  /// Erro de validação quando o valor é zero ou vazio
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Informe um valor maior que zero.'**
+  String get errorAmountRequired;
+
+  /// Erro de validação quando o título está vazio (finanças)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'O título é obrigatório.'**
+  String get errorTitleRequired;
+
+  /// Erro de validação quando nenhuma categoria está selecionada
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Selecione uma categoria.'**
+  String get errorCategoryRequired;
+
+  /// Rótulo do campo de nota opcional no formulário de transação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Nota'**
+  String get fieldNote;
+
+  /// Rótulo do campo de categoria no formulário de transação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Categoria'**
+  String get fieldCategory;
+
+  /// Texto exibido quando nenhum limite de orçamento está definido para uma categoria
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Sem limite definido'**
+  String get noLimitSet;
+
+  /// Rótulo para o tipo de transação receita
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Receita'**
+  String get income;
+
+  /// Rótulo para o tipo de transação despesa
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Despesa'**
+  String get expense;
+
+  /// Conteúdo da SnackBar após exclusão suave de transação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Transação excluída'**
+  String get transactionDeleted;
+
+  /// Título da AppBar ao editar uma transação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Editar transação'**
+  String get editTransaction;
+
+  /// Tooltip do botão de excluir objetivo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Excluir objetivo'**
+  String get deleteGoal;
+
+  /// Rótulo para dívidas a pagar
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'A pagar'**
+  String get toPay;
+
+  /// Rótulo para dívidas a receber
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'A receber'**
+  String get toReceive;
+
+  /// Rótulo da seção de vinculação financeira no formulário de tarefa
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Vincular a...'**
+  String get linkToFinance;
+
+  /// Rótulo do chip de vinculação na tela de detalhe de tarefa
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Ligado a'**
+  String get linkedTo;
+
+  /// Categoria de despesa: alimentação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Alimentação'**
+  String get categoryAlimentacao;
+
+  /// Categoria de despesa: transporte
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Transporte'**
+  String get categoryTransporte;
+
+  /// Categoria de despesa: moradia
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Moradia'**
+  String get categoryMoradia;
+
+  /// Categoria de despesa: saúde
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Saúde'**
+  String get categorySaude;
+
+  /// Categoria de despesa: educação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Educação'**
+  String get categoryEducacao;
+
+  /// Categoria de despesa: lazer
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Lazer'**
+  String get categoryLazer;
+
+  /// Categoria de despesa: roupas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Roupas'**
+  String get categoryRoupas;
+
+  /// Categoria de despesa: tecnologia
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Tecnologia'**
+  String get categoryTecnologia;
+
+  /// Categoria de despesa/receita: outros
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Outros'**
+  String get categoryOutros;
+
+  /// Categoria de receita: salário
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Salário'**
+  String get categorySalario;
+
+  /// Categoria de receita: freelance
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Freelance'**
+  String get categoryFreelance;
+
+  /// Categoria de receita: investimentos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Investimentos'**
+  String get categoryInvestimentos;
 }
 
 class _AppLocalizationsDelegate
