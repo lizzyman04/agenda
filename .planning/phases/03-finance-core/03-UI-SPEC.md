@@ -1,7 +1,8 @@
 ---
 phase: 3
 slug: finance-core
-status: draft
+status: approved
+reviewed_at: 2026-05-14
 design_system: Flutter Material 3
 flutter_theme: ColorScheme.fromSeed(seedColor: Colors.deepPurple) — inherited from Phase 2
 created: 2026-05-14
@@ -36,17 +37,18 @@ All values are `EdgeInsets` or `SizedBox` logical pixels. Must be multiples of 4
 |-------|-------|---------------|
 | xs | 4 | `SizedBox(height: 4)` / `SizedBox(width: 4)` — chip internal gaps, tight inline spacing |
 | sm | 8 | `SizedBox(height: 8)` / `EdgeInsets.all(8)` — card margin, chip run spacing |
-| md | 12 | `SizedBox(height: 12)` — between form cards (matches Phase 2 form spacing) |
-| lg | 16 | `EdgeInsets.symmetric(horizontal: 16)` — screen horizontal padding, card internal padding |
-| xl | 24 | `SizedBox(height: 24)` — between major sections within a screen |
-| 2xl | 32 | `SizedBox(height: 32)` — bottom of form body (scroll breathing room) |
-| 3xl | 48 | `SizedBox(height: 48)` — chart section top/bottom margin |
+| md | 16 | `EdgeInsets.symmetric(horizontal: 16)` — screen horizontal padding, card internal padding |
+| lg | 24 | `SizedBox(height: 24)` — between major sections within a screen |
+| xl | 32 | `SizedBox(height: 32)` — bottom of form body (scroll breathing room) |
+| 2xl | 48 | `SizedBox(height: 48)` — chart section top/bottom margin |
+| 3xl | 64 | Reserved for future large breakpoints |
 
 Exceptions:
 - Touch targets for icon buttons: minimum 48×48 logical pixels (Material 3 requirement)
 - `Card.margin` for transaction/goal/debt list items: `EdgeInsets.symmetric(horizontal: 8, vertical: 4)` (matches Phase 2 `TaskCard` margin)
 - `Divider` height inside cards: 1 logical pixel with `indent: 48, endIndent: 16` (matches Phase 2 `_FieldDivider`)
 - Bottom sheet handle bar: `Container(width: 40, height: 4)` with `BorderRadius.circular(2)` (matches Phase 2 GTD guide pattern)
+- Between form cards: `SizedBox(height: 12)` — 12px gap matches Phase 2 `task_form_screen.dart` card gap; intentional deviation from the 8/16 standard scale steps
 
 ---
 
@@ -56,7 +58,7 @@ All roles map to `Theme.of(context).textTheme.*` — do not declare custom `Text
 
 | Role | Flutter TextTheme Role | Approx Size | Weight | Line Height | Usage |
 |------|----------------------|-------------|--------|-------------|-------|
-| Display | `displaySmall` | ~36sp | w400 | 1.2 | Dashboard balance amount (e.g., "MT 12.450,00") |
+| Display | `displaySmall` | ~36sp | w400 | 1.2 | Dashboard balance amount (e.g., "MT 12.450,00") — large size provides visual prominence without needing semibold |
 | Headline | `titleLarge` | ~22sp | w400 | 1.2 | Screen section headers, empty state titles, GTD-style question headings |
 | Title | `titleMedium` | ~16sp | w500 | 1.4 | Card titles (transaction title, goal name, debt counterparty) |
 | Body | `bodyLarge` | ~16sp | w400 | 1.5 | Primary list item text, form field input text |
@@ -65,9 +67,9 @@ All roles map to `Theme.of(context).textTheme.*` — do not declare custom `Text
 | Caption | `bodySmall` | ~12sp | w400 | 1.3 | Field label above value in ListTile (matches Phase 2 `bodySmall + onSurfaceVariant`) |
 | Chip | Explicit `TextStyle(fontSize: 11)` | 11sp | w400 | — | Amount/date chips in transaction cards (matches Phase 2 `TaskCard` chip pattern) |
 
-Weight rule: Use w400 (regular) and w600 (semibold) only. Do not introduce w700 or w300.
-- w400: all body text, secondary text, chip text
-- w600: amounts that are primary data (balance, net worth, goal total), confirmed review values
+Weight rule: Use w400 (regular) and w500 (medium) only. Do not introduce w600, w700, or w300.
+- w400: all body text, secondary text, chip text, display/headline roles
+- w500: `titleMedium` and `labelMedium` roles (Material 3 defaults for those TextTheme roles)
 
 ---
 
@@ -110,6 +112,10 @@ Phase 3 inherits `ColorScheme.fromSeed(seedColor: Colors.deepPurple)` from Phase
 
 ## Widget Vocabulary
 
+### Primary Visual Anchor
+
+The primary visual anchor for the Finance dashboard is the current balance amount rendered in `displaySmall` (approximately 36sp, w400) inside the dashboard summary card at the top of the screen. This is the single element that draws the user's eye first on entering the Finance tab. All other dashboard elements (charts, tab sub-navigation) are visually subordinate to it.
+
 ### Screen-Level Widgets
 
 | Screen | Root Widget | Navigation Entry | Notes |
@@ -138,15 +144,20 @@ Phase 3 inherits `ColorScheme.fromSeed(seedColor: Colors.deepPurple)` from Phase
 
 | Action | Widget | Color |
 |--------|--------|-------|
-| Primary CTA (add/save) | `FloatingActionButton` (list) / `FilledButton` (form AppBar) | `cs.primary` |
+| Primary CTA (add) | `FloatingActionButton` (list screens) | `cs.primary` |
+| Save transaction (form AppBar) | `FilledButton` with label "Salvar transação" / "Save transaction" | `cs.primary` |
+| Save goal (form AppBar) | `FilledButton` with label "Salvar objetivo" / "Save goal" | `cs.primary` |
+| Save debt (form AppBar) | `FilledButton` with label "Salvar dívida" / "Save debt" | `cs.primary` |
+| Save recurring payment (form AppBar) | `FilledButton` with label "Salvar pagamento" / "Save payment" | `cs.primary` |
 | Secondary action (edit, cancel) | `OutlinedButton` | Default |
 | Destructive confirm | `FilledButton` with `backgroundColor: cs.error` inside `AlertDialog` | `cs.error` |
 | Inline delete (list swipe) | `Dismissible` with `DismissDirection.endToStart` + red background | `cs.error` |
 | Undo delete | `SnackBar` + `SnackBarAction` | Default SnackBar + primary action label |
 | Toggle (active/inactive) | `Switch` via `SwitchListTile` | Default |
-| Month navigation (dashboard) | `IconButton(Icons.chevron_left)` + `Text` + `IconButton(Icons.chevron_right)` | `cs.onSurface` |
+| Month navigation (dashboard) | `IconButton(tooltip: 'Mês anterior' / 'Previous month', icon: Icon(Icons.chevron_left))` + `Text` + `IconButton(tooltip: 'Próximo mês' / 'Next month', icon: Icon(Icons.chevron_right))` | `cs.onSurface` |
 | Category picker | `ModalBottomSheet` with `ListView` of `ListTile` options | `cs.surfaceContainerLow` |
 | Contribution add (goal) | `FilledButton.tonal` inside goal detail | `cs.secondaryContainer` |
+| Delete (transaction detail screen) | `IconButton(tooltip: 'Excluir transação' / 'Delete transaction', icon: Icon(Icons.delete_outline))` | `cs.error` (icon color) |
 
 ---
 
@@ -167,7 +178,7 @@ TransactionCard layout:
 |---------|------|
 | Leading icon | `Icons.arrow_upward` (income, income-green color) / `Icons.arrow_downward` (expense, expense-red color), size 24 |
 | Title | `bodyLarge`, single line, `TextOverflow.ellipsis` |
-| Amount | `bodyLarge`, `fontWeight: FontWeight.w600`, income-green or expense-red depending on `TransactionType` |
+| Amount | `bodyLarge`, `fontWeight: FontWeight.w500`, income-green or expense-red depending on `TransactionType` |
 | Category + Date | `bodySmall`, `cs.onSurfaceVariant`, row with `·` separator |
 | Note chip | `Chip` with `TextStyle(fontSize: 11)`, shown only if `note != null`, max 1 line |
 | Card margin | `EdgeInsets.symmetric(horizontal: 8, vertical: 4)` |
@@ -231,8 +242,11 @@ All finance forms (`TransactionFormScreen`, `GoalFormScreen`, `DebtFormScreen`, 
 |----------|-------|
 | Root | `Scaffold` + `Form(key: _formKey)` + `ListView` |
 | Body padding | `EdgeInsets.symmetric(horizontal: 16, vertical: 12)` |
-| Between cards | `SizedBox(height: 12)` |
-| AppBar save action | `FilledButton` in AppBar `actions` (right-aligned) — label: "Salvar" |
+| Between cards | `SizedBox(height: 12)` (exception — see Spacing Exceptions) |
+| AppBar save action — TransactionFormScreen | `FilledButton` in AppBar `actions` (right-aligned) — label: "Salvar transação" / "Save transaction" |
+| AppBar save action — GoalFormScreen | `FilledButton` in AppBar `actions` (right-aligned) — label: "Salvar objetivo" / "Save goal" |
+| AppBar save action — DebtFormScreen | `FilledButton` in AppBar `actions` (right-aligned) — label: "Salvar dívida" / "Save debt" |
+| AppBar save action — RecurringPaymentFormScreen | `FilledButton` in AppBar `actions` (right-aligned) — label: "Salvar pagamento" / "Save payment" |
 | Form card style | `Card(elevation: 0, color: cs.surfaceContainerLow, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)))` |
 | Field row | `_FieldRow` pattern: `Icon(size: 20, color: cs.onSurfaceVariant)` + `SizedBox(width: 12)` + `Expanded(child: field)` |
 | Field divider | `Divider(height: 1, indent: 48, endIndent: 16)` |
@@ -349,9 +363,9 @@ BarChart(
 | Property | Value |
 |----------|-------|
 | Layout | `Row(MainAxisAlignment.spaceBetween)` |
-| Prev button | `IconButton(icon: Icon(Icons.chevron_left))` |
+| Prev button | `IconButton(tooltip: 'Mês anterior' / 'Previous month', icon: Icon(Icons.chevron_left))` |
 | Month label | `Text('MMMM yyyy' formatted, style: titleMedium)` |
-| Next button | `IconButton(icon: Icon(Icons.chevron_right))` |
+| Next button | `IconButton(tooltip: 'Próximo mês' / 'Next month', icon: Icon(Icons.chevron_right))` |
 | Disabled state | Next button disabled (`onPressed: null`) when selected month is current month |
 
 ---
@@ -455,7 +469,7 @@ The `TabBar` uses `isScrollable: true` so all 6 tabs fit on any screen width. `T
 
 1. User taps FAB on Transações tab → `TransactionFormScreen` pushed via `MaterialPageRoute`.
 2. Form fields: type toggle (income/expense via `SegmentedButton`), amount field, category picker (BottomSheet), date picker, optional note field, optional goal link (if expense).
-3. AppBar: `FilledButton("Salvar")` — calls Cubit on tap.
+3. AppBar: `FilledButton("Salvar transação")` — calls Cubit on tap.
 4. On success: pop screen. `TransactionListCubit` reloads via `watchLazy()` automatically.
 5. On validation error: field border highlights (Material 3 default), `Text` error message below field.
 
@@ -527,7 +541,10 @@ All strings go into `lib/config/l10n/app_pt_BR.arb` and `app_en.arb`. No hardcod
 | `addDebt` | Adicionar dívida | Add debt | Debt List FAB tooltip |
 | `addRecurring` | Adicionar pagamento | Add payment | Recurring FAB tooltip |
 | `addContribution` | Adicionar contribuição | Add contribution | Goal Detail button |
-| `saveButton` | Salvar | Save | Form AppBar (inherits from Phase 2) |
+| `saveTransaction` | Salvar transação | Save transaction | TransactionFormScreen AppBar |
+| `saveGoal` | Salvar objetivo | Save goal | GoalFormScreen AppBar |
+| `saveDebt` | Salvar dívida | Save debt | DebtFormScreen AppBar |
+| `saveRecurringPayment` | Salvar pagamento | Save payment | RecurringPaymentFormScreen AppBar |
 | `setBudgetLimit` | Definir limite | Set limit | Budget bottom sheet |
 
 ### Empty States
@@ -579,7 +596,7 @@ Finance ARB keys follow the same convention as Phase 2:
 - Screens: `{domain}ScreenTitle` — e.g., `transactionListScreenTitle`
 - Fields: `field{Name}` — e.g., `fieldAmount`, `fieldNote`, `fieldCategory`
 - Empty states: `empty{Domain}`, `empty{Domain}Body` — e.g., `emptyTransactions`, `emptyTransactionsBody`
-- Actions: verb + noun camelCase — e.g., `addTransaction`, `saveButton`, `deleteButton`
+- Actions: verb + noun camelCase — e.g., `addTransaction`, `saveTransaction`, `deleteButton`
 - Errors: `error{Context}` — e.g., `errorAmountRequired`, `errorSaveFailed`
 - Categories (seed names): `category{Name}` — e.g., `categoryAlimentacao`, `categorySalario`
 
@@ -631,3 +648,10 @@ All widgets are either Flutter SDK built-ins or `fl_chart` 1.2.0 (already approv
 | Category picker as BottomSheet | Claude's Discretion (CONTEXT.md) | Category Picker |
 | Task link chip (ActionChip) | CONTEXT.md D-19, D-21 | Task ↔ Finance Link |
 | NavigationBar tab 4 = Finanças | Phase 3 scope | Navigation Architecture |
+| Per-form save labels (saveTransaction, saveGoal, saveDebt, saveRecurringPayment) | UI checker revision 2026-05-14 | Copywriting, Form Pattern, Action Widgets, Interaction Contracts |
+| Primary visual anchor declaration (displaySmall balance) | UI checker revision 2026-05-14 | Widget Vocabulary |
+| Month nav IconButton tooltip declarations | UI checker revision 2026-05-14 | Action Widgets, Month Navigation Header |
+| Weight rule updated to w400 + w500 only (w600 removed) | UI checker revision 2 — 2026-05-14 | Typography |
+| Transaction card amount weight changed from w600 to w500 | UI checker revision 2 — 2026-05-14 | Transaction Card Contract |
+| Delete button tooltip added to Action Widgets | UI checker revision 2 — 2026-05-14 | Action Widgets |
+| md token corrected to 16 in main scale; 12px gap moved to Exceptions | UI checker revision 2 — 2026-05-14 | Spacing Scale |
