@@ -76,15 +76,15 @@ Plans:
   3. User can create a savings goal with a target amount and optional deadline, contribute to it, and see the percentage progress update with each contribution
   4. User can log a debt (to pay or to receive) with amount and due date, and log a recurring payment (subscription or bill) with amount and billing cycle
   5. All screens — transaction list, budget overview, goals list, debt list — display meaningful empty states with a clear action prompt when no data exists yet; the dashboard shows current balance and net worth; the spending chart renders a monthly category breakdown as pie and bar
-**Plans**: TBD
+**Plans**: 5 plans
 **UI hint**: yes
 
 Plans:
-- [ ] 03-01: Finance domain — entities (Transaction, Budget, SavingsGoal, Debt, RecurringPayment), repository interfaces
-- [ ] 03-02: Finance data layer — Isar schemas (reusing enum convention), model mappers, repository implementations
-- [ ] 03-03: Finance application layer — TransactionCubit, BudgetCubit, GoalCubit, DebtCubit, HomeDashboardCubit (shared)
-- [ ] 03-04: Finance presentation — transaction log, budget tracker, savings goals, debt tracker, recurring payments
-- [ ] 03-05: Dashboard + charts — net worth overview, fl_chart spending pie + bar, empty states across all finance screens
+- [ ] 03-01-PLAN.md — Finance domain: Transaction, Budget, SavingsGoal, Debt, RecurringPayment entities + enums + repository interfaces; Currencies constants; FinanceColors; formatAmount utility
+- [ ] 03-02-PLAN.md — Finance data layer: 6 Isar @Collection models, 6 DAOs, finance_mappers.dart, 5 repository impls; AppConfig.schemaVersion → 3; MigrationRunner case 3 (seed 13 categories); FinanceModule populated; main.dart schema list updated
+- [ ] 03-03-PLAN.md — Finance application layer: TransactionCubit, BudgetCubit, GoalCubit + GoalListCubit, DebtCubit, RecurringPaymentCubit, HomeDashboardCubit (single-pass balance + net worth + chart aggregation)
+- [ ] 03-04-PLAN.md — Finance presentation: 10 screens (transaction list/form, budget overview, goal list/detail/form, debt list/form, recurring list/form), 4 widgets (TransactionCard, BudgetProgressBar, GoalProgressCard, FinanceEmptyState), Finance tab in NavigationBar, task↔finance link display + task form picker
+- [ ] 03-05-PLAN.md — Dashboard + charts: DashboardSummaryCard (displaySmall balance), SpendingPieChart + SpendingBarChart (fl_chart 1.2.0), month navigation, empty states for dashboard and no-expenses-in-month
 
 ---
 
@@ -139,6 +139,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
-| 3. Finance Core | 0/5 | Not started | - |
+| 3. Finance Core | 0/5 | In progress | - |
 | 4. Notifications + Backup | 0/5 | Not started | - |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
