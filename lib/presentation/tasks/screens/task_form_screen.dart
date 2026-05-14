@@ -1,4 +1,10 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
+import 'package:agenda/config/di/injection.dart';
+import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/domain/finance/debt.dart';
+import 'package:agenda/domain/finance/debt_repository.dart';
+import 'package:agenda/domain/finance/goal_repository.dart';
+import 'package:agenda/domain/finance/savings_goal.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/domain/tasks/priority.dart';
@@ -37,6 +43,14 @@ class _TaskFormScreenState extends State<TaskFormScreen>
   String? _recurrenceRule;
   bool _advancedExpanded = false;
 
+  // Finance link state
+  int? _linkedGoalId;
+  int? _linkedDebtId;
+  List<SavingsGoal> _activeGoals = [];
+  List<Debt> _activeDebts = [];
+  String? _linkedGoalTitle;
+  String? _linkedDebtTitle;
+
   bool get _isEditing => widget.item != null;
 
   @override
@@ -64,6 +78,155 @@ class _TaskFormScreenState extends State<TaskFormScreen>
       _dueTime = TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
     }
     _recurrenceRule = item?.recurrenceRule;
+    _linkedGoalId = item?.linkedGoalId;
+    _linkedDebtId = item?.linkedDebtId;
+    _loadFinanceLinks();
+  }
+
+  Future<void> _loadFinanceLinks() async {
+    final goalRepo = getIt<GoalRepository>();
+    final debtRepo = getIt<DebtRepository>();
+
+    final goalsResult = await goalRepo.getActiveGoals();
+    if (goalsResult is Success<List<SavingsGoal>> && mounted) {
+      final goals = goalsResult.value;
+      setState(() {
+        _activeGoals = goals;
+        if (_linkedGoalId != null) {
+          try {
+            _linkedGoalTitle = goals
+                .firstWhere((g) => g.id == _linkedGoalId)
+                .title;
+          } catch (_) {}
+        }
+      });
+    }
+
+    final debtsResult = await debtRepo.getDebts();
+    if (debtsResult is Success<List<Debt>> && mounted) {
+      final debts = debtsResult.value;
+      setState(() {
+        _activeDebts = debts;
+        if (_linkedDebtId != null) {
+          try {
+            _linkedDebtTitle = debts
+                .firstWhere((d) => d.id == _linkedDebtId)
+                .title;
+          } catch (_) {}
+        }
+      });
+    }
+  }
+
+  Future<void> _pickFinanceLink() async {
+    final l10n = AppLocalizations.of(context);
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        minChildSize: 0.3,
+        maxChildSize: 0.85,
+        expand: false,
+        builder: (_, scrollCtrl) => Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+              child: Text(
+                l10n.linkToFinance,
+                style: Theme.of(ctx).textTheme.titleMedium,
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                controller: scrollCtrl,
+                children: [
+                  // Clear option
+                  ListTile(
+                    leading: const Icon(Icons.link_off),
+                    title: const Text('Sem vínculo'),
+                    onTap: () {
+                      setState(() {
+                        _linkedGoalId = null;
+                        _linkedDebtId = null;
+                        _linkedGoalTitle = null;
+                        _linkedDebtTitle = null;
+                      });
+                      Navigator.of(ctx).pop();
+                    },
+                  ),
+                  if (_activeGoals.isNotEmpty) ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                      child: Text(
+                        l10n.goalsTabLabel,
+                        style: Theme.of(ctx).textTheme.labelMedium?.copyWith(
+                              color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                            ),
+                      ),
+                    ),
+                    ..._activeGoals.map(
+                      (g) => ListTile(
+                        leading: const Icon(Icons.savings_outlined),
+                        title: Text(g.title),
+                        trailing: _linkedGoalId == g.id
+                            ? Icon(Icons.check,
+                                color: Theme.of(ctx).colorScheme.primary)
+                            : null,
+                        onTap: () {
+                          setState(() {
+                            _linkedGoalId = g.id;
+                            _linkedGoalTitle = g.title;
+                            _linkedDebtId = null;
+                            _linkedDebtTitle = null;
+                          });
+                          Navigator.of(ctx).pop();
+                        },
+                      ),
+                    ),
+                  ],
+                  if (_activeDebts.isNotEmpty) ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                      child: Text(
+                        l10n.debtsTabLabel,
+                        style: Theme.of(ctx).textTheme.labelMedium?.copyWith(
+                              color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                            ),
+                      ),
+                    ),
+                    ..._activeDebts.map(
+                      (d) => ListTile(
+                        leading: const Icon(Icons.handshake_outlined),
+                        title: Text(d.title),
+                        subtitle: Text(d.counterparty),
+                        trailing: _linkedDebtId == d.id
+                            ? Icon(Icons.check,
+                                color: Theme.of(ctx).colorScheme.primary)
+                            : null,
+                        onTap: () {
+                          setState(() {
+                            _linkedDebtId = d.id;
+                            _linkedDebtTitle = d.title;
+                            _linkedGoalId = null;
+                            _linkedGoalTitle = null;
+                          });
+                          Navigator.of(ctx).pop();
+                        },
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -131,6 +294,8 @@ class _TaskFormScreenState extends State<TaskFormScreen>
         dueDate: _dueDate,
         dueTimeMinutes: dueTimeMinutes,
         recurrenceRule: _recurrenceRule,
+        linkedGoalId: _linkedGoalId ?? clearField,
+        linkedDebtId: _linkedDebtId ?? clearField,
         updatedAt: now,
       );
       await context.read<TaskListCubit>().updateItem(saved);
@@ -156,6 +321,8 @@ class _TaskFormScreenState extends State<TaskFormScreen>
         dueDate: _dueDate,
         dueTimeMinutes: dueTimeMinutes,
         recurrenceRule: _recurrenceRule,
+        linkedGoalId: _linkedGoalId,
+        linkedDebtId: _linkedDebtId,
         createdAt: now,
         updatedAt: now,
       );
@@ -498,6 +665,27 @@ class _TaskFormScreenState extends State<TaskFormScreen>
                 ),
                 const SizedBox(height: 8),
               ],
+            ),
+            const SizedBox(height: 12),
+
+            // Finance link card
+            _FormCard(
+              child: ListTile(
+                leading: const Icon(Icons.link_outlined),
+                title: Text(
+                  l10n.linkToFinance,
+                  style: theme.textTheme.titleSmall
+                      ?.copyWith(color: cs.onSurfaceVariant),
+                ),
+                subtitle: (_linkedGoalTitle ?? _linkedDebtTitle) != null
+                    ? Text(
+                        '${l10n.linkedTo} ${_linkedGoalTitle ?? _linkedDebtTitle}',
+                        style: theme.textTheme.bodyMedium,
+                      )
+                    : null,
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _pickFinanceLink,
+              ),
             ),
             const SizedBox(height: 32),
           ],

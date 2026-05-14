@@ -4,6 +4,7 @@ import 'package:agenda/application/tasks/day_planner/day_planner_cubit.dart';
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/finance/screens/finance_dashboard_screen.dart';
 import 'package:agenda/presentation/tasks/screens/day_planner_screen.dart';
 import 'package:agenda/presentation/tasks/screens/eisenhower_screen.dart';
 import 'package:agenda/presentation/tasks/screens/gtd_filter_screen.dart';
@@ -63,11 +64,12 @@ class _AppShell extends StatefulWidget {
 class _AppShellState extends State<_AppShell> {
   int _selectedIndex = 0;
 
-  static const _screens = [
+  static const List<Widget> _screens = [
     TaskListScreen(),
     EisenhowerScreen(),
     DayPlannerScreen(),
     GtdFilterScreen(usedAsTab: true),
+    FinanceDashboardScreen(),
   ];
 
   @override
@@ -103,6 +105,11 @@ class _AppShellState extends State<_AppShell> {
             icon: const Icon(Icons.label_outline),
             selectedIcon: const Icon(Icons.label),
             label: l10n.navGtd,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: const Icon(Icons.account_balance_wallet),
+            label: l10n.financeTabLabel,
           ),
         ],
       ),

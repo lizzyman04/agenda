@@ -287,6 +287,31 @@ class TaskDetailScreen extends StatelessWidget {
               ],
             ),
           ],
+
+          // ── Finance link chip ──
+          if (item.linkedGoalId != null || item.linkedDebtId != null) ...[
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Wrap(
+                children: [
+                  ActionChip(
+                    avatar: const Icon(Icons.link, size: 16),
+                    label: Text(
+                      '${l10n.linkedTo} '
+                      '${item.linkedGoalId != null ? l10n.goalsTabLabel : l10n.debtsTabLabel} '
+                      '#${item.linkedGoalId ?? item.linkedDebtId}',
+                    ),
+                    backgroundColor: cs.secondaryContainer,
+                    onPressed: () {
+                      // Navigation to finance detail is deferred to plan 03-05
+                      // when deep-link routing is set up.
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
       bottomNavigationBar: SafeArea(

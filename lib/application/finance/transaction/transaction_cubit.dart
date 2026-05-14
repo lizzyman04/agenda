@@ -62,6 +62,28 @@ class TransactionCubit extends Cubit<TransactionState> {
     // watchChanges() fires reload automatically
   }
 
+  /// Restores a soft-deleted transaction by clearing its deletedAt field.
+  ///
+  /// Used by the undo snackbar action after a swipe-to-delete.
+  Future<void> restoreTransaction(int id) async {
+    final getResult = await _repository.getTransaction(id);
+    final Transaction tx;
+    switch (getResult) {
+      case Err<Transaction>():
+        // Transaction not found — silently ignore (already permanently deleted).
+        return;
+      case Success<Transaction>(:final value):
+        tx = value;
+    }
+    // Clear deletedAt to restore the transaction.
+    final restored = tx.copyWith(deletedAt: null, updatedAt: DateTime.now());
+    final result = await _repository.updateTransaction(restored);
+    if (result is Err<Transaction>) {
+      emit(TransactionError(result.failure));
+    }
+    // watchChanges() fires reload automatically
+  }
+
   // --- Private ---
 
   Future<void> _reload() async {
