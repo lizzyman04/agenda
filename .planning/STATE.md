@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-05-14T20:33:24.499Z"
-last_activity: 2026-05-14 -- Phase 03 planning complete
+last_updated: "2026-05-14T20:35:35.629Z"
+last_activity: 2026-05-14 -- Phase 03 execution started
 progress:
   total_phases: 5
   completed_phases: 2
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Open AGENDA at any moment and immediately see what needs doing and where the money stands — no internet connection ever required.
-**Current focus:** Phase 3 — Finance Core
+**Current focus:** Phase 03 — finance-core
 
 ## Current Position
 
-Phase: 3 of 5 (Finance Core)
-Plan: 0 of 5 in current phase
-Status: Ready to execute
-Last activity: 2026-05-14 -- Phase 03 planning complete
+Phase: 03 (finance-core) — EXECUTING
+Plan: 1 of 5
+Status: Executing Phase 03
+Last activity: 2026-05-14 -- Phase 03 execution started
 
 Progress: [████░░░░░░] 40%
 
