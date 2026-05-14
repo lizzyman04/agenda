@@ -74,6 +74,7 @@ class SavingsGoal {
   /// Can exceed 1.0 — no cap at domain layer; UI layer is responsible
   /// for clamping the display value.
   double progressPercent(int taggedTransactionsCents) {
+    // ignore: prefer_int_literals
     if (targetAmountCents == 0) return 0.0;
     return amountSavedCents(taggedTransactionsCents) / targetAmountCents;
   }
