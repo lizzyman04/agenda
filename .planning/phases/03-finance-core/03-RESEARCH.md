@@ -1014,17 +1014,19 @@ class TransactionRepositoryImpl implements TransactionRepository { ... }
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Category l10n key naming convention**
    - What we know: CONTEXT.md D-04/D-05 gives PT-BR display names; CLAUDE.md says UI text in PT-BR with EN toggle.
    - What's unclear: Do we store `nameKey` (ARB lookup key) or `namePtBr` + `nameEn` as separate fields on `TransactionCategoryModel`? The ARB key approach is cleaner but requires the l10n system to be used at the data layer boundary.
    - Recommendation: Store `namePtBr` as the canonical display name (already seeded in PT-BR per D-04/D-05) and `nameEn` as a nullable field (populated for default categories only). Custom categories have only `namePtBr`. This avoids coupling the data layer to the l10n ARB system.
+   - RESOLVED: Plan 03-02 (Task 1 TransactionCategoryModel) uses `namePtBr` + `nameEn` (nullable) as separate fields, matching the recommendation. No ARB lookup key stored at the data layer.
 
 2. **RecurringPayment auto-advance**
    - What we know: `RecurringPaymentModel` has `nextDueDate`. Phase 4 notification system reads this.
    - What's unclear: Does Phase 3 advance `nextDueDate` automatically when a payment is marked, or is that Phase 4's job?
    - Recommendation: Phase 3 stores `nextDueDate` but does NOT auto-advance it. Phase 4 notification logic owns the advance logic when the payment fires. Phase 3 only provides the data structure.
+   - RESOLVED: Plan 03-02 (RecurringPaymentRepositoryImpl) stores `nextDueDate` but does not advance it; no auto-advance logic is planned in Phase 3. Phase 4 owns the notification + advance logic.
 
 ---
 
