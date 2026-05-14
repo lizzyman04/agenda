@@ -195,6 +195,13 @@ grep "FinanceModule\|TransactionDao\|GoalMapper\|DebtRepository" injection.confi
 - **Files modified:** `lib/data/database/migration_runner.dart`
 - **Commit:** 8240499
 
+**4. [Rule 1 - Bug] Pre-existing AppConfig test checked schemaVersion == 2, failed after bump to 3**
+- **Found during:** Post-commit comprehensive test run
+- **Issue:** `test/core/config/app_config_test.dart` had `expect(AppConfig.schemaVersion, 2)` — broken by the legitimate schemaVersion bump
+- **Fix:** Updated test description and expected value to `3`
+- **Files modified:** `test/core/config/app_config_test.dart`
+- **Commit:** 348360d
+
 ## Known Stubs
 
 None — this plan is data and infrastructure layer only. No UI rendering, no display-only stubs.
