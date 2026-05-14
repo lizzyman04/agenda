@@ -18,7 +18,9 @@ abstract final class AppConfig {
   ///
   /// Bump this constant AND add a corresponding migration block in
   /// MigrationRunner._runMigration every time the Isar schema changes.
-  static const int schemaVersion = 2;
+  /// v3: Finance collections added; MigrationRunner case 3 seeds
+  ///     default transaction categories (D-04, D-05).
+  static const int schemaVersion = 3;
 
   // ---------------------------------------------------------------------------
   // Notification ID namespaces
