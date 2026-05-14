@@ -11,9 +11,12 @@ void main() {
       expect(AppConfig.packageName, 'com.omeu.space.agenda');
     });
 
-    test('schemaVersion is 2 (ItemModel collection added in Phase 2)', () {
-      expect(AppConfig.schemaVersion, 2);
-    });
+    test(
+      'schemaVersion is 3 (Phase 3: finance collections + category seeding)',
+      () {
+        expect(AppConfig.schemaVersion, 3);
+      },
+    );
 
     test('taskNotificationBase is 10', () {
       expect(AppConfig.taskNotificationBase, 10);
