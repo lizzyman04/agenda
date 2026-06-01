@@ -61,7 +61,30 @@ on app teardown.
 without `close()` — a minor leak in the goal CRUD cubit, unrelated to this crash and
 not one of the 6 dashboard cubits. Flagged for a future cleanup.
 
-## Device re-test (still required)
+## Device re-test (still required) — MUST be a COLD RESTART
 
-Run `flutter run`, open Finance → Transações → FAB. The form must open and save with
-no `_dependents.isEmpty` assertion. Repeat for Dívidas and Recorrências forms.
+This fix relocates the 6 `BlocProvider`s across the `MaterialApp` boundary (from inside
+`FinanceDashboardScreen` to above `MaterialApp`). That is a structural element-tree
+change. **Hot reload (`r`) cannot relocate an existing Element** — it keeps the stale
+tree and re-runs `build()`, during which the old finance `InheritedProvider`s deactivate
+while their tab `BlocBuilder` dependents are still attached → the same
+`InheritedElement.debugDeactivated()` → `assert(_dependents.isEmpty)` (framework.dart:6268)
+fires on tab switch (observed on the Orçamentos tab).
+
+Re-test procedure:
+1. Fully stop the app (do NOT hot reload). Then:
+   `flutter run` (or press `R` for hot RESTART, capital R, not `r`).
+2. Open Finance, switch through all 6 tabs (Resumo → Recorrências), including Orçamentos.
+3. Open the Transações, Dívidas, and Recorrências forms via FAB; save one of each.
+
+No `_dependents.isEmpty` assertion should occur after a cold restart.
+
+If it STILL crashes after a genuine cold restart, capture the FULL stack trace (the
+widget frames directly above the assertion identify which InheritedElement deactivated)
+— that would indicate a real residual bug rather than stale hot-reload state.
+
+## Confirmed clean (no budgets code bug)
+
+`budget_overview_screen.dart` uses `context.read<BudgetCubit>()` + `BlocBuilder` only —
+no `BlocProvider`, no `BlocProvider.value`, no route push. There is no `budget_form_screen`.
+Budgets cannot itself trigger this assertion; the prior fix covers it.
