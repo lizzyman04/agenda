@@ -94,11 +94,25 @@ sheet and reordered to **pop first, then mutate**, on the hypothesis that `setLi
 so the root cause is deeper than the emit/teardown ordering. The reorder is harmless and
 left in place, but the bug is still open.
 
-**STATUS: OPEN — deferred by user decision (not blocking Phase 3).** See STATE.md
-Blockers/Concerns. Next investigation step: capture the full stack trace on save to
-identify which InheritedElement deactivates and which widget is the lingering dependent
-(candidates: the `TextField`/`autofocus` focus scope, the modal route's own inherited
-scopes, or a Theme/MediaQuery dependency captured by the sheet content).
+**STATUS: RESOLVED (2026-06-02, commit ae397ae).**
 
-The other finance forms (transaction/debt/recurring `_save`) `await` the cubit call
-before `pop()`, so they are unaffected.
+A reproducing widget test (`test/presentation/finance/budget_limit_sheet_test.dart`)
+surfaced the *real* first exception, which the `_dependents.isEmpty` assertion was only
+a cascade of:
+
+```
+A TextEditingController was used after being disposed.
+```
+
+The controller was created in `_openLimitSheet`'s method scope and disposed immediately
+after the `showModalBottomSheet` await returned. During the sheet's dismiss transition
+the `TextField` rebuilt against the disposed controller → rendering error → finally the
+overlay's `InheritedElement.debugDeactivated()` → `_dependents.isEmpty`. The provider-
+scope move (260601-u6q) and pop-before-emit reorder (03c9498) were both unrelated to
+this cause — which is why neither fixed it.
+
+**Fix:** moved the sheet body into `_BudgetLimitSheet`, a `StatefulWidget` that owns the
+`TextEditingController` and disposes it in `State.dispose()` (framework-correct teardown
+order). The sheet returns the parsed limit via `Navigator.pop`; `setLimit` is applied
+after the sheet has fully closed. Regression test asserts no exception + `setLimit` fires
+with the parsed value (25000 cents). All 30 finance tests pass; analyze clean.

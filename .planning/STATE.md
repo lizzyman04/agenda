@@ -84,7 +84,7 @@ None.
 - **Phase 2 research flag**: OEM Android notification behavior (Samsung/Xiaomi/Huawei) varies significantly; consider a focused research spike before Phase 4 notification scheduling architecture is finalized
 - **Phase 4 research flag**: PT-BR comma decimal separator in CSV round-trip (`1.234,56`) has edge cases; dedicate a spike to locale-aware parsing before the backup feature spec is written
 - **Phase 5 research flag**: iOS `inactive` vs `paused` lifecycle states for lock triggering behave differently on simulator vs real device; spike recommended before Phase 5 app lock implementation
-- **OPEN BUG (Phase 3, deferred 2026-06-01)**: Saving a budget limit in the Orçamentos BottomSheet crashes with `_dependents.isEmpty` (`InheritedElement.debugDeactivated`, framework.dart:6268). Provider-scope fix (260601-u6q) and pop-before-emit reorder (03c9498) did NOT resolve it — root cause deeper. Non-blocking; user deferred. Needs full save-path stack trace to identify the deactivating InheritedElement. Other finance forms unaffected.
+- **RESOLVED (2026-06-02, commit ae397ae)**: Budget-limit-save `_dependents.isEmpty` crash. True root cause was a `TextEditingController` disposed too early (method-scope dispose right after the `showModalBottomSheet` await → "used after being disposed" during the dismiss transition → cascaded to the overlay `_dependents.isEmpty` assertion). Fixed by moving the sheet body into `_BudgetLimitSheet` (StatefulWidget that owns/disposes the controller). Reproducing widget test added (budget_limit_sheet_test.dart). Earlier provider-scope/pop-order attempts were unrelated to this cause.
 
 ### Quick Tasks Completed
 
