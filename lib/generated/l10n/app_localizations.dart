@@ -1245,6 +1245,42 @@ abstract class AppLocalizations {
   /// **'Adicione transações para ver seu resumo.'**
   String get emptyDashboardBody;
 
+  /// Rótulo do saldo no cartão de resumo do painel
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Saldo atual'**
+  String get currentBalance;
+
+  /// Rótulo do patrimônio líquido no cartão de resumo do painel
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Patrimônio líquido'**
+  String get netWorth;
+
+  /// Exibido na área do gráfico quando o mês selecionado não tem despesas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Sem gastos em {month}'**
+  String noExpensesInMonth(String month);
+
+  /// Título da seção de gráficos do painel
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Gastos por categoria'**
+  String get spendingByCategory;
+
+  /// Tooltip da seta de navegação para o mês anterior
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Mês anterior'**
+  String get previousMonth;
+
+  /// Tooltip da seta de navegação para o próximo mês
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Próximo mês'**
+  String get nextMonth;
+
   /// Mensagem de erro ao falhar o carregamento
   ///
   /// In pt_BR, this message translates to:

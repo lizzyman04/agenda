@@ -593,6 +593,26 @@ class AppLocalizationsPt extends AppLocalizations {
   String get emptyDashboardBody => 'Adicione transações para ver seu resumo.';
 
   @override
+  String get currentBalance => 'Saldo atual';
+
+  @override
+  String get netWorth => 'Patrimônio líquido';
+
+  @override
+  String noExpensesInMonth(String month) {
+    return 'Sem gastos em $month';
+  }
+
+  @override
+  String get spendingByCategory => 'Gastos por categoria';
+
+  @override
+  String get previousMonth => 'Mês anterior';
+
+  @override
+  String get nextMonth => 'Próximo mês';
+
+  @override
   String get errorLoadFailed =>
       'Não foi possível carregar os dados. Tente novamente.';
 
@@ -1269,6 +1289,26 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get emptyDashboardBody => 'Adicione transações para ver seu resumo.';
+
+  @override
+  String get currentBalance => 'Saldo atual';
+
+  @override
+  String get netWorth => 'Patrimônio líquido';
+
+  @override
+  String noExpensesInMonth(String month) {
+    return 'Sem gastos em $month';
+  }
+
+  @override
+  String get spendingByCategory => 'Gastos por categoria';
+
+  @override
+  String get previousMonth => 'Mês anterior';
+
+  @override
+  String get nextMonth => 'Próximo mês';
 
   @override
   String get errorLoadFailed =>
