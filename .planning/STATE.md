@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-05-14T20:35:35.629Z"
-last_activity: 2026-05-14 -- Phase 03 execution started
+last_updated: "2026-06-01T00:00:00.000Z"
+last_activity: 2026-06-01 -- Phase 03 plans 03-01..03-03 complete; 03-04 code done, checkpoint pending
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 15
-  completed_plans: 10
-  percent: 67
+  completed_plans: 13
+  percent: 87
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 03 (finance-core) — EXECUTING
-Plan: 1 of 5
-Status: Executing Phase 03
-Last activity: 2026-05-14 -- Phase 03 execution started
+Plan: 4 of 5 (03-04 checkpoint pending)
+Status: Plans 03-01, 03-02, 03-03 complete; 03-04 code built, human-verify checkpoint pending; 03-05 not started
+Last activity: 2026-06-01 -- build_runner re-run post 03-03 (DI fix); resuming 03-04 checkpoint
 
-Progress: [████░░░░░░] 40%
+Progress: [████████░░] 87%
 
 ## Performance Metrics
 
@@ -49,7 +49,7 @@ Progress: [████░░░░░░] 40%
 
 **Recent Trend:**
 
-- Last 5 plans: 02-01, 02-02, 02-03, 02-04, 02-05
+- Last 5 plans: 03-01, 03-02, 03-03, 03-04 (partial), DI post-fix
 - Trend: On track
 
 *Updated after each plan completion*
@@ -87,6 +87,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-05-14T16:40:27.234Z
-Stopped at: Phase 3 UI-SPEC approved
-Resume file: .planning/phases/03-finance-core/03-UI-SPEC.md
+Last session: 2026-06-01T00:00:00.000Z
+Stopped at: 03-04 human-verify checkpoint (Finance UI on device)
+Resume file: .planning/phases/03-finance-core/03-04-PLAN.md

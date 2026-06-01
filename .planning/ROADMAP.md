@@ -82,8 +82,8 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — Finance domain: Transaction, Budget, SavingsGoal, Debt, RecurringPayment entities + enums + repository interfaces; Currencies constants; FinanceColors; formatAmount utility
 - [x] 03-02-PLAN.md — Finance data layer: 6 Isar @Collection models, 6 DAOs, finance_mappers.dart, 5 repository impls; AppConfig.schemaVersion → 3; MigrationRunner case 3 (seed 13 categories); FinanceModule populated; main.dart schema list updated
-- [x] 03-03-PLAN.md — Finance application layer: TransactionCubit, BudgetCubit, GoalCubit + GoalListCubit, DebtCubit, RecurringPaymentCubit, HomeDashboardCubit (single-pass balance + net worth + chart aggregation)
-- [ ] 03-04-PLAN.md — Finance presentation: 10 screens (transaction list/form, budget overview, goal list/detail/form, debt list/form, recurring list/form), 4 widgets (TransactionCard, BudgetProgressBar, GoalProgressCard, FinanceEmptyState), Finance tab in NavigationBar, task↔finance link display + task form picker
+- [x] 03-03-PLAN.md — Finance application layer: TransactionCubit, BudgetCubit, GoalCubit + GoalListCubit, DebtCubit, RecurringPaymentCubit, HomeDashboardCubit (single-pass balance + net worth + chart aggregation) *(post-fix 2026-06-01: build_runner re-run to regenerate injection.config.dart with cubit factories)*
+- [ ] 03-04-PLAN.md — Finance presentation: 10 screens (transaction list/form, budget overview, goal list/detail/form, debt list/form, recurring list/form), 4 widgets (TransactionCard, BudgetProgressBar, GoalProgressCard, FinanceEmptyState), Finance tab in NavigationBar, task↔finance link display + task form picker *(code complete, checkpoint human-verify pending)*
 - [ ] 03-05-PLAN.md — Dashboard + charts: DashboardSummaryCard (displaySmall balance), SpendingPieChart + SpendingBarChart (fl_chart 1.2.0), month navigation, empty states for dashboard and no-expenses-in-month
 
 ---
@@ -139,6 +139,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
-| 3. Finance Core | 0/5 | In progress | - |
+| 3. Finance Core | 3/5 | In progress | - |
 | 4. Notifications + Backup | 0/5 | Not started | - |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
