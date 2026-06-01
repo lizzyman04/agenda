@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 Phase: 03 (finance-core) — EXECUTING
 Plan: 4 of 5 (03-04 checkpoint pending)
 Status: Plans 03-01, 03-02, 03-03 complete; 03-04 code built, human-verify checkpoint pending; 03-05 not started
-Last activity: 2026-06-01 -- build_runner re-run post 03-03 (DI fix); resuming 03-04 checkpoint
+Last activity: 2026-06-01 -- Completed quick task 260601-u6q: fix finance form _dependents.isEmpty crash (provider scope)
 
 Progress: [████████░░] 87%
 
@@ -84,6 +84,12 @@ None.
 - **Phase 2 research flag**: OEM Android notification behavior (Samsung/Xiaomi/Huawei) varies significantly; consider a focused research spike before Phase 4 notification scheduling architecture is finalized
 - **Phase 4 research flag**: PT-BR comma decimal separator in CSV round-trip (`1.234,56`) has edge cases; dedicate a spike to locale-aware parsing before the backup feature spec is written
 - **Phase 5 research flag**: iOS `inactive` vs `paused` lifecycle states for lock triggering behave differently on simulator vs real device; spike recommended before Phase 5 app lock implementation
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260601-u6q | Fix finance form `_dependents.isEmpty` crash (hoist cubits above MaterialApp) | 2026-06-01 | d8dc04c | [260601-u6q-fix-finance-provider-scope](./quick/260601-u6q-fix-finance-provider-scope/) |
 
 ## Session Continuity
 
