@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 03 (finance-core) — EXECUTING
-Plan: 5 of 5 (03-05 executing)
-Status: Plans 03-01..03-04 complete; 03-04 checkpoint APPROVED (budget-save crash deferred, non-blocking); 03-05 executing
-Last activity: 2026-06-01 -- 03-04 checkpoint approved; starting 03-05 (dashboard + charts)
+Plan: 5 of 5 (03-05 code complete, human-verify checkpoint pending)
+Status: Plans 03-01..03-04 complete; 03-05 code complete (dashboard summary card, pie+bar charts, month nav) — human-verify checkpoint pending; budget-save crash still deferred
+Last activity: 2026-06-01 -- 03-05 executed and merged (commits 561c273, 6a316ec, c345f06); awaiting dashboard human-verify
 
 Progress: [████████░░] 87%
 
