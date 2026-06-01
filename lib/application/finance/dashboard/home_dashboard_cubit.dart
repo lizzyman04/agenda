@@ -43,7 +43,15 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
   DateTime _selectedMonth = DateTime.now();
 
   /// Subscribes to transaction changes and loads the initial dashboard data.
+  ///
+  /// Idempotent: if already subscribed (e.g. the dashboard tab is rebuilt when
+  /// the user revisits the Resumo tab), it only reloads and does not open a
+  /// second watch subscription that would leak the first.
   Future<void> start() async {
+    if (_txWatchSub != null) {
+      await _reload();
+      return;
+    }
     _txWatchSub = _transactionRepository
         .watchChanges()
         .listen((_) async => _reload());
