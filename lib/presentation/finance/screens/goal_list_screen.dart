@@ -28,12 +28,11 @@ class _GoalListScreenState extends State<GoalListScreen> {
   }
 
   void _openForm() {
+    // GoalFormScreen creates its own GoalCubit via getIt; the list refreshes
+    // through GoalListCubit's watch stream. No provider wrapper needed here.
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => BlocProvider.value(
-          value: context.read<GoalListCubit>(),
-          child: const GoalFormScreen(),
-        ),
+        builder: (_) => const GoalFormScreen(),
       ),
     );
   }

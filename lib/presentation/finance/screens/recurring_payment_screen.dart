@@ -31,12 +31,10 @@ class _RecurringPaymentScreenState
   }
 
   void _openForm({RecurringPayment? payment}) {
+    // RecurringPaymentCubit is provided above MaterialApp; route inherits it.
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => BlocProvider.value(
-          value: context.read<RecurringPaymentCubit>(),
-          child: RecurringPaymentFormScreen(payment: payment),
-        ),
+        builder: (_) => RecurringPaymentFormScreen(payment: payment),
       ),
     );
   }

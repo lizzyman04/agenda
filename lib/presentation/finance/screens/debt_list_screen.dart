@@ -29,12 +29,10 @@ class _DebtListScreenState extends State<DebtListScreen> {
   }
 
   void _openForm({Debt? debt}) {
+    // DebtCubit is provided above MaterialApp, so the pushed route inherits it.
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => BlocProvider.value(
-          value: context.read<DebtCubit>(),
-          child: DebtFormScreen(debt: debt),
-        ),
+        builder: (_) => DebtFormScreen(debt: debt),
       ),
     );
   }

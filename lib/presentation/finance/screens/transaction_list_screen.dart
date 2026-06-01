@@ -29,12 +29,11 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   }
 
   void _openForm({Transaction? transaction}) {
+    // TransactionCubit is provided above MaterialApp, so the pushed route
+    // inherits it directly — no per-route BlocProvider.value needed.
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => BlocProvider.value(
-          value: context.read<TransactionCubit>(),
-          child: TransactionFormScreen(transaction: transaction),
-        ),
+        builder: (_) => TransactionFormScreen(transaction: transaction),
       ),
     );
   }

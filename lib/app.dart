@@ -1,3 +1,9 @@
+import 'package:agenda/application/finance/budget/budget_cubit.dart';
+import 'package:agenda/application/finance/dashboard/home_dashboard_cubit.dart';
+import 'package:agenda/application/finance/debt/debt_cubit.dart';
+import 'package:agenda/application/finance/goal/goal_list_cubit.dart';
+import 'package:agenda/application/finance/recurring/recurring_payment_cubit.dart';
+import 'package:agenda/application/finance/transaction/transaction_cubit.dart';
 import 'package:agenda/application/shared/locale/locale_cubit.dart';
 import 'package:agenda/application/shared/locale/locale_state.dart';
 import 'package:agenda/application/tasks/day_planner/day_planner_cubit.dart';
@@ -18,8 +24,25 @@ class AgendaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<LocaleCubit>(
-      create: (_) => getIt<LocaleCubit>(),
+    // Finance cubits are provided ABOVE MaterialApp (above the Navigator) so that
+    // every pushed route inherits them. Providers placed in MaterialApp.home sit
+    // below the Navigator and are NOT visible to pushed routes — re-providing them
+    // per-route via BlocProvider.value duplicated a single instance across two live
+    // InheritedProviders and triggered a `_dependents.isEmpty` framework assertion.
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<LocaleCubit>(create: (_) => getIt<LocaleCubit>()),
+        BlocProvider<TransactionCubit>(create: (_) => getIt<TransactionCubit>()),
+        BlocProvider<BudgetCubit>(create: (_) => getIt<BudgetCubit>()),
+        BlocProvider<GoalListCubit>(create: (_) => getIt<GoalListCubit>()),
+        BlocProvider<DebtCubit>(create: (_) => getIt<DebtCubit>()),
+        BlocProvider<RecurringPaymentCubit>(
+          create: (_) => getIt<RecurringPaymentCubit>(),
+        ),
+        BlocProvider<HomeDashboardCubit>(
+          create: (_) => getIt<HomeDashboardCubit>(),
+        ),
+      ],
       child: BlocBuilder<LocaleCubit, LocaleState>(
         builder: (context, localeState) {
           return MaterialApp(
