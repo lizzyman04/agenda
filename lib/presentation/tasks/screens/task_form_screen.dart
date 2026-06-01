@@ -1,10 +1,10 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/debt.dart';
+import 'package:agenda/domain/finance/debt.dart' hide clearField;
 import 'package:agenda/domain/finance/debt_repository.dart';
 import 'package:agenda/domain/finance/goal_repository.dart';
-import 'package:agenda/domain/finance/savings_goal.dart';
+import 'package:agenda/domain/finance/savings_goal.dart' hide clearField;
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/domain/tasks/priority.dart';
