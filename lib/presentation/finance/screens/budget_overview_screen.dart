@@ -37,6 +37,9 @@ class _BudgetOverviewScreenState extends State<BudgetOverviewScreen> {
           : '',
     );
     final l10n = AppLocalizations.of(context);
+    // Capture the cubit before showing the sheet so the save handler does not
+    // depend on a context lookup from inside the (soon-to-be-dismissed) sheet.
+    final cubit = context.read<BudgetCubit>();
 
     await showModalBottomSheet<void>(
       context: context,
@@ -92,17 +95,22 @@ class _BudgetOverviewScreenState extends State<BudgetOverviewScreen> {
                     .replaceAll(',', '.')
                     .replaceAll(RegExp(r'[^\d.]'), '');
                 final parsed = double.tryParse(raw);
+                // Dismiss the sheet FIRST, then mutate. Emitting a new
+                // BudgetCubit state while the modal route is still tearing
+                // down interleaves a BlocBuilder rebuild with the route's
+                // deactivation and trips the framework _dependents.isEmpty
+                // assertion (InheritedElement.debugDeactivated).
+                Navigator.of(ctx).pop();
                 if (parsed != null && parsed > 0) {
                   final limitCents = (parsed * 100).round();
                   final now = DateTime.now();
-                  context.read<BudgetCubit>().setLimit(
-                        categoryId,
-                        now.month,
-                        now.year,
-                        limitCents,
-                      );
+                  cubit.setLimit(
+                    categoryId,
+                    now.month,
+                    now.year,
+                    limitCents,
+                  );
                 }
-                Navigator.of(ctx).pop();
               },
               child: Text(l10n.setBudgetLimit),
             ),
