@@ -307,7 +307,6 @@ class _FieldRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(icon, size: 20, color: cs.onSurfaceVariant),
           const SizedBox(width: 12),

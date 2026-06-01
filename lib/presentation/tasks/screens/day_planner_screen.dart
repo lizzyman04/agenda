@@ -164,7 +164,6 @@ class _TaskPickerSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.5,
       builder: (context, scrollController) {
         if (items.isEmpty) {
           return const Center(child: Icon(Icons.inbox_outlined, size: 48));

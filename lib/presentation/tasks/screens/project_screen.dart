@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 ///
 /// [projectId] is passed from the router path parameter.
 class ProjectScreen extends StatefulWidget {
-  const ProjectScreen({super.key, required this.projectId});
+  const ProjectScreen({required this.projectId, super.key});
 
   final int projectId;
 

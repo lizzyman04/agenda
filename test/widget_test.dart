@@ -21,7 +21,7 @@ class _StubItemRepository implements ItemRepository {
 
   @override
   AsyncResult<Item> getItem(int id) async =>
-      Err(DatabaseFailure('stub'));
+      const Err(DatabaseFailure('stub'));
 
   @override
   AsyncResult<List<Item>> getItemsByType(ItemType type) async =>
@@ -36,11 +36,11 @@ class _StubItemRepository implements ItemRepository {
 
   @override
   AsyncResult<Item> softDelete(int id) async =>
-      Err(DatabaseFailure('stub'));
+      const Err(DatabaseFailure('stub'));
 
   @override
   AsyncResult<Item> restoreItem(int id) async =>
-      Err(DatabaseFailure('stub'));
+      const Err(DatabaseFailure('stub'));
 
   @override
   AsyncResult<List<Item>> searchByTitle(String query) async =>
@@ -77,7 +77,7 @@ void main() {
     // Replace the real Isar-backed repository with a stub so the widget tree
     // can render without the native libisar.so binary (unavailable in VM tests).
     getIt.unregister<ItemRepository>();
-    getIt.registerLazySingleton<ItemRepository>(() => _StubItemRepository());
+    getIt.registerLazySingleton<ItemRepository>(_StubItemRepository.new);
   });
 
   tearDown(() async {

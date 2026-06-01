@@ -90,7 +90,7 @@ void main() {
         when(() => repository.getSubtaskCounts(10))
             .thenAnswer((_) async => const Success<(int, int)>((0, 0)));
         when(() => repository.getSubtasks(10))
-            .thenAnswer((_) async => Success<List<Item>>([]));
+            .thenAnswer((_) async => const Success<List<Item>>([]));
         when(() => repository.createItem(any()))
             .thenAnswer((_) async => Success<Item>(makeSubtask()));
         return ProjectCubit(repository);
@@ -154,7 +154,7 @@ void main() {
         when(() => repository.getSubtaskCounts(10))
             .thenAnswer((_) async => const Success<(int, int)>((0, 0)));
         when(() => repository.getSubtasks(10))
-            .thenAnswer((_) async => Success<List<Item>>([]));
+            .thenAnswer((_) async => const Success<List<Item>>([]));
         when(() => repository.softDelete(any()))
             .thenAnswer((_) async => Success<Item>(makeSubtask()));
         return ProjectCubit(repository);

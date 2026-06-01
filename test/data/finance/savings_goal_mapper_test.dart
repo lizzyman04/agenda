@@ -10,7 +10,7 @@ void main() {
   final now = DateTime(2026, 5, 14, 12);
 
   group('GoalMapper.toDomain', () {
-    final mapper = const GoalMapper();
+    const mapper = GoalMapper();
 
     test('produces SavingsGoal with contributions.length == 2', () {
       final c1 = GoalContribution()
@@ -57,7 +57,7 @@ void main() {
   });
 
   group('GoalMapper.toModel', () {
-    final mapper = const GoalMapper();
+    const mapper = GoalMapper();
 
     test('contributions list initialized as growable (can add without error)',
         () {
@@ -92,11 +92,11 @@ void main() {
         contributions: [
           SavingsGoalContribution(
             amountCents: 10000,
-            date: DateTime(2026, 1, 1),
+            date: DateTime(2026),
           ),
           SavingsGoalContribution(
             amountCents: 20000,
-            date: DateTime(2026, 2, 1),
+            date: DateTime(2026, 2),
           ),
         ],
         isCompleted: false,
@@ -113,7 +113,7 @@ void main() {
   });
 
   group('DebtMapper round-trip', () {
-    final mapper = const DebtMapper();
+    const mapper = DebtMapper();
 
     test('DebtDirection.toPay round-trips through DebtMapper', () {
       final debtModel = data.DebtModel()

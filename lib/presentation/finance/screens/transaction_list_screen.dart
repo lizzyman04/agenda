@@ -76,7 +76,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
               heading: l10n.emptyTransactions,
               body: l10n.emptyTransactionsBody,
               ctaLabel: l10n.addTransaction,
-              onCta: () => _openForm(),
+              onCta: _openForm,
             ),
           TransactionLoaded(:final transactions) => Stack(
               children: [
@@ -100,7 +100,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                   bottom: 16,
                   child: FloatingActionButton(
                     tooltip: l10n.addTransaction,
-                    onPressed: () => _openForm(),
+                    onPressed: _openForm,
                     child: const Icon(Icons.add),
                   ),
                 ),

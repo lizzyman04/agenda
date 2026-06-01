@@ -9,10 +9,7 @@ import 'package:flutter/material.dart';
 /// [items] is empty.
 class QuadrantCard extends StatelessWidget {
   const QuadrantCard({
-    super.key,
-    required this.label,
-    required this.items,
-    required this.headerColor,
+    required this.label, required this.items, required this.headerColor, super.key,
   });
 
   final String label;

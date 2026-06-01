@@ -1,7 +1,6 @@
 import 'package:agenda/application/tasks/day_planner/day_planner_cubit.dart';
 import 'package:agenda/application/tasks/day_planner/day_planner_state.dart';
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
-import 'package:agenda/application/tasks/task_list/task_list_filter.dart';
 import 'package:agenda/application/tasks/task_list/task_list_state.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/tasks/screens/day_planner_screen.dart';
@@ -50,15 +49,15 @@ void main() {
 
       // TaskListCubit is read via context.watch — needs a stable state
       when(() => taskListCubit.state).thenReturn(
-        const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+        const TaskListLoaded(items: []),
       );
       whenListen(
         taskListCubit,
         Stream<TaskListState>.fromIterable([
-          const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+          const TaskListLoaded(items: []),
         ]),
         initialState:
-            const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+            const TaskListLoaded(items: []),
       );
     });
 

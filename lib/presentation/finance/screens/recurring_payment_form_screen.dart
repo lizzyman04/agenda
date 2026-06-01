@@ -95,7 +95,6 @@ class _RecurringPaymentFormScreenState
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
         minChildSize: 0.3,
         maxChildSize: 0.8,
         expand: false,
@@ -332,7 +331,7 @@ class _RecurringPaymentFormScreenState
                   _FieldRow(
                     icon: Icons.repeat_outlined,
                     child: DropdownButtonFormField<RecurringCycle>(
-                      value: _cycle,
+                      initialValue: _cycle,
                       decoration: const InputDecoration(
                         labelText: 'Ciclo',
                         border: InputBorder.none,
@@ -412,7 +411,6 @@ class _FieldRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(icon, size: 20, color: cs.onSurfaceVariant),
           const SizedBox(width: 12),

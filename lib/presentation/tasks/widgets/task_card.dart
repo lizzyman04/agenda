@@ -11,11 +11,7 @@ import 'package:intl/intl.dart';
 /// Does NOT import Isar — only domain types are used.
 class TaskCard extends StatelessWidget {
   const TaskCard({
-    super.key,
-    required this.item,
-    required this.onComplete,
-    required this.onDelete,
-    required this.onTap,
+    required this.item, required this.onComplete, required this.onDelete, required this.onTap, super.key,
   });
 
   final Item item;

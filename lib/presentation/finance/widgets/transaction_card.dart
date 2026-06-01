@@ -13,13 +13,7 @@ import 'package:intl/intl.dart';
 /// No Isar imports — only domain types.
 class TransactionCard extends StatelessWidget {
   const TransactionCard({
-    super.key,
-    required this.transaction,
-    required this.onDelete,
-    required this.onTap,
-    required this.categoryName,
-    required this.currencySymbol,
-    required this.locale,
+    required this.transaction, required this.onDelete, required this.onTap, required this.categoryName, required this.currencySymbol, required this.locale, super.key,
   });
 
   final Transaction transaction;

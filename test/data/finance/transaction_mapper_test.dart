@@ -5,7 +5,7 @@ import 'package:agenda/domain/finance/transaction_type.dart' as domain;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final mapper = const TransactionMapper();
+  const mapper = TransactionMapper();
   final now = DateTime(2026, 5, 14, 12);
 
   group('TransactionMapper.toDomain', () {

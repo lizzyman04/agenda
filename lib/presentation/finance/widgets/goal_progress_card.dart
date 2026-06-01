@@ -14,12 +14,7 @@ import 'package:intl/intl.dart';
 /// Per Phase 3 UI-SPEC Goal Progress Card Contract.
 class GoalProgressCard extends StatelessWidget {
   const GoalProgressCard({
-    super.key,
-    required this.goal,
-    required this.taggedTransactionsCents,
-    required this.onTap,
-    required this.currencySymbol,
-    required this.locale,
+    required this.goal, required this.taggedTransactionsCents, required this.onTap, required this.currencySymbol, required this.locale, super.key,
   });
 
   final SavingsGoal goal;
@@ -67,7 +62,7 @@ class GoalProgressCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   if (goal.isCompleted)
-                    Icon(
+                    const Icon(
                       Icons.check_circle,
                       color: FinanceColors.incomeGreen,
                       size: 20,

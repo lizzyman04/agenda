@@ -8,12 +8,7 @@ import 'package:flutter/material.dart';
 /// Pure presentation widget — no BLoC imports.
 class FinanceEmptyState extends StatelessWidget {
   const FinanceEmptyState({
-    super.key,
-    required this.icon,
-    required this.heading,
-    required this.body,
-    required this.ctaLabel,
-    required this.onCta,
+    required this.icon, required this.heading, required this.body, required this.ctaLabel, required this.onCta, super.key,
   });
 
   /// The icon displayed above the heading.

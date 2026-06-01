@@ -21,12 +21,12 @@ class MockIsarCollection extends Mock
 /// varies per call. Instead, this fake implementation executes the callback
 /// and tracks call count.
 class FakeIsar extends Fake implements Isar {
+
+  FakeIsar(this._categoryCollection);
   int writeTxnCallCount = 0;
   bool shouldExecuteCallback = true;
 
   final MockIsarCollection _categoryCollection;
-
-  FakeIsar(this._categoryCollection);
 
   @override
   IsarCollection<T> collection<T>() {

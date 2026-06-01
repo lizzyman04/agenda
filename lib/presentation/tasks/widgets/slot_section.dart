@@ -9,13 +9,7 @@ import 'package:flutter/material.dart';
 /// buttons, and an "Add" action.
 class SlotSection extends StatelessWidget {
   const SlotSection({
-    super.key,
-    required this.label,
-    required this.maxSlots,
-    required this.currentItems,
-    required this.isOverCapacity,
-    required this.onTapAdd,
-    required this.onRemove,
+    required this.label, required this.maxSlots, required this.currentItems, required this.isOverCapacity, required this.onTapAdd, required this.onRemove, super.key,
   });
 
   final String label;

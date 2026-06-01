@@ -30,8 +30,8 @@ class TransactionDao {
   /// Used for budget progress computation and chart rendering.
   /// Exclusive upper bound: [DateTime(year, month + 1, 1)].
   Future<List<TransactionModel>> findByMonth(int month, int year) async {
-    final from = DateTime(year, month, 1);
-    final to = DateTime(year, month + 1, 1);
+    final from = DateTime(year, month);
+    final to = DateTime(year, month + 1);
     return _collection
         .filter()
         .deletedAtIsNull()

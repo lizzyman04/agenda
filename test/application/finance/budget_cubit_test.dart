@@ -1,6 +1,5 @@
 import 'package:agenda/application/finance/budget/budget_cubit.dart';
 import 'package:agenda/application/finance/budget/budget_state.dart';
-import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/finance/budget.dart';
 import 'package:agenda/domain/finance/budget_repository.dart';
@@ -79,14 +78,14 @@ void main() {
       build: () {
         final now = DateTime.now();
         when(() => mockTxRepo.getByMonth(now.month, now.year)).thenAnswer(
-          (_) async => Success([_makeExpense(amountCents: 3000, categoryId: 1)]),
+          (_) async => Success([_makeExpense()]),
         );
         when(() => mockBudgetRepo.getForMonth(now.month, now.year)).thenAnswer(
-          (_) async => Success([_makeBudget(categoryId: 1, limitCents: 10000)]),
+          (_) async => Success([_makeBudget()]),
         );
         when(() => mockCategoryRepo.getByType(TransactionType.expense))
             .thenAnswer(
-          (_) async => Success([_makeCategory(id: 1, name: 'Alimentação')]),
+          (_) async => Success([_makeCategory(name: 'Alimentação')]),
         );
         return BudgetCubit(mockTxRepo, mockBudgetRepo, mockCategoryRepo);
       },
@@ -105,7 +104,7 @@ void main() {
       build: () {
         final now = DateTime.now();
         when(() => mockTxRepo.getByMonth(now.month, now.year)).thenAnswer(
-          (_) async => Success(<Transaction>[]),
+          (_) async => const Success(<Transaction>[]),
         );
         when(() => mockBudgetRepo.getForMonth(now.month, now.year)).thenAnswer(
           (_) async => Success([_makeBudget(categoryId: 2, limitCents: 5000)]),
@@ -131,19 +130,19 @@ void main() {
       build: () {
         final now = DateTime.now();
         when(() => mockTxRepo.getByMonth(now.month, now.year)).thenAnswer(
-          (_) async => Success(<Transaction>[]),
+          (_) async => const Success(<Transaction>[]),
         );
         when(
           () => mockBudgetRepo.setLimit(any(), any(), any(), any()),
         ).thenAnswer(
-          (_) async => Success(_makeBudget(categoryId: 1, limitCents: 8000)),
+          (_) async => Success(_makeBudget(limitCents: 8000)),
         );
         when(() => mockBudgetRepo.getForMonth(any(), any())).thenAnswer(
-          (_) async => Success([_makeBudget(categoryId: 1, limitCents: 8000)]),
+          (_) async => Success([_makeBudget(limitCents: 8000)]),
         );
         when(() => mockCategoryRepo.getByType(TransactionType.expense))
             .thenAnswer(
-          (_) async => Success([_makeCategory(id: 1)]),
+          (_) async => Success([_makeCategory()]),
         );
         return BudgetCubit(mockTxRepo, mockBudgetRepo, mockCategoryRepo);
       },

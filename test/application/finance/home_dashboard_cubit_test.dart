@@ -140,8 +140,8 @@ void main() {
         debtRepo: mockDebtRepo,
         catRepo: mockCatRepo,
         transactions: [
-          _makeTx(id: 1, type: TransactionType.income, amountCents: 5000),
-          _makeTx(id: 2, type: TransactionType.income, amountCents: 3000),
+          _makeTx(),
+          _makeTx(id: 2, amountCents: 3000),
           _makeTx(id: 3, type: TransactionType.expense, amountCents: 2000),
         ],
       ),
@@ -163,15 +163,15 @@ void main() {
         debtRepo: mockDebtRepo,
         catRepo: mockCatRepo,
         transactions: [
-          _makeTx(id: 1, type: TransactionType.income, amountCents: 5000),
-          _makeTx(id: 2, type: TransactionType.income, amountCents: 3000),
+          _makeTx(),
+          _makeTx(id: 2, amountCents: 3000),
           _makeTx(id: 3, type: TransactionType.expense, amountCents: 2000),
         ],
         goals: [
-          _makeGoal(id: 1), // contributions = [], taggedCents = 0 → amountSaved = 0
+          _makeGoal(), // contributions = [], taggedCents = 0 → amountSaved = 0
         ],
         debts: [
-          _makeDebt(id: 1, amountCents: 1500, direction: DebtDirection.toPay, isPaid: false),
+          _makeDebt(),
         ],
       ),
       act: (cubit) => cubit.start(),
@@ -192,7 +192,7 @@ void main() {
         debtRepo: mockDebtRepo,
         catRepo: mockCatRepo,
         transactions: [
-          _makeTx(id: 1, type: TransactionType.income, amountCents: 6000),
+          _makeTx(amountCents: 6000),
         ],
         debts: [
           // toReceive debt — must NOT be subtracted from net worth
@@ -200,7 +200,6 @@ void main() {
             id: 2,
             amountCents: 3000,
             direction: DebtDirection.toReceive,
-            isPaid: false,
           ),
         ],
       ),
@@ -227,10 +226,8 @@ void main() {
           catRepo: mockCatRepo,
           transactions: [
             _makeTx(
-              id: 1,
               type: TransactionType.expense,
               amountCents: 1000,
-              categoryId: 1,
               date: DateTime(now.year, now.month, 5),
             ),
             _makeTx(
@@ -245,11 +242,10 @@ void main() {
               id: 3,
               type: TransactionType.expense,
               amountCents: 999,
-              categoryId: 1,
               date: DateTime(now.year, now.month - 1 == 0 ? 12 : now.month - 1, 5),
             ),
           ],
-          categories: [_makeCategory(id: 1), _makeCategory(id: 2)],
+          categories: [_makeCategory(), _makeCategory(id: 2)],
         );
       },
       act: (cubit) => cubit.start(),
@@ -279,10 +275,7 @@ void main() {
           transactions: [
             // March 2026 expense
             _makeTx(
-              id: 1,
               type: TransactionType.expense,
-              amountCents: 5000,
-              categoryId: 1,
               date: _d(2026, 3, 15),
             ),
             // April 2026 expense — must not appear in March chart
@@ -294,7 +287,7 @@ void main() {
               date: _d(2026, 4, 10),
             ),
           ],
-          categories: [_makeCategory(id: 1)],
+          categories: [_makeCategory()],
         );
       },
       act: (cubit) async {
@@ -333,7 +326,7 @@ void main() {
         catRepo: mockCatRepo,
         transactions: [
           // Income only — no expense
-          _makeTx(id: 1, type: TransactionType.income, amountCents: 5000),
+          _makeTx(),
         ],
       ),
       act: (cubit) => cubit.start(),
@@ -357,7 +350,7 @@ void main() {
         // soft-deleted (deletedAtIsNull filter in DAO). We confirm the
         // cubit correctly aggregates only what the repo returns.
         transactions: [
-          _makeTx(id: 1, type: TransactionType.income, amountCents: 5000),
+          _makeTx(),
           // Repo already excludes soft-deleted — simulate by returning only active
         ],
       ),

@@ -127,7 +127,7 @@ class _BudgetOverviewScreenState extends State<BudgetOverviewScreen> {
             const Center(child: CircularProgressIndicator()),
           BudgetError(:final failure) =>
             Center(child: Text(failure.message)),
-          BudgetLoaded(categories: final categories)
+          BudgetLoaded(: final categories)
               when categories.isEmpty =>
             FinanceEmptyState(
               icon: Icons.donut_large_outlined,

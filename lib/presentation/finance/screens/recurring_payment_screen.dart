@@ -60,7 +60,7 @@ class _RecurringPaymentScreenState
               heading: l10n.emptyRecurring,
               body: l10n.emptyRecurringBody,
               ctaLabel: l10n.addRecurring,
-              onCta: () => _openForm(),
+              onCta: _openForm,
             ),
           RecurringPaymentLoaded(:final payments) => Stack(
               children: [
@@ -86,7 +86,7 @@ class _RecurringPaymentScreenState
                   bottom: 16,
                   child: FloatingActionButton(
                     tooltip: l10n.addRecurring,
-                    onPressed: () => _openForm(),
+                    onPressed: _openForm,
                     child: const Icon(Icons.add),
                   ),
                 ),

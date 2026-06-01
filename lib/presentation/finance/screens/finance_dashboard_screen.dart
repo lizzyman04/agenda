@@ -26,8 +26,26 @@ class FinanceDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<TransactionCubit>()),
+        BlocProvider(create: (_) => getIt<BudgetCubit>()),
+        BlocProvider(create: (_) => getIt<GoalListCubit>()),
+        BlocProvider(create: (_) => getIt<DebtCubit>()),
+        BlocProvider(create: (_) => getIt<RecurringPaymentCubit>()),
+        BlocProvider(create: (_) => getIt<HomeDashboardCubit>()),
+      ],
+      child: const _FinanceDashboardView(),
+    );
+  }
+}
 
+class _FinanceDashboardView extends StatelessWidget {
+  const _FinanceDashboardView();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return DefaultTabController(
       length: 6,
       child: Scaffold(
@@ -48,25 +66,15 @@ class FinanceDashboardScreen extends StatelessWidget {
             ],
           ),
         ),
-        body: MultiBlocProvider(
-          providers: [
-            BlocProvider(create: (_) => getIt<TransactionCubit>()),
-            BlocProvider(create: (_) => getIt<BudgetCubit>()),
-            BlocProvider(create: (_) => getIt<GoalListCubit>()),
-            BlocProvider(create: (_) => getIt<DebtCubit>()),
-            BlocProvider(create: (_) => getIt<RecurringPaymentCubit>()),
-            BlocProvider(create: (_) => getIt<HomeDashboardCubit>()),
+        body: const TabBarView(
+          children: [
+            _DashboardTab(),
+            TransactionListScreen(),
+            BudgetOverviewScreen(),
+            GoalListScreen(),
+            DebtListScreen(),
+            RecurringPaymentScreen(),
           ],
-          child: TabBarView(
-            children: [
-              _DashboardTab(),
-              const TransactionListScreen(),
-              const BudgetOverviewScreen(),
-              const GoalListScreen(),
-              const DebtListScreen(),
-              const RecurringPaymentScreen(),
-            ],
-          ),
         ),
       ),
     );
@@ -75,6 +83,8 @@ class FinanceDashboardScreen extends StatelessWidget {
 
 /// Placeholder dashboard tab — replaced in plan 03-05 with charts.
 class _DashboardTab extends StatelessWidget {
+  const _DashboardTab();
+
   @override
   Widget build(BuildContext context) {
     return const Center(

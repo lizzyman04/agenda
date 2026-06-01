@@ -58,7 +58,7 @@ class _DebtListScreenState extends State<DebtListScreen> {
               heading: l10n.emptyDebts,
               body: l10n.emptyDebtsBody,
               ctaLabel: l10n.addDebt,
-              onCta: () => _openForm(),
+              onCta: _openForm,
             ),
           DebtLoaded(:final debts) => Stack(
               children: [
@@ -84,7 +84,7 @@ class _DebtListScreenState extends State<DebtListScreen> {
                   bottom: 16,
                   child: FloatingActionButton(
                     tooltip: l10n.addDebt,
-                    onPressed: () => _openForm(),
+                    onPressed: _openForm,
                     child: const Icon(Icons.add),
                   ),
                 ),

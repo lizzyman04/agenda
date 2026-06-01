@@ -95,7 +95,7 @@ void main() {
         when(() => mockRepo.softDelete(any()))
             .thenAnswer((_) async => Success(tx));
         when(() => mockRepo.getTransactions())
-            .thenAnswer((_) async => Success([]));
+            .thenAnswer((_) async => const Success([]));
         return TransactionCubit(mockRepo);
       },
       act: (cubit) => cubit.softDelete(1),

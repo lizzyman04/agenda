@@ -1,5 +1,4 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
-import 'package:agenda/application/tasks/task_list/task_list_filter.dart';
 import 'package:agenda/application/tasks/task_list/task_list_state.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
@@ -56,15 +55,15 @@ void main() {
 
     testWidgets('renders all four quadrant sections', (tester) async {
       when(() => cubit.state).thenReturn(
-        const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+        const TaskListLoaded(items: []),
       );
       whenListen(
         cubit,
         Stream<TaskListState>.fromIterable([
-          const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+          const TaskListLoaded(items: []),
         ]),
         initialState:
-            const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+            const TaskListLoaded(items: []),
       );
 
       await tester.pumpWidget(_buildTestWidget(cubit));
@@ -90,7 +89,6 @@ void main() {
       when(() => cubit.state).thenReturn(
         TaskListLoaded(
           items: [urgentImportant],
-          filter: TaskListFilter.empty,
         ),
       );
       whenListen(
@@ -98,12 +96,10 @@ void main() {
         Stream<TaskListState>.fromIterable([
           TaskListLoaded(
             items: [urgentImportant],
-            filter: TaskListFilter.empty,
           ),
         ]),
         initialState: TaskListLoaded(
           items: [urgentImportant],
-          filter: TaskListFilter.empty,
         ),
       );
 

@@ -119,13 +119,13 @@ void main() {
       repository = MockItemRepository();
 
       when(() => cubit.state).thenReturn(
-        const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+        const TaskListLoaded(items: []),
       );
       whenListen(
         cubit,
-        Stream<TaskListState>.empty(),
+        const Stream<TaskListState>.empty(),
         initialState:
-            const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+            const TaskListLoaded(items: []),
       );
       when(() => cubit.applyFilter(any())).thenAnswer((_) async {});
 

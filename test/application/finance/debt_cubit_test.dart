@@ -89,8 +89,8 @@ void main() {
     blocTest<DebtCubit, DebtState>(
       'togglePaid() emits DebtLoaded with updated debt',
       build: () {
-        final unpaidDebt = _makeDebt(id: 1, isPaid: false);
-        final paidDebt = _makeDebt(id: 1, isPaid: true);
+        final unpaidDebt = _makeDebt();
+        final paidDebt = _makeDebt(isPaid: true);
         // Simulate watchChanges firing after togglePaid triggers a repo change
         when(() => mockRepo.watchChanges()).thenAnswer((_) => const Stream.empty());
         when(() => mockRepo.togglePaid(1)).thenAnswer(

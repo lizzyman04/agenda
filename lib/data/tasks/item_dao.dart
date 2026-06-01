@@ -81,24 +81,24 @@ class ItemDao {
         )
         .optional(
           resolvedGtdContext != null,
-          (q) => q.and().gtdContextEqualTo(resolvedGtdContext!),
+          (q) => q.and().gtdContextEqualTo(resolvedGtdContext),
         )
         .optional(
           resolvedDateFrom != null && resolvedDateTo != null,
-          (q) => q.and().dueDateBetween(resolvedDateFrom!, resolvedDateTo!),
+          (q) => q.and().dueDateBetween(resolvedDateFrom, resolvedDateTo),
         )
         .optional(
           resolvedDateFrom != null && resolvedDateTo == null,
           (q) =>
-              q.and().dueDateGreaterThan(resolvedDateFrom!, include: true),
+              q.and().dueDateGreaterThan(resolvedDateFrom, include: true),
         )
         .optional(
           resolvedDateTo != null && resolvedDateFrom == null,
-          (q) => q.and().dueDateLessThan(resolvedDateTo!, include: true),
+          (q) => q.and().dueDateLessThan(resolvedDateTo, include: true),
         )
         .optional(
           resolvedParentId != null,
-          (q) => q.and().parentIdEqualTo(resolvedParentId!),
+          (q) => q.and().parentIdEqualTo(resolvedParentId),
         )
         .optional(
           !showCompleted,

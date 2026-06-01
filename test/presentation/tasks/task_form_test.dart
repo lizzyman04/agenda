@@ -1,5 +1,4 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
-import 'package:agenda/application/tasks/task_list/task_list_filter.dart';
 import 'package:agenda/application/tasks/task_list/task_list_state.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
@@ -43,15 +42,15 @@ void main() {
     setUp(() {
       cubit = MockTaskListCubit();
       when(() => cubit.state).thenReturn(
-        const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+        const TaskListLoaded(items: []),
       );
       whenListen(
         cubit,
         Stream<TaskListState>.fromIterable([
-          const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+          const TaskListLoaded(items: []),
         ]),
         initialState:
-            const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+            const TaskListLoaded(items: []),
       );
     });
 

@@ -65,7 +65,6 @@ void main() {
       'loadGoal() emits GoalLoaded with combined amountSavedCents',
       build: () {
         final goal = _makeGoal(
-          id: 1,
           contributions: [
             SavingsGoalContribution(amountCents: 2000, date: _d(2026, 1, 5)),
           ],
@@ -89,19 +88,18 @@ void main() {
     blocTest<GoalCubit, GoalState>(
       'addContribution() calls goalRepo.addContribution and re-emits GoalLoaded',
       build: () {
-        final goal = _makeGoal(id: 1);
+        final goal = _makeGoal();
         final contribution = SavingsGoalContribution(
           amountCents: 1000,
           date: _d(2026, 1, 10),
         );
         final updatedGoal = _makeGoal(
-          id: 1,
           contributions: [contribution],
         );
         when(() => mockGoalRepo.getGoal(1))
             .thenAnswer((_) async => Success(goal));
         when(() => mockTxRepo.getByLinkedGoal(1))
-            .thenAnswer((_) async => Success([]));
+            .thenAnswer((_) async => const Success([]));
         when(() => mockGoalRepo.addContribution(1, any())).thenAnswer(
           (_) async => Success(updatedGoal),
         );

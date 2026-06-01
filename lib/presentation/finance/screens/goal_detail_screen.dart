@@ -18,7 +18,7 @@ import 'package:intl/intl.dart';
 /// Shows progress, contribution history, and allows adding new contributions.
 /// Provides edit and delete actions in the AppBar.
 class GoalDetailScreen extends StatelessWidget {
-  const GoalDetailScreen({super.key, required this.goalId});
+  const GoalDetailScreen({required this.goalId, super.key});
 
   final int goalId;
 
@@ -40,7 +40,7 @@ class _GoalDetailView extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final amountCtrl = TextEditingController();
     final noteCtrl = TextEditingController();
-    DateTime selectedDate = DateTime.now();
+    var selectedDate = DateTime.now();
 
     await showModalBottomSheet<void>(
       context: context,

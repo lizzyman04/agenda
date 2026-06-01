@@ -1,5 +1,4 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
-import 'package:agenda/application/tasks/task_list/task_list_filter.dart';
 import 'package:agenda/application/tasks/task_list/task_list_state.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
@@ -51,15 +50,15 @@ void main() {
     testWidgets('shows empty state when TaskListLoaded with no items',
         (tester) async {
       when(() => cubit.state).thenReturn(
-        const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+        const TaskListLoaded(items: []),
       );
       whenListen(
         cubit,
         Stream<TaskListState>.fromIterable([
-          const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+          const TaskListLoaded(items: []),
         ]),
         initialState:
-            const TaskListLoaded(items: [], filter: TaskListFilter.empty),
+            const TaskListLoaded(items: []),
       );
 
       await tester.pumpWidget(_buildTestWidget(cubit));
@@ -73,15 +72,15 @@ void main() {
         (tester) async {
       final item = _makeItem(1, title: 'Buy groceries');
       when(() => cubit.state).thenReturn(
-        TaskListLoaded(items: [item], filter: TaskListFilter.empty),
+        TaskListLoaded(items: [item]),
       );
       whenListen(
         cubit,
         Stream<TaskListState>.fromIterable([
-          TaskListLoaded(items: [item], filter: TaskListFilter.empty),
+          TaskListLoaded(items: [item]),
         ]),
         initialState:
-            TaskListLoaded(items: [item], filter: TaskListFilter.empty),
+            TaskListLoaded(items: [item]),
       );
 
       await tester.pumpWidget(_buildTestWidget(cubit));
@@ -96,20 +95,19 @@ void main() {
 
       // Start in Loaded, then transition to PendingUndo to fire the listener
       when(() => cubit.state).thenReturn(
-        TaskListLoaded(items: [item], filter: TaskListFilter.empty),
+        TaskListLoaded(items: [item]),
       );
       whenListen(
         cubit,
         Stream<TaskListState>.fromIterable([
-          TaskListLoaded(items: [item], filter: TaskListFilter.empty),
+          TaskListLoaded(items: [item]),
           const TaskListWithPendingUndo(
             deletedItemId: 1,
             items: [],
-            filter: TaskListFilter.empty,
           ),
         ]),
         initialState:
-            TaskListLoaded(items: [item], filter: TaskListFilter.empty),
+            TaskListLoaded(items: [item]),
       );
 
       await tester.pumpWidget(_buildTestWidget(cubit));
@@ -124,15 +122,15 @@ void main() {
         (tester) async {
       final item = _makeItem(42, title: 'Delete me');
       when(() => cubit.state).thenReturn(
-        TaskListLoaded(items: [item], filter: TaskListFilter.empty),
+        TaskListLoaded(items: [item]),
       );
       whenListen(
         cubit,
         Stream<TaskListState>.fromIterable([
-          TaskListLoaded(items: [item], filter: TaskListFilter.empty),
+          TaskListLoaded(items: [item]),
         ]),
         initialState:
-            TaskListLoaded(items: [item], filter: TaskListFilter.empty),
+            TaskListLoaded(items: [item]),
       );
       when(() => cubit.softDelete(42)).thenAnswer((_) async {});
 

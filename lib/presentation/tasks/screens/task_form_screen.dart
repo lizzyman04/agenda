@@ -128,7 +128,6 @@ class _TaskFormScreenState extends State<TaskFormScreen>
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
         minChildSize: 0.3,
         maxChildSize: 0.85,
         expand: false,
@@ -473,7 +472,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
                 _FieldRow(
                   icon: Icons.flag_outlined,
                   child: DropdownButtonFormField<Priority>(
-                    value: _priority,
+                    initialValue: _priority,
                     decoration: InputDecoration(
                       labelText: l10n.fieldPriority,
                       border: InputBorder.none,
@@ -745,7 +744,6 @@ class _FieldRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(icon, size: 20, color: cs.onSurfaceVariant),
           const SizedBox(width: 12),
@@ -972,7 +970,7 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
   String? _gtdContext;
   String? _description;
 
-  static const _mainPath = [
+  static const List<_GtdNode> _mainPath = [
     _GtdNode.q1Title,
     _GtdNode.q2Actionable,
     _GtdNode.q3Delegate,
@@ -988,7 +986,7 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
 
   void _push(_GtdNode node) => setState(() => _history.add(node));
   void _pop() {
-    if (_history.length > 1) setState(() => _history.removeLast());
+    if (_history.length > 1) setState(_history.removeLast);
   }
 
   int get _mainStepIndex {
@@ -998,7 +996,7 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
 
   Future<void> _confirmCancel() async {
     if (_titleCtrl.text.trim().isEmpty && _history.length <= 1) {
-      Navigator.of(context).pop(null);
+      Navigator.of(context).pop();
       return;
     }
     final confirmed = await showDialog<bool>(
@@ -1018,11 +1016,11 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
         ],
       ),
     );
-    if (confirmed == true && mounted) Navigator.of(context).pop(null);
+    if (confirmed == true && mounted) Navigator.of(context).pop();
   }
 
   void _endWithSnackbar(String msg) {
-    Navigator.of(context).pop(null);
+    Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
     );
@@ -1298,7 +1296,7 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
           if (_priority == Priority.medium) _priority = Priority.low;
           _push(_GtdNode.q6Deadline);
         }),
-        (Icons.cancel, _l.gtdQ5bCancelTask, () => Navigator.of(context).pop(null)),
+        (Icons.cancel, _l.gtdQ5bCancelTask, () => Navigator.of(context).pop()),
         (Icons.more_horiz, _l.gtdQ5bOther, () => _push(_GtdNode.q6Deadline)),
       ],
     ),
@@ -1339,7 +1337,7 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
           _waitingFor ??= 'alguém';
           _push(_GtdNode.review);
         }),
-        (Icons.cancel, _l.gtdQ7bCancelTask, () => Navigator.of(context).pop(null)),
+        (Icons.cancel, _l.gtdQ7bCancelTask, () => Navigator.of(context).pop()),
         (Icons.more_horiz, _l.gtdQ7bOther, () {
           _priority = Priority.low;
           _push(_GtdNode.review);
@@ -1381,7 +1379,7 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
         _dueDate = null;
         _push(_GtdNode.q6bNoDeadlineReason);
       }),
-      (Icons.edit_calendar, _l.gtdDeadlineCustom, () { _pickCustomDate(); }),
+      (Icons.edit_calendar, _l.gtdDeadlineCustom, _pickCustomDate),
     ];
     return _optionNode(t, cs,
       question: _l.gtdQ6,
@@ -1671,7 +1669,9 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
     final t = text.toLowerCase();
     if (t.contains('@casa') || t.contains('em casa')) return '@casa';
     if (t.contains('@trabalho') || t.contains('@escritório') ||
-        t.contains('no trabalho')) return '@trabalho';
+        t.contains('no trabalho')) {
+      return '@trabalho';
+    }
     if (t.contains('@computador') || t.contains('@pc')) return '@computador';
     if (t.contains('@telefone') || t.contains('ligar para')) return '@telefone';
     if (t.contains('@compras') || t.contains('comprar')) return '@compras';

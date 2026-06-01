@@ -13,7 +13,7 @@ void main() {
     );
 
     test(
-      'EN locale: 125000 cents with R\$ symbol returns "R\$ 1,250.00"',
+      r'EN locale: 125000 cents with R$ symbol returns "R$ 1,250.00"',
       () {
         final result = formatAmount(125000, r'R$', const Locale('en'));
         expect(result, equals(r'R$ 1,250.00'));
@@ -37,7 +37,7 @@ void main() {
     );
 
     test(
-      'EN locale: 100 cents (1 unit) with \$ symbol returns "\$ 1.00"',
+      r'EN locale: 100 cents (1 unit) with $ symbol returns "$ 1.00"',
       () {
         final result = formatAmount(100, r'$', const Locale('en'));
         expect(result, equals(r'$ 1.00'));

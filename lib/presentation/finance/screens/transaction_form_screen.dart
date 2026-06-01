@@ -1,8 +1,7 @@
-import 'package:agenda/application/finance/goal/goal_list_cubit.dart';
-import 'package:agenda/application/finance/goal/goal_list_state.dart';
 import 'package:agenda/application/finance/transaction/transaction_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/domain/finance/goal_repository.dart';
 import 'package:agenda/domain/finance/savings_goal.dart';
 import 'package:agenda/domain/finance/transaction.dart';
 import 'package:agenda/domain/finance/transaction_category.dart';
@@ -99,12 +98,10 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
   }
 
   Future<void> _loadGoals() async {
-    // Try to read from GoalListCubit if already in context
-    final cubit = getIt<GoalListCubit>();
-    await cubit.start();
-    final state = cubit.state;
-    if (state is GoalListLoaded && mounted) {
-      setState(() => _activeGoals = state.goals);
+    final repo = getIt<GoalRepository>();
+    final result = await repo.getActiveGoals();
+    if (result is Success<List<SavingsGoal>> && mounted) {
+      setState(() => _activeGoals = result.value);
     }
   }
 
@@ -123,7 +120,6 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
         minChildSize: 0.3,
         maxChildSize: 0.8,
         expand: false,
@@ -216,7 +212,7 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                   ? Icon(Icons.check,
                       color: Theme.of(ctx).colorScheme.primary)
                   : null,
-              onTap: () => Navigator.of(ctx).pop(null),
+              onTap: () => Navigator.of(ctx).pop(),
             ),
             const Divider(height: 1),
             Expanded(
@@ -269,7 +265,7 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
     final rawAmount = _amountController.text
         .replaceAll(',', '.')
         .replaceAll(RegExp(r'[^\d.]'), '');
-    final double? parsedAmount = double.tryParse(rawAmount);
+    final parsedAmount = double.tryParse(rawAmount);
     if (parsedAmount == null || parsedAmount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -571,7 +567,6 @@ class _FieldRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(icon, size: 20, color: cs.onSurfaceVariant),
           const SizedBox(width: 12),

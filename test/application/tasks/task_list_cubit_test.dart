@@ -52,7 +52,7 @@ void main() {
         parentId: any(named: 'parentId'),
         showCompleted: any(named: 'showCompleted'),
       ),
-    ).thenAnswer((_) async => Success<List<Item>>([]));
+    ).thenAnswer((_) async => const Success<List<Item>>([]));
   });
 
   group('TaskListCubit', () {
@@ -93,7 +93,7 @@ void main() {
       'search() calls repository.searchByTitle with query',
       build: () {
         when(() => repository.searchByTitle(any()))
-            .thenAnswer((_) async => Success<List<Item>>([]));
+            .thenAnswer((_) async => const Success<List<Item>>([]));
         return TaskListCubit(repository, recurrenceEngine);
       },
       act: (cubit) async {
