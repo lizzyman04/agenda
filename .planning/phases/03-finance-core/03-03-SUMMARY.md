@@ -186,6 +186,20 @@ No new threat surface beyond what is documented in the plan's threat model:
 - T-03-03-04 (Tampering — GoalCubit double-counting): Mitigated. Two paths (contributions + tagged txs) kept separate; `_refreshGoal()` folds tagged from transactionRepo, `goal.amountSavedCents()` folds manual contributions.
 - T-03-03-05 (DoS — emit-after-close): Mitigated. Double `isClosed` guard in every `_reload()` method; 17 total guard occurrences across 7 cubits.
 
+## Post-Execution Fix (2026-06-01)
+
+**Issue:** Finance tab crashed at runtime with `GetIt: Object/factory with type X is not registered` for all six cubits (TransactionCubit, BudgetCubit, GoalListCubit, DebtCubit, RecurringPaymentCubit, HomeDashboardCubit).
+
+**Root cause:** `build_runner` was not re-run after this plan's cubit files were written. `injection.config.dart` was stale — it contained the finance DAOs, mappers, and repository implementations (built during plan 03-02) but lacked the six cubit `gh.factory<T>` registrations added in plan 03-03.
+
+**Fix:** Ran `dart run build_runner build --delete-conflicting-outputs`. injectable_generator picked up all six `@injectable`-annotated cubits and regenerated `injection.config.dart` with their factory registrations (34 outputs written total).
+
+**Debug session:** `.planning/debug/getit-finance-cubits-not-registered.md` (resolved)
+
+**Files changed:** `lib/config/di/injection.config.dart`
+
+**Lesson:** Always run `build_runner` after adding `@injectable`-annotated cubits — generated file is not updated automatically on hot-reload or build; it requires an explicit `build_runner build` invocation.
+
 ## Self-Check: PASSED
 
 Files verified:

@@ -9,6 +9,16 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:agenda/application/finance/budget/budget_cubit.dart' as _i759;
+import 'package:agenda/application/finance/dashboard/home_dashboard_cubit.dart'
+    as _i428;
+import 'package:agenda/application/finance/debt/debt_cubit.dart' as _i710;
+import 'package:agenda/application/finance/goal/goal_cubit.dart' as _i316;
+import 'package:agenda/application/finance/goal/goal_list_cubit.dart' as _i665;
+import 'package:agenda/application/finance/recurring/recurring_payment_cubit.dart'
+    as _i275;
+import 'package:agenda/application/finance/transaction/transaction_cubit.dart'
+    as _i1065;
 import 'package:agenda/application/shared/locale/locale_cubit.dart' as _i101;
 import 'package:agenda/application/tasks/day_planner/day_planner_cubit.dart'
     as _i1073;
@@ -113,6 +123,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i542.RecurringPaymentMapper>(),
       ),
     );
+    gh.factory<_i275.RecurringPaymentCubit>(
+      () => _i275.RecurringPaymentCubit(gh<_i577.RecurringPaymentRepository>()),
+    );
     gh.lazySingleton<_i583.TransactionCategoryRepository>(
       () => _i986.TransactionCategoryRepositoryImpl(
         gh<_i514.TransactionCategoryDao>(),
@@ -141,10 +154,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i101.LocaleCubit>(
       () => _i101.LocaleCubit(gh<_i460.SharedPreferences>()),
     );
+    gh.factory<_i710.DebtCubit>(
+      () => _i710.DebtCubit(gh<_i537.DebtRepository>()),
+    );
     gh.lazySingleton<_i687.TransactionRepository>(
       () => _i47.TransactionRepositoryImpl(
         gh<_i264.TransactionDao>(),
         gh<_i542.TransactionMapper>(),
+      ),
+    );
+    gh.factory<_i428.HomeDashboardCubit>(
+      () => _i428.HomeDashboardCubit(
+        gh<_i687.TransactionRepository>(),
+        gh<_i482.GoalRepository>(),
+        gh<_i537.DebtRepository>(),
+        gh<_i583.TransactionCategoryRepository>(),
       ),
     );
     gh.lazySingleton<_i565.ItemRepository>(
@@ -154,6 +178,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i44.RecurrenceEngine>(),
       ),
     );
+    gh.factory<_i665.GoalListCubit>(
+      () => _i665.GoalListCubit(gh<_i482.GoalRepository>()),
+    );
     gh.factory<_i646.ProjectCubit>(
       () => _i646.ProjectCubit(gh<_i565.ItemRepository>()),
     );
@@ -161,6 +188,22 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i726.TaskListCubit(
         gh<_i565.ItemRepository>(),
         gh<_i44.RecurrenceEngine>(),
+      ),
+    );
+    gh.factory<_i759.BudgetCubit>(
+      () => _i759.BudgetCubit(
+        gh<_i687.TransactionRepository>(),
+        gh<_i618.BudgetRepository>(),
+        gh<_i583.TransactionCategoryRepository>(),
+      ),
+    );
+    gh.factory<_i1065.TransactionCubit>(
+      () => _i1065.TransactionCubit(gh<_i687.TransactionRepository>()),
+    );
+    gh.factory<_i316.GoalCubit>(
+      () => _i316.GoalCubit(
+        gh<_i482.GoalRepository>(),
+        gh<_i687.TransactionRepository>(),
       ),
     );
     return this;
