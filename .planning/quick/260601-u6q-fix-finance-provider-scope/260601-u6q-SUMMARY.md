@@ -83,8 +83,18 @@ If it STILL crashes after a genuine cold restart, capture the FULL stack trace (
 widget frames directly above the assertion identify which InheritedElement deactivated)
 — that would indicate a real residual bug rather than stale hot-reload state.
 
-## Confirmed clean (no budgets code bug)
+## Follow-up fix — budget limit sheet save (commit 03c9498)
 
-`budget_overview_screen.dart` uses `context.read<BudgetCubit>()` + `BlocBuilder` only —
-no `BlocProvider`, no `BlocProvider.value`, no route push. There is no `budget_form_screen`.
-Budgets cannot itself trigger this assertion; the prior fix covers it.
+After cold restart, a *second*, distinct instance of the same assertion surfaced:
+saving a limit in the budget BottomSheet. Cause was unrelated to provider scope —
+the save handler called `BudgetCubit.setLimit()` (async, **not awaited**) and popped
+the modal route in the same tick. `setLimit`'s `emit` resolved while the route was
+tearing down, interleaving a `BlocBuilder` rebuild with the route's deactivation →
+`InheritedElement.debugDeactivated()` → `assert(_dependents.isEmpty)`.
+
+Fix (`budget_overview_screen.dart`): capture `final cubit = context.read<BudgetCubit>()`
+before showing the sheet, **pop first, then mutate**. Decouples route teardown from emit.
+
+The other finance forms (transaction/debt/recurring `_save`) already `await` the cubit
+call before `pop()`, so the emit completes before teardown — no change needed. Pickers
+pop with a return value and emit nothing. Budgets was the sole offender.
