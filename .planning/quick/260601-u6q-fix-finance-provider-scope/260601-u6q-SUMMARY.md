@@ -83,18 +83,22 @@ If it STILL crashes after a genuine cold restart, capture the FULL stack trace (
 widget frames directly above the assertion identify which InheritedElement deactivated)
 — that would indicate a real residual bug rather than stale hot-reload state.
 
-## Follow-up fix — budget limit sheet save (commit 03c9498)
+## Follow-up attempt — budget limit sheet save (commit 03c9498) — UNRESOLVED
 
-After cold restart, a *second*, distinct instance of the same assertion surfaced:
-saving a limit in the budget BottomSheet. Cause was unrelated to provider scope —
-the save handler called `BudgetCubit.setLimit()` (async, **not awaited**) and popped
-the modal route in the same tick. `setLimit`'s `emit` resolved while the route was
-tearing down, interleaving a `BlocBuilder` rebuild with the route's deactivation →
-`InheritedElement.debugDeactivated()` → `assert(_dependents.isEmpty)`.
+After cold restart a *second*, distinct instance of the assertion surfaced: saving a
+limit in the budget BottomSheet still crashes with `_dependents.isEmpty`.
 
-Fix (`budget_overview_screen.dart`): capture `final cubit = context.read<BudgetCubit>()`
-before showing the sheet, **pop first, then mutate**. Decouples route teardown from emit.
+Attempted fix (`budget_overview_screen.dart`, 03c9498): captured the cubit before the
+sheet and reordered to **pop first, then mutate**, on the hypothesis that `setLimit`'s
+`emit` interleaved with the modal route teardown. **This did NOT resolve the crash** —
+so the root cause is deeper than the emit/teardown ordering. The reorder is harmless and
+left in place, but the bug is still open.
 
-The other finance forms (transaction/debt/recurring `_save`) already `await` the cubit
-call before `pop()`, so the emit completes before teardown — no change needed. Pickers
-pop with a return value and emit nothing. Budgets was the sole offender.
+**STATUS: OPEN — deferred by user decision (not blocking Phase 3).** See STATE.md
+Blockers/Concerns. Next investigation step: capture the full stack trace on save to
+identify which InheritedElement deactivates and which widget is the lingering dependent
+(candidates: the `TextField`/`autofocus` focus scope, the modal route's own inherited
+scopes, or a Theme/MediaQuery dependency captured by the sheet content).
+
+The other finance forms (transaction/debt/recurring `_save`) `await` the cubit call
+before `pop()`, so they are unaffected.

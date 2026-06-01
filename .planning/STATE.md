@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 03 (finance-core) — EXECUTING
-Plan: 4 of 5 (03-04 checkpoint pending)
-Status: Plans 03-01, 03-02, 03-03 complete; 03-04 code built, human-verify checkpoint pending; 03-05 not started
-Last activity: 2026-06-01 -- Completed quick task 260601-u6q: fix finance form _dependents.isEmpty crash (provider scope)
+Plan: 5 of 5 (03-05 executing)
+Status: Plans 03-01..03-04 complete; 03-04 checkpoint APPROVED (budget-save crash deferred, non-blocking); 03-05 executing
+Last activity: 2026-06-01 -- 03-04 checkpoint approved; starting 03-05 (dashboard + charts)
 
 Progress: [████████░░] 87%
 
@@ -84,6 +84,7 @@ None.
 - **Phase 2 research flag**: OEM Android notification behavior (Samsung/Xiaomi/Huawei) varies significantly; consider a focused research spike before Phase 4 notification scheduling architecture is finalized
 - **Phase 4 research flag**: PT-BR comma decimal separator in CSV round-trip (`1.234,56`) has edge cases; dedicate a spike to locale-aware parsing before the backup feature spec is written
 - **Phase 5 research flag**: iOS `inactive` vs `paused` lifecycle states for lock triggering behave differently on simulator vs real device; spike recommended before Phase 5 app lock implementation
+- **OPEN BUG (Phase 3, deferred 2026-06-01)**: Saving a budget limit in the Orçamentos BottomSheet crashes with `_dependents.isEmpty` (`InheritedElement.debugDeactivated`, framework.dart:6268). Provider-scope fix (260601-u6q) and pop-before-emit reorder (03c9498) did NOT resolve it — root cause deeper. Non-blocking; user deferred. Needs full save-path stack trace to identify the deactivating InheritedElement. Other finance forms unaffected.
 
 ### Quick Tasks Completed
 
