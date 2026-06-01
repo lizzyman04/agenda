@@ -31,95 +31,29 @@ class _BudgetOverviewScreenState extends State<BudgetOverviewScreen> {
     String categoryName,
     int existingLimitCents,
   ) async {
-    final controller = TextEditingController(
-      text: existingLimitCents > 0
-          ? (existingLimitCents / 100).toStringAsFixed(2).replaceAll('.', ',')
-          : '',
-    );
-    final l10n = AppLocalizations.of(context);
-    // Capture the cubit before showing the sheet so the save handler does not
-    // depend on a context lookup from inside the (soon-to-be-dismissed) sheet.
     final cubit = context.read<BudgetCubit>();
 
-    await showModalBottomSheet<void>(
+    // The sheet owns its own TextEditingController (see _BudgetLimitSheet) and
+    // returns the parsed limit via Navigator.pop. We apply the mutation only
+    // after the sheet has fully closed, so no emit interleaves with teardown
+    // and no controller is touched after disposal.
+    final limitCents = await showModalBottomSheet<int>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(ctx).viewInsets.bottom,
-          left: 24,
-          right: 24,
-          top: 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Theme.of(ctx).colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              categoryName,
-              style: Theme.of(ctx).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              autofocus: true,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[\d,.]')),
-              ],
-              decoration: InputDecoration(
-                labelText: l10n.fieldAmount,
-                hintText: '0,00',
-                border: const OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: () {
-                final raw = controller.text
-                    .replaceAll(',', '.')
-                    .replaceAll(RegExp(r'[^\d.]'), '');
-                final parsed = double.tryParse(raw);
-                // Dismiss the sheet FIRST, then mutate. Emitting a new
-                // BudgetCubit state while the modal route is still tearing
-                // down interleaves a BlocBuilder rebuild with the route's
-                // deactivation and trips the framework _dependents.isEmpty
-                // assertion (InheritedElement.debugDeactivated).
-                Navigator.of(ctx).pop();
-                if (parsed != null && parsed > 0) {
-                  final limitCents = (parsed * 100).round();
-                  final now = DateTime.now();
-                  cubit.setLimit(
-                    categoryId,
-                    now.month,
-                    now.year,
-                    limitCents,
-                  );
-                }
-              },
-              child: Text(l10n.setBudgetLimit),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
+      builder: (_) => _BudgetLimitSheet(
+        categoryName: categoryName,
+        existingLimitCents: existingLimitCents,
       ),
     );
-    controller.dispose();
+
+    if (limitCents != null) {
+      final now = DateTime.now();
+      await cubit.setLimit(categoryId, now.month, now.year, limitCents);
+    }
   }
 
   @override
@@ -187,6 +121,116 @@ class _BudgetOverviewScreenState extends State<BudgetOverviewScreen> {
             ),
         };
       },
+    );
+  }
+}
+
+/// Bottom-sheet body for setting a category budget limit.
+///
+/// Owns its own [TextEditingController] so the controller is disposed by the
+/// framework in the correct order (after the TextField unmounts). Disposing a
+/// controller created in the caller's method scope — right after the sheet's
+/// `await` returned — caused a "TextEditingController used after being
+/// disposed" error during the dismiss transition, which cascaded into the
+/// `InheritedElement._dependents.isEmpty` assertion on the overlay.
+///
+/// Returns the parsed limit (in cents) via `Navigator.pop`, or `null` when the
+/// input is empty/invalid.
+class _BudgetLimitSheet extends StatefulWidget {
+  const _BudgetLimitSheet({
+    required this.categoryName,
+    required this.existingLimitCents,
+  });
+
+  final String categoryName;
+  final int existingLimitCents;
+
+  @override
+  State<_BudgetLimitSheet> createState() => _BudgetLimitSheetState();
+}
+
+class _BudgetLimitSheetState extends State<_BudgetLimitSheet> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: widget.existingLimitCents > 0
+          ? (widget.existingLimitCents / 100)
+              .toStringAsFixed(2)
+              .replaceAll('.', ',')
+          : '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final raw = _controller.text
+        .replaceAll(',', '.')
+        .replaceAll(RegExp(r'[^\d.]'), '');
+    final parsed = double.tryParse(raw);
+    final limitCents =
+        (parsed != null && parsed > 0) ? (parsed * 100).round() : null;
+    Navigator.of(context).pop(limitCents);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 24,
+        right: 24,
+        top: 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.outlineVariant,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(widget.categoryName, style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _controller,
+            autofocus: true,
+            keyboardType:
+                const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[\d,.]')),
+            ],
+            decoration: InputDecoration(
+              labelText: l10n.fieldAmount,
+              hintText: '0,00',
+              border: const OutlineInputBorder(),
+            ),
+            onSubmitted: (_) => _submit(),
+          ),
+          const SizedBox(height: 16),
+          FilledButton(
+            onPressed: _submit,
+            child: Text(l10n.setBudgetLimit),
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 }
