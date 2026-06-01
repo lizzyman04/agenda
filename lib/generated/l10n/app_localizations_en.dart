@@ -590,6 +590,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emptyDashboardBody => 'Add transactions to see your summary.';
 
   @override
+  String get currentBalance => 'Current balance';
+
+  @override
+  String get netWorth => 'Net worth';
+
+  @override
+  String noExpensesInMonth(String month) {
+    return 'No expenses in $month';
+  }
+
+  @override
+  String get spendingByCategory => 'Spending by category';
+
+  @override
+  String get previousMonth => 'Previous month';
+
+  @override
+  String get nextMonth => 'Next month';
+
+  @override
   String get errorLoadFailed => 'Could not load data. Please try again.';
 
   @override
