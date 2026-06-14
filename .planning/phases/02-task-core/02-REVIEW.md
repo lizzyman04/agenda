@@ -1,342 +1,367 @@
 ---
-phase: "02"
-status: findings
-severity_counts:
-  critical: 0
-  high: 4
-  medium: 6
-  low: 4
-  info: 3
-reviewed_files: 32
+phase: 02-task-core
+reviewed: 2026-06-14T16:54:06Z
+depth: standard
+files_reviewed: 50
+files_reviewed_list:
+  - lib/application/tasks/day_planner/day_planner_cubit.dart
+  - lib/application/tasks/day_planner/day_planner_state.dart
+  - lib/application/tasks/project/project_cubit.dart
+  - lib/application/tasks/project/project_state.dart
+  - lib/application/tasks/task_list/task_list_cubit.dart
+  - lib/application/tasks/task_list/task_list_filter.dart
+  - lib/application/tasks/task_list/task_list_state.dart
+  - lib/config/di/tasks_module.dart
+  - lib/config/l10n/app_en.arb
+  - lib/config/l10n/app_pt.arb
+  - lib/config/l10n/app_pt_BR.arb
+  - lib/core/config/app_config.dart
+  - lib/data/database/migration_runner.dart
+  - lib/data/tasks/item_dao.dart
+  - lib/data/tasks/item_mapper.dart
+  - lib/data/tasks/item_model.dart
+  - lib/domain/tasks/eisenhower_quadrant.dart
+  - lib/domain/tasks/item.dart
+  - lib/domain/tasks/item_repository.dart
+  - lib/domain/tasks/item_type.dart
+  - lib/domain/tasks/priority.dart
+  - lib/domain/tasks/recurrence_engine.dart
+  - lib/domain/tasks/size_category.dart
+  - lib/infrastructure/tasks/item_repository_impl.dart
+  - lib/infrastructure/tasks/recurrence_engine_impl.dart
+  - lib/main.dart
+  - lib/presentation/tasks/screens/day_planner_screen.dart
+  - lib/presentation/tasks/screens/eisenhower_screen.dart
+  - lib/presentation/tasks/screens/gtd_filter_screen.dart
+  - lib/presentation/tasks/screens/project_screen.dart
+  - lib/presentation/tasks/screens/task_form_screen.dart
+  - lib/presentation/tasks/screens/task_list_screen.dart
+  - lib/presentation/tasks/widgets/gtd_chip.dart
+  - lib/presentation/tasks/widgets/quadrant_card.dart
+  - lib/presentation/tasks/widgets/slot_section.dart
+  - lib/presentation/tasks/widgets/task_card.dart
+  - test/application/tasks/day_planner_cubit_test.dart
+  - test/application/tasks/project_cubit_test.dart
+  - test/application/tasks/task_list_cubit_test.dart
+  - test/data/tasks/item_dao_test.dart
+  - test/data/tasks/item_mapper_test.dart
+  - test/domain/tasks/eisenhower_quadrant_test.dart
+  - test/domain/tasks/item_test.dart
+  - test/domain/tasks/recurrence_engine_test.dart
+  - test/infrastructure/tasks/item_repository_impl_test.dart
+  - test/infrastructure/tasks/recurrence_engine_impl_test.dart
+  - test/presentation/tasks/day_planner_test.dart
+  - test/presentation/tasks/eisenhower_board_test.dart
+  - test/presentation/tasks/gtd_test.dart
+  - test/presentation/tasks/task_form_test.dart
+  - test/presentation/tasks/task_list_screen_test.dart
+findings:
+  critical: 1
+  warning: 9
+  info: 6
+  total: 16
+status: issues_found
 ---
 
-# Phase 02 (task-core): Code Review Report
+# Phase 02: Code Review Report
 
-**Reviewed:** 2026-04-15T00:00:00Z
+**Reviewed:** 2026-06-14T16:54:06Z
 **Depth:** standard
-**Files Reviewed:** 32
+**Files Reviewed:** 50
 **Status:** issues_found
 
 ## Summary
 
-The task-core phase delivers a well-structured, layered Flutter codebase covering the domain, data, infrastructure, application, and presentation layers for task management. The domain entities and BLoC cubits follow the established Result<T> pattern consistently. Isar queries use typed API methods and avoid string interpolation, matching the security requirement documented in T-02-01. The migration runner, mapper, and DI module are clean.
+Phase 02 implements the task core: domain entities (Item, recurrence, Eisenhower),
+the Isar data layer (model/mapper/DAO), the repository, three Cubits, and the
+presentation screens. The layering is clean and the privacy constraint is upheld —
+no network, analytics, crash-reporting, or external I/O appears anywhere in the
+task code.
 
-Four high-severity runtime issues were identified, primarily around the `copyWith` null-clearing limitation leading to data corruption on edit, an unsafe `as` cast in the create flow, a missing `await` on a fire-and-forget cubit call that can cause the form to close before the error state propagates, and a stale-data read-after-write in `softDelete`. Six medium-severity logic and maintainability issues cover the `Result` typedef unsafety pattern used at every call site, the `getDistinctGtdContexts` full-table-scan design, unbounded slot duplication, a wrong comment number, a frozen recurrence rule on date-change, and the `_nextMonthly` overflow edge case. Four low-severity and three info items round out the review.
+Note: a previous REVIEW.md existed for an older revision of this phase; many of its
+findings (the unsafe `as` cast in `createItem`, the fire-and-forget save calls,
+`copyWith` being unable to clear nullable fields, the `getDistinctGtdContexts`
+full-table scan, and unbounded day-planner duplicates) have since been fixed in the
+current code and are not re-reported. This review reflects the code as it stands now.
 
----
+The remaining blocker is a data-integrity bug: editing a subtask through the task
+form flips its `type` from `subtask` to `task` while keeping its `parentId`,
+producing a row that violates the create-time invariant and corrupts the
+project/subtask relationship. Warnings cover lost error feedback on save paths
+(cubits emit error states but the UI pops/closes anyway), a recurrence drift bug on
+month-end "same day" rules, a state-machine race between the soft-delete pending-undo
+state and the `watchChanges` auto-reload, a non-atomic migration runner, and — most
+importantly for confidence in this phase — `ItemDao` (the file holding every query)
+shipping with an empty test stub, plus `Item.copyWith` (subtle sentinel semantics)
+being untested.
 
-## High Severity
+## Critical Issues
 
-### HR-01: Unsafe `as` cast in `createItem` — crash on any Err branch
+### CR-01: Editing a subtask flips its type to `task` while keeping `parentId`, corrupting the project relationship
 
-**File:** `lib/infrastructure/tasks/item_repository_impl.dart:34-35`
-**Issue:** `getItem` is called to validate the parent, and on success the code performs an unconditional `as Success<Item>` cast. Because `Result<T>` is typed as `Object`, if the value is an `Err` the guard on line 34 returns early — but only when `parentResult is Err<Item>`. However, if `parentResult` is a success holding a different concrete type (unlikely today but possible with the untyped `typedef Result<T> = Object`), the cast would throw a `TypeError` at runtime that bypasses the wrapping `try/catch` because `TypeError` is not caught by `on Object`. In practice the same unsafe `as` pattern is repeated in `project_cubit.dart:23` and `project_cubit.dart:98`. The root cause is that the project uses `typedef Result<T> = Object`, which erases the type, making every successful extraction require an explicit downcast that can fail at runtime if the wrong branch is entered.
+**File:** `lib/presentation/tasks/screens/task_form_screen.dart:68-69, 275-300`
+**Issue:** In edit mode `_itemType` is initialized as
+`item?.type == ItemType.project ? ItemType.project : ItemType.task` (line 68-69),
+which collapses `ItemType.subtask` to `ItemType.task`. `_save()` then writes
+`type: _itemType` via `widget.item!.copyWith(...)`. `copyWith` keeps the original
+`parentId` (the arg is omitted), so saving an edited subtask produces a row with
+`type == task` **and** a non-null `parentId` pointing at a project.
 
-**Fix:** Replace the two-step is-check + downcast with a pattern match at every call site:
+That state is explicitly rejected on the create path
+(`ItemRepositoryImpl.createItem` enforces "parentId must reference a project" only
+for items whose parent is validated, T-02-04), but `updateItem` performs **no**
+type/parentId consistency check, so the corruption persists. Downstream,
+`getSubtasks`/`getSubtaskCounts` filter purely on `parentId` (DAO lines 29-35,
+112-126) regardless of `type`, so the now-"task" still counts toward the project
+rollup while also appearing in the main task list and Eisenhower board. The
+SegmentedButton only offers task/project, so the original `subtask` type can never
+be restored through the UI. Data integrity is silently broken by a normal edit.
+
+**Fix:** Preserve the discriminator on edit and add a guard on the update path:
 ```dart
-// Instead of:
-if (parentResult is Err<Item>) return parentResult;
-final parent = (parentResult as Success<Item>).value;
+// initState — keep the real type instead of collapsing subtask -> task:
+_itemType = item?.type ?? ItemType.task;
 
-// Use:
-switch (parentResult) {
-  case Err<Item>(:final failure):
-    return Err<Item>(failure);
-  case Success<Item>(:final value):
-    // use value
-}
-```
-Or promote `Result<T>` to a proper sealed class so the type system tracks exhaustion.
-
----
-
-### HR-02: Fire-and-forget cubit calls in `TaskFormScreen._save` — errors silently lost
-
-**File:** `lib/presentation/tasks/screens/task_form_screen.dart:153` and `lib/presentation/tasks/screens/task_form_screen.dart:183`
-**Issue:** `context.read<TaskListCubit>().updateItem(saved)` and `.createItem(saved)` are called without `await`. Both methods are `async` and return `Future<void>`. Because `Navigator.of(context).pop()` on line 186 is called immediately after the unawaited fire, the screen is dismissed before the cubit has a chance to emit `TaskListError`. The user never sees any feedback when the create/update fails (e.g., DB write failure). Additionally, calling a method on a potentially-closed `BuildContext` inside a mounted widget is fine here, but the pattern makes it impossible to handle errors from `_save`.
-
-**Fix:** Make `_save` async and await both calls, then check if the cubit emitted an error state before popping:
-```dart
-Future<void> _save() async {
-  if (!_formKey.currentState!.validate()) return;
-  // ... build saved item ...
-
-  if (_isEditing) {
-    await context.read<TaskListCubit>().updateItem(saved);
-  } else {
-    await context.read<TaskListCubit>().createItem(saved);
-  }
-
-  if (!mounted) return;
-  // Optionally inspect cubit state for error before popping.
-  Navigator.of(context).pop();
-}
-```
-
----
-
-### HR-03: `softDelete` reads back a soft-deleted item — returns stale null-id data
-
-**File:** `lib/infrastructure/tasks/item_repository_impl.dart:101-107`
-**Issue:** `softDelete` calls `_dao.softDelete(id)` which writes `deletedAt = DateTime.now()` to the model, then immediately calls `getItem(id)`. `_dao.findById(id)` does a raw `_collection.get(id)` with no `deletedAtIsNull()` filter — so this call will succeed and return the deleted item. However, `restoreItem` follows the same two-step pattern. The real problem is that `getItem` already documents "Returns Err(DatabaseFailure) if not found" — after a soft-delete the item is NOT logically "not found" but the API is semantically misleading. More critically, if a future refactor adds `deletedAtIsNull()` to `findById`, both `softDelete` and `restoreItem` will start returning `Err` because the item is no longer reachable.
-
-**Fix:** After the DAO operation, read the model directly inside the same transaction or capture the updated domain object before delegating to `getItem`:
-```dart
-@override
-AsyncResult<Item> softDelete(int id) async {
-  try {
-    await _dao.softDelete(id);
-    // Re-fetch by raw id (not filtered), map to domain, return it directly.
-    final model = await _dao.findById(id);
-    if (model == null) return Err<Item>(DatabaseFailure('Item $id not found after softDelete'));
-    return Success<Item>(_mapper.toDomain(model));
-  } on Object catch (e) {
-    return Err<Item>(DatabaseFailure('softDelete failed: $e'));
-  }
-}
-```
-Apply the same fix to `restoreItem`.
-
----
-
-### HR-04: `copyWith` cannot clear nullable fields — edit form silently retains stale data
-
-**File:** `lib/domain/tasks/item.dart:122-177`
-**Issue:** The `copyWith` method is documented explicitly: "nullable fields cannot be explicitly set to null via copyWith". Every nullable field uses `?? this.field`, so passing `null` is a no-op. This becomes a correctness bug in `TaskFormScreen._save` (edit mode, line 127-152): if the user clears the `dueDate` by not selecting a date, `_dueDate` is `null` in state. When `widget.item!.copyWith(dueDate: null)` is called, the existing `dueDate` from the original item is silently retained. The same applies to `description`, `gtdContext`, `waitingFor`, `recurrenceRule`, `amount`, and `currencyCode`.
-
-**Fix — Option A (recommended):** Introduce a sentinel / `Optional<T>` wrapper pattern so `copyWith` can distinguish "not provided" from "set to null":
-```dart
-// Use a wrapper:
-class _Absent { const _Absent(); }
-const absent = _Absent();
-
-Item copyWith({
-  Object? dueDate = absent,
-  // ...
-}) {
-  return Item(
-    dueDate: dueDate is _Absent ? this.dueDate : dueDate as DateTime?,
-    // ...
+// _save() — never let a subtask's type/parent change via this generic form:
+if (_isEditing) {
+  saved = widget.item!.copyWith(
+    title: _titleController.text.trim(),
+    type: widget.item!.type == ItemType.subtask
+        ? widget.item!.type      // lock subtask type
+        : _itemType,             // task <-> project toggle only for non-subtasks
+    // parentId intentionally omitted so it is preserved
+    // ...rest unchanged...
   );
 }
 ```
+Also mirror the `createItem` parentId/type validation inside
+`ItemRepositoryImpl.updateItem` so an inconsistent row can never be written.
 
-**Fix — Option B (simpler short-term):** Add explicit `clearXxx()` methods for the clearable nullable fields used in the form (`clearDueDate`, `clearDescription`, etc.) and call them when the field is blank in the form save.
+## Warnings
 
----
+### WR-01: Recurrence drifts permanently for month-end "same day" rules
 
-## Medium Severity
+**File:** `lib/infrastructure/tasks/recurrence_engine_impl.dart:81-101`
+**Issue:** `_nextMonthly` uses `day = byMonthDay ?? from.day` and clamps to the
+target month's length. In the null-`byMonthDay` "same day as seed" mode, a task
+seeded on Jan 31 yields Feb 28; the next occurrence is then computed from Feb 28 and
+produces Mar 28 — not Mar 31 — because the clamped day becomes the new `from.day`.
+The monthly anchor is irreversibly lost after the first short month.
+**Fix:** Anchor the day-of-month on the rule, not the rolling `from.day`. Either
+require `byMonthDay` for monthly recurrence (the form already emits
+`FREQ=MONTHLY;BYMONTHDAY=${_dueDate!.day}`, so production rules carry it), or carry
+the seed day so the engine re-expands to the full day after a short month. At
+minimum, add a Jan-31 -> Feb -> Mar test to pin the intended behaviour.
 
-### MR-01: `Result<T> = Object` typedef — no compile-time type safety at unwrap sites
+### WR-02: `softDelete` pending-undo state is immediately overwritten by the watchChanges reload
 
-**File:** `lib/core/failures/result.dart:33`
-**Issue:** `typedef Result<T> = Object` erases the generic entirely. Every call site must use `is Success<Item>` runtime type checks and then unsafe `as Success<Item>` downcasts. This is a project-wide pattern that bypasses Dart's type system — a wrong cast at any new call site will throw at runtime rather than fail at compile time. The `AsyncResult<T> = Future<Object>` has the same issue.
-
-**Fix:** Replace with a proper sealed class:
+**File:** `lib/application/tasks/task_list/task_list_cubit.dart:36-41, 60-82`
+**Issue:** `softDelete` performs an Isar `writeTxn`, which fires the
+`watchChanges()` stream the cubit subscribed to in `start()`. The listener calls
+`_reload()`, emitting `TaskListLoaded` and replacing the just-emitted
+`TaskListWithPendingUndo` before the 5 s window. The documented state machine
+("`TaskListWithPendingUndo` persists for `undoSnackbarDuration`, then transitions to
+`TaskListLoaded`") therefore does not hold — the transition is effectively instant
+and racy. The undo SnackBar still works only because the screen captured
+`deletedItemId` in the listener closure; any other consumer of the pending state
+will misbehave.
+**Fix:** Hold the auto-reload while an undo is pending:
 ```dart
-sealed class Result<T> {
-  const Result();
-}
-
-final class Success<T> extends Result<T> {
-  const Success(this.value);
-  final T value;
-}
-
-final class Err<T> extends Result<T> {
-  const Err(this.failure);
-  final Failure failure;
-}
-
-typedef AsyncResult<T> = Future<Result<T>>;
-```
-All switch expressions on `Result` will then be exhaustively checked by the compiler.
-
----
-
-### MR-02: `getDistinctGtdContexts` loads entire active item collection into memory
-
-**File:** `lib/infrastructure/tasks/item_repository_impl.dart:183-202`
-**Issue:** `getDistinctGtdContexts` calls `filterItems()` with no parameters, which fetches up to 500 active items into memory and then does an in-Dart `.map().whereType().toSet()` to extract unique contexts. This is a full collection scan through the application layer. As the collection grows toward the 500-item limit, this becomes both a memory and a latency issue, and it will silently miss any GTD contexts beyond the first 500 items.
-
-**Fix:** Add a dedicated DAO method that queries only the `gtdContext` field:
-```dart
-Future<List<String>> findDistinctGtdContexts() async =>
-    (await _collection
-        .filter()
-        .deletedAtIsNull()
-        .gtdContextIsNotNull()
-        .findAll())
-        .map((m) => m.gtdContext!)
-        .toSet()
-        .toList()
-      ..sort();
-```
-Alternatively, if the 500-item ceiling is acceptable for Phase 2, at minimum document the truncation risk in a comment.
-
----
-
-### MR-03: `DayPlannerCubit.assignMedium` / `assignSmall` allow unbounded duplicates
-
-**File:** `lib/application/tasks/day_planner/day_planner_cubit.dart:35-56`
-**Issue:** `assignMedium` and `assignSmall` always append to the existing list without checking whether the item is already assigned. A user can add the same task five times to the medium slot. The `remove(id)` method removes ALL occurrences where `i.id == itemId`, which partially papers over the issue but the duplicate display between assign and remove is a logic error.
-
-**Fix:** Guard against duplicates before appending:
-```dart
-void assignMedium(Item item) {
-  if (state.mediumTasks.any((i) => i.id == item.id)) return;
-  final updated = [...state.mediumTasks, item];
-  // ...
+Future<void> _reload() async {
+  if (isClosed) return;
+  if (_pendingUndoId != null) return; // suppress during undo window
+  // ...existing reload...
 }
 ```
+Set `_pendingUndoId` in `softDelete`, clear it in the timer callback and in
+`restoreItem`.
 
----
+### WR-03: TaskFormScreen swallows repository errors — user sees a successful-looking pop on failed save
 
-### MR-04: Recurrence rule frozen to original `dueDate.day` when date changes in form
-
-**File:** `lib/presentation/tasks/screens/task_form_screen.dart:347-350`
-**Issue:** The `FREQ=MONTHLY;BYMONTHDAY=...` radio tile hardcodes `_dueDate!.day` at widget build time:
+**File:** `lib/presentation/tasks/screens/task_form_screen.dart:300-332`
+**Issue:** `_save()` awaits `updateItem`/`createItem` then unconditionally pops. If
+the cubit emits `TaskListError` (e.g. the `createItem` parentId validation fails, or
+a DB error), the form pops as if the save succeeded and the error is never shown.
+The user believes the task was saved.
+**Fix:** Have the cubit methods return a `Result`/bool, or inspect the cubit state
+after awaiting and only pop on success:
 ```dart
-value: 'FREQ=MONTHLY;BYMONTHDAY=${_dueDate!.day}',
-```
-The RadioListTile `value` is evaluated once during `build`. If the user first selects the monthly recurrence, then changes the due date to a different day, the recurrence rule stored in `_recurrenceRule` still refers to the original day, not the newly selected one. There is no mechanism to sync the rule when `_dueDate` changes.
-
-**Fix:** Clear `_recurrenceRule` whenever `_dueDate` changes, forcing the user to re-select recurrence after picking a new date:
-```dart
-if (picked != null) {
-  setState(() {
-    _dueDate = picked;
-    // Reset recurrence rule so the monthly value reflects the new day.
-    if (_recurrenceRule != null && _recurrenceRule!.startsWith('FREQ=MONTHLY')) {
-      _recurrenceRule = null;
-    }
-  });
+await context.read<TaskListCubit>().createItem(saved);
+if (!mounted) return;
+final state = context.read<TaskListCubit>().state;
+if (state is TaskListError) {
+  ScaffoldMessenger.of(context)
+      .showSnackBar(SnackBar(content: Text(state.failure.message)));
+  return;
 }
+Navigator.of(context).pop();
 ```
 
----
+### WR-04: ProjectScreen add-subtask sheet leaks its controller and drops errors
 
-### MR-05: `_nextMonthly` month overflow produces wrong `nextMonth` for January
+**File:** `lib/presentation/tasks/screens/project_screen.dart:28-73`
+**Issue:** The `TextEditingController` created at line 30 is never disposed (leak on
+every sheet open). The button pops the sheet whether or not a subtask was added
+(empty input is silently ignored via `if (title.isNotEmpty)`), and `addSubtask` can
+emit `ProjectError` which is never surfaced — the user just sees the sheet close
+with no new subtask and no feedback.
+**Fix:** Move the sheet to a small `StatefulWidget` that disposes its controller,
+add a validator/inline error for empty titles, and surface `ProjectError` via
+SnackBar before popping.
 
-**File:** `lib/infrastructure/tasks/recurrence_engine_impl.dart:82-84`
-**Issue:** The computation for `nextMonth` when `from.month == 12`:
+### WR-05: `updateItem` returns the in-memory item instead of re-reading the persisted row
+
+**File:** `lib/infrastructure/tasks/item_repository_impl.dart:93-103`
+**Issue:** Unlike `createItem`/`softDelete`/`restoreItem`, which re-read via
+`findById` after writing, `updateItem` returns the locally-built `updated` object
+without confirming the write or reading back any DB-side state. If `_dao.save`
+silently no-ops, the caller still receives `Success` with stale-but-plausible data.
+The contract is inconsistent across the repository and can mask write failures.
+**Fix:** Re-read after save for parity:
 ```dart
-final nextMonth = from.month == 12
-    ? DateTime(from.year + 1)
-    : DateTime(from.year, from.month + 1);
+final id = await _dao.save(model);
+final saved = await _dao.findById(id);
+if (saved == null) {
+  return Err<Item>(DatabaseFailure('Item ${item.id} not found after update'));
+}
+return Success<Item>(_mapper.toDomain(saved));
 ```
-`DateTime(from.year + 1)` with no month argument defaults to January (month 1, day 1). This is correct. However, `daysInNextMonth` is then computed as:
-```dart
-DateTime(nextMonth.year, nextMonth.month + 1, 0).day
-```
-When `nextMonth.month` is 1 (January), `nextMonth.month + 1` is 2, so this correctly gives 31. This part is safe. But the issue is that `nextMonth` for `month == 12` includes `day = 1` while for other months it uses `DateTime(from.year, from.month + 1)` which also defaults to `day = 1`. This is consistent and the overflow clamping is correct. The real edge case is that the `from` time-of-day components (`from.hour`, `from.minute`, `from.second`) are preserved but `from.millisecond` and `from.microsecond` are silently dropped, creating a subtle precision loss for any `DateTime` that carries sub-second components.
 
-**Fix:** Preserve full sub-second precision:
+### WR-06: ItemDao has zero test coverage — only an empty group stub ships
+
+**File:** `test/data/tasks/item_dao_test.dart:1-6`
+**Issue:** The DAO holds all query logic this phase rests on (`deletedAtIsNull`
+filtering, the 500-row limit, the multi-criteria `filterItems` `.optional()` chain
+with three date-range branches, `searchByTitle`, soft-delete/restore,
+`findDistinctGtdContexts`), yet the test file is `group('ItemDao', () {});` with no
+tests. None of the T-02-01/T-02-02 guarantees (no string interpolation,
+deletedAt-first, limit(500)) are verified, and the date-range branching is exactly
+the kind of conditional logic that regresses silently.
+**Fix:** Add integration tests against a temp Isar instance covering: soft-deleted
+rows excluded, limit enforced, each `filterItems` date branch (`from && to`,
+`from only`, `to only`), `searchByTitle` case-insensitivity, and
+`findDistinctGtdContexts` distinctness + sort.
+
+### WR-07: `Item.copyWith` sentinel logic is untested despite subtle semantics
+
+**File:** `lib/domain/tasks/item.dart:146-218` (test:
+`test/domain/tasks/item_test.dart`)
+**Issue:** `copyWith` uses the `clearField` sentinel to distinguish "omitted" from
+"explicitly null" across ~12 nullable fields, with `as String?`/`as int?`/
+`as DateTime?` casts. `item_test.dart` covers defaults and the Eisenhower getter but
+never exercises `copyWith` — not the keep-existing path, the explicit-null path, nor
+the casts. Both CR-01 and WR-03 flow through `copyWith`, making this a high-risk
+untested surface.
+**Fix:** Add tests: `copyWith()` keeps each nullable field; `copyWith(field:
+clearField)` nulls it; `copyWith(field: value)` sets it.
+
+### WR-08: `completeItem` next-occurrence copy omits fields and ignores create errors
+
+**File:** `lib/application/tasks/task_list/task_list_cubit.dart:125-170`
+**Issue:** When a recurring task completes, the next occurrence is built field-by-
+field (lines 144-164) and omits `linkedGoalId`/`linkedDebtId`, so a recurring task
+linked to a goal/debt loses that link on every rollover. The result of
+`await _repository.createItem(nextItem)` is also discarded — if creation fails, the
+recurring series silently stops with no error emitted.
+**Fix:** Build the next occurrence via `copyWith` so future fields are not forgotten,
+and handle the create result:
 ```dart
-return DateTime(
-  nextMonth.year, nextMonth.month, clampedDay,
-  from.hour, from.minute, from.second,
-  from.millisecond, from.microsecond,
+final nextItem = item.copyWith(
+  id: 0,
+  dueDate: nextDate,
+  isCompleted: false,
+  completedAt: clearField,
+  createdAt: now,
+  updatedAt: now,
 );
-```
-Apply the same fix to the `yearly` branch in `nextOccurrence` and `_nextWeekly`.
-
----
-
-### MR-06: `TaskFormScreen` comment numbers are wrong — both switches say "8."
-
-**File:** `lib/presentation/tasks/screens/task_form_screen.dart:362` and `lib/presentation/tasks/screens/task_form_screen.dart:369`
-**Issue:** Both the Urgent and Important `SwitchListTile` sections are labeled `// 8.` in comments. The Important switch should be `// 9.` and all subsequent section comments are off by one. Minor but misleading when reading the file.
-
-**Fix:** Re-number `// 8. Important` → `// 9. Important`, `// 9. Size` → `// 10. Size`, etc.
-
----
-
-## Low Severity
-
-### LR-01: `TaskCard` delete tooltip is a hardcoded English string
-
-**File:** `lib/presentation/tasks/widgets/task_card.dart:110`
-**Issue:** `tooltip: 'Delete'` is a hardcoded English string. The project uses PT-BR as the primary locale, and all other user-visible strings go through `AppLocalizations`. This string will not be translated.
-
-**Fix:**
-```dart
-tooltip: AppLocalizations.of(context).deleteTask,
-```
-Add the `deleteTask` key to both ARB files.
-
----
-
-### LR-02: `SlotSection` remove button tooltip is hardcoded English
-
-**File:** `lib/presentation/tasks/widgets/slot_section.dart:86`
-**Issue:** `tooltip: 'Remove'` is a hardcoded English string, same issue as LR-01.
-
-**Fix:** Use `AppLocalizations.of(context).removeTask` or equivalent l10n key.
-
----
-
-### LR-03: `GtdFilterScreen` accesses GetIt directly — bypasses DI injection
-
-**File:** `lib/presentation/tasks/screens/gtd_filter_screen.dart:39`
-**Issue:** `final repo = GetIt.instance<ItemRepository>();` accesses the service locator directly inside a widget method. The project convention threads dependencies through the widget tree (via `BlocProvider`, constructor, or route arguments). Direct `GetIt.instance` calls in UI code are a DI anti-pattern that makes the screen untestable in isolation and couples presentation to infrastructure.
-
-**Fix:** The `ItemRepository` instance is already accessible through the `TaskListCubit`'s data path. Either pass the repository as a constructor parameter to the screen, or expose a `loadGtdContexts` method on `TaskListCubit` that returns the list and emits a state the screen can react to.
-
----
-
-### LR-04: `ProjectScreen._showAddSubtaskSheet` reads `context` after sheet builder
-
-**File:** `lib/presentation/tasks/screens/project_screen.dart:59`
-**Issue:** Inside the `showModalBottomSheet` builder, `context.read<ProjectCubit>()` is called on the outer screen `context` (captured via closure), not on the `sheetContext`. While this works because the outer context is still mounted, it is a subtle Flutter anti-pattern — if the outer widget is removed from the tree while the sheet is open, this will throw a `ProviderNotFoundException`. The correct approach is to pass the cubit value into the sheet explicitly.
-
-**Fix:**
-```dart
-showModalBottomSheet<void>(
-  context: context,
-  builder: (sheetContext) {
-    return BlocProvider.value(
-      value: context.read<ProjectCubit>(),
-      child: _AddSubtaskSheet(
-        projectId: widget.projectId,
-        l10n: l10n,
-      ),
-    );
-  },
-);
+final created = await _repository.createItem(nextItem);
+if (created is Err<Item>) emit(TaskListError(created.failure));
 ```
 
----
+### WR-09: Migration runner is not atomic and has no error handling — a throwing migration bricks startup
+
+**File:** `lib/data/database/migration_runner.dart:25-51`
+**Issue:** `run` loops over versions, executing each migration then writing the new
+version to prefs, with no try/catch. If a migration throws, it propagates out of
+`IsarService.open` and prevents the app from starting, with no recovery path. The
+version-bump and data-write are also separate steps: a crash between them can leave
+prefs and Isar data divergent. The current v3 `_seedDefaultCategories` is saved only
+by its `count > 0` idempotency guard; any future non-idempotent migration would be
+unsafe under this pattern.
+**Fix:** Wrap each step in try/catch and surface failures clearly; keep the
+version-bump and the data write as close to atomic as Isar allows; and document that
+every migration must be idempotent.
 
 ## Info
 
-### IN-01: `TaskListCubit` emits `TaskListLoading` state but never transitions to it
+### IN-01: Duplicate localization file `app_pt.arb` generates an unused locale
 
-**File:** `lib/application/tasks/task_list/task_list_cubit.dart`
-**Issue:** `TaskListLoading` is defined in `task_list_state.dart` and the `builder` in `TaskListScreen` renders a spinner for it. However, `TaskListCubit` never emits `TaskListLoading` — `_reload()` goes directly from `TaskListInitial` or `TaskListLoaded` to the new `TaskListLoaded`/`TaskListError` without an intermediate loading state. This means the spinner on the loading state can never appear, making `TaskListLoading` dead code.
+**File:** `lib/config/l10n/app_pt.arb` (vs `app_pt_BR.arb`)
+**Issue:** `app_pt.arb` is a key-for-key duplicate of `app_pt_BR.arb` (287 identical
+keys), but `l10n.yaml` declares only `pt_BR` and `en` as supported locales with
+`app_pt_BR.arb` as the template. The `pt` file produces a generated `pt`
+localization the app never selects, and is a second copy to keep in sync. CLAUDE.md
+specifies "PT-BR with EN toggle"; there is no plain-`pt` requirement.
+**Fix:** Delete `app_pt.arb` unless a generic `pt` fallback is intended; if kept,
+document why and keep it in sync.
 
-**Suggestion:** Either emit `TaskListLoading()` at the top of `_reload()` before the async query, or remove `TaskListLoading` from the state hierarchy and the switch cases if the silent-reload UX is intentional.
+### IN-02: `_loadFinanceLinks` uses try/catch on `firstWhere` instead of `firstWhereOrNull`
+
+**File:** `lib/presentation/tasks/screens/task_form_screen.dart:96-100, 111-115`
+**Issue:** `firstWhere((g) => g.id == _linkedGoalId)` is wrapped in `catch (_) {}` to
+handle the not-found case. Empty catch blocks hide all errors, not just the expected
+`StateError`.
+**Fix:** Use `package:collection`'s `firstWhereOrNull` with a null check; no catch.
+
+### IN-03: Hardcoded EN/PT-BR strings bypass the l10n pipeline
+
+**File:** `lib/presentation/tasks/screens/task_form_screen.dart:151, 815` (and the
+whole `_GtdGuideSheet`), `lib/presentation/tasks/widgets/task_card.dart:107`,
+`lib/presentation/tasks/widgets/slot_section.dart:80`
+**Issue:** Literals like `'Sem vínculo'`, `'8 questions to clarify & prioritize'`,
+`tooltip: 'Delete'`, `tooltip: 'Remove'`, and the GTD guide's many inline strings
+(`'Pergunta X de Y'`, `'Próximo →'`, `'Título'`, `'Contexto'`, the priority labels)
+are not in the ARB files, so the EN toggle does not affect them and EN/PT-BR literals
+are mixed.
+**Fix:** Move user-facing strings into `app_*.arb` and reference via
+`AppLocalizations`.
+
+### IN-04: `app_config.dart` notification-base comment contradicts the constants
+
+**File:** `lib/core/config/app_config.dart:27, 31-38`
+**Issue:** The header comment states "Deterministic derivation: entityId * 10 +
+notificationType" while the constants define per-domain bases (`taskNotificationBase
+= 10`, `financeNotificationBase = 20`, `systemNotificationBase = 30`). Both cannot be
+the derivation rule; this will mislead Phase 4 notification ID generation.
+**Fix:** Reconcile the comment with the constants and state the exact ID formula
+once.
+
+### IN-05: Day-planner `slotLimitWarning` is cached pre-update and reset on remove — inconsistent UX
+
+**File:** `lib/application/tasks/day_planner/day_planner_cubit.dart:21-71`
+**Issue:** `slotLimitWarning` is computed from the pre-update state on each assign,
+but `remove()` and the next non-overflowing assign reset it to `false`, so the global
+banner can switch off while a slot is still over capacity. The per-section
+`isOverCapacity` (from `areMediumSlotsFull` etc.) is the reliable signal; the global
+flag is redundant and can disagree with it.
+**Fix:** Derive `slotLimitWarning` from the resulting state (any slot length > its
+max) rather than caching the pre-update boolean, or drop the global flag in favour of
+the per-section indicator.
+
+### IN-06: Finance-link fields documented as "always null in Phase 2" but the form writes them
+
+**File:** `lib/domain/tasks/item.dart:119-123`,
+`lib/presentation/tasks/screens/task_form_screen.dart:296-297, 323-324`
+**Issue:** The domain docs say `linkedGoalId`/`linkedDebtId` are "Reserved for
+Phase 3 — always null in Phase 2," yet `TaskFormScreen` loads active goals/debts and
+persists these links. The documented invariant is already violated (the feature
+appears intentionally pulled forward), so the comment will mislead future readers.
+**Fix:** Update the doc comments to reflect that finance linkage is wired in this
+phase, or gate the finance-link card behind a Phase-3 flag if it is not meant to be
+live yet.
 
 ---
 
-### IN-02: `RecurrenceEngine` field unused — suppressed with `ignore` comment
-
-**File:** `lib/infrastructure/tasks/item_repository_impl.dart:25-26`
-**Issue:** `_recurrenceEngine` is injected but suppressed with `// ignore: unused_field`. The recurring task completion is stubbed to `TaskListCubit.completeItem` (application layer), but the `ItemRepositoryImpl` holds a reference it doesn't use. This leaks infrastructure concern into the repository.
-
-**Suggestion:** Remove `_recurrenceEngine` from `ItemRepositoryImpl` constructor and inject it only where it is consumed (`TaskListCubit`). The cubit already has direct access to `RecurrenceEngine`.
-
----
-
-### IN-03: `item.dart` documents the `copyWith` null-clearing limitation but offers no workaround in the class
-
-**File:** `lib/domain/tasks/item.dart:119-124`
-**Issue:** The existing comment correctly documents the limitation but then directs callers to "use `ItemRepository` directly (Isar write)" as the workaround for clearing nullable fields. This is an abstraction leak — the domain entity is telling consumers to bypass it and go directly to the data layer for a routine use-case (restoring an item). This will cause correctness bugs if any presenter tries to clear a field through `copyWith` without reading the caveat.
-
-**Suggestion:** Address via HR-04 fix (sentinel pattern) or add `clearXxx` factory methods. Remove the comment pointing to direct Isar writes as a workaround.
-
----
-
-_Reviewed: 2026-04-15T00:00:00Z_
+_Reviewed: 2026-06-14T16:54:06Z_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_
