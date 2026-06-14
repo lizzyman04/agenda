@@ -93,6 +93,11 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   AsyncResult<Item> updateItem(Item item) async {
     try {
+      if (item.type != ItemType.subtask && item.parentId != null) {
+        return const Err<Item>(
+          ValidationFailure('parentId must be null for type task or project'),
+        );
+      }
       final updated = item.copyWith(updatedAt: DateTime.now());
       final model = _mapper.toModel(updated);
       await _dao.save(model);

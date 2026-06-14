@@ -1,4 +1,5 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
+import 'package:agenda/application/tasks/task_list/task_list_state.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/finance/debt.dart' hide clearField;
@@ -65,8 +66,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
     _waitingForController =
         TextEditingController(text: item?.waitingFor ?? '');
 
-    _itemType =
-        item?.type == ItemType.project ? ItemType.project : ItemType.task;
+    _itemType = item?.type ?? ItemType.task;
     _priority = item?.priority ?? Priority.medium;
     _sizeCategory = item?.sizeCategory ?? SizeCategory.medium;
     _isUrgent = item?.isUrgent ?? false;
@@ -278,7 +278,9 @@ class _TaskFormScreenState extends State<TaskFormScreen>
         description: _descriptionController.text.trim().isNotEmpty
             ? _descriptionController.text.trim()
             : null,
-        type: _itemType,
+        type: widget.item!.type == ItemType.subtask
+            ? widget.item!.type
+            : _itemType,
         priority: _priority,
         sizeCategory: _sizeCategory,
         isUrgent: _isUrgent,
@@ -298,6 +300,14 @@ class _TaskFormScreenState extends State<TaskFormScreen>
         updatedAt: now,
       );
       await context.read<TaskListCubit>().updateItem(saved);
+      if (!mounted) return;
+      final updateState = context.read<TaskListCubit>().state;
+      if (updateState is TaskListError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(updateState.failure.message)),
+        );
+        return;
+      }
     } else {
       saved = Item(
         id: 0,
@@ -326,9 +336,16 @@ class _TaskFormScreenState extends State<TaskFormScreen>
         updatedAt: now,
       );
       await context.read<TaskListCubit>().createItem(saved);
+      if (!mounted) return;
+      final createState = context.read<TaskListCubit>().state;
+      if (createState is TaskListError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(createState.failure.message)),
+        );
+        return;
+      }
     }
 
-    if (!mounted) return;
     Navigator.of(context).pop();
   }
 

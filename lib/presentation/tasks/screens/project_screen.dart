@@ -26,49 +26,13 @@ class _ProjectScreenState extends State<ProjectScreen> {
   }
 
   void _showAddSubtaskSheet(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final controller = TextEditingController();
-
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 16,
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 16,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: controller,
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: l10n.subtaskTitleHint,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {
-                  final title = controller.text.trim();
-                  if (title.isNotEmpty) {
-                    context.read<ProjectCubit>().addSubtask(
-                          projectId: widget.projectId,
-                          title: title,
-                        );
-                  }
-                  Navigator.of(sheetContext).pop();
-                },
-                child: Text(l10n.addSubtask),
-              ),
-            ],
-          ),
-        );
-      },
+      builder: (_) => _AddSubtaskSheet(
+        projectId: widget.projectId,
+        cubit: context.read<ProjectCubit>(),
+      ),
     );
   }
 
@@ -139,6 +103,82 @@ class _ProjectScreenState extends State<ProjectScreen> {
               ),
           };
         },
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Add-subtask sheet — StatefulWidget owning/disposing its controller (WR-03)
+// ---------------------------------------------------------------------------
+
+class _AddSubtaskSheet extends StatefulWidget {
+  const _AddSubtaskSheet({required this.projectId, required this.cubit});
+
+  final int projectId;
+  final ProjectCubit cubit;
+
+  @override
+  State<_AddSubtaskSheet> createState() => _AddSubtaskSheetState();
+}
+
+class _AddSubtaskSheetState extends State<_AddSubtaskSheet> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final title = _controller.text.trim();
+    if (title.isEmpty) return;
+    await widget.cubit.addSubtask(projectId: widget.projectId, title: title);
+    if (!mounted) return;
+    final state = widget.cubit.state;
+    if (state is ProjectError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(state.failure.message)),
+      );
+      return; // keep sheet open so user can retry
+    }
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: l10n.subtaskTitleHint,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ElevatedButton(
+            onPressed: _submit,
+            child: Text(l10n.addSubtask),
+          ),
+        ],
       ),
     );
   }
