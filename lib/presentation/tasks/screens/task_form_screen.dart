@@ -281,6 +281,12 @@ class _TaskFormScreenState extends State<TaskFormScreen>
         type: widget.item!.type == ItemType.subtask
             ? widget.item!.type
             : _itemType,
+        // Invariant: only subtasks may carry a parentId. A non-subtask item
+        // must have parentId == null, otherwise updateItem's guard rejects the
+        // save. Clearing it here lets the form recover any legacy item whose
+        // type is not subtask but still holds a stale parentId.
+        parentId:
+            widget.item!.type == ItemType.subtask ? widget.item!.parentId : null,
         priority: _priority,
         sizeCategory: _sizeCategory,
         isUrgent: _isUrgent,
