@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 Phase: 03 (finance-core) — EXECUTING
 Plan: 5 of 5 (03-05 code complete, human-verify checkpoint pending)
 Status: Plans 03-01..03-04 complete; 03-05 code complete (dashboard summary card, pie+bar charts, month nav) — human-verify checkpoint pending; budget-save crash still deferred
-Last activity: 2026-06-01 -- 03-05 executed and merged (commits 561c273, 6a316ec, c345f06); awaiting dashboard human-verify
+Last activity: 2026-06-14 - Completed quick task 260614-w5e: Fix phase 02 code review findings CR-01 WR-03 WR-04
 
 Progress: [████████░░] 87%
 
@@ -91,6 +91,7 @@ None.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260601-u6q | Fix finance form `_dependents.isEmpty` crash (hoist cubits above MaterialApp) | 2026-06-01 | d8dc04c | [260601-u6q-fix-finance-provider-scope](./quick/260601-u6q-fix-finance-provider-scope/) |
+| 260614-w5e | Fix phase 02 code review findings CR-01 WR-03 WR-04 | 2026-06-14 | e333cd7 | [260614-w5e-fix-phase-02-code-review-findings-cr-01-](./quick/260614-w5e-fix-phase-02-code-review-findings-cr-01-/) |
 
 ## Session Continuity
 
