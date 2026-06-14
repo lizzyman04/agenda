@@ -147,5 +147,50 @@ void main() {
         verify(() => mockDao.searchByTitle('task')).called(1);
       });
     });
+
+    group('updateItem', () {
+      test(
+          'returns Err(ValidationFailure) when type is task and parentId is non-null',
+          () async {
+        final item = makeItem(type: domain.ItemType.task, parentId: 5);
+
+        final result = await repository.updateItem(item);
+
+        expect(result, isA<Err<Item>>());
+        final err = result as Err<Item>;
+        expect(err.failure, isA<ValidationFailure>());
+        // Guard fires before DAO — no DAO calls expected
+        verifyNever(() => mockDao.save(any()));
+      });
+
+      test('returns Success when type is subtask and parentId is non-null',
+          () async {
+        final item = makeItem(type: domain.ItemType.subtask, parentId: 5);
+        final model = makeModel();
+        final savedItem = makeItem(type: domain.ItemType.subtask, parentId: 5);
+
+        when(() => mockMapper.toModel(any())).thenReturn(model);
+        when(() => mockDao.save(any())).thenAnswer((_) async => 1);
+        when(() => mockMapper.toDomain(any())).thenReturn(savedItem);
+
+        final result = await repository.updateItem(item);
+
+        expect(result, isA<Success<Item>>());
+      });
+
+      test('returns Success when type is task and parentId is null', () async {
+        final item = makeItem(type: domain.ItemType.task, parentId: null);
+        final model = makeModel();
+        final savedItem = makeItem(type: domain.ItemType.task, parentId: null);
+
+        when(() => mockMapper.toModel(any())).thenReturn(model);
+        when(() => mockDao.save(any())).thenAnswer((_) async => 1);
+        when(() => mockMapper.toDomain(any())).thenReturn(savedItem);
+
+        final result = await repository.updateItem(item);
+
+        expect(result, isA<Success<Item>>());
+      });
+    });
   });
 }
