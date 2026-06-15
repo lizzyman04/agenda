@@ -98,23 +98,34 @@ class TaskListCubit extends Cubit<TaskListState> {
 
   /// Creates a new item (TASK-01, TASK-03).
   ///
-  /// The watchChanges() stream fires automatically after the write,
-  /// triggering _reload() via the listener.
-  Future<void> createItem(Item item) async {
+  /// Returns `true` on success, `false` on failure. On failure a
+  /// [TaskListError] is emitted carrying the failure. Callers should branch on
+  /// the returned value rather than inspecting state after the await — success
+  /// emits nothing here (the watchChanges() stream fires the reload), so a
+  /// stale [TaskListError] from a prior operation must not be mistaken for this
+  /// call's outcome.
+  Future<bool> createItem(Item item) async {
     final result = await _repository.createItem(item);
     if (result is Err<Item>) {
       emit(TaskListError(result.failure));
+      return false;
     }
     // watchChanges() fires reload automatically
+    return true;
   }
 
   /// Updates an existing item (edit flow — TASK-03).
-  Future<void> updateItem(Item item) async {
+  ///
+  /// Returns `true` on success, `false` on failure. See [createItem] for why
+  /// the boolean result, not post-await state, is the source of truth.
+  Future<bool> updateItem(Item item) async {
     final result = await _repository.updateItem(item);
     if (result is Err<Item>) {
       emit(TaskListError(result.failure));
+      return false;
     }
     // watchChanges() fires reload automatically
+    return true;
   }
 
   /// Marks an item as completed (TASK-06).

@@ -108,7 +108,7 @@ void main() {
 
     testWidgets('submitting with valid title calls cubit.createItem',
         (tester) async {
-      when(() => cubit.createItem(any())).thenAnswer((_) async {});
+      when(() => cubit.createItem(any())).thenAnswer((_) async => true);
 
       await tester.pumpWidget(_buildTestWidget(cubit));
       await tester.pump();

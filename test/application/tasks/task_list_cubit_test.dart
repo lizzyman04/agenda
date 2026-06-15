@@ -224,5 +224,69 @@ void main() {
       act: (cubit) => cubit.start(),
       expect: () => [isA<TaskListError>()],
     );
+
+    // WR-01 regression: create/update must report their own outcome via the
+    // returned bool, not via post-await state. Success emits nothing here (the
+    // watchChanges() stream drives the reload), so callers cannot infer success
+    // from state — a stale TaskListError would otherwise read as a failure.
+    test('createItem returns true and emits nothing on success', () async {
+      final item = makeItem(id: 1);
+      when(() => repository.createItem(any()))
+          .thenAnswer((_) async => Success(item));
+      final cubit = TaskListCubit(repository, recurrenceEngine);
+      final emissions = <TaskListState>[];
+      final sub = cubit.stream.listen(emissions.add);
+
+      final result = await cubit.createItem(item);
+
+      expect(result, isTrue);
+      expect(emissions, isEmpty);
+      await sub.cancel();
+      await cubit.close();
+    });
+
+    test('createItem returns false and emits TaskListError on failure',
+        () async {
+      when(() => repository.createItem(any())).thenAnswer(
+        (_) async => const Err<Item>(DatabaseFailure('db error')),
+      );
+      final cubit = TaskListCubit(repository, recurrenceEngine);
+
+      final result = await cubit.createItem(makeItem(id: 1));
+
+      expect(result, isFalse);
+      expect(cubit.state, isA<TaskListError>());
+      await cubit.close();
+    });
+
+    test('updateItem returns true and emits nothing on success', () async {
+      final item = makeItem(id: 1);
+      when(() => repository.updateItem(any()))
+          .thenAnswer((_) async => Success(item));
+      final cubit = TaskListCubit(repository, recurrenceEngine);
+      final emissions = <TaskListState>[];
+      final sub = cubit.stream.listen(emissions.add);
+
+      final result = await cubit.updateItem(item);
+
+      expect(result, isTrue);
+      expect(emissions, isEmpty);
+      await sub.cancel();
+      await cubit.close();
+    });
+
+    test('updateItem returns false and emits TaskListError on failure',
+        () async {
+      when(() => repository.updateItem(any())).thenAnswer(
+        (_) async => const Err<Item>(DatabaseFailure('db error')),
+      );
+      final cubit = TaskListCubit(repository, recurrenceEngine);
+
+      final result = await cubit.updateItem(makeItem(id: 1));
+
+      expect(result, isFalse);
+      expect(cubit.state, isA<TaskListError>());
+      await cubit.close();
+    });
   });
 }

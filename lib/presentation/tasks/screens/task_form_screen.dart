@@ -305,12 +305,17 @@ class _TaskFormScreenState extends State<TaskFormScreen>
         linkedDebtId: _linkedDebtId ?? clearField,
         updatedAt: now,
       );
-      await context.read<TaskListCubit>().updateItem(saved);
+      final ok = await context.read<TaskListCubit>().updateItem(saved);
       if (!mounted) return;
-      final updateState = context.read<TaskListCubit>().state;
-      if (updateState is TaskListError) {
+      if (!ok) {
+        // updateItem returned false → it emitted a TaskListError for THIS
+        // save, so the current state carries the relevant failure message.
+        final state = context.read<TaskListCubit>().state;
+        final message = state is TaskListError
+            ? state.failure.message
+            : AppLocalizations.of(context).errorSaveFailed;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(updateState.failure.message)),
+          SnackBar(content: Text(message)),
         );
         return;
       }
@@ -341,12 +346,17 @@ class _TaskFormScreenState extends State<TaskFormScreen>
         createdAt: now,
         updatedAt: now,
       );
-      await context.read<TaskListCubit>().createItem(saved);
+      final ok = await context.read<TaskListCubit>().createItem(saved);
       if (!mounted) return;
-      final createState = context.read<TaskListCubit>().state;
-      if (createState is TaskListError) {
+      if (!ok) {
+        // createItem returned false → it emitted a TaskListError for THIS
+        // save, so the current state carries the relevant failure message.
+        final state = context.read<TaskListCubit>().state;
+        final message = state is TaskListError
+            ? state.failure.message
+            : AppLocalizations.of(context).errorSaveFailed;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(createState.failure.message)),
+          SnackBar(content: Text(message)),
         );
         return;
       }
