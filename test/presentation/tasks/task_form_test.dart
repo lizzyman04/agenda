@@ -1,5 +1,11 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/application/tasks/task_list/task_list_state.dart';
+import 'package:agenda/config/di/injection.dart';
+import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/domain/finance/debt.dart';
+import 'package:agenda/domain/finance/debt_repository.dart';
+import 'package:agenda/domain/finance/goal_repository.dart';
+import 'package:agenda/domain/finance/savings_goal.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/tasks/screens/task_form_screen.dart';
@@ -12,6 +18,13 @@ import 'package:mocktail/mocktail.dart';
 
 class MockTaskListCubit extends MockCubit<TaskListState>
     implements TaskListCubit {}
+
+// Finance-link repositories the TaskFormScreen resolves via getIt in initState
+// (added in phase 03). The form only reads active goals/debts, so empty stubs
+// are sufficient for these task-form tests.
+class MockGoalRepository extends Mock implements GoalRepository {}
+
+class MockDebtRepository extends Mock implements DebtRepository {}
 
 // Required so mocktail can register the Item fallback value
 class FakeItem extends Fake implements Item {}
@@ -38,6 +51,8 @@ void main() {
 
   group('TaskFormScreen', () {
     late MockTaskListCubit cubit;
+    late MockGoalRepository goalRepo;
+    late MockDebtRepository debtRepo;
 
     setUp(() {
       cubit = MockTaskListCubit();
@@ -52,6 +67,22 @@ void main() {
         initialState:
             const TaskListLoaded(items: []),
       );
+
+      // TaskFormScreen.initState resolves these via getIt to load finance
+      // links; stub them to empty so the widget mounts without a real DI graph.
+      goalRepo = MockGoalRepository();
+      debtRepo = MockDebtRepository();
+      when(goalRepo.getActiveGoals)
+          .thenAnswer((_) async => const Success(<SavingsGoal>[]));
+      when(debtRepo.getDebts)
+          .thenAnswer((_) async => const Success(<Debt>[]));
+      getIt
+        ..registerSingleton<GoalRepository>(goalRepo)
+        ..registerSingleton<DebtRepository>(debtRepo);
+    });
+
+    tearDown(() async {
+      await getIt.reset();
     });
 
     testWidgets('title field is present', (tester) async {
