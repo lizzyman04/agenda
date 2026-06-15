@@ -1,7 +1,9 @@
 ---
 phase: 02-task-core
 verified: 2026-04-15T00:00:00Z
-status: human_needed
+status: pass
+human_verification_approved: 2026-06-15
+human_verification_note: "All 5 on-device UAT items were exercised on a device when Phase 02 was originally completed; user confirmed pass on 2026-06-15."
 score: 5/5 must-haves verified
 overrides_applied: 0
 deferred:
@@ -30,8 +32,12 @@ human_verification:
 
 **Phase Goal:** Users can manage their entire task workload — create projects and subtasks, classify tasks with Eisenhower/1-3-5/GTD, set recurring due dates, search, and filter — with all data persisted locally
 **Verified:** 2026-04-15
-**Status:** HUMAN_NEEDED
+**Status:** PASS (human UAT approved 2026-06-15)
 **Re-verification:** No — initial verification
+
+> **Human verification approved (2026-06-15):** The 5 on-device UAT items
+> listed in frontmatter were tested on a device when Phase 02 was originally
+> completed; user confirmed all pass. Status promoted from HUMAN_NEEDED to PASS.
 
 ---
 
