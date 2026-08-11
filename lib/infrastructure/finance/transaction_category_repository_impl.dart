@@ -1,7 +1,7 @@
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/data/finance/finance_mappers.dart';
 import 'package:agenda/data/finance/transaction_category_dao.dart';
+import 'package:agenda/data/finance/transaction_category_mapper.dart';
 import 'package:agenda/data/finance/transaction_model.dart' as data;
 import 'package:agenda/domain/finance/transaction_category.dart';
 import 'package:agenda/domain/finance/transaction_category_repository.dart';

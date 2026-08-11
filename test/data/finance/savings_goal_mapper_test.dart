@@ -1,5 +1,6 @@
+import 'package:agenda/data/finance/debt_mapper.dart';
 import 'package:agenda/data/finance/debt_model.dart' as data;
-import 'package:agenda/data/finance/finance_mappers.dart';
+import 'package:agenda/data/finance/goal_mapper.dart';
 import 'package:agenda/data/finance/savings_goal_model.dart';
 import 'package:agenda/domain/finance/debt_direction.dart' as domain;
 import 'package:agenda/domain/finance/savings_goal.dart';
