@@ -101,14 +101,19 @@ class GoalRepositoryImpl implements GoalRepository {
         return Err(DatabaseFailure('Goal $goalId not found'));
       }
 
-      // Append to the growable list — no runtime crash because initialized as
-      // List.empty(growable: true) in SavingsGoalModel.
-      model.contributions.add(
+      // Rebuild the list rather than mutating it in place. The field
+      // initializer in SavingsGoalModel is growable, but that only applies to
+      // freshly constructed models: Isar's generated deserializer REPLACES
+      // `contributions` with the fixed-length list returned by
+      // readObjectList, so `.add()` on a model loaded via findById throws
+      // "Unsupported operation: Cannot add to a fixed-length list".
+      model.contributions = [
+        ...model.contributions,
         GoalContribution()
           ..amountCents = contribution.amountCents
           ..date = contribution.date
           ..note = contribution.note,
-      );
+      ];
       model.updatedAt = DateTime.now();
 
       await _dao.save(model);

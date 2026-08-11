@@ -37,8 +37,16 @@ class SavingsGoalModel {
   /// CRITICAL: List.empty(growable: true) — NOT [].
   ///
   /// Isar's code-generated writer requires the list to be explicitly growable.
-  /// Using [] compiles but throws "Cannot add to a fixed-length list" at write time.
+  /// Using [] compiles but throws "Cannot add to a fixed-length list" at write
+  /// time.
   /// See: github.com/isar/isar/discussions/781
+  ///
+  /// EQUALLY CRITICAL: this initializer only covers freshly constructed
+  /// models. Isar's generated deserializer ASSIGNS over this field with the
+  /// fixed-length list returned by `readObjectList`, so a model loaded via
+  /// `findById` has a NON-growable list. Never call `.add()` on it — build a
+  /// new list instead (`model.contributions = [...model.contributions, x]`).
+  /// Getting this wrong is what broke goal contributions in Phase 03 UAT.
   List<GoalContribution> contributions = List.empty(growable: true);
 
   bool isCompleted = false;
