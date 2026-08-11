@@ -9,7 +9,7 @@ import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/tasks/screens/gtd_filter_screen.dart';
 import 'package:agenda/presentation/tasks/screens/project_screen.dart';
 import 'package:agenda/presentation/tasks/screens/task_detail_screen.dart';
-import 'package:agenda/presentation/tasks/screens/task_form_screen.dart';
+import 'package:agenda/presentation/tasks/form/screens/task_form_screen.dart';
 import 'package:agenda/presentation/tasks/widgets/task_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -6,7 +6,7 @@ import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/priority.dart';
 import 'package:agenda/domain/tasks/size_category.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
-import 'package:agenda/presentation/tasks/screens/task_form_screen.dart';
+import 'package:agenda/presentation/tasks/form/screens/task_form_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';

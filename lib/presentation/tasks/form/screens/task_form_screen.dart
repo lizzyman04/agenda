@@ -11,6 +11,10 @@ import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/domain/tasks/priority.dart';
 import 'package:agenda/domain/tasks/size_category.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/tasks/form/gtd/gtd_models.dart';
+import 'package:agenda/presentation/tasks/form/widgets/advanced_options_card.dart';
+import 'package:agenda/presentation/tasks/form/widgets/form_primitives.dart';
+import 'package:agenda/presentation/tasks/form/widgets/gtd_guide_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -367,7 +371,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
 
   Future<void> _openGtdGuide() async {
     final l10n = AppLocalizations.of(context);
-    final result = await showModalBottomSheet<_GtdResult>(
+    final result = await showModalBottomSheet<GtdResult>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -429,7 +433,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           children: [
             // Title field
-            _FormCard(
+            FormCard(
               child: TextFormField(
                 controller: _titleController,
                 autofocus: !_isEditing,
@@ -456,7 +460,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
             const SizedBox(height: 12),
 
             // Type toggle
-            _FormCard(
+            FormCard(
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -483,7 +487,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
 
             // GTD Guide card (create mode only)
             if (!_isEditing) ...[
-              _GtdGuideCard(
+              GtdGuideCard(
                 onTap: _openGtdGuide,
                 colorScheme: cs,
                 theme: theme,
@@ -493,7 +497,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
             ],
 
             // Advanced options
-            _AdvancedOptionsCard(
+            AdvancedOptionsCard(
               expanded: _advancedExpanded,
               onToggle: () =>
                   setState(() => _advancedExpanded = !_advancedExpanded),
@@ -502,7 +506,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
               cs: cs,
               children: [
                 // Priority
-                _FieldRow(
+                FieldRow(
                   icon: Icons.flag_outlined,
                   child: DropdownButtonFormField<Priority>(
                     initialValue: _priority,
@@ -524,10 +528,10 @@ class _TaskFormScreenState extends State<TaskFormScreen>
                     },
                   ),
                 ),
-                const _FieldDivider(),
+                const FieldDivider(),
 
                 // Due Date
-                _FieldRow(
+                FieldRow(
                   icon: Icons.calendar_today_outlined,
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -560,8 +564,8 @@ class _TaskFormScreenState extends State<TaskFormScreen>
 
                 // Due Time (only when date set)
                 if (_dueDate != null) ...[
-                  const _FieldDivider(),
-                  _FieldRow(
+                  const FieldDivider(),
+                  FieldRow(
                     icon: Icons.access_time_outlined,
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -587,7 +591,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
 
                 // Recurrence
                 if (_dueDate != null) ...[
-                  const _FieldDivider(),
+                  const FieldDivider(),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                     child: Text(
@@ -611,7 +615,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
                           )),
                 ],
 
-                const _FieldDivider(),
+                const FieldDivider(),
 
                 // Urgent / Important
                 SwitchListTile(
@@ -631,7 +635,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
                   onChanged: (val) => setState(() => _isImportant = val),
                 ),
 
-                const _FieldDivider(),
+                const FieldDivider(),
 
                 // Size
                 Padding(
@@ -665,10 +669,10 @@ class _TaskFormScreenState extends State<TaskFormScreen>
                 ),
                 const SizedBox(height: 12),
 
-                const _FieldDivider(),
+                const FieldDivider(),
 
                 // Description
-                _FieldRow(
+                FieldRow(
                   icon: Icons.notes_outlined,
                   child: TextFormField(
                     controller: _descriptionController,
@@ -681,10 +685,10 @@ class _TaskFormScreenState extends State<TaskFormScreen>
                     minLines: 1,
                   ),
                 ),
-                const _FieldDivider(),
+                const FieldDivider(),
 
                 // Waiting For
-                _FieldRow(
+                FieldRow(
                   icon: Icons.hourglass_empty_outlined,
                   child: TextFormField(
                     controller: _waitingForController,
@@ -701,7 +705,7 @@ class _TaskFormScreenState extends State<TaskFormScreen>
             const SizedBox(height: 12),
 
             // Finance link card
-            _FormCard(
+            FormCard(
               child: ListTile(
                 leading: const Icon(Icons.link_outlined),
                 title: Text(
@@ -746,240 +750,6 @@ class _TaskFormScreenState extends State<TaskFormScreen>
   }
 }
 
-// ---------------------------------------------------------------------------
-// Small layout helpers
-// ---------------------------------------------------------------------------
-
-class _FormCard extends StatelessWidget {
-  const _FormCard({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Card(
-      elevation: 0,
-      color: cs.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: child,
-    );
-  }
-}
-
-class _FieldRow extends StatelessWidget {
-  const _FieldRow({required this.icon, required this.child});
-  final IconData icon;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: cs.onSurfaceVariant),
-          const SizedBox(width: 12),
-          Expanded(child: child),
-        ],
-      ),
-    );
-  }
-}
-
-class _FieldDivider extends StatelessWidget {
-  const _FieldDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Divider(height: 1, indent: 48, endIndent: 16);
-  }
-}
-
-class _GtdGuideCard extends StatelessWidget {
-  const _GtdGuideCard({
-    required this.onTap,
-    required this.colorScheme,
-    required this.theme,
-    required this.label,
-  });
-
-  final VoidCallback onTap;
-  final ColorScheme colorScheme;
-  final ThemeData theme;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: colorScheme.primaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(10),
-                child: Icon(Icons.psychology,
-                    color: colorScheme.onPrimary, size: 22),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '8 questions to clarify & prioritize',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onPrimaryContainer.withValues(
-                          alpha: 0.75,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.arrow_forward_ios,
-                  size: 16, color: colorScheme.onPrimaryContainer),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AdvancedOptionsCard extends StatelessWidget {
-  const _AdvancedOptionsCard({
-    required this.expanded,
-    required this.onToggle,
-    required this.label,
-    required this.theme,
-    required this.cs,
-    required this.children,
-  });
-
-  final bool expanded;
-  final VoidCallback onToggle;
-  final String label;
-  final ThemeData theme;
-  final ColorScheme cs;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: cs.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          InkWell(
-            onTap: onToggle,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Row(
-                children: [
-                  Icon(Icons.tune_outlined, size: 20, color: cs.onSurfaceVariant),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(label,
-                        style: theme.textTheme.titleSmall
-                            ?.copyWith(color: cs.onSurfaceVariant)),
-                  ),
-                  AnimatedRotation(
-                    turns: expanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 200),
-                    child: Icon(Icons.keyboard_arrow_down,
-                        color: cs.onSurfaceVariant),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeInOut,
-            child: expanded
-                ? Column(children: children)
-                : const SizedBox.shrink(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// GTD Guide
-// ---------------------------------------------------------------------------
-
-// ===== GTD GUIDE — Natural-language decision tree =====
-// Deviations from spec:
-// - "Outro motivo" always continues to next step (no free-text collection)
-// - Recurrence: Habit tasks get low priority but no RRULE (picker deferred)
-// - Duplicate detection deferred (needs repository access from modal context)
-// - Cancel "save draft" simplified to discard (no draft persistence layer)
-
-typedef _GtdOpt = (IconData, String, void Function());
-
-class _GtdResult {
-  const _GtdResult({
-    required this.title,
-    required this.priority,
-    required this.isUrgent,
-    required this.isImportant,
-    this.dueDate,
-    this.waitingFor,
-    this.gtdContext,
-    this.description,
-  });
-
-  final String title;
-  final Priority priority;
-  final bool isUrgent;
-  final bool isImportant;
-  final DateTime? dueDate;
-  final String? waitingFor;
-  final String? gtdContext;
-  final String? description;
-}
-
-enum _GtdNode {
-  q1Title,
-  q2Actionable,
-  q2bWhyAdd,
-  q3Delegate,
-  q3bDelegateName,
-  q3cFollowUp,
-  q4Quick,
-  q4bWhyNotNow,
-  q5Important,
-  q5bWhyKeep,
-  q6Deadline,
-  q6bNoDeadlineReason,
-  q7Impact,
-  q7bWhyKeepNoImpact,
-  review,
-}
 
 class _GtdGuideSheet extends StatefulWidget {
   const _GtdGuideSheet({required this.l10n});
@@ -990,7 +760,7 @@ class _GtdGuideSheet extends StatefulWidget {
 }
 
 class _GtdGuideSheetState extends State<_GtdGuideSheet> {
-  final List<_GtdNode> _history = [_GtdNode.q1Title];
+  final List<GtdNode> _history = [GtdNode.q1Title];
 
   final _titleCtrl = TextEditingController();
   final _delegateCtrl = TextEditingController();
@@ -1003,21 +773,21 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
   String? _gtdContext;
   String? _description;
 
-  static const List<_GtdNode> _mainPath = [
-    _GtdNode.q1Title,
-    _GtdNode.q2Actionable,
-    _GtdNode.q3Delegate,
-    _GtdNode.q4Quick,
-    _GtdNode.q5Important,
-    _GtdNode.q6Deadline,
-    _GtdNode.q7Impact,
-    _GtdNode.review,
+  static const List<GtdNode> _mainPath = [
+    GtdNode.q1Title,
+    GtdNode.q2Actionable,
+    GtdNode.q3Delegate,
+    GtdNode.q4Quick,
+    GtdNode.q5Important,
+    GtdNode.q6Deadline,
+    GtdNode.q7Impact,
+    GtdNode.review,
   ];
 
   AppLocalizations get _l => widget.l10n;
-  _GtdNode get _current => _history.last;
+  GtdNode get _current => _history.last;
 
-  void _push(_GtdNode node) => setState(() => _history.add(node));
+  void _push(GtdNode node) => setState(() => _history.add(node));
   void _pop() {
     if (_history.length > 1) setState(_history.removeLast);
   }
@@ -1062,7 +832,7 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
   void _finish() {
     final title = _titleCtrl.text.trim();
     if (title.isEmpty) return;
-    Navigator.of(context).pop(_GtdResult(
+    Navigator.of(context).pop(GtdResult(
       title: title,
       priority: _priority,
       isUrgent: _isUrgent,
@@ -1185,7 +955,7 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
   }
 
   Widget _buildNode(ThemeData t, ColorScheme cs) => switch (_current) {
-    _GtdNode.q1Title => _textNode(
+    GtdNode.q1Title => _textNode(
       t, cs,
       question: _l.gtdQ1,
       icon: Icons.edit_note,
@@ -1196,22 +966,22 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
         final text = _titleCtrl.text.trim();
         if (text.isEmpty) return;
         _gtdContext ??= _inferContext(text);
-        _push(_GtdNode.q2Actionable);
+        _push(GtdNode.q2Actionable);
       },
     ),
 
-    _GtdNode.q2Actionable => _optionNode(
+    GtdNode.q2Actionable => _optionNode(
       t, cs,
       question: _l.gtdQ2,
       icon: Icons.help_outline,
       subtitle: 'Considere se isso trará valor real para você.',
       options: [
-        (Icons.check_circle_outline, _l.gtdAnswerYes, () => _push(_GtdNode.q3Delegate)),
-        (Icons.cancel, _l.gtdAnswerNo, () => _push(_GtdNode.q2bWhyAdd)),
+        (Icons.check_circle_outline, _l.gtdAnswerYes, () => _push(GtdNode.q3Delegate)),
+        (Icons.cancel, _l.gtdAnswerNo, () => _push(GtdNode.q2bWhyAdd)),
       ],
     ),
 
-    _GtdNode.q2bWhyAdd => _optionNode(
+    GtdNode.q2bWhyAdd => _optionNode(
       t, cs,
       question: _l.gtdQ2bQuestion,
       icon: Icons.psychology,
@@ -1226,22 +996,22 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
           _priority = Priority.low;
           _endWithSnackbar(_l.gtdIdeaSavedMessage);
         }),
-        (Icons.person_add, _l.gtdQ2bDelegated, () => _push(_GtdNode.q3Delegate)),
-        (Icons.add_task, _l.gtdQ2bKeepAnyway, () => _push(_GtdNode.q3Delegate)),
+        (Icons.person_add, _l.gtdQ2bDelegated, () => _push(GtdNode.q3Delegate)),
+        (Icons.add_task, _l.gtdQ2bKeepAnyway, () => _push(GtdNode.q3Delegate)),
       ],
     ),
 
-    _GtdNode.q3Delegate => _optionNode(
+    GtdNode.q3Delegate => _optionNode(
       t, cs,
       question: _l.gtdQ3,
       icon: Icons.group,
       options: [
-        (Icons.person, _l.gtdAnswerNo, () => _push(_GtdNode.q4Quick)),
-        (Icons.send, _l.gtdAnswerYes, () => _push(_GtdNode.q3bDelegateName)),
+        (Icons.person, _l.gtdAnswerNo, () => _push(GtdNode.q4Quick)),
+        (Icons.send, _l.gtdAnswerYes, () => _push(GtdNode.q3bDelegateName)),
       ],
     ),
 
-    _GtdNode.q3bDelegateName => _textNode(
+    GtdNode.q3bDelegateName => _textNode(
       t, cs,
       question: _l.gtdQ3DelegateTo,
       icon: Icons.person_search,
@@ -1251,112 +1021,112 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
         final name = _delegateCtrl.text.trim();
         if (name.isEmpty) return;
         _waitingFor = name;
-        _push(_GtdNode.q3cFollowUp);
+        _push(GtdNode.q3cFollowUp);
       },
     ),
 
-    _GtdNode.q3cFollowUp => _optionNode(
+    GtdNode.q3cFollowUp => _optionNode(
       t, cs,
       question: _l.gtdQ3FollowUp,
       icon: Icons.notification_add,
       options: [
         (Icons.alarm_add, _l.gtdAnswerYes, () {
           _dueDate = DateTime.now().add(const Duration(days: 7));
-          _push(_GtdNode.review);
+          _push(GtdNode.review);
         }),
-        (Icons.check, _l.gtdAnswerNo, () => _push(_GtdNode.review)),
+        (Icons.check, _l.gtdAnswerNo, () => _push(GtdNode.review)),
       ],
     ),
 
-    _GtdNode.q4Quick => _optionNode(
+    GtdNode.q4Quick => _optionNode(
       t, cs,
       question: _l.gtdQ4,
       icon: Icons.timer,
       subtitle: 'A regra dos 10 minutos: se sim, você deveria fazer agora.',
       options: [
-        (Icons.east, _l.gtdAnswerNo, () => _push(_GtdNode.q5Important)),
-        (Icons.bolt, _l.gtdAnswerYes, () => _push(_GtdNode.q4bWhyNotNow)),
+        (Icons.east, _l.gtdAnswerNo, () => _push(GtdNode.q5Important)),
+        (Icons.bolt, _l.gtdAnswerYes, () => _push(GtdNode.q4bWhyNotNow)),
       ],
     ),
 
-    _GtdNode.q4bWhyNotNow => _optionNode(
+    GtdNode.q4bWhyNotNow => _optionNode(
       t, cs,
       question: _l.gtdQ4bQuestion,
       icon: Icons.hourglass_empty,
       options: [
         (Icons.work, _l.gtdQ4bBusy, () {
           _dueDate = _today();
-          _push(_GtdNode.q5Important);
+          _push(GtdNode.q5Important);
         }),
-        (Icons.info_outline, _l.gtdQ4bNeedContext, () => _push(_GtdNode.q5Important)),
-        (Icons.schedule, _l.gtdQ4bNotRightTime, () => _push(_GtdNode.q5Important)),
+        (Icons.info_outline, _l.gtdQ4bNeedContext, () => _push(GtdNode.q5Important)),
+        (Icons.schedule, _l.gtdQ4bNotRightTime, () => _push(GtdNode.q5Important)),
         (Icons.done_all, _l.gtdQ4bDoItNow, () => _endWithSnackbar(_l.gtdDoItNowMessage)),
-        (Icons.more_horiz, _l.gtdQ4bOther, () => _push(_GtdNode.q5Important)),
+        (Icons.more_horiz, _l.gtdQ4bOther, () => _push(GtdNode.q5Important)),
       ],
     ),
 
-    _GtdNode.q5Important => _optionNode(
+    GtdNode.q5Important => _optionNode(
       t, cs,
       question: _l.gtdQ5,
       icon: Icons.star_outline,
       options: [
         (Icons.check_circle_outline, _l.gtdAnswerYes, () {
           _isImportant = true;
-          _push(_GtdNode.q6Deadline);
+          _push(GtdNode.q6Deadline);
         }),
         (Icons.remove_circle_outline, _l.gtdAnswerNo, () {
           _isImportant = false;
-          _push(_GtdNode.q5bWhyKeep);
+          _push(GtdNode.q5bWhyKeep);
         }),
       ],
     ),
 
-    _GtdNode.q5bWhyKeep => _optionNode(
+    GtdNode.q5bWhyKeep => _optionNode(
       t, cs,
       question: _l.gtdQ5bQuestion,
       icon: Icons.help,
       options: [
         (Icons.assignment, _l.gtdQ5bObligation, () {
           if (_priority == Priority.medium) _priority = Priority.low;
-          _push(_GtdNode.q6Deadline);
+          _push(GtdNode.q6Deadline);
         }),
         (Icons.person_pin, _l.gtdQ5bSomeoneAsking, () {
           _isUrgent = true;
           _priority = Priority.high;
-          _push(_GtdNode.q6Deadline);
+          _push(GtdNode.q6Deadline);
         }),
         (Icons.notifications_none, _l.gtdQ5bReminder, () {
           if (_priority == Priority.medium) _priority = Priority.low;
-          _push(_GtdNode.q6Deadline);
+          _push(GtdNode.q6Deadline);
         }),
         (Icons.cancel, _l.gtdQ5bCancelTask, () => Navigator.of(context).pop()),
-        (Icons.more_horiz, _l.gtdQ5bOther, () => _push(_GtdNode.q6Deadline)),
+        (Icons.more_horiz, _l.gtdQ5bOther, () => _push(GtdNode.q6Deadline)),
       ],
     ),
 
-    _GtdNode.q6Deadline => _deadlineNode(t, cs),
+    GtdNode.q6Deadline => _deadlineNode(t, cs),
 
-    _GtdNode.q6bNoDeadlineReason => _optionNode(
+    GtdNode.q6bNoDeadlineReason => _optionNode(
       t, cs,
       question: _l.gtdQ6bQuestion,
       icon: Icons.event_busy,
       options: [
-        (Icons.repeat, _l.gtdQ6bHabit, () => _push(_GtdNode.q7Impact)),
+        (Icons.repeat, _l.gtdQ6bHabit, () => _push(GtdNode.q7Impact)),
         (Icons.alarm_off, _l.gtdQ6bNotUrgent, () {
           if (_priority == Priority.medium) _priority = Priority.low;
-          _push(_GtdNode.q7Impact);
+          _push(GtdNode.q7Impact);
         }),
         (Icons.hourglass_empty, _l.gtdQ6bWhenever, () {
           if (_priority == Priority.medium) _priority = Priority.low;
-          _push(_GtdNode.q7Impact);
+          _push(GtdNode.q7Impact);
         }),
-        (Icons.more_horiz, _l.gtdQ6bOther, () => _push(_GtdNode.q7Impact)),
+        (Icons.more_horiz, _l.gtdQ6bOther, () => _push(GtdNode.q7Impact)),
       ],
     ),
 
-    _GtdNode.q7Impact => _impactNode(t, cs),
+    GtdNode.q7Impact => _impactNode(t, cs),
 
-    _GtdNode.q7bWhyKeepNoImpact => _optionNode(
+    GtdNode.q7bWhyKeepNoImpact => _optionNode(
       t, cs,
       question: _l.gtdQ7bQuestion,
       icon: Icons.help_outline,
@@ -1364,53 +1134,53 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
         (Icons.favorite_border, _l.gtdQ7bPersonalWish, () {
           _priority = Priority.low;
           _gtdContext ??= 'wishlist';
-          _push(_GtdNode.review);
+          _push(GtdNode.review);
         }),
         (Icons.people_outline, _l.gtdQ7bSomeoneExpects, () {
           _waitingFor ??= 'alguém';
-          _push(_GtdNode.review);
+          _push(GtdNode.review);
         }),
         (Icons.cancel, _l.gtdQ7bCancelTask, () => Navigator.of(context).pop()),
         (Icons.more_horiz, _l.gtdQ7bOther, () {
           _priority = Priority.low;
-          _push(_GtdNode.review);
+          _push(GtdNode.review);
         }),
       ],
     ),
 
-    _GtdNode.review => _reviewNode(t, cs),
+    GtdNode.review => _reviewNode(t, cs),
   };
 
   // ---- Specialised node builders ----
 
   Widget _deadlineNode(ThemeData t, ColorScheme cs) {
     final now = DateTime.now();
-    final opts = <_GtdOpt>[
+    final opts = <GtdOpt>[
       (Icons.today, _l.gtdDeadlineToday, () {
         _dueDate = _today();
         _isUrgent = true;
-        _push(_GtdNode.q7Impact);
+        _push(GtdNode.q7Impact);
       }),
       (Icons.event, _l.gtdDeadlineTomorrow, () {
         _dueDate = now.add(const Duration(days: 1));
         _isUrgent = true;
-        _push(_GtdNode.q7Impact);
+        _push(GtdNode.q7Impact);
       }),
       (Icons.date_range, _l.gtdDeadlineThisWeek, () {
         _dueDate = now.add(const Duration(days: 7));
-        _push(_GtdNode.q7Impact);
+        _push(GtdNode.q7Impact);
       }),
       (Icons.calendar_month, _l.gtdDeadlineNext20Days, () {
         _dueDate = now.add(const Duration(days: 20));
-        _push(_GtdNode.q7Impact);
+        _push(GtdNode.q7Impact);
       }),
       (Icons.calendar_view_month, _l.gtdDeadlineThisMonth, () {
         _dueDate = DateTime(now.year, now.month + 1, now.day);
-        _push(_GtdNode.q7Impact);
+        _push(GtdNode.q7Impact);
       }),
       (Icons.block, _l.gtdDeadlineNoDeadline, () {
         _dueDate = null;
-        _push(_GtdNode.q6bNoDeadlineReason);
+        _push(GtdNode.q6bNoDeadlineReason);
       }),
       (Icons.edit_calendar, _l.gtdDeadlineCustom, _pickCustomDate),
     ];
@@ -1435,34 +1205,34 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
           DateTime.now().add(const Duration(days: 2)),
         );
       });
-      _push(_GtdNode.q7Impact);
+      _push(GtdNode.q7Impact);
     }
   }
 
   Widget _impactNode(ThemeData t, ColorScheme cs) {
-    final opts = <_GtdOpt>[
+    final opts = <GtdOpt>[
       (Icons.warning_amber, _l.gtdImpactVeryNegative, () {
         _priority = Priority.urgent;
         _isImportant = true;
         _isUrgent = _dueDate != null;
-        _push(_GtdNode.review);
+        _push(GtdNode.review);
       }),
       (Icons.trending_down, _l.gtdImpactNegative, () {
         _priority = Priority.high;
         _isImportant = true;
-        _push(_GtdNode.review);
+        _push(GtdNode.review);
       }),
-      (Icons.remove, _l.gtdImpactModerate, () => _push(_GtdNode.review)),
+      (Icons.remove, _l.gtdImpactModerate, () => _push(GtdNode.review)),
       (Icons.expand_less, _l.gtdImpactLight, () {
         _priority = Priority.low;
-        _push(_GtdNode.review);
+        _push(GtdNode.review);
       }),
       (Icons.minimize, _l.gtdImpactVeryLight, () {
         _priority = Priority.low;
-        _push(_GtdNode.review);
+        _push(GtdNode.review);
       }),
       (Icons.not_interested, _l.gtdImpactNone,
-          () => _push(_GtdNode.q7bWhyKeepNoImpact)),
+          () => _push(GtdNode.q7bWhyKeepNoImpact)),
     ];
     return _optionNode(t, cs,
       question: _l.gtdQ7,
@@ -1548,7 +1318,7 @@ class _GtdGuideSheetState extends State<_GtdGuideSheet> {
     ColorScheme cs, {
     required String question,
     required IconData icon,
-    required List<_GtdOpt> options,
+    required List<GtdOpt> options,
     String? subtitle,
   }) {
     return Column(
