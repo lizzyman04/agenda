@@ -25,8 +25,17 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 03.1 (architecture-compliance) — EXECUTING
-Plan: 1 of 18
-Status: Executing Phase 03.1
+Plan: 1 of 18 complete (03.1-01 merged); 03.1-02 and 03.1-03 partially done in worktrees
+Status: Wave 1 INTERRUPTED by an API session limit at 2026-08-11 ~15:30 (resets 16:30 Africa/Maputo). Three executors were killed mid-task.
+
+**Resume state — read before dispatching anything:**
+- `03.1-01` COMPLETE and merged to main. `tool/check_architecture.dart` exists and reproduces the baseline exactly (20 line violations + 1 exemption, 2 directory violations, 28 missing READMEs). Run `dart run tool/check_architecture.dart` to measure progress from here on.
+- `03.1-02` PARTIAL. Worktree `.claude/worktrees/agent-a87f3e2112faf19f9`, branch `worktree-agent-a87f3e2112faf19f9`, commit `525afaf`. Created `task_form_logic.dart` and `finance_link_sheet.dart`; `task_form_screen.dart` modified. **UNVERIFIED — no analyzer or test run covered this state.** Do not merge without re-running the plan's verification.
+- `03.1-03` PARTIAL. Worktree `.claude/worktrees/agent-abbc0f9421b82d2a1`, branch `worktree-agent-abbc0f9421b82d2a1`, commits `99bf89c` (atoms extracted, verified) + `9edcb78` (WIP rescue, UNVERIFIED). Seven widget files under `widgets/detail/`.
+- `03.1-04` NOT STARTED — its worktree was empty and has been removed.
+- `03.1-05` through `03.1-18` NOT STARTED.
+
+The two WIP commits were made by the orchestrator with `--no-verify` purely to stop the work being destroyed when the worktrees are cleaned up. They are rescue commits, not verified work.
 
 Phase 03 (finance-core) remains open behind it: code complete, but 3 UAT issues are unresolved (test 2 — category-name stub showing `#id` and a duplicated note; test 3 — SnackBar queueing on a second swipe inside the undo window; test 9 — task-link chip showing a raw id) plus an undiagnosed app-wide undo-timer defect where 5s SnackBars never dismiss. None of these block Phase 3.1, which is a pure refactor.
 
