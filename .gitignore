@@ -48,3 +48,6 @@ landing/_site/
 landing/.jekyll-cache/
 landing/.sass-cache/
 landing/Gemfile.lock
+
+# Ephemeral GSD executor worktrees
+.claude/worktrees/
