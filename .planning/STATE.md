@@ -5,7 +5,7 @@ milestone_name: milestone
 status: executing
 stopped_at: Phase 3 UI-SPEC approved
 last_updated: "2026-06-15T00:00:00.000Z"
-last_activity: 2026-06-15 -- Phase 02 verification approved (UAT pass) and marked DONE; quick task 260614-w5e closed (CR-01/WR-03/WR-04 + WR-01 resolved). No PR — solo local project.
+last_activity: 2026-08-11 -- Phase 03 UAT completed on-device via adb (7 pass / 3 open issues). Test-5 blocker fixed and device-verified in quick task 260811-97x. New house rules adopted: no code file over 150 lines, aggressive folder nesting by responsibility, README per nest — applied to the goals slice; 21 files and 4 folders still non-compliant.
 progress:
   total_phases: 5
   completed_phases: 2
@@ -92,6 +92,7 @@ None.
 |---|-------------|------|--------|-----------|
 | 260601-u6q | Fix finance form `_dependents.isEmpty` crash (hoist cubits above MaterialApp) | 2026-06-01 | d8dc04c | [260601-u6q-fix-finance-provider-scope](./quick/260601-u6q-fix-finance-provider-scope/) |
 | 260614-w5e | Fix phase 02 code review findings CR-01 WR-03 WR-04 (+ recheck WR-01, finance-repo test stubs) — CLOSED 2026-06-15, suite green 206/206, no PR (solo local) | 2026-06-15 | 756b67d | [260614-w5e-fix-phase-02-code-review-findings-cr-01-](./quick/260614-w5e-fix-phase-02-code-review-findings-cr-01-/) |
+| 260811-97x | Fix phase 03 UAT test-5 blocker: goal contribution sheet crash + the fixed-length-list persistence bug it masked; goals slice restructured to the 150-line/nested-folder rules — device-verified, suite green 211/211 | 2026-08-11 | a2f8e7d, f5347ba | [260811-97x-fix-goal-contribution-sheet-crash](./quick/260811-97x-fix-goal-contribution-sheet-crash/) |
 
 ## Session Continuity
 

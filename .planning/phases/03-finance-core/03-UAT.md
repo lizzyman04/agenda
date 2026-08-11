@@ -65,10 +65,11 @@ retest: "2026-08-11 device re-verification (claude-adb) — CONFIRMS documented 
 
 ### 5. Create a Savings Goal + Add Contribution
 expected: In Objetivos, create a goal with a name and target amount. Open it and add a contribution. The goal progress card advances toward the target (amount saved + percentage update).
-result: issue
+result: pass
 reported: "Tested on device (Infinix X6831, Android, debug build). Goal creation works — 'Fundo Emergencia' saved, card shows MT 0,00 de MT 1.000,00 / 0%. Adding a contribution of 250 CRASHES: red error screen 'package:flutter/src/widgets/framework.dart: Failed assertion: line 6268 pos 12: _dependents.isEmpty: is not true'. Contribution is not persisted — goal still MT 0,00 after restart. Reproduced 2/2 deterministically."
 severity: blocker
 tested_by: claude-adb
+resolved: "2026-08-11, quick task 260811-97x. TWO stacked defects — the crash masked a persistence bug underneath. (1) Presentation: the sheet's controllers were disposed mid-dismiss; fixed by giving the sheet its own StatefulWidget that owns them and returns the contribution via Navigator.pop. Removing the crash exposed (2) Infrastructure: GoalRepositoryImpl.addContribution called .add() on model.contributions, but Isar's generated deserializer assigns a FIXED-LENGTH list over the growable field initializer, so any model from findById threw 'Unsupported operation: Cannot add to a fixed-length list'; fixed by rebuilding the list. Re-verified on the same device: contribution of 250 persists, card reads MT 250,00 de MT 1.000,00 / 25%, progress bar advanced, entry in Histórico de contribuições, no crash. Regression tests: goal_contribution_sheet_test.dart (2) and goal_repository_add_contribution_test.dart (3) — all five fail against the pre-fix code."
 
 ### 6. Add a Debt + Toggle Paid
 expected: In Dívidas, create a debt with a direction (you owe / owed to you) and amount. It appears in the list; toggling it paid updates its status/visual state.
@@ -104,11 +105,12 @@ tested_by: claude-adb
 ## Summary
 
 total: 10
-passed: 6
-issues: 4
+passed: 7
+issues: 3
 pending: 0
 skipped: 0
 blocked: 0
+resolved: 1  # test 5 blocker fixed in quick task 260811-97x
 
 ## Gaps
 
@@ -143,7 +145,7 @@ blocked: 0
   debug_session: ""
 
 - truth: "Adding a contribution to a savings goal persists it and advances the goal progress card (amount saved + percentage)."
-  status: failed
+  status: resolved  # 2026-08-11, quick task 260811-97x — see test 5 `resolved`
   reason: "Device test: submitting a contribution throws 'InheritedElement._dependents.isEmpty is not true' (framework.dart:6268) and renders the red error screen. Contribution never persists. Reproduced 2/2."
   severity: blocker
   test: 5
