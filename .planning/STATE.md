@@ -92,6 +92,7 @@ None.
 
 ### Blockers/Concerns
 
+- **BUG FOUND 2026-08-11 (Phase 3.1, plan 03.1-08) — amount parsing rejects PT-BR thousands separators.** `parseAmountCentsOrNull` in `lib/core/utils/amount_parser.dart` does `raw.replaceAll(',', '.').replaceAll(RegExp(r'[^\d.]'), '')`, so `'1.250,50'` becomes `'1.250.50'` — two dots, invalid double — and returns `null`. A user typing an amount the natural PT-BR way gets it silently rejected. Separately, a leading `-` is stripped rather than rejected, so `'-5'` parses as **500 cents positive**. This is PRE-EXISTING behaviour duplicated across all four finance forms, not introduced by the refactor; plan 03.1-08 preserved it verbatim and unit-tested the real behaviour, which is correct for a pure refactor. Round-tripping is unaffected (`formatCentsForInput` emits no thousands separator), so this only bites on manual entry. **Fix in a separate task after Phase 3.1 — do not fix mid-refactor.**
 - **Phase 2 research flag**: OEM Android notification behavior (Samsung/Xiaomi/Huawei) varies significantly; consider a focused research spike before Phase 4 notification scheduling architecture is finalized
 - **Phase 4 research flag**: PT-BR comma decimal separator in CSV round-trip (`1.234,56`) has edge cases; dedicate a spike to locale-aware parsing before the backup feature spec is written
 - **Phase 5 research flag**: iOS `inactive` vs `paused` lifecycle states for lock triggering behave differently on simulator vs real device; spike recommended before Phase 5 app lock implementation
