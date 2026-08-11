@@ -15,6 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Architecture scaffold, Isar + migration runner, DI wiring, l10n setup, offline guarantee
 - [x] **Phase 2: Task Core** - Complete task domain — projects, subtasks, CRUD, recurring, Eisenhower, 1-3-5, GTD, search, filter
 - [ ] **Phase 3: Finance Core** - Complete finance domain — transactions, budgets, goals, debts, recurring payments, dashboard, charts
+- [ ] **Phase 3.1: Architecture Compliance** (INSERTED) - 150-line file limit, nested feature modules, per-nest README docs
 - [ ] **Phase 4: Notifications + Backup** - All notification types with boot-safe rescheduling; JSON + CSV export/import
 - [ ] **Phase 5: App Lock + Settings + Polish** - PIN + biometric lock, settings screen, onboarding, empty states
 
@@ -88,6 +89,28 @@ Plans:
 
 ---
 
+### Phase 3.1: Architecture Compliance (INSERTED)
+
+**Goal**: Every hand-written source file is under 150 lines, every directory is nested by responsibility with no more than ~10 related files, and every feature nest carries a README documenting its responsibility and rules
+**Depends on**: Phase 3
+**Inserted**: 2026-08-11 — house rules adopted mid-project; applied to the goals slice in quick task 260811-97x, rest of the codebase still non-compliant
+**Requirements**: (none — internal quality)
+**Success Criteria** (what must be TRUE):
+  1. No hand-written file under lib/ exceeds 150 lines (generated *.g.dart and injection.config.dart exempt)
+  2. No directory under lib/ holds more than 10 related source files
+  3. Every feature directory under lib/presentation/ and lib/application/ contains a README.md stating its responsibility, its contents, and any slice-specific rules
+  4. The full test suite passes unchanged — this is a pure refactor with no behaviour change
+  5. `flutter analyze` reports no new errors or warnings
+**Plans**: TBD
+**UI hint**: no
+
+Plans:
+- [ ] 3.1-01: task_form_screen.dart (1713 lines) — decompose into a tasks/form/ slice
+- [ ] 3.1-02: Remaining presentation screens over 150 lines — transaction_form (587), task_detail (563), recurring_payment_form (431), debt_form (327), goal_form (286), finance_dashboard (269), budget_overview (236), debt_list (202), task_list (201), day_planner (200), project (185), recurring_payment (173)
+- [ ] 3.1-03: Non-presentation files over 150 lines — finance_mappers (327), item_repository_impl (227), task_list_cubit (227), item (219), currencies (203), home_dashboard_cubit (202), item_dao (178), budget_cubit (155)
+- [ ] 3.1-04: Folder nesting — split domain/finance (16 files), data/finance (13), presentation/finance/screens (11), presentation/finance/widgets (10)
+- [ ] 3.1-05: README per nest + CI guard enforcing the 150-line and folder-size limits
+
 ### Phase 4: Notifications + Backup
 **Goal**: All notification types are scheduled, delivered reliably after device reboot, and controlled by the user; data can be exported as JSON or CSV and restored from backup with transactional safety
 **Depends on**: Phase 3
@@ -133,12 +156,13 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
-| 3. Finance Core | 3/5 | In progress | - |
+| 3. Finance Core | 5/5 | In verification | - |
+| 3.1. Architecture Compliance | 0/5 | In progress | - |
 | 4. Notifications + Backup | 0/5 | Not started | - |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
