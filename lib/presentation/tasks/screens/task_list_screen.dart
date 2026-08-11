@@ -10,7 +10,7 @@ import 'package:agenda/presentation/tasks/screens/gtd_filter_screen.dart';
 import 'package:agenda/presentation/tasks/screens/project_screen.dart';
 import 'package:agenda/presentation/tasks/screens/task_detail_screen.dart';
 import 'package:agenda/presentation/tasks/form/screens/task_form_screen.dart';
-import 'package:agenda/presentation/tasks/widgets/task_card.dart';
+import 'package:agenda/presentation/tasks/widgets/task_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -90,17 +90,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
             onPressed: _navigateToGtdFilter,
           ),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(56),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: SearchBar(
-              hintText: l10n.searchTasks,
-              leading: const Icon(Icons.search),
-              onChanged: (query) =>
-                  context.read<TaskListCubit>().search(query),
-            ),
-          ),
+        bottom: TaskSearchBar(
+          hintText: l10n.searchTasks,
+          onChanged: (query) => context.read<TaskListCubit>().search(query),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -134,68 +126,18 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 child: Text(failure.message),
               ),
             TaskListLoaded(:final items) when items.isEmpty =>
-              _EmptyState(l10n: l10n),
-            TaskListLoaded(:final items) => _TaskList(
+              TaskListEmptyState(l10n: l10n),
+            TaskListLoaded(:final items) => TaskListView(
                 items: items,
                 onEdit: _navigateToItem,
               ),
-            TaskListWithPendingUndo(:final items) => _TaskList(
+            TaskListWithPendingUndo(:final items) => TaskListView(
                 items: items,
                 onEdit: _navigateToItem,
               ),
           };
         },
       ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.l10n});
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.check_box_outline_blank, size: 64),
-          const SizedBox(height: 16),
-          Text(
-            l10n.noTasks,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TaskList extends StatelessWidget {
-  const _TaskList({
-    required this.items,
-    required this.onEdit,
-  });
-
-  final List<Item> items;
-  final void Function(Item item) onEdit;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return TaskCard(
-          item: item,
-          onComplete: () =>
-              context.read<TaskListCubit>().completeItem(item),
-          onDelete: () =>
-              context.read<TaskListCubit>().softDelete(item.id),
-          onTap: () => onEdit(item),
-        );
-      },
     );
   }
 }
