@@ -2,16 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planned
-stopped_at: Phase 3.1 planned (18 plans, 5 waves) — ready to execute
-last_updated: "2026-08-11T00:00:00.000Z"
-last_activity: 2026-08-11 -- Phase 3.1 (Architecture Compliance) researched, planned, and plan-checked. 18 plans across 5 waves. Research settled the CI-guard question (no maintained Dart lint enforces file length; tool/check_architecture.dart, zero new deps). Hard-case rulings: finance_mappers.dart SPLIT into 6 per-entity files, item.dart SPLIT (sentinel + copyWith extension), currencies.dart EXEMPT with recorded justification. Plan-checker verified coverage closes on all 21 files and both over-full directories with no blockers.
+status: executing
+stopped_at: 03-04 human-verify checkpoint (Finance UI on device)
+last_updated: "2026-08-11T10:49:37.418Z"
 progress:
-  total_phases: 5
-  completed_phases: 2
+  total_phases: 6
+  completed_phases: 3
   total_plans: 33
-  completed_plans: 13
-  percent: 39
+  completed_plans: 15
+  percent: 45
 ---
 
 # Project State
@@ -21,13 +20,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Open AGENDA at any moment and immediately see what needs doing and where the money stands — no internet connection ever required.
-**Current focus:** Phase 3.1 — architecture-compliance
+**Current focus:** Phase 03.1 — architecture-compliance
 
 ## Current Position
 
-Phase: 3.1 (architecture-compliance) — PLANNED, ready to execute
-Plan: 0 of 18 (5 waves; Wave 1 holds 11 parallel plans)
-Status: Research, validation strategy, 18 plans, and the plan-checker pass all complete and committed. Next action is `/gsd-execute-phase 3.1`.
+Phase: 03.1 (architecture-compliance) — EXECUTING
+Plan: 1 of 18
+Status: Executing Phase 03.1
 
 Phase 03 (finance-core) remains open behind it: code complete, but 3 UAT issues are unresolved (test 2 — category-name stub showing `#id` and a duplicated note; test 3 — SnackBar queueing on a second swipe inside the undo window; test 9 — task-link chip showing a raw id) plus an undiagnosed app-wide undo-timer defect where 5s SnackBars never dismiss. None of these block Phase 3.1, which is a pure refactor.
 
