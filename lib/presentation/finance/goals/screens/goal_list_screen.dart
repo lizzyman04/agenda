@@ -1,10 +1,10 @@
 import 'package:agenda/application/finance/goal/goal_list_cubit.dart';
 import 'package:agenda/application/finance/goal/goal_list_state.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
-import 'package:agenda/presentation/finance/screens/goal_detail_screen.dart';
-import 'package:agenda/presentation/finance/screens/goal_form_screen.dart';
+import 'package:agenda/presentation/finance/goals/screens/goal_detail_screen.dart';
+import 'package:agenda/presentation/finance/goals/screens/goal_form_screen.dart';
 import 'package:agenda/presentation/finance/widgets/finance_empty_state.dart';
-import 'package:agenda/presentation/finance/widgets/goal_progress_card.dart';
+import 'package:agenda/presentation/finance/goals/widgets/goal_progress_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

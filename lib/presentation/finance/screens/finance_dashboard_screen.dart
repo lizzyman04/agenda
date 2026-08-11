@@ -5,7 +5,7 @@ import 'package:agenda/application/finance/dashboard/home_dashboard_state.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/screens/budget_overview_screen.dart';
 import 'package:agenda/presentation/finance/screens/debt_list_screen.dart';
-import 'package:agenda/presentation/finance/screens/goal_list_screen.dart';
+import 'package:agenda/presentation/finance/goals/screens/goal_list_screen.dart';
 import 'package:agenda/presentation/finance/screens/recurring_payment_screen.dart';
 import 'package:agenda/presentation/finance/screens/transaction_list_screen.dart';
 import 'package:agenda/presentation/finance/widgets/dashboard_summary_card.dart';
