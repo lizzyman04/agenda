@@ -1,8 +1,10 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/application/tasks/task_list/task_list_state.dart';
 import 'package:agenda/config/di/injection.dart';
+import 'package:agenda/domain/finance/debt.dart' hide clearField;
 import 'package:agenda/domain/finance/debt_repository.dart';
 import 'package:agenda/domain/finance/goal_repository.dart';
+import 'package:agenda/domain/finance/savings_goal.dart' hide clearField;
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/domain/tasks/priority.dart';
@@ -170,97 +172,56 @@ class _TaskFormScreenState extends State<TaskFormScreen>
     final dueTimeMinutes =
         _dueTime != null ? _dueTime!.hour * 60 + _dueTime!.minute : null;
 
-    final Item saved;
-    if (_isEditing) {
-      saved = widget.item!.copyWith(
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim().isNotEmpty
-            ? _descriptionController.text.trim()
-            : null,
-        type: widget.item!.type == ItemType.subtask
-            ? widget.item!.type
-            : _itemType,
-        // Invariant: only subtasks may carry a parentId. A non-subtask item
-        // must have parentId == null, otherwise updateItem's guard rejects the
-        // save. Clearing it here lets the form recover any legacy item whose
-        // type is not subtask but still holds a stale parentId.
-        parentId:
-            widget.item!.type == ItemType.subtask ? widget.item!.parentId : null,
-        priority: _priority,
-        sizeCategory: _sizeCategory,
-        isUrgent: _isUrgent,
-        isImportant: _isImportant,
-        isNextAction: _isNextAction,
-        gtdContext: _gtdContextController.text.trim().isNotEmpty
-            ? _gtdContextController.text.trim()
-            : null,
-        waitingFor: _waitingForController.text.trim().isNotEmpty
-            ? _waitingForController.text.trim()
-            : null,
-        dueDate: _dueDate,
-        dueTimeMinutes: dueTimeMinutes,
-        recurrenceRule: _recurrenceRule,
-        linkedGoalId: _linkedGoalId ?? clearField,
-        linkedDebtId: _linkedDebtId ?? clearField,
-        updatedAt: now,
-      );
-      final ok = await context.read<TaskListCubit>().updateItem(saved);
-      if (!mounted) return;
-      if (!ok) {
-        // updateItem returned false → it emitted a TaskListError for THIS
-        // save, so the current state carries the relevant failure message.
-        final state = context.read<TaskListCubit>().state;
-        final message = state is TaskListError
-            ? state.failure.message
-            : AppLocalizations.of(context).errorSaveFailed;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
-        return;
-      }
-    } else {
-      saved = Item(
-        id: 0,
-        type: _itemType,
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim().isNotEmpty
-            ? _descriptionController.text.trim()
-            : null,
-        priority: _priority,
-        sizeCategory: _sizeCategory,
-        isUrgent: _isUrgent,
-        isImportant: _isImportant,
-        isNextAction: _isNextAction,
-        gtdContext: _gtdContextController.text.trim().isNotEmpty
-            ? _gtdContextController.text.trim()
-            : null,
-        waitingFor: _waitingForController.text.trim().isNotEmpty
-            ? _waitingForController.text.trim()
-            : null,
-        dueDate: _dueDate,
-        dueTimeMinutes: dueTimeMinutes,
-        recurrenceRule: _recurrenceRule,
-        linkedGoalId: _linkedGoalId,
-        linkedDebtId: _linkedDebtId,
-        createdAt: now,
-        updatedAt: now,
-      );
-      final ok = await context.read<TaskListCubit>().createItem(saved);
-      if (!mounted) return;
-      if (!ok) {
-        // createItem returned false → it emitted a TaskListError for THIS
-        // save, so the current state carries the relevant failure message.
-        final state = context.read<TaskListCubit>().state;
-        final message = state is TaskListError
-            ? state.failure.message
-            : AppLocalizations.of(context).errorSaveFailed;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
-        return;
-      }
-    }
+    final item = buildFormItem(
+      isEditing: _isEditing,
+      original: widget.item,
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim().isNotEmpty
+          ? _descriptionController.text.trim()
+          : null,
+      itemType: _itemType,
+      priority: _priority,
+      sizeCategory: _sizeCategory,
+      isUrgent: _isUrgent,
+      isImportant: _isImportant,
+      isNextAction: _isNextAction,
+      gtdContext: _gtdContextController.text.trim().isNotEmpty
+          ? _gtdContextController.text.trim()
+          : null,
+      waitingFor: _waitingForController.text.trim().isNotEmpty
+          ? _waitingForController.text.trim()
+          : null,
+      dueDate: _dueDate,
+      dueTimeMinutes: dueTimeMinutes,
+      recurrenceRule: _recurrenceRule,
+      linkedGoalId: _linkedGoalId,
+      linkedDebtId: _linkedDebtId,
+      now: now,
+    );
 
+    final ok = await _persist(item);
+    if (!mounted) return;
+    _handleSaveResult(ok);
+  }
+
+  Future<bool> _persist(Item item) {
+    final cubit = context.read<TaskListCubit>();
+    return _isEditing ? cubit.updateItem(item) : cubit.createItem(item);
+  }
+
+  void _handleSaveResult(bool ok) {
+    if (!ok) {
+      // The cubit returned false → it emitted a TaskListError for THIS
+      // save, so the current state carries the relevant failure message.
+      final state = context.read<TaskListCubit>().state;
+      final message = state is TaskListError
+          ? state.failure.message
+          : AppLocalizations.of(context).errorSaveFailed;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+      return;
+    }
     Navigator.of(context).pop();
   }
 
@@ -276,21 +237,25 @@ class _TaskFormScreenState extends State<TaskFormScreen>
       builder: (_) => GtdGuideSheet(l10n: l10n),
     );
     if (result == null || !mounted) return;
+    final values = applyGtdResult(
+      result,
+      currentDescription: _descriptionController.text,
+    );
     setState(() {
-      if (result.title.isNotEmpty) _titleController.text = result.title;
-      if (result.description != null && _descriptionController.text.isEmpty) {
-        _descriptionController.text = result.description!;
+      if (values.title.isNotEmpty) _titleController.text = values.title;
+      if (values.description != null) {
+        _descriptionController.text = values.description!;
       }
-      _priority = result.priority;
-      _isUrgent = result.isUrgent;
-      _isImportant = result.isImportant;
+      _priority = values.priority;
+      _isUrgent = values.isUrgent;
+      _isImportant = values.isImportant;
       _isNextAction = true;
-      _dueDate = result.dueDate;
-      if (result.waitingFor != null) {
-        _waitingForController.text = result.waitingFor!;
+      _dueDate = values.dueDate;
+      if (values.waitingFor != null) {
+        _waitingForController.text = values.waitingFor!;
       }
-      if (result.gtdContext != null) {
-        _gtdContextController.text = result.gtdContext!;
+      if (values.gtdContext != null) {
+        _gtdContextController.text = values.gtdContext!;
       }
     });
   }

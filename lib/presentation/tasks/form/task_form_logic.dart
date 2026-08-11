@@ -66,13 +66,14 @@ Item buildFormItem({
   required bool isEditing,
   required Item? original,
   required String title,
-  String? description,
   required ItemType itemType,
   required Priority priority,
   required SizeCategory sizeCategory,
   required bool isUrgent,
   required bool isImportant,
   required bool isNextAction,
+  required DateTime now,
+  String? description,
   String? gtdContext,
   String? waitingFor,
   DateTime? dueDate,
@@ -80,7 +81,6 @@ Item buildFormItem({
   String? recurrenceRule,
   int? linkedGoalId,
   int? linkedDebtId,
-  required DateTime now,
 }) {
   if (isEditing) {
     final item = original!;
