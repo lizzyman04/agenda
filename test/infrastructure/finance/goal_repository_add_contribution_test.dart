@@ -1,4 +1,4 @@
-import 'package:agenda/data/finance/finance_mappers.dart';
+import 'package:agenda/data/finance/goal_mapper.dart';
 import 'package:agenda/data/finance/savings_goal_dao.dart';
 import 'package:agenda/data/finance/savings_goal_model.dart';
 import 'package:agenda/core/failures/result.dart';
