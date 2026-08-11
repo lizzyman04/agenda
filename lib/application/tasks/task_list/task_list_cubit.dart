@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:agenda/application/tasks/task_list/recurring_completion.dart';
 import 'package:agenda/application/tasks/task_list/task_list_filter.dart';
+import 'package:agenda/application/tasks/task_list/task_list_reload.dart';
 import 'package:agenda/application/tasks/task_list/task_list_state.dart';
 import 'package:agenda/core/constants/app_constants.dart';
 import 'package:agenda/core/failures/result.dart';
@@ -10,13 +12,8 @@ import 'package:agenda/domain/tasks/recurrence_engine.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-/// Owns the filtered and searched task list (TASK-11, TASK-12).
-///
-/// Subscribes to ItemRepository.watchChanges() — reloads automatically
-/// whenever the Isar collection changes (T-02-05).
-///
-/// Factory (not singleton) — a fresh instance is created each time the
-/// task list screen is opened.
+/// Owns the filtered and searched task list (TASK-11, TASK-12); subscribes
+/// to watchChanges() (T-02-05). Factory (not singleton) per screen open.
 @injectable
 class TaskListCubit extends Cubit<TaskListState> {
   TaskListCubit(this._repository, this._recurrenceEngine)
@@ -24,15 +21,13 @@ class TaskListCubit extends Cubit<TaskListState> {
 
   final ItemRepository _repository;
   final RecurrenceEngine _recurrenceEngine;
-
   StreamSubscription<void>? _watchSubscription;
   Timer? _undoTimer;
   TaskListFilter _filter = TaskListFilter.empty;
   String _searchQuery = '';
 
-  /// Subscribes to collection changes and loads the initial list.
-  ///
-  /// Call once from the task list screen's initState or BlocProvider.
+  /// Subscribes to collection changes and loads the initial list. Call
+  /// once from the task list screen's initState or BlocProvider.
   Future<void> start() async {
     _watchSubscription = _repository.watchChanges().listen((_) async {
       await _reload();
@@ -52,21 +47,17 @@ class TaskListCubit extends Cubit<TaskListState> {
     await _reload();
   }
 
-  /// Soft-deletes an item and emits [TaskListWithPendingUndo] (TASK-05).
-  ///
-  /// The undo snackbar duration is AppConstants.undoSnackbarDuration (5s).
-  /// If not restored within 5 s, the state transitions to TaskListLoaded
-  /// (the item remains soft-deleted in Isar).
+  /// Soft-deletes an item and emits [TaskListWithPendingUndo] (TASK-05);
+  /// undo window is 5s (AppConstants.undoSnackbarDuration); item stays
+  /// soft-deleted in Isar whether or not the undo window is used.
   Future<void> softDelete(int id) async {
     final result = await _repository.softDelete(id);
     if (result is Err<Item>) {
       emit(TaskListError(result.failure));
       return;
     }
-
-    final currentItems = _currentItems();
+    final currentItems = currentItemsFromState(state);
     final updatedItems = currentItems.where((i) => i.id != id).toList();
-
     _undoTimer?.cancel();
     emit(TaskListWithPendingUndo(
       deletedItemId: id,
@@ -74,20 +65,16 @@ class TaskListCubit extends Cubit<TaskListState> {
       filter: _filter,
       searchQuery: _searchQuery,
     ));
-
     _undoTimer = Timer(AppConstants.undoSnackbarDuration, () async {
-      // 5-second window closed — item remains soft-deleted; reload fresh state
       await _reload();
     });
   }
 
   /// Restores a soft-deleted item within the undo window (TASK-05).
-  ///
   /// Cancels the undo timer and emits a fresh TaskListLoaded.
   Future<void> restoreItem(int id) async {
     _undoTimer?.cancel();
     _undoTimer = null;
-
     final result = await _repository.restoreItem(id);
     if (result is Err<Item>) {
       emit(TaskListError(result.failure));
@@ -96,43 +83,32 @@ class TaskListCubit extends Cubit<TaskListState> {
     await _reload();
   }
 
-  /// Creates a new item (TASK-01, TASK-03).
-  ///
-  /// Returns `true` on success, `false` on failure. On failure a
-  /// [TaskListError] is emitted carrying the failure. Callers should branch on
-  /// the returned value rather than inspecting state after the await — success
-  /// emits nothing here (the watchChanges() stream fires the reload), so a
-  /// stale [TaskListError] from a prior operation must not be mistaken for this
-  /// call's outcome.
+  /// Creates a new item (TASK-01, TASK-03). Returns `true`/`false` for
+  /// success — callers must branch on this, not post-await state: success
+  /// emits nothing (watchChanges() drives reload), so a stale
+  /// [TaskListError] from a prior op could be mistaken for this outcome.
   Future<bool> createItem(Item item) async {
     final result = await _repository.createItem(item);
     if (result is Err<Item>) {
       emit(TaskListError(result.failure));
       return false;
     }
-    // watchChanges() fires reload automatically
     return true;
   }
 
-  /// Updates an existing item (edit flow — TASK-03).
-  ///
-  /// Returns `true` on success, `false` on failure. See [createItem] for why
-  /// the boolean result, not post-await state, is the source of truth.
+  /// Updates an existing item (edit flow — TASK-03). See [createItem] for
+  /// why the boolean result, not post-await state, is the source of truth.
   Future<bool> updateItem(Item item) async {
     final result = await _repository.updateItem(item);
     if (result is Err<Item>) {
       emit(TaskListError(result.failure));
       return false;
     }
-    // watchChanges() fires reload automatically
     return true;
   }
 
-  /// Marks an item as completed (TASK-06).
-  ///
-  /// For recurring tasks (TASK-10): creates a new Item with the next
-  /// occurrence's dueDate computed by [RecurrenceEngine].
-  /// The watch stream fires and triggers _reload() automatically.
+  /// Marks an item as completed (TASK-06); recurring tasks (TASK-10) get
+  /// their next occurrence via [RecurrenceEngine], reload via watchChanges().
   Future<void> completeItem(Item item) async {
     final now = DateTime.now();
     final updated = item.copyWith(
@@ -145,79 +121,26 @@ class TaskListCubit extends Cubit<TaskListState> {
       emit(TaskListError(result.failure));
       return;
     }
-
-    // Recurring task: create next occurrence (TASK-10)
     if (item.recurrenceRule != null && item.dueDate != null) {
       final rule = _recurrenceEngine.parse(item.recurrenceRule);
       if (rule != null) {
         final nextDate =
             _recurrenceEngine.nextOccurrence(item.dueDate!, rule);
-        final nextItem = Item(
-          id: 0, // Isar auto-increment assigns a new id
-          type: item.type,
-          title: item.title,
-          description: item.description,
-          parentId: item.parentId,
-          priority: item.priority,
-          isUrgent: item.isUrgent,
-          isImportant: item.isImportant,
-          sizeCategory: item.sizeCategory,
-          isNextAction: item.isNextAction,
-          gtdContext: item.gtdContext,
-          waitingFor: item.waitingFor,
-          dueDate: nextDate,
-          dueTimeMinutes: item.dueTimeMinutes,
-          recurrenceRule: item.recurrenceRule,
-          amount: item.amount,
-          currencyCode: item.currencyCode,
-          createdAt: now,
-          updatedAt: now,
-        );
+        final nextItem = buildNextOccurrence(item, nextDate);
         await _repository.createItem(nextItem);
-        // watchChanges() stream fires; _reload() called by listener
       }
     }
-    // watchChanges() fires reload for the completed item update
   }
-
-  // --- Private ---
 
   Future<void> _reload() async {
     if (isClosed) return;
-
-    final result = _searchQuery.isNotEmpty
-        ? await _repository.searchByTitle(_searchQuery)
-        : await _repository.filterItems(
-            type: _filter.itemType,
-            quadrant: _filter.quadrant,
-            gtdContext: _filter.gtdContext,
-            dueDateFrom: _filter.dueDateFrom,
-            dueDateTo: _filter.dueDateTo,
-            parentId: _filter.projectId,
-            showCompleted: _filter.showCompleted,
-          );
-
-    if (isClosed) return;
-
-    if (result is Success<List<Item>>) {
-      emit(TaskListLoaded(
-        items: result.value,
-        filter: _filter,
-        searchQuery: _searchQuery,
-      ));
-    } else if (result is Err<List<Item>>) {
-      emit(TaskListError(result.failure));
-    }
+    final newState = await reloadTaskListState(
+      repository: _repository,
+      searchQuery: _searchQuery,
+      filter: _filter,
+    );
+    if (!isClosed) emit(newState);
   }
-
-  List<Item> _currentItems() {
-    return switch (state) {
-      TaskListLoaded(:final items) => items,
-      TaskListWithPendingUndo(:final items) => items,
-      _ => [],
-    };
-  }
-
   @override
   Future<void> close() async {
     _undoTimer?.cancel();
