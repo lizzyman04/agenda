@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:agenda/application/finance/dashboard/dashboard_aggregator.dart';
 import 'package:agenda/application/finance/dashboard/home_dashboard_state.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/finance/debt.dart';
-import 'package:agenda/domain/finance/debt_direction.dart';
 import 'package:agenda/domain/finance/debt_repository.dart';
 import 'package:agenda/domain/finance/goal_repository.dart';
 import 'package:agenda/domain/finance/savings_goal.dart';
@@ -11,18 +11,14 @@ import 'package:agenda/domain/finance/transaction.dart';
 import 'package:agenda/domain/finance/transaction_category.dart';
 import 'package:agenda/domain/finance/transaction_category_repository.dart';
 import 'package:agenda/domain/finance/transaction_repository.dart';
-import 'package:agenda/domain/finance/transaction_type.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-/// Aggregates all finance dashboard data in a single reactive cubit.
+/// Orchestrates finance dashboard reloads: fetches repository data, then
+/// delegates D-07/D-08/D-09 aggregation math to `dashboard_aggregator.dart`.
 ///
 /// Subscribes to TransactionRepository.watchChanges() — reloads when
-/// transactions change. Performs single-pass aggregation over all
-/// transactions for balance (D-07), net worth (D-08), and chart data (D-09).
-///
-/// No N+1 Isar queries — all data is fetched in parallel logical steps
-/// then aggregated in Dart (T-03-03-01).
+/// transactions change. No N+1 Isar queries (T-03-03-01).
 ///
 /// Factory (not singleton) — one per home dashboard screen.
 @injectable
@@ -44,9 +40,8 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
 
   /// Subscribes to transaction changes and loads the initial dashboard data.
   ///
-  /// Idempotent: if already subscribed (e.g. the dashboard tab is rebuilt when
-  /// the user revisits the Resumo tab), it only reloads and does not open a
-  /// second watch subscription that would leak the first.
+  /// Idempotent — rebuilding the dashboard tab only reloads, it never opens
+  /// a second watch subscription that would leak the first.
   Future<void> start() async {
     if (_txWatchSub != null) {
       await _reload();
@@ -64,22 +59,12 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
     await _reload();
   }
 
-  // --- Private ---
-
-  /// Single-pass aggregation per D-07, D-08, D-09 formulas.
-  ///
-  /// Step order:
-  /// 1. Load all non-deleted transactions (single Isar query, 500-item cap)
-  /// 2. Compute lifetime balance in one Dart loop (no second query)
-  /// 3. Load active goals and compute tagged-tx amounts for each per allTx
-  /// 4. Load debts; compute net worth D-08 (toPay && !isPaid only)
-  /// 5. Filter allTx to selectedMonth expenses; groupBy categoryId in Dart
-  /// 6. Load category labels for chart rendering
-  /// 7. Emit HomeDashboardLoaded
+  /// Loads repository data, delegates aggregation to dashboard_aggregator.dart
+  /// (D-07/D-08/D-09), then emits [HomeDashboardLoaded].
   Future<void> _reload() async {
     if (isClosed) return;
 
-    // Step 1 — All non-deleted transactions (DAO applies deletedAtIsNull)
+    // All non-deleted transactions (DAO applies deletedAtIsNull)
     final txResult = await _transactionRepository.getTransactions();
     if (isClosed) return;
 
@@ -92,20 +77,9 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
         allTx = value;
     }
 
-    // Step 2 — Balance: single-pass income/expense sum (D-07)
-    var income = 0;
-    var expenses = 0;
-    for (final tx in allTx) {
-      if (tx.type == TransactionType.income) {
-        income += tx.amountCents;
-      } else {
-        expenses += tx.amountCents;
-      }
-    }
-    final balance = income - expenses;
+    final balance = computeBalance(allTx);
 
-    // Step 3 — Load active goals; compute tagged-tx amounts from allTx
-    // (avoids second Isar query per goal — no N+1)
+    // Active goals; tagged-tx amounts are computed from allTx (no N+1)
     final goalsResult = await _goalRepository.getActiveGoals();
     if (isClosed) return;
 
@@ -118,22 +92,9 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
         goals = value;
     }
 
-    // Build a map of goalId -> taggedTransactionsCents from allTx in one pass
-    final taggedByGoal = <int, int>{};
-    for (final tx in allTx) {
-      final goalId = tx.linkedGoalId;
-      if (goalId != null) {
-        taggedByGoal[goalId] = (taggedByGoal[goalId] ?? 0) + tx.amountCents;
-      }
-    }
+    final taggedByGoal = computeTaggedByGoal(allTx);
+    final goalsSavedTotal = computeGoalsSavedTotal(goals, taggedByGoal);
 
-    // Sum of all active goal savings (manual contributions + tagged txs)
-    final goalsSavedTotal = goals.fold(
-      0,
-      (sum, g) => sum + g.amountSavedCents(taggedByGoal[g.id] ?? 0),
-    );
-
-    // Step 4 — Load debts; compute D-08 formula
     final debtsResult = await _debtRepository.getDebts();
     if (isClosed) return;
 
@@ -146,32 +107,20 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
         debts = value;
     }
 
-    // D-08: only toPay && !isPaid debts are subtracted from net worth.
-    // Debts-to-receive (toReceive) are explicitly excluded (T-03-03-01).
-    final debtTotal = debts
-        .where(
-          (d) => d.direction == DebtDirection.toPay && !d.isPaid,
-        )
-        .fold(0, (sum, d) => sum + d.amountCents);
+    final debtTotal = computeDebtTotal(debts);
+    final netWorth = computeNetWorth(
+      balanceCents: balance,
+      goalsSavedTotalCents: goalsSavedTotal,
+      debtTotalCents: debtTotal,
+    );
 
-    final netWorth = balance + goalsSavedTotal - debtTotal;
+    final categorySpend = computeCategorySpend(
+      allTx,
+      year: _selectedMonth.year,
+      month: _selectedMonth.month,
+    );
 
-    // Step 5 — Filter allTx to selectedMonth expenses; groupBy categoryId
-    // Single-pass Dart loop — no additional Isar query (no N+1)
-    final selectedYear = _selectedMonth.year;
-    final selectedMonthNum = _selectedMonth.month;
-    final categorySpend = <int, int>{};
-    for (final tx in allTx) {
-      if (tx.type == TransactionType.expense &&
-          tx.date.year == selectedYear &&
-          tx.date.month == selectedMonthNum &&
-          tx.deletedAt == null) {
-        categorySpend[tx.categoryId] =
-            (categorySpend[tx.categoryId] ?? 0) + tx.amountCents;
-      }
-    }
-
-    // Step 6 — Load category labels for chart display
+    // Category labels for chart display
     final catResult = await _categoryRepository.getAll();
     if (isClosed) return;
 
@@ -184,7 +133,6 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
         categories = value;
     }
 
-    // Step 7 — Emit loaded state
     emit(HomeDashboardLoaded(
       balanceCents: balance,
       netWorthCents: netWorth,
