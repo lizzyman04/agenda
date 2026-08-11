@@ -1,5 +1,6 @@
 import 'package:agenda/data/database/isar_service.dart';
 import 'package:agenda/data/tasks/item_model.dart';
+import 'package:agenda/data/tasks/item_query_builder.dart';
 import 'package:isar_community/isar.dart';
 
 /// Raw Isar query access for [ItemModel].
@@ -52,60 +53,17 @@ class ItemDao {
     int? parentId,
     bool showCompleted = false,
   }) async {
-    // Always start with active (non-deleted) items.
-    // Use .optional() to conditionally chain each filter — preserves the
-    // Isar QueryBuilder phantom-type invariant without dynamic reassignment.
-    // Promote nullable params to non-nullable locals so Dart flow analysis
-    // can prove non-null inside the lambda closures.
-    final resolvedType = type;
-    final resolvedIsUrgent = isUrgent;
-    final resolvedIsImportant = isImportant;
-    final resolvedGtdContext = gtdContext;
-    final resolvedDateFrom = dueDateFrom;
-    final resolvedDateTo = dueDateTo;
-    final resolvedParentId = parentId;
-    return _collection
-        .filter()
-        .deletedAtIsNull()
-        .optional(
-          resolvedType != null,
-          (q) => q.and().typeEqualTo(resolvedType!),
-        )
-        .optional(
-          resolvedIsUrgent != null,
-          (q) => q.and().isUrgentEqualTo(resolvedIsUrgent!),
-        )
-        .optional(
-          resolvedIsImportant != null,
-          (q) => q.and().isImportantEqualTo(resolvedIsImportant!),
-        )
-        .optional(
-          resolvedGtdContext != null,
-          (q) => q.and().gtdContextEqualTo(resolvedGtdContext),
-        )
-        .optional(
-          resolvedDateFrom != null && resolvedDateTo != null,
-          (q) => q.and().dueDateBetween(resolvedDateFrom, resolvedDateTo),
-        )
-        .optional(
-          resolvedDateFrom != null && resolvedDateTo == null,
-          (q) =>
-              q.and().dueDateGreaterThan(resolvedDateFrom, include: true),
-        )
-        .optional(
-          resolvedDateTo != null && resolvedDateFrom == null,
-          (q) => q.and().dueDateLessThan(resolvedDateTo, include: true),
-        )
-        .optional(
-          resolvedParentId != null,
-          (q) => q.and().parentIdEqualTo(resolvedParentId),
-        )
-        .optional(
-          !showCompleted,
-          (q) => q.and().isCompletedEqualTo(false),
-        )
-        .limit(500)
-        .findAll();
+    return buildItemFilterQuery(
+      _collection,
+      type: type,
+      isUrgent: isUrgent,
+      isImportant: isImportant,
+      gtdContext: gtdContext,
+      dueDateFrom: dueDateFrom,
+      dueDateTo: dueDateTo,
+      parentId: parentId,
+      showCompleted: showCompleted,
+    ).limit(500).findAll();
   }
 
   /// Count subtasks for rollup — O(1) with index.
