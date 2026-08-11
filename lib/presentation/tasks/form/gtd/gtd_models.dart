@@ -50,3 +50,71 @@ enum GtdNode {
   q7bWhyKeepNoImpact,
   review,
 }
+
+/// What a node should render, as data rather than widgets.
+///
+/// Keeping the decision tree free of widgets means it can be unit-tested by
+/// walking nodes and asserting on options, with no pumping required.
+sealed class GtdNodeSpec {
+  const GtdNodeSpec();
+}
+
+/// A question answered by picking one of [options].
+class GtdOptionSpec extends GtdNodeSpec {
+  const GtdOptionSpec({
+    required this.question,
+    required this.icon,
+    required this.options,
+    this.subtitle,
+  });
+
+  final String question;
+  final IconData icon;
+  final List<GtdOpt> options;
+  final String? subtitle;
+}
+
+/// A question answered by typing free text.
+class GtdTextSpec extends GtdNodeSpec {
+  const GtdTextSpec({
+    required this.question,
+    required this.icon,
+    required this.controller,
+    required this.onNext,
+    this.hint,
+    this.maxLength,
+  });
+
+  final String question;
+  final IconData icon;
+  final TextEditingController controller;
+  final VoidCallback onNext;
+  final String? hint;
+  final int? maxLength;
+}
+
+/// The terminal summary step.
+class GtdReviewSpec extends GtdNodeSpec {
+  const GtdReviewSpec();
+}
+
+/// The eight questions on the tree's happy path.
+///
+/// Progress is measured against this list only, so the follow-up `q*b`
+/// branches never make the progress bar jump backwards.
+const gtdMainPath = <GtdNode>[
+  GtdNode.q1Title,
+  GtdNode.q2Actionable,
+  GtdNode.q3Delegate,
+  GtdNode.q4Quick,
+  GtdNode.q5Important,
+  GtdNode.q6Deadline,
+  GtdNode.q7Impact,
+  GtdNode.review,
+];
+
+/// Index into [gtdMainPath] of the furthest main-path node in [history].
+int gtdStepIndex(List<GtdNode> history) {
+  final idx = history.lastIndexWhere(gtdMainPath.contains);
+  return idx >= 0 ? idx : 0;
+}
