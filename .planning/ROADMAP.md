@@ -101,19 +101,39 @@ Plans:
   3. Every feature directory under lib/presentation/ and lib/application/ contains a README.md stating its responsibility, its contents, and any slice-specific rules
   4. The full test suite passes unchanged — this is a pure refactor with no behaviour change
   5. `flutter analyze` reports no new errors or warnings
-**Plans**: 5 plans
+**Plans**: 18 plans (planned 2026-08-11 — expanded from the original 5-plan estimate; see plan-level rationale below)
 **UI hint**: no
 
-**Scope baseline** (re-measured 2026-08-11 after the goals slice and GTD sub-slice landed — the
-original estimates below were written before those refactors and understated the progress):
+**Scope baseline** (re-measured 2026-08-11 after the goals slice and GTD sub-slice landed):
 21 files over 150 lines · 2 directories over 10 files · 2 of 30 feature nests carry a README.
 
+**Planner deviation from the 5-plan estimate**: 18 plans across 5 waves. Each of the 21
+over-limit files needs concrete, per-file extraction seams (not a mechanical batch action) to
+stay within a single plan's context budget, and two of the planner's own decomposition choices
+(shared finance-form primitives, per-entity `presentation/finance/widgets/<entity>/` subfolders)
+were required to avoid the split work itself creating *new* directory-size violations. See
+plan `3.1-08`'s objective for why the four finance form screens share a Wave 1 prerequisite
+plan, and plan `3.1-16`'s objective for why the two folder-nesting plans run last.
+
 Plans:
-- [ ] 3.1-01: task_form_screen.dart — decompose into a tasks/form/ slice. *(Partially done: the GTD guide was extracted in commits 6c06312 and 04c4f84, taking the file 1483 → 752. Remaining: the form body — field groups, finance-link picker, save path.)*
-- [ ] 3.1-02: Remaining presentation screens over 150 lines — transaction_form (587), task_detail (563), recurring_payment_form (431), debt_form (327), goal_form (286, now under finance/goals/screens/), finance_dashboard (269), budget_overview (236), debt_list (202), task_list (201), day_planner (200), project (185), recurring_payment (173)
-- [ ] 3.1-03: Non-presentation files over 150 lines — finance_mappers (327), item_repository_impl (227), task_list_cubit (227), item (219), currencies (203), home_dashboard_cubit (202), item_dao (178), budget_cubit (155). *Open question for the planner: finance_mappers and currencies are flat declarative data tables and item.dart is a single cohesive entity class — splitting these by line count may cost more than it buys. Planner proposes split-or-exempt per file; plan-checker reviews.*
-- [ ] 3.1-04: Folder nesting — split domain/finance (16 files) and data/finance (13). *(presentation/finance/screens is now 8 and presentation/finance/widgets is 6 — both fell under the limit when the goals slice was extracted, so they are no longer in scope.)*
-- [ ] 3.1-05: README per nest (28 of 30 feature dirs still missing one) + CI guard enforcing the 150-line and folder-size limits
+- [ ] 3.1-01: Architecture guard scaffold — tool/check_architecture.dart + exemption allowlist (currencies.dart), informational mode; guard unit-tested against fixtures
+- [ ] 3.1-02: task_form_screen.dart remainder — field groups, finance-link picker, save path (completes the partial 3.1-01 work from commits 6c06312/04c4f84)
+- [ ] 3.1-03: task_detail_screen.dart split (563 lines) — hero card, section atoms, action bar
+- [ ] 3.1-04: item.dart split-or-exempt (SPLIT: sentinel + copyWith extension) + task_list_cubit.dart pure-function extraction
+- [ ] 3.1-05: item_dao.dart query-builder extraction + item_repository_impl.dart part/part-of split
+- [ ] 3.1-06: task_list_screen.dart + day_planner_screen.dart + project_screen.dart splits
+- [ ] 3.1-07: home_dashboard_cubit.dart + budget_cubit.dart aggregation-math extraction
+- [ ] 3.1-08: Shared finance-form utilities (FormCard/FieldRow/FieldDivider, CategoryPickerSheet, amount_parser) — prerequisite for 3.1-12..15
+- [ ] 3.1-09: debt_list_screen.dart + recurring_payment_screen.dart + budget_overview_screen.dart splits
+- [ ] 3.1-10: finance_dashboard_screen.dart split
+- [ ] 3.1-11: finance_mappers.dart split-or-exempt (SPLIT into 6 per-entity mapper files) — prerequisite for 3.1-17
+- [ ] 3.1-12: transaction_form_screen.dart split (587 lines, largest presentation/finance file) — depends on 3.1-08
+- [ ] 3.1-13: recurring_payment_form_screen.dart split — depends on 3.1-08
+- [ ] 3.1-14: debt_form_screen.dart split — depends on 3.1-08
+- [ ] 3.1-15: goal_form_screen.dart split — depends on 3.1-08
+- [ ] 3.1-16: domain/finance folder nesting (16 → 6 subfolders) — depends on every finance-touching plan above
+- [ ] 3.1-17: data/finance folder nesting (18 → 6 subfolders, using 3.1-11's mapper files) — depends on 3.1-16
+- [ ] 3.1-18: README per nest (all directories under presentation/+application/, literal reading) + guard enforcement wired into CI — final plan
 
 ### Phase 4: Notifications + Backup
 **Goal**: All notification types are scheduled, delivered reliably after device reboot, and controlled by the user; data can be exported as JSON or CSV and restored from backup with transactional safety
@@ -167,6 +187,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 5/5 | In verification | - |
-| 3.1. Architecture Compliance | 0/5 | In progress | - |
+| 3.1. Architecture Compliance | 0/18 | In progress | - |
 | 4. Notifications + Backup | 0/5 | Not started | - |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
