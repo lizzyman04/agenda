@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:agenda/application/finance/budget/budget_aggregator.dart';
 import 'package:agenda/application/finance/budget/budget_state.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/finance/budget.dart';
@@ -87,13 +88,7 @@ class BudgetCubit extends Cubit<BudgetState> {
         transactions = value;
     }
 
-    // (2) Group by categoryId to get spentCents per category
-    final spentMap = <int, int>{};
-    for (final tx in transactions) {
-      spentMap[tx.categoryId] = (spentMap[tx.categoryId] ?? 0) + tx.amountCents;
-    }
-
-    // (3) Load budget limits for current month
+    // (2) Load budget limits for current month
     final budgetsResult = await _budgetRepository.getForMonth(month, year);
     if (isClosed) return;
 
@@ -106,13 +101,7 @@ class BudgetCubit extends Cubit<BudgetState> {
         budgets = value;
     }
 
-    // Build limit map from configured budgets
-    final limitMap = <int, int>{};
-    for (final budget in budgets) {
-      limitMap[budget.categoryId] = budget.limitCents;
-    }
-
-    // (4) Load all expense categories
+    // (3) Load all expense categories
     final catResult =
         await _categoryRepository.getByType(TransactionType.expense);
     if (isClosed) return;
@@ -126,23 +115,11 @@ class BudgetCubit extends Cubit<BudgetState> {
         categories = value;
     }
 
-    // (5) Build combined map: all category ids from both spend and limit maps
-    final allCategoryIds = {...spentMap.keys, ...limitMap.keys};
-    final combined = <int, ({int limitCents, int spentCents})>{};
-    for (final id in allCategoryIds) {
-      combined[id] = (
-        limitCents: limitMap[id] ?? 0,
-        spentCents: spentMap[id] ?? 0,
-      );
-    }
-
-    // Also include categories with limits but no spend
-    for (final budget in budgets) {
-      combined[budget.categoryId] ??= (
-        limitCents: budget.limitCents,
-        spentCents: 0,
-      );
-    }
+    // (4) Merge spend + limit data per category (see budget_aggregator.dart)
+    final combined = mergeBudgetData(
+      transactions: transactions,
+      budgets: budgets,
+    );
 
     emit(BudgetLoaded(budgets: combined, categories: categories));
   }
