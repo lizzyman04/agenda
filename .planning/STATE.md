@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-06-15T00:00:00.000Z"
-last_activity: 2026-08-11 -- Phase 03 UAT completed on-device via adb (7 pass / 3 open issues). Test-5 blocker fixed and device-verified in quick task 260811-97x. New house rules adopted: no code file over 150 lines, aggressive folder nesting by responsibility, README per nest — applied to the goals slice; 21 files and 4 folders still non-compliant.
+status: planned
+stopped_at: Phase 3.1 planned (18 plans, 5 waves) — ready to execute
+last_updated: "2026-08-11T00:00:00.000Z"
+last_activity: 2026-08-11 -- Phase 3.1 (Architecture Compliance) researched, planned, and plan-checked. 18 plans across 5 waves. Research settled the CI-guard question (no maintained Dart lint enforces file length; tool/check_architecture.dart, zero new deps). Hard-case rulings: finance_mappers.dart SPLIT into 6 per-entity files, item.dart SPLIT (sentinel + copyWith extension), currencies.dart EXEMPT with recorded justification. Plan-checker verified coverage closes on all 21 files and both over-full directories with no blockers.
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 15
+  total_plans: 33
   completed_plans: 13
-  percent: 87
+  percent: 39
 ---
 
 # Project State
@@ -21,14 +21,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Open AGENDA at any moment and immediately see what needs doing and where the money stands — no internet connection ever required.
-**Current focus:** Phase 03 — finance-core
+**Current focus:** Phase 3.1 — architecture-compliance
 
 ## Current Position
 
-Phase: 03 (finance-core) — EXECUTING
-Plan: 5 of 5 (03-05 code complete, human-verify checkpoint pending)
-Status: Plans 03-01..03-04 complete; 03-05 code complete (dashboard summary card, pie+bar charts, month nav) — human-verify checkpoint pending; budget-save crash still deferred
-Last activity: 2026-06-15 - Phase 02 verification approved (5/5 UAT pass), marked DONE. Quick task 260614-w5e closed: CR-01/WR-03/WR-04 + recheck WR-01 resolved; finance-repo test stubs added; suite green 206/206. No PR (solo local project).
+Phase: 3.1 (architecture-compliance) — PLANNED, ready to execute
+Plan: 0 of 18 (5 waves; Wave 1 holds 11 parallel plans)
+Status: Research, validation strategy, 18 plans, and the plan-checker pass all complete and committed. Next action is `/gsd-execute-phase 3.1`.
+
+Phase 03 (finance-core) remains open behind it: code complete, but 3 UAT issues are unresolved (test 2 — category-name stub showing `#id` and a duplicated note; test 3 — SnackBar queueing on a second swipe inside the undo window; test 9 — task-link chip showing a raw id) plus an undiagnosed app-wide undo-timer defect where 5s SnackBars never dismiss. None of these block Phase 3.1, which is a pure refactor.
+
+Baseline entering Phase 3.1: 230 tests passing, `flutter analyze` clean, 21 files over 150 lines, 2 directories over 10 files, 2 of 30 feature nests carrying a README.
 
 Progress: [████████░░] 87%
 
