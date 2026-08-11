@@ -1,18 +1,18 @@
 title: AGENDA
 description: "Private mobile app for task management and personal finances. 100% offline."
-url: "https://agenda.omeu.space"
-baseurl: ""
+url: "https://lizzyman04.com"
+baseurl: "/agenda"
 
 # jekyll-polyglot
 languages: ["en", "pt"]
 default_lang: "en"
-exclude_from_localization: ["assets", "CNAME", "feed.xml"]
+exclude_from_localization: ["assets", "feed.xml"]
 parallel_localization: false
 
 author:
   name: lizzyman04
   github: https://github.com/lizzyman04/agenda
-  email: admin+agenda@omeu.space
+  email: agenda@lizzyman04.com
 
 markdown: kramdown
 highlighter: rouge
