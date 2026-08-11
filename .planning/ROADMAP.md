@@ -101,15 +101,19 @@ Plans:
   3. Every feature directory under lib/presentation/ and lib/application/ contains a README.md stating its responsibility, its contents, and any slice-specific rules
   4. The full test suite passes unchanged — this is a pure refactor with no behaviour change
   5. `flutter analyze` reports no new errors or warnings
-**Plans**: TBD
+**Plans**: 5 plans
 **UI hint**: no
 
+**Scope baseline** (re-measured 2026-08-11 after the goals slice and GTD sub-slice landed — the
+original estimates below were written before those refactors and understated the progress):
+21 files over 150 lines · 2 directories over 10 files · 2 of 30 feature nests carry a README.
+
 Plans:
-- [ ] 3.1-01: task_form_screen.dart (1713 lines) — decompose into a tasks/form/ slice
-- [ ] 3.1-02: Remaining presentation screens over 150 lines — transaction_form (587), task_detail (563), recurring_payment_form (431), debt_form (327), goal_form (286), finance_dashboard (269), budget_overview (236), debt_list (202), task_list (201), day_planner (200), project (185), recurring_payment (173)
-- [ ] 3.1-03: Non-presentation files over 150 lines — finance_mappers (327), item_repository_impl (227), task_list_cubit (227), item (219), currencies (203), home_dashboard_cubit (202), item_dao (178), budget_cubit (155)
-- [ ] 3.1-04: Folder nesting — split domain/finance (16 files), data/finance (13), presentation/finance/screens (11), presentation/finance/widgets (10)
-- [ ] 3.1-05: README per nest + CI guard enforcing the 150-line and folder-size limits
+- [ ] 3.1-01: task_form_screen.dart — decompose into a tasks/form/ slice. *(Partially done: the GTD guide was extracted in commits 6c06312 and 04c4f84, taking the file 1483 → 752. Remaining: the form body — field groups, finance-link picker, save path.)*
+- [ ] 3.1-02: Remaining presentation screens over 150 lines — transaction_form (587), task_detail (563), recurring_payment_form (431), debt_form (327), goal_form (286, now under finance/goals/screens/), finance_dashboard (269), budget_overview (236), debt_list (202), task_list (201), day_planner (200), project (185), recurring_payment (173)
+- [ ] 3.1-03: Non-presentation files over 150 lines — finance_mappers (327), item_repository_impl (227), task_list_cubit (227), item (219), currencies (203), home_dashboard_cubit (202), item_dao (178), budget_cubit (155). *Open question for the planner: finance_mappers and currencies are flat declarative data tables and item.dart is a single cohesive entity class — splitting these by line count may cost more than it buys. Planner proposes split-or-exempt per file; plan-checker reviews.*
+- [ ] 3.1-04: Folder nesting — split domain/finance (16 files) and data/finance (13). *(presentation/finance/screens is now 8 and presentation/finance/widgets is 6 — both fell under the limit when the goals slice was extracted, so they are no longer in scope.)*
+- [ ] 3.1-05: README per nest (28 of 30 feature dirs still missing one) + CI guard enforcing the 150-line and folder-size limits
 
 ### Phase 4: Notifications + Backup
 **Goal**: All notification types are scheduled, delivered reliably after device reboot, and controlled by the user; data can be exported as JSON or CSV and restored from backup with transactional safety
