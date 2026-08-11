@@ -13,6 +13,8 @@ task validation and persistence live in `application/tasks/task_list/` and
 
 ```
 form/
+├── task_form_logic.dart         pure functions: build/load/apply
+├── task_form_fields_model.dart  mutable non-controller field state
 ├── screens/   route-level widget; owns the form state and the cubit
 ├── widgets/   presentation-only cards and layout primitives
 └── gtd/       the GTD clarification guide — a self-contained sub-slice
@@ -20,11 +22,18 @@ form/
     └── widgets/   node renderers and sheet chrome
 ```
 
+### form/ (top level)
+
+| File | Lines | Role |
+|------|------:|------|
+| `task_form_logic.dart` | 99 | Pure functions: `loadFinanceLinks`, `buildFormItem`, `applyGtdResult` |
+| `task_form_fields_model.dart` | 116 | `TaskFormFieldsModel` — mutable holder for every non-controller field, plus `FinanceLinksSnapshot`/`GtdFormValues` and the `apply*` batch-update methods |
+
 ### screens/
 
 | File | Lines | Role |
 |------|------:|------|
-| `task_form_screen.dart` | 752 | Create/edit form; owns controllers, finance links, save |
+| `task_form_screen.dart` | 148 | Create/edit form; owns controllers and `TaskFormFieldsModel`, wires save/GTD-guide/finance-link flows |
 
 ### widgets/
 
@@ -33,6 +42,11 @@ form/
 | `form_primitives.dart` | 56 | `FormCard`, `FieldRow`, `FieldDivider` |
 | `gtd_guide_card.dart` | 74 | Entry-point card that opens the guide |
 | `advanced_options_card.dart` | 69 | Collapsible card for the advanced fields |
+| `title_type_card.dart` | 81 | Title field + task/project type toggle |
+| `schedule_fields.dart` | 150 | Priority, due date/time, and recurrence fields |
+| `flags_size_notes_fields.dart` | 115 | Urgent/important, size, description, waiting-for fields |
+| `finance_link_sheet.dart` | 126 | `FinanceLinkSheet` + `FinanceLinkSelection` — pop-returning goal/debt picker |
+| `task_form_fields.dart` | 150 | Assembles the field-group widgets above; owns date/time/finance-link picker mechanics (model-only, no controllers) |
 
 ### gtd/
 
@@ -87,12 +101,21 @@ if both halves claim it.
 
 ## Status
 
-The GTD sub-slice is fully compliant — every file is under 150 lines.
+The whole `tasks/form/` slice is compliant — every file, including the GTD
+sub-slice, is at or under 150 lines (`dart run tool/check_architecture.dart`
+reports no LINES violations under this directory).
 
-`task_form_screen.dart` is still **752 lines** and remains the last breach in
-this slice. Its remaining bulk is the form body: the field groups, the finance
-link picker, and the save path. Splitting it into field-group widgets is the
-next increment of Phase 3.1 plan `3.1-01`.
+`task_form_screen.dart` still owns every `TextEditingController` and the
+cubit call, but the non-controller field state (`itemType`, `priority`,
+`dueDate`, the finance-link ids, `advancedExpanded`, …) lives in one mutable
+`TaskFormFieldsModel` (`task_form_fields_model.dart`) instead of a dozen
+separate `State` fields. `TaskFormFields` (`widgets/task_form_fields.dart`)
+receives that model read-only plus a single `onModelChanged` callback the
+screen wraps in `setState` — this is what keeps the screen's `build()` to a
+handful of lines despite wiring five field-group widgets. Date/time pickers
+and the finance-link sheet only ever touch the model, so `TaskFormFields`
+implements them directly rather than bouncing back to the screen; the GTD
+guide also updates text controllers, so it stays screen-owned.
 
 ## Upstream dependencies
 
