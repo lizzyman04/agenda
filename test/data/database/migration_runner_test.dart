@@ -1,6 +1,6 @@
 import 'package:agenda/data/database/migration_runner.dart';
-import 'package:agenda/data/finance/transaction_category_model.dart';
-import 'package:agenda/data/finance/transaction_model.dart';
+import 'package:agenda/data/finance/category/transaction_category_model.dart';
+import 'package:agenda/data/finance/transaction/transaction_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_community/isar.dart';
 import 'package:mocktail/mocktail.dart';

@@ -1,12 +1,12 @@
 import 'package:agenda/app.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/data/database/isar_service.dart';
-import 'package:agenda/data/finance/budget_model.dart';
-import 'package:agenda/data/finance/debt_model.dart';
-import 'package:agenda/data/finance/recurring_payment_model.dart';
-import 'package:agenda/data/finance/savings_goal_model.dart';
-import 'package:agenda/data/finance/transaction_category_model.dart';
-import 'package:agenda/data/finance/transaction_model.dart';
+import 'package:agenda/data/finance/budget/budget_model.dart';
+import 'package:agenda/data/finance/category/transaction_category_model.dart';
+import 'package:agenda/data/finance/debt/debt_model.dart';
+import 'package:agenda/data/finance/goal/savings_goal_model.dart';
+import 'package:agenda/data/finance/recurring/recurring_payment_model.dart';
+import 'package:agenda/data/finance/transaction/transaction_model.dart';
 import 'package:agenda/data/tasks/item_model.dart';
 import 'package:flutter/material.dart';
 

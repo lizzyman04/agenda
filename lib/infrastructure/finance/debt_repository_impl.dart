@@ -1,7 +1,7 @@
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/data/finance/debt_dao.dart';
-import 'package:agenda/data/finance/debt_mapper.dart';
+import 'package:agenda/data/finance/debt/debt_dao.dart';
+import 'package:agenda/data/finance/debt/debt_mapper.dart';
 import 'package:agenda/domain/finance/debt/debt.dart';
 import 'package:agenda/domain/finance/debt/debt_repository.dart';
 import 'package:injectable/injectable.dart';

@@ -1,7 +1,7 @@
 import 'package:agenda/core/config/app_config.dart';
 import 'package:agenda/core/constants/storage_keys.dart';
-import 'package:agenda/data/finance/transaction_category_model.dart';
-import 'package:agenda/data/finance/transaction_model.dart';
+import 'package:agenda/data/finance/category/transaction_category_model.dart';
+import 'package:agenda/data/finance/transaction/transaction_model.dart';
 import 'package:isar_community/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

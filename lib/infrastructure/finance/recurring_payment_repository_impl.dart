@@ -1,7 +1,7 @@
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/data/finance/recurring_payment_dao.dart';
-import 'package:agenda/data/finance/recurring_payment_mapper.dart';
+import 'package:agenda/data/finance/recurring/recurring_payment_dao.dart';
+import 'package:agenda/data/finance/recurring/recurring_payment_mapper.dart';
 import 'package:agenda/domain/finance/recurring/recurring_payment.dart';
 import 'package:agenda/domain/finance/recurring/recurring_payment_repository.dart';
 import 'package:injectable/injectable.dart';

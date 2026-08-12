@@ -1,8 +1,8 @@
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/data/finance/goal_mapper.dart';
-import 'package:agenda/data/finance/savings_goal_dao.dart';
-import 'package:agenda/data/finance/savings_goal_model.dart';
+import 'package:agenda/data/finance/goal/goal_mapper.dart';
+import 'package:agenda/data/finance/goal/savings_goal_dao.dart';
+import 'package:agenda/data/finance/goal/savings_goal_model.dart';
 import 'package:agenda/domain/finance/goal/goal_repository.dart';
 import 'package:agenda/domain/finance/goal/savings_goal.dart';
 import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
