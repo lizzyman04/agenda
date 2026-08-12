@@ -1,4 +1,4 @@
-import 'package:agenda/data/finance/savings_goal_model.dart';
+import 'package:agenda/data/finance/goal/savings_goal_model.dart';
 import 'package:agenda/domain/finance/goal/savings_goal.dart';
 import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
 

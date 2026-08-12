@@ -1,4 +1,4 @@
-import 'package:agenda/data/finance/debt_model.dart' as data;
+import 'package:agenda/data/finance/debt/debt_model.dart' as data;
 import 'package:agenda/domain/finance/debt/debt.dart';
 import 'package:agenda/domain/finance/debt/debt_direction.dart' as domain;
 

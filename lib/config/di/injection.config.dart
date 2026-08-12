@@ -29,18 +29,23 @@ import 'package:agenda/config/di/core_module.dart' as _i84;
 import 'package:agenda/config/di/finance_module.dart' as _i650;
 import 'package:agenda/config/di/tasks_module.dart' as _i619;
 import 'package:agenda/data/database/isar_service.dart' as _i43;
-import 'package:agenda/data/finance/budget_dao.dart' as _i337;
-import 'package:agenda/data/finance/budget_mapper.dart' as _i289;
-import 'package:agenda/data/finance/debt_dao.dart' as _i647;
-import 'package:agenda/data/finance/debt_mapper.dart' as _i630;
-import 'package:agenda/data/finance/goal_mapper.dart' as _i1064;
-import 'package:agenda/data/finance/recurring_payment_dao.dart' as _i488;
-import 'package:agenda/data/finance/recurring_payment_mapper.dart' as _i352;
-import 'package:agenda/data/finance/savings_goal_dao.dart' as _i782;
-import 'package:agenda/data/finance/transaction_category_dao.dart' as _i514;
-import 'package:agenda/data/finance/transaction_category_mapper.dart' as _i906;
-import 'package:agenda/data/finance/transaction_dao.dart' as _i264;
-import 'package:agenda/data/finance/transaction_mapper.dart' as _i851;
+import 'package:agenda/data/finance/budget/budget_dao.dart' as _i1035;
+import 'package:agenda/data/finance/budget/budget_mapper.dart' as _i233;
+import 'package:agenda/data/finance/category/transaction_category_dao.dart'
+    as _i404;
+import 'package:agenda/data/finance/category/transaction_category_mapper.dart'
+    as _i9;
+import 'package:agenda/data/finance/debt/debt_dao.dart' as _i731;
+import 'package:agenda/data/finance/debt/debt_mapper.dart' as _i539;
+import 'package:agenda/data/finance/goal/goal_mapper.dart' as _i249;
+import 'package:agenda/data/finance/goal/savings_goal_dao.dart' as _i514;
+import 'package:agenda/data/finance/recurring/recurring_payment_dao.dart'
+    as _i1024;
+import 'package:agenda/data/finance/recurring/recurring_payment_mapper.dart'
+    as _i568;
+import 'package:agenda/data/finance/transaction/transaction_dao.dart' as _i357;
+import 'package:agenda/data/finance/transaction/transaction_mapper.dart'
+    as _i536;
 import 'package:agenda/data/tasks/item_dao.dart' as _i409;
 import 'package:agenda/data/tasks/item_mapper.dart' as _i546;
 import 'package:agenda/domain/finance/budget/budget_repository.dart' as _i877;
@@ -89,62 +94,44 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.singleton<_i43.IsarService>(() => coreModule.isarService);
-    gh.lazySingleton<_i851.TransactionMapper>(
+    gh.lazySingleton<_i536.TransactionMapper>(
       () => financeModule.transactionMapper,
     );
-    gh.lazySingleton<_i906.TransactionCategoryMapper>(
+    gh.lazySingleton<_i9.TransactionCategoryMapper>(
       () => financeModule.transactionCategoryMapper,
     );
-    gh.lazySingleton<_i289.BudgetMapper>(() => financeModule.budgetMapper);
-    gh.lazySingleton<_i1064.GoalMapper>(() => financeModule.goalMapper);
-    gh.lazySingleton<_i630.DebtMapper>(() => financeModule.debtMapper);
-    gh.lazySingleton<_i352.RecurringPaymentMapper>(
+    gh.lazySingleton<_i233.BudgetMapper>(() => financeModule.budgetMapper);
+    gh.lazySingleton<_i249.GoalMapper>(() => financeModule.goalMapper);
+    gh.lazySingleton<_i539.DebtMapper>(() => financeModule.debtMapper);
+    gh.lazySingleton<_i568.RecurringPaymentMapper>(
       () => financeModule.recurringPaymentMapper,
     );
     gh.lazySingleton<_i546.ItemMapper>(() => tasksModule.itemMapper);
-    gh.lazySingleton<_i264.TransactionDao>(
+    gh.lazySingleton<_i357.TransactionDao>(
       () => financeModule.transactionDao(gh<_i43.IsarService>()),
     );
-    gh.lazySingleton<_i514.TransactionCategoryDao>(
+    gh.lazySingleton<_i404.TransactionCategoryDao>(
       () => financeModule.transactionCategoryDao(gh<_i43.IsarService>()),
     );
-    gh.lazySingleton<_i337.BudgetDao>(
+    gh.lazySingleton<_i1035.BudgetDao>(
       () => financeModule.budgetDao(gh<_i43.IsarService>()),
     );
-    gh.lazySingleton<_i782.SavingsGoalDao>(
+    gh.lazySingleton<_i514.SavingsGoalDao>(
       () => financeModule.savingsGoalDao(gh<_i43.IsarService>()),
     );
-    gh.lazySingleton<_i647.DebtDao>(
+    gh.lazySingleton<_i731.DebtDao>(
       () => financeModule.debtDao(gh<_i43.IsarService>()),
     );
-    gh.lazySingleton<_i488.RecurringPaymentDao>(
+    gh.lazySingleton<_i1024.RecurringPaymentDao>(
       () => financeModule.recurringPaymentDao(gh<_i43.IsarService>()),
     );
     gh.lazySingleton<_i409.ItemDao>(
       () => tasksModule.itemDao(gh<_i43.IsarService>()),
     );
-    gh.lazySingleton<_i877.BudgetRepository>(
-      () => _i576.BudgetRepositoryImpl(
-        gh<_i337.BudgetDao>(),
-        gh<_i289.BudgetMapper>(),
-      ),
-    );
-    gh.lazySingleton<_i200.TransactionCategoryRepository>(
-      () => _i986.TransactionCategoryRepositoryImpl(
-        gh<_i514.TransactionCategoryDao>(),
-        gh<_i906.TransactionCategoryMapper>(),
-      ),
-    );
     gh.lazySingleton<_i858.GoalRepository>(
       () => _i904.GoalRepositoryImpl(
-        gh<_i782.SavingsGoalDao>(),
-        gh<_i1064.GoalMapper>(),
-      ),
-    );
-    gh.lazySingleton<_i585.TransactionRepository>(
-      () => _i47.TransactionRepositoryImpl(
-        gh<_i264.TransactionDao>(),
-        gh<_i851.TransactionMapper>(),
+        gh<_i514.SavingsGoalDao>(),
+        gh<_i249.GoalMapper>(),
       ),
     );
     gh.lazySingleton<_i44.RecurrenceEngine>(
@@ -153,22 +140,33 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i665.GoalListCubit>(
       () => _i665.GoalListCubit(gh<_i858.GoalRepository>()),
     );
-    gh.factory<_i1065.TransactionCubit>(
-      () => _i1065.TransactionCubit(gh<_i585.TransactionRepository>()),
-    );
-    gh.factory<_i101.LocaleCubit>(
-      () => _i101.LocaleCubit(gh<_i460.SharedPreferences>()),
-    );
-    gh.factory<_i759.BudgetCubit>(
-      () => _i759.BudgetCubit(
-        gh<_i585.TransactionRepository>(),
-        gh<_i877.BudgetRepository>(),
-        gh<_i200.TransactionCategoryRepository>(),
+    gh.lazySingleton<_i385.RecurringPaymentRepository>(
+      () => _i574.RecurringPaymentRepositoryImpl(
+        gh<_i1024.RecurringPaymentDao>(),
+        gh<_i568.RecurringPaymentMapper>(),
       ),
     );
     gh.lazySingleton<_i169.DebtRepository>(
       () =>
-          _i763.DebtRepositoryImpl(gh<_i647.DebtDao>(), gh<_i630.DebtMapper>()),
+          _i763.DebtRepositoryImpl(gh<_i731.DebtDao>(), gh<_i539.DebtMapper>()),
+    );
+    gh.factory<_i710.DebtCubit>(
+      () => _i710.DebtCubit(gh<_i169.DebtRepository>()),
+    );
+    gh.factory<_i101.LocaleCubit>(
+      () => _i101.LocaleCubit(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i585.TransactionRepository>(
+      () => _i47.TransactionRepositoryImpl(
+        gh<_i357.TransactionDao>(),
+        gh<_i536.TransactionMapper>(),
+      ),
+    );
+    gh.lazySingleton<_i200.TransactionCategoryRepository>(
+      () => _i986.TransactionCategoryRepositoryImpl(
+        gh<_i404.TransactionCategoryDao>(),
+        gh<_i9.TransactionCategoryMapper>(),
+      ),
     );
     gh.factory<_i316.GoalCubit>(
       () => _i316.GoalCubit(
@@ -176,17 +174,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i585.TransactionRepository>(),
       ),
     );
-    gh.lazySingleton<_i385.RecurringPaymentRepository>(
-      () => _i574.RecurringPaymentRepositoryImpl(
-        gh<_i488.RecurringPaymentDao>(),
-        gh<_i352.RecurringPaymentMapper>(),
-      ),
-    );
     gh.lazySingleton<_i565.ItemRepository>(
       () => _i215.ItemRepositoryImpl(
         gh<_i409.ItemDao>(),
         gh<_i546.ItemMapper>(),
         gh<_i44.RecurrenceEngine>(),
+      ),
+    );
+    gh.lazySingleton<_i877.BudgetRepository>(
+      () => _i576.BudgetRepositoryImpl(
+        gh<_i1035.BudgetDao>(),
+        gh<_i233.BudgetMapper>(),
       ),
     );
     gh.factory<_i275.RecurringPaymentCubit>(
@@ -209,8 +207,15 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i44.RecurrenceEngine>(),
       ),
     );
-    gh.factory<_i710.DebtCubit>(
-      () => _i710.DebtCubit(gh<_i169.DebtRepository>()),
+    gh.factory<_i1065.TransactionCubit>(
+      () => _i1065.TransactionCubit(gh<_i585.TransactionRepository>()),
+    );
+    gh.factory<_i759.BudgetCubit>(
+      () => _i759.BudgetCubit(
+        gh<_i585.TransactionRepository>(),
+        gh<_i877.BudgetRepository>(),
+        gh<_i200.TransactionCategoryRepository>(),
+      ),
     );
     return this;
   }

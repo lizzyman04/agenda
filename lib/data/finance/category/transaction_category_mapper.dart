@@ -1,5 +1,5 @@
-import 'package:agenda/data/finance/transaction_category_model.dart';
-import 'package:agenda/data/finance/transaction_model.dart' as data;
+import 'package:agenda/data/finance/category/transaction_category_model.dart';
+import 'package:agenda/data/finance/transaction/transaction_model.dart' as data;
 import 'package:agenda/domain/finance/category/transaction_category.dart';
 import 'package:agenda/domain/finance/transaction/transaction_type.dart'
     as domain;

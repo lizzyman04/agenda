@@ -1,4 +1,4 @@
-import 'package:agenda/data/finance/recurring_payment_model.dart' as data;
+import 'package:agenda/data/finance/recurring/recurring_payment_model.dart' as data;
 import 'package:agenda/domain/finance/recurring/recurring_cycle.dart' as domain;
 import 'package:agenda/domain/finance/recurring/recurring_payment.dart';
 

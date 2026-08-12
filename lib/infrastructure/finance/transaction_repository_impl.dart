@@ -1,7 +1,7 @@
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/data/finance/transaction_dao.dart';
-import 'package:agenda/data/finance/transaction_mapper.dart';
+import 'package:agenda/data/finance/transaction/transaction_dao.dart';
+import 'package:agenda/data/finance/transaction/transaction_mapper.dart';
 import 'package:agenda/domain/finance/transaction/transaction.dart';
 import 'package:agenda/domain/finance/transaction/transaction_repository.dart';
 import 'package:injectable/injectable.dart';

@@ -1,4 +1,4 @@
-import 'package:agenda/data/finance/transaction_model.dart';
+import 'package:agenda/data/finance/transaction/transaction_model.dart';
 import 'package:isar_community/isar.dart';
 
 part 'transaction_category_model.g.dart';

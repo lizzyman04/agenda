@@ -1,5 +1,5 @@
 import 'package:agenda/data/database/isar_service.dart';
-import 'package:agenda/data/finance/recurring_payment_model.dart';
+import 'package:agenda/data/finance/recurring/recurring_payment_model.dart';
 import 'package:isar_community/isar.dart';
 
 /// Raw Isar query access for [RecurringPaymentModel].

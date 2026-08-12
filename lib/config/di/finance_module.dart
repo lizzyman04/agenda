@@ -1,16 +1,16 @@
 import 'package:agenda/data/database/isar_service.dart';
-import 'package:agenda/data/finance/budget_dao.dart';
-import 'package:agenda/data/finance/budget_mapper.dart';
-import 'package:agenda/data/finance/debt_dao.dart';
-import 'package:agenda/data/finance/debt_mapper.dart';
-import 'package:agenda/data/finance/goal_mapper.dart';
-import 'package:agenda/data/finance/recurring_payment_dao.dart';
-import 'package:agenda/data/finance/recurring_payment_mapper.dart';
-import 'package:agenda/data/finance/savings_goal_dao.dart';
-import 'package:agenda/data/finance/transaction_category_dao.dart';
-import 'package:agenda/data/finance/transaction_category_mapper.dart';
-import 'package:agenda/data/finance/transaction_dao.dart';
-import 'package:agenda/data/finance/transaction_mapper.dart';
+import 'package:agenda/data/finance/budget/budget_dao.dart';
+import 'package:agenda/data/finance/budget/budget_mapper.dart';
+import 'package:agenda/data/finance/category/transaction_category_dao.dart';
+import 'package:agenda/data/finance/category/transaction_category_mapper.dart';
+import 'package:agenda/data/finance/debt/debt_dao.dart';
+import 'package:agenda/data/finance/debt/debt_mapper.dart';
+import 'package:agenda/data/finance/goal/goal_mapper.dart';
+import 'package:agenda/data/finance/goal/savings_goal_dao.dart';
+import 'package:agenda/data/finance/recurring/recurring_payment_dao.dart';
+import 'package:agenda/data/finance/recurring/recurring_payment_mapper.dart';
+import 'package:agenda/data/finance/transaction/transaction_dao.dart';
+import 'package:agenda/data/finance/transaction/transaction_mapper.dart';
 import 'package:injectable/injectable.dart';
 
 /// DI registrations for the Finance domain.
