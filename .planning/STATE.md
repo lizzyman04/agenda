@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: 03-04 human-verify checkpoint (Finance UI on device)
-last_updated: "2026-08-11T10:49:37.418Z"
+last_updated: "2026-08-12T05:24:41.985Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 33
-  completed_plans: 15
-  percent: 45
+  completed_plans: 26
+  percent: 79
 ---
 
 # Project State
@@ -25,10 +25,11 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 03.1 (architecture-compliance) — EXECUTING
-Plan: 1 of 18 complete (03.1-01 merged); 03.1-02 and 03.1-03 partially done in worktrees
-Status: Wave 1 INTERRUPTED by an API session limit at 2026-08-11 ~15:30 (resets 16:30 Africa/Maputo). Three executors were killed mid-task.
+Plan: 1 of 18
+Status: Executing Phase 03.1
 
 **Resume state — read before dispatching anything:**
+
 - `03.1-01` COMPLETE and merged to main. `tool/check_architecture.dart` exists and reproduces the baseline exactly (20 line violations + 1 exemption, 2 directory violations, 28 missing READMEs). Run `dart run tool/check_architecture.dart` to measure progress from here on.
 - `03.1-02` PARTIAL. Worktree `.claude/worktrees/agent-a87f3e2112faf19f9`, branch `worktree-agent-a87f3e2112faf19f9`, commit `525afaf`. Created `task_form_logic.dart` and `finance_link_sheet.dart`; `task_form_screen.dart` modified. **UNVERIFIED — no analyzer or test run covered this state.** Do not merge without re-running the plan's verification.
 - `03.1-03` PARTIAL. Worktree `.claude/worktrees/agent-abbc0f9421b82d2a1`, branch `worktree-agent-abbc0f9421b82d2a1`, commits `99bf89c` (atoms extracted, verified) + `9edcb78` (WIP rescue, UNVERIFIED). Seven widget files under `widgets/detail/`.
