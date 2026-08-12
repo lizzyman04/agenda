@@ -14,6 +14,11 @@
 /// reviewed — an exemption is a deliberate, documented exception, not an
 /// escape hatch for deferring a split that should actually happen.
 const Map<String, String> lineLimitExemptions = {
+  // NOTE: as of the 03.1 verification pass this file has ZERO importers in
+  // lib/ or test/ — it is staged for the multi-currency work and is dead code
+  // until then. The exemption below stands on its own merits, but it is
+  // currently protecting an unreferenced file: if multi-currency is dropped,
+  // delete the file and this entry together rather than carrying both.
   'lib/core/constants/currencies.dart':
       'Flat ISO 4217 data table (single static const List<Currency>) — '
       'splitting by line range fragments a single semantic unit and '

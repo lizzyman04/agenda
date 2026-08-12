@@ -24,9 +24,39 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 
 ## Current Position
 
-Phase: 03.1 (architecture-compliance) — EXECUTING
+Phase: 03.1 (architecture-compliance) — VERIFIED, AWAITING HUMAN UAT
 Plan: 18 of 18
-Status: Phase complete — ready for verification
+Status: All 18 plans complete and merged; goal-backward verification PASSED (5/5 must-haves).
+Phase is NOT closed — on-device UAT is the only outstanding item. See 03.1-VERIFICATION.md.
+
+**Verification result (03.1-VERIFICATION.md, independent re-measurement — not read from SUMMARYs):**
+
+- SC-1 through SC-5 all verified. 204 hand-written files checked by a hand-rolled `find`/`wc`
+  pass that deliberately bypassed the guard; exactly one file exceeds 150 lines and it is the
+  single allowlist entry. The guard's own exclusion set was audited file-by-file — nothing
+  hand-written is being wrongly skipped.
+- All 36 READMEs are accurate, not just present: none omits a `.dart` file that exists in its
+  directory, none names a file that does not exist, and every line count in every README file
+  table matches the real file.
+- Guard enforcement exercised by injecting one violation of each of the three rules — exit 1
+  each time, tree restored clean.
+- **All six regenerated Isar `*_model.g.dart` files are byte-identical to their pre-move
+  versions** — collection name AND id hash unchanged. This materially lowers the 03.1-17
+  migration risk that earlier notes flagged; the schema genuinely did not move.
+
+**Three items for a human to decide (none are failures):**
+
+1. The sole line-cap exemption, `lib/core/constants/currencies.dart`, protects a file with
+   **zero importers** anywhere in `lib/` or `test/` — dead code staged for multi-currency work.
+   The justification is sound on its own terms but did not disclose this; the entry now carries
+   a note. Delete file + exemption together if multi-currency is dropped.
+2. The house rule covers `lib/` only. `tool/check_architecture.dart` is itself 182 lines and 16
+   `test/` files exceed 150 — matching SC-1's literal wording, but the enforcer is exempt from
+   the rule it enforces.
+3. **On-device UAT was never performed for any plan in this phase** — no emulator or device in
+   the execution environment. Three human items: cold start against pre-3.1 seeded data, manual
+   smoke of the five extracted form screens (which have no widget tests), and keyboard/focus/
+   scroll behaviour. This is the sole reason the phase is not closed.
 
 **Resume state — read before dispatching anything:**
 
