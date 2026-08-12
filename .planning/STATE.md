@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 03.1-16-PLAN.md (Wave 3) — domain/finance nested, 93 consumer files repointed
-last_updated: "2026-08-12T12:53:16.149Z"
+last_updated: "2026-08-12T13:13:22.939Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 33
-  completed_plans: 31
-  percent: 94
+  completed_plans: 32
+  percent: 97
 ---
 
 # Project State
@@ -25,22 +25,24 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 03.1 (architecture-compliance) — EXECUTING
-Plan: 17 of 18
+Plan: 18 of 18
 Status: Ready to execute
 
 **Resume state — read before dispatching anything:**
 
-- `03.1-01` through `03.1-16` COMPLETE, SUMMARY.md written for each. Waves 1, 2 and 3 of 5 are closed.
+- `03.1-01` through `03.1-17` COMPLETE, SUMMARY.md written for each. Waves 1, 2, 3 and 4 of 5 are closed.
 - `03.1-16` (Wave 3) DONE — `lib/domain/finance/` nested into six per-entity subfolders (`transaction/`, `budget/`, `goal/`, `debt/`, `recurring/`, `category/`) via `git mv`; 93 consumer files across `lib/` and `test/` repointed; `injection.config.dart` regenerated.
-- `03.1-17` (Wave 4) NEXT — nest `lib/data/finance/` (18 files, the last directory violation) using **the identical six entity names** 03.1-16 established. Note: `data/finance` carries generated `.g.dart` companions that must move alongside their models, and `build_runner` must be re-run after the move.
-- `03.1-18` (Wave 5) NOT STARTED. Wires the guard into CI; gated on everything else landing.
+- `03.1-17` (Wave 4) DONE — `lib/data/finance/` nested into **the identical six subfolders**; 24 files moved via `git mv` (18 hand-written + 6 Isar `.g.dart`, each model co-moved with its companion in one command); 27 consumer files repointed; `build_runner` re-run, `injection.config.dart` genuinely regenerated (alias numbers changed). `lib/infrastructure/finance/` was **not** nested — 6 files, under the cap, only its imports were rewritten.
+- `03.1-18` (Wave 5) NEXT. Wires the guard into CI; everything else has landed.
 
-Post-Wave-3 measurements (03.1-16 branch):
+Post-Wave-4 measurements (03.1-17 branch):
 
-- `dart run tool/check_architecture.dart`: **zero line-count violations**; **`lib/domain/finance/` directory violation CLOSED** (36 → 35 violations). Remaining: 1 directory violation (`lib/data/finance/` — 03.1-17) + 34 missing per-nest READMEs (03.1-18).
-- `flutter test`: 265/265 passing — no regression from the Wave-2 baseline.
-- `flutter analyze --no-fatal-infos --fatal-warnings` (the CI invocation): exit 0. Info count 82 → 65 (03.1-16 re-sorted the 15 import blocks its own path change had unsorted).
-- `dart format` parity: the format-dirty file set is byte-identical to the pre-plan baseline. See Blockers for the contradiction 03.1-18 must settle.
+- `dart run tool/check_architecture.dart`: **ZERO line-count violations AND ZERO directory-size violations** (35 → 34). SC-1 and SC-2 are both closed. All 34 remaining violations are missing per-nest READMEs — 03.1-18's entire remaining job. Note `lib/data/` is outside the README check's scope (`lib/presentation/` + `lib/application/` only), so 03.1-17's six new subfolders added no README debt.
+- `flutter test`: 265/265 passing — unchanged.
+- `flutter analyze --no-fatal-infos --fatal-warnings` (the CI invocation): exit 0, 65 infos — identical to the pre-plan baseline. The only issue-level delta is one pre-existing `unintended_html_in_doc_comment` whose file path moved.
+- `flutter analyze --no-fatal-infos | grep -c lines_longer_than_80_chars`: **0**, measured after the nesting, not assumed.
+- `dart format` parity: 103/258 dirty before and after, the same file set modulo this plan's own renames. See Blockers for the contradiction 03.1-18 must still settle.
+- **NOT verified:** no on-device / emulator cold-start check was possible in the execution environment for either 03.1-16 or 03.1-17. Isar collection names are unchanged (only file locations moved) and the DI resolution test plus the full suite are green, but a human on-device pass before merging the phase is still advisable.
 
 **RESOLVED (commit `227d030`) — the 150-line vs 80-column tension.** The four densest
 split files (`task_form_screen.dart`, `task_form_fields.dart`,
@@ -75,7 +77,7 @@ Phase 03 (finance-core) remains open behind it: code complete, but 3 UAT issues 
 
 Baseline entering Phase 3.1: 230 tests passing, `flutter analyze` clean, 21 files over 150 lines, 2 directories over 10 files, 2 of 30 feature nests carrying a README.
 
-Progress: [█████████░] 94%
+Progress: [██████████] 97%
 
 ## Performance Metrics
 
@@ -99,6 +101,7 @@ Progress: [█████████░] 94%
 
 *Updated after each plan completion*
 | Phase 03.1 P16 | 35min | 2 tasks | 102 files |
+| Phase 03.1 P17 | 25min | 2 tasks | 51 files |
 
 ## Accumulated Context
 
@@ -121,6 +124,7 @@ Recent decisions affecting current work:
 - **Phase 2**: Soft delete via `deletedAt` field on ItemModel; 500-item query cap on active items
 - **Phase 2**: `go_router` declared in pubspec but routing handled via `IndexedStack` + modal routes in Phase 2; go_router guard wired in Phase 5
 - [Phase ?]: Phase 3.1: domain/finance nested into six per-entity subfolders (transaction, budget, goal, debt, recurring, category) — the same six names 03.1-17 must apply to data/finance
+- [Phase ?]: Phase 3.1: data/finance nested into the same six per-entity subfolders as domain/finance (transaction, budget, goal, debt, recurring, category); Isar .g.dart companions co-located with their models — architecture guard now reports ZERO directory-size and ZERO line-count violations
 
 ### Pending Todos
 
@@ -146,6 +150,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-08-12T12:53:16.128Z
+Last session: 2026-08-12T13:13:10.648Z
 Stopped at: Completed 03.1-16-PLAN.md (Wave 3) — domain/finance nested, 93 consumer files repointed
 Resume file: None
