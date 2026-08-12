@@ -17,6 +17,11 @@ goals/
 └── widgets/   presentation-only pieces; no cubit, no persistence
 ```
 
+Both subdirectories have their own README. The goal's save-time
+construction logic lives one level up, in
+`presentation/finance/goal_form_logic.dart`, alongside the other finance
+forms' logic files.
+
 ### screens/
 
 | File | Role |
@@ -31,6 +36,7 @@ goals/
 |------|------|
 | `goal_detail_body.dart` | Loaded-state body of the detail screen |
 | `goal_progress_card.dart` | Progress header — amount saved, target, percentage |
+| `goal_form_fields.dart` | The goal form's title/target/date fields; controllers stay on `goal_form_screen.dart` |
 | `contribution_history_list.dart` | Newest-first list of manual contributions |
 | `add_contribution_sheet.dart` | Bottom sheet that builds a `SavingsGoalContribution` |
 | `delete_goal_dialog.dart` | Confirmation dialog before soft delete |
