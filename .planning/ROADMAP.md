@@ -94,6 +94,7 @@ Plans:
 **Goal**: Every hand-written source file is under 150 lines, every directory is nested by responsibility with no more than ~10 related files, and every feature nest carries a README documenting its responsibility and rules
 **Depends on**: Phase 3
 **Inserted**: 2026-08-11 — house rules adopted mid-project; applied to the goals slice in quick task 260811-97x, rest of the codebase still non-compliant
+**Verified**: 2026-08-12 — all 5 success criteria confirmed by independent re-measurement (03.1-VERIFICATION.md). Guard enforces in CI. **Not closed**: on-device UAT never ran (no emulator in the execution environment) — cold start against pre-3.1 seeded data, manual smoke of the five extracted form screens, keyboard/focus/scroll behaviour.
 **Requirements**: (none — internal quality)
 **Success Criteria** (what must be TRUE):
   1. No hand-written file under lib/ exceeds 150 lines (generated *.g.dart and injection.config.dart exempt)
@@ -187,6 +188,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 5/5 | In verification | - |
-| 3.1. Architecture Compliance | 18/18 | Complete |  |
+| 3.1. Architecture Compliance | 18/18 | Verified — awaiting on-device UAT | Guard enforcing in CI; see 03.1-VERIFICATION.md |
 | 4. Notifications + Backup | 0/5 | Not started | - |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
