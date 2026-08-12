@@ -96,3 +96,33 @@ Transaction buildTransactionToSave({
     updatedAt: now,
   );
 }
+
+/// Resolves the display label for the selected category (verbatim from the
+/// inline ternary previously in `build()`). [preferEnglish] is
+/// `Localizations.localeOf(context).languageCode == 'en'`, kept as a bool so
+/// this file stays Flutter-widget-free.
+String resolveCategoryDisplay(
+  TransactionCategory? category, {
+  required bool preferEnglish,
+  required String fallback,
+}) {
+  if (category == null) return fallback;
+  return preferEnglish && category.nameEn != null
+      ? category.nameEn!
+      : category.namePtBr;
+}
+
+/// Resolves the display label for the linked goal (verbatim from the inline
+/// expression previously in `build()`).
+String resolveGoalDisplay(
+  int? linkedGoalId,
+  List<SavingsGoal> activeGoals, {
+  String fallback = 'Sem vínculo',
+}) {
+  if (linkedGoalId == null) return fallback;
+  return activeGoals
+          .where((g) => g.id == linkedGoalId)
+          .map((g) => g.title)
+          .firstOrNull ??
+      '#$linkedGoalId';
+}
