@@ -1,6 +1,6 @@
 import 'package:agenda/application/finance/transaction/transaction_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
-import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/core/utils/amount_parser.dart';
 import 'package:agenda/domain/finance/goal_repository.dart';
 import 'package:agenda/domain/finance/savings_goal.dart';
 import 'package:agenda/domain/finance/transaction.dart';
@@ -8,6 +8,10 @@ import 'package:agenda/domain/finance/transaction_category.dart';
 import 'package:agenda/domain/finance/transaction_category_repository.dart';
 import 'package:agenda/domain/finance/transaction_type.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/finance/transaction_form_logic.dart';
+import 'package:agenda/presentation/finance/widgets/category_picker_sheet.dart';
+import 'package:agenda/presentation/finance/widgets/finance_form_primitives.dart';
+import 'package:agenda/presentation/finance/widgets/transaction/goal_link_picker_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,18 +55,15 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
     final tx = widget.transaction;
 
     // Pre-fill amount: convert cents to decimal string
-    final amountStr = tx != null
-        ? (tx.amountCents / 100).toStringAsFixed(2).replaceAll('.', ',')
-        : '';
-    _amountController = TextEditingController(text: amountStr);
+    _amountController =
+        TextEditingController(text: formatCentsForInput(tx?.amountCents ?? 0));
     _noteController = TextEditingController(text: tx?.note ?? '');
 
     _selectedType = tx?.type ?? TransactionType.income;
     _selectedDate = tx?.date ?? DateTime.now();
     _selectedGoalId = tx?.linkedGoalId;
 
-    _loadCategories();
-    _loadGoals();
+    _loadFormData();
   }
 
   @override
@@ -72,37 +73,22 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
     super.dispose();
   }
 
-  Future<void> _loadCategories() async {
+  Future<void> _loadFormData() async {
     setState(() => _loadingCategories = true);
-    final repo = getIt<TransactionCategoryRepository>();
-    final result = await repo.getAll();
-    if (result is Success<List<TransactionCategory>> && mounted) {
-      final cats = result.value;
-      setState(() {
-        _allCategories = cats;
-        _loadingCategories = false;
-        // Pre-select category for edit mode
-        if (widget.transaction != null && _selectedCategory == null) {
-          try {
-            _selectedCategory = cats.firstWhere(
-              (c) => c.id == widget.transaction!.categoryId,
-            );
-          } catch (_) {
-            _selectedCategory = null;
-          }
-        }
-      });
-    } else {
-      if (mounted) setState(() => _loadingCategories = false);
-    }
-  }
-
-  Future<void> _loadGoals() async {
-    final repo = getIt<GoalRepository>();
-    final result = await repo.getActiveGoals();
-    if (result is Success<List<SavingsGoal>> && mounted) {
-      setState(() => _activeGoals = result.value);
-    }
+    final data = await loadTransactionFormData(
+      getIt<TransactionCategoryRepository>(),
+      getIt<GoalRepository>(),
+      preselectedCategoryId: widget.transaction?.categoryId,
+    );
+    if (!mounted) return;
+    setState(() {
+      _allCategories = data.categories;
+      _activeGoals = data.activeGoals;
+      _loadingCategories = false;
+      if (widget.transaction != null && _selectedCategory == null) {
+        _selectedCategory = data.preselectedCategory;
+      }
+    });
   }
 
   List<TransactionCategory> get _filteredCategories => _allCategories
@@ -110,7 +96,6 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
       .toList();
 
   Future<void> _pickCategory() async {
-    final cats = _filteredCategories;
     final locale = Localizations.localeOf(context);
     final picked = await showModalBottomSheet<TransactionCategory>(
       context: context,
@@ -119,45 +104,10 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => DraggableScrollableSheet(
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        expand: false,
-        builder: (_, scrollCtrl) => Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 4),
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Theme.of(ctx).colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                controller: scrollCtrl,
-                itemCount: cats.length,
-                itemBuilder: (_, i) {
-                  final cat = cats[i];
-                  final name = locale.languageCode == 'en' && cat.nameEn != null
-                      ? cat.nameEn!
-                      : cat.namePtBr;
-                  return ListTile(
-                    title: Text(name),
-                    trailing: _selectedCategory?.id == cat.id
-                        ? Icon(Icons.check,
-                            color: Theme.of(ctx).colorScheme.primary)
-                        : null,
-                    onTap: () => Navigator.of(ctx).pop(cat),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+      builder: (_) => CategoryPickerSheet(
+        categories: _filteredCategories,
+        selectedCategoryId: _selectedCategory?.id,
+        locale: locale,
       ),
     );
     if (picked != null && mounted) {
@@ -179,74 +129,23 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
 
   Future<void> _pickGoal() async {
     if (_activeGoals.isEmpty) return;
-    final picked = await showModalBottomSheet<SavingsGoal?>(
+    final picked = await showModalBottomSheet<int?>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.4,
-        minChildSize: 0.2,
-        maxChildSize: 0.7,
-        expand: false,
-        builder: (_, scrollCtrl) => Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 4),
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Theme.of(ctx).colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            // None option to clear link
-            ListTile(
-              leading: const Icon(Icons.link_off),
-              title: const Text('Sem vínculo'),
-              trailing: _selectedGoalId == null
-                  ? Icon(Icons.check,
-                      color: Theme.of(ctx).colorScheme.primary)
-                  : null,
-              onTap: () => Navigator.of(ctx).pop(),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: ListView.builder(
-                controller: scrollCtrl,
-                itemCount: _activeGoals.length,
-                itemBuilder: (_, i) {
-                  final goal = _activeGoals[i];
-                  return ListTile(
-                    leading: const Icon(Icons.savings_outlined),
-                    title: Text(goal.title),
-                    trailing: _selectedGoalId == goal.id
-                        ? Icon(Icons.check,
-                            color: Theme.of(ctx).colorScheme.primary)
-                        : null,
-                    onTap: () => Navigator.of(ctx).pop(goal),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+      builder: (_) => GoalLinkPickerSheet(
+        activeGoals: _activeGoals,
+        selectedGoalId: _selectedGoalId,
       ),
     );
+    // `picked` is null both when the user chose "Sem vínculo" and when the
+    // sheet is dismissed by the back button — matches the pre-existing
+    // showModalBottomSheet contract.
     if (mounted) {
-      setState(() {
-        // `picked` is null when user presses "Sem vínculo", or a goal when selected
-        // showModalBottomSheet returns null when dismissed by back button too
-        if (picked == null) {
-          _selectedGoalId = null;
-        } else {
-          _selectedGoalId = picked.id;
-        }
-      });
+      setState(() => _selectedGoalId = picked);
     }
   }
 
@@ -262,11 +161,8 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
       return;
     }
 
-    final rawAmount = _amountController.text
-        .replaceAll(',', '.')
-        .replaceAll(RegExp(r'[^\d.]'), '');
-    final parsedAmount = double.tryParse(rawAmount);
-    if (parsedAmount == null || parsedAmount <= 0) {
+    final amountCents = parseAmountCentsOrNull(_amountController.text);
+    if (amountCents == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).errorAmountRequired),
@@ -276,37 +172,24 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
       return;
     }
 
-    final amountCents = (parsedAmount * 100).round();
-    final now = DateTime.now();
-    final cubit = context.read<TransactionCubit>();
+    final tx = buildTransactionToSave(
+      isEditing: _isEditing,
+      original: widget.transaction,
+      type: _selectedType,
+      amountCents: amountCents,
+      categoryId: _selectedCategory!.id,
+      date: _selectedDate,
+      note: _noteController.text.trim().isNotEmpty
+          ? _noteController.text.trim()
+          : null,
+      linkedGoalId: _selectedGoalId,
+      now: DateTime.now(),
+    );
 
+    final cubit = context.read<TransactionCubit>();
     if (_isEditing) {
-      final updated = widget.transaction!.copyWith(
-        type: _selectedType,
-        amountCents: amountCents,
-        categoryId: _selectedCategory!.id,
-        date: _selectedDate,
-        note: _noteController.text.trim().isNotEmpty
-            ? _noteController.text.trim()
-            : null,
-        linkedGoalId: _selectedGoalId,
-        updatedAt: now,
-      );
-      await cubit.updateTransaction(updated);
+      await cubit.updateTransaction(tx);
     } else {
-      final tx = Transaction(
-        id: 0,
-        type: _selectedType,
-        amountCents: amountCents,
-        categoryId: _selectedCategory!.id,
-        date: _selectedDate,
-        note: _noteController.text.trim().isNotEmpty
-            ? _noteController.text.trim()
-            : null,
-        linkedGoalId: _selectedGoalId,
-        createdAt: now,
-        updatedAt: now,
-      );
       await cubit.createTransaction(tx);
     }
 
@@ -363,7 +246,7 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           children: [
             // Type toggle
-            _FormCard(
+            FormCard(
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -398,11 +281,11 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
             const SizedBox(height: 12),
 
             // Amount + Category + Date + Note card
-            _FormCard(
+            FormCard(
               child: Column(
                 children: [
                   // Amount
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.attach_money_outlined,
                     child: TextFormField(
                       controller: _amountController,
@@ -433,10 +316,10 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                       },
                     ),
                   ),
-                  const _FieldDivider(),
+                  const FieldDivider(),
 
                   // Category
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.category_outlined,
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -460,10 +343,10 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                       onTap: _loadingCategories ? null : _pickCategory,
                     ),
                   ),
-                  const _FieldDivider(),
+                  const FieldDivider(),
 
                   // Date
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.calendar_today_outlined,
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -481,10 +364,10 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                       onTap: _pickDate,
                     ),
                   ),
-                  const _FieldDivider(),
+                  const FieldDivider(),
 
                   // Note
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.notes_outlined,
                     child: TextFormField(
                       controller: _noteController,
@@ -504,8 +387,8 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
 
             // Goal link (expense only)
             if (_selectedType == TransactionType.expense) ...[
-              _FormCard(
-                child: _FieldRow(
+              FormCard(
+                child: FieldRow(
                   icon: Icons.savings_outlined,
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -532,56 +415,5 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
         ),
       ),
     );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Layout helpers (reuse Phase 2 pattern)
-// ---------------------------------------------------------------------------
-
-class _FormCard extends StatelessWidget {
-  const _FormCard({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Card(
-      elevation: 0,
-      color: cs.surfaceContainerLow,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: child,
-    );
-  }
-}
-
-class _FieldRow extends StatelessWidget {
-  const _FieldRow({required this.icon, required this.child});
-  final IconData icon;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: cs.onSurfaceVariant),
-          const SizedBox(width: 12),
-          Expanded(child: child),
-        ],
-      ),
-    );
-  }
-}
-
-class _FieldDivider extends StatelessWidget {
-  const _FieldDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Divider(height: 1, indent: 48, endIndent: 16);
   }
 }
