@@ -133,3 +133,9 @@ class TaskFormFieldsModel {
     dueDate = v.dueDate;
   }
 }
+
+/// Applies a mutation to a [TaskFormFieldsModel] inside the owning screen's
+/// `setState`. Declared here rather than in `task_form_fields.dart` so the
+/// picker helpers can reference it without importing that widget.
+typedef TaskFormFieldsMutator =
+    void Function(void Function(TaskFormFieldsModel model));
