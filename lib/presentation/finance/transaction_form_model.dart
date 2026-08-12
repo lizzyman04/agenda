@@ -1,7 +1,7 @@
-import 'package:agenda/domain/finance/savings_goal.dart';
-import 'package:agenda/domain/finance/transaction.dart';
-import 'package:agenda/domain/finance/transaction_category.dart';
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 
 /// Mutable field state for the transaction form, held by
 /// `TransactionFormScreen` and mutated inside `setState`.

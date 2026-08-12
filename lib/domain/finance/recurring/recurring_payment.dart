@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/recurring_cycle.dart';
+import 'package:agenda/domain/finance/recurring/recurring_cycle.dart';
 
 /// Sentinel value used by [RecurringPayment.copyWith] to distinguish
 /// "not provided" from "explicitly set to null" for nullable fields.

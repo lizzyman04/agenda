@@ -1,5 +1,5 @@
 import 'package:agenda/core/failures/failure.dart';
-import 'package:agenda/domain/finance/debt.dart';
+import 'package:agenda/domain/finance/debt/debt.dart';
 import 'package:equatable/equatable.dart';
 
 /// Base sealed class for all Debt states.

@@ -1,6 +1,6 @@
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/savings_goal.dart';
-import 'package:agenda/domain/finance/savings_goal_contribution.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
 
 /// Abstract repository interface for savings goals.
 ///

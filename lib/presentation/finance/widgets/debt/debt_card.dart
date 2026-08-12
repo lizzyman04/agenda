@@ -1,6 +1,6 @@
 import 'package:agenda/core/utils/amount_formatter.dart';
-import 'package:agenda/domain/finance/debt.dart';
-import 'package:agenda/domain/finance/debt_direction.dart';
+import 'package:agenda/domain/finance/debt/debt.dart';
+import 'package:agenda/domain/finance/debt/debt_direction.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

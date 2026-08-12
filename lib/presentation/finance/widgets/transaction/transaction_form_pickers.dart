@@ -1,5 +1,5 @@
-import 'package:agenda/domain/finance/savings_goal.dart';
-import 'package:agenda/domain/finance/transaction_category.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
 import 'package:agenda/presentation/finance/widgets/category_picker_sheet.dart';
 import 'package:agenda/presentation/finance/widgets/transaction/goal_link_picker_sheet.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,5 @@
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/budget.dart';
+import 'package:agenda/domain/finance/budget/budget.dart';
 
 /// Abstract repository interface for monthly category budgets.
 ///

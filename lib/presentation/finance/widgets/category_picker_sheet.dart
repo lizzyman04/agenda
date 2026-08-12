@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/transaction_category.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
 import 'package:flutter/material.dart';
 
 /// Bottom-sheet content for picking a [TransactionCategory] from an

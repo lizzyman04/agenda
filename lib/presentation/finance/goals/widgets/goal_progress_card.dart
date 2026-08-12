@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:agenda/core/constants/finance_colors.dart';
 import 'package:agenda/core/utils/amount_formatter.dart';
-import 'package:agenda/domain/finance/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

@@ -1,5 +1,5 @@
-import 'package:agenda/domain/finance/budget.dart';
-import 'package:agenda/domain/finance/transaction.dart';
+import 'package:agenda/domain/finance/budget/budget.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
 
 /// Merges [transactions] and [budgets] into a per-category spend/limit map.
 ///

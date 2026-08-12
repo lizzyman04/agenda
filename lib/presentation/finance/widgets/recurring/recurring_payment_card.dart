@@ -1,6 +1,6 @@
 import 'package:agenda/core/utils/amount_formatter.dart';
-import 'package:agenda/domain/finance/recurring_cycle.dart';
-import 'package:agenda/domain/finance/recurring_payment.dart';
+import 'package:agenda/domain/finance/recurring/recurring_cycle.dart';
+import 'package:agenda/domain/finance/recurring/recurring_payment.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

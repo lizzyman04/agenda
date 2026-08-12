@@ -1,6 +1,6 @@
 import 'package:agenda/application/finance/recurring/recurring_payment_cubit.dart';
 import 'package:agenda/application/finance/recurring/recurring_payment_state.dart';
-import 'package:agenda/domain/finance/recurring_payment.dart';
+import 'package:agenda/domain/finance/recurring/recurring_payment.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/screens/recurring_payment_form_screen.dart';
 import 'package:agenda/presentation/finance/widgets/finance_empty_state.dart';

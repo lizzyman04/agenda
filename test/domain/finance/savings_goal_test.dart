@@ -1,5 +1,5 @@
-import 'package:agenda/domain/finance/savings_goal.dart';
-import 'package:agenda/domain/finance/savings_goal_contribution.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

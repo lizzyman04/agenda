@@ -1,7 +1,7 @@
 import 'package:agenda/core/constants/finance_colors.dart';
 import 'package:agenda/core/utils/amount_formatter.dart';
-import 'package:agenda/domain/finance/transaction.dart';
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

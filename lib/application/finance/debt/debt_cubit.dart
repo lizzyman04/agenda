@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:agenda/application/finance/debt/debt_state.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/debt.dart';
-import 'package:agenda/domain/finance/debt_repository.dart';
+import 'package:agenda/domain/finance/debt/debt.dart';
+import 'package:agenda/domain/finance/debt/debt_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 

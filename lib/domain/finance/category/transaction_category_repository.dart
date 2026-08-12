@@ -1,6 +1,6 @@
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/transaction_category.dart';
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 
 /// Abstract repository interface for transaction categories.
 ///

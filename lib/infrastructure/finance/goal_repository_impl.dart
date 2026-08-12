@@ -3,9 +3,9 @@ import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/data/finance/goal_mapper.dart';
 import 'package:agenda/data/finance/savings_goal_dao.dart';
 import 'package:agenda/data/finance/savings_goal_model.dart';
-import 'package:agenda/domain/finance/goal_repository.dart';
-import 'package:agenda/domain/finance/savings_goal.dart';
-import 'package:agenda/domain/finance/savings_goal_contribution.dart';
+import 'package:agenda/domain/finance/goal/goal_repository.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
 import 'package:injectable/injectable.dart';
 
 /// Concrete implementation of [GoalRepository].

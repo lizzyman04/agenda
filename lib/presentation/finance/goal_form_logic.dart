@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
 
 /// Pure construction logic for the goal form screen's save flow.
 ///

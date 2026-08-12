@@ -1,6 +1,6 @@
 import 'package:agenda/data/finance/debt_model.dart' as data;
-import 'package:agenda/domain/finance/debt.dart';
-import 'package:agenda/domain/finance/debt_direction.dart' as domain;
+import 'package:agenda/domain/finance/debt/debt.dart';
+import 'package:agenda/domain/finance/debt/debt_direction.dart' as domain;
 
 /// Converts between [data.DebtModel] and [Debt].
 class DebtMapper {

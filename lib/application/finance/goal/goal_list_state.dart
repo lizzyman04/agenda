@@ -1,5 +1,5 @@
 import 'package:agenda/core/failures/failure.dart';
-import 'package:agenda/domain/finance/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
 import 'package:equatable/equatable.dart';
 
 /// Base sealed class for all GoalListCubit states (full goals list view).

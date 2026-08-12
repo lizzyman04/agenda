@@ -1,5 +1,5 @@
 import 'package:agenda/data/finance/budget_model.dart';
-import 'package:agenda/domain/finance/budget.dart';
+import 'package:agenda/domain/finance/budget/budget.dart';
 
 /// Converts between [BudgetModel] and [Budget].
 class BudgetMapper {

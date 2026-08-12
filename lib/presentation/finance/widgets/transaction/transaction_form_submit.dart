@@ -1,8 +1,8 @@
 import 'package:agenda/application/finance/transaction/transaction_cubit.dart';
 import 'package:agenda/core/utils/amount_parser.dart';
-import 'package:agenda/domain/finance/transaction.dart';
-import 'package:agenda/domain/finance/transaction_category.dart';
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/transaction_form_logic.dart';
 import 'package:agenda/presentation/finance/widgets/transaction/transaction_form_pickers.dart';

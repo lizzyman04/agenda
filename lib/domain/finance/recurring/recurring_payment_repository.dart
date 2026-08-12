@@ -1,5 +1,5 @@
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/recurring_payment.dart';
+import 'package:agenda/domain/finance/recurring/recurring_payment.dart';
 
 /// Abstract repository interface for recurring payments.
 ///

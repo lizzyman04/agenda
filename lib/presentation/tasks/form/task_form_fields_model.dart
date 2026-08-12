@@ -1,5 +1,5 @@
-import 'package:agenda/domain/finance/debt.dart' hide clearField;
-import 'package:agenda/domain/finance/savings_goal.dart' hide clearField;
+import 'package:agenda/domain/finance/debt/debt.dart' hide clearField;
+import 'package:agenda/domain/finance/goal/savings_goal.dart' hide clearField;
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/domain/tasks/priority.dart';

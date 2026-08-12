@@ -1,5 +1,5 @@
-import 'package:agenda/domain/finance/recurring_cycle.dart';
-import 'package:agenda/domain/finance/transaction_category.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
+import 'package:agenda/domain/finance/recurring/recurring_cycle.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/widgets/finance_form_primitives.dart';
 import 'package:agenda/presentation/finance/widgets/recurring/recurring_payment_schedule_fields.dart';
