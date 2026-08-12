@@ -1,12 +1,14 @@
 import 'package:agenda/application/finance/recurring/recurring_payment_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
-import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/core/utils/amount_parser.dart';
 import 'package:agenda/domain/finance/recurring_cycle.dart';
 import 'package:agenda/domain/finance/recurring_payment.dart';
 import 'package:agenda/domain/finance/transaction_category.dart';
 import 'package:agenda/domain/finance/transaction_category_repository.dart';
-import 'package:agenda/domain/finance/transaction_type.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/finance/recurring_payment_form_logic.dart';
+import 'package:agenda/presentation/finance/widgets/category_picker_sheet.dart';
+import 'package:agenda/presentation/finance/widgets/finance_form_primitives.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,12 +48,9 @@ class _RecurringPaymentFormScreenState
     super.initState();
     final payment = widget.payment;
     _titleController = TextEditingController(text: payment?.title ?? '');
-    final amountStr = payment != null
-        ? (payment.amountCents / 100)
-            .toStringAsFixed(2)
-            .replaceAll('.', ',')
-        : '';
-    _amountController = TextEditingController(text: amountStr);
+    _amountController = TextEditingController(
+      text: payment != null ? formatCentsForInput(payment.amountCents) : '',
+    );
     _cycle = payment?.cycle ?? RecurringCycle.monthly;
     _nextDueDate = payment?.nextDueDate ??
         DateTime.now().add(const Duration(days: 30));
@@ -67,22 +66,19 @@ class _RecurringPaymentFormScreenState
 
   Future<void> _loadCategories(int? preselectedId) async {
     setState(() => _loadingCategories = true);
-    final repo = getIt<TransactionCategoryRepository>();
-    final result = await repo.getByType(TransactionType.expense);
-    if (result is Success<List<TransactionCategory>> && mounted) {
-      setState(() {
-        _expenseCategories = result.value;
-        _loadingCategories = false;
-        if (preselectedId != null) {
-          try {
-            _selectedCategory = _expenseCategories
-                .firstWhere((c) => c.id == preselectedId);
-          } catch (_) {}
-        }
-      });
-    } else {
-      if (mounted) setState(() => _loadingCategories = false);
-    }
+    final categories =
+        await loadExpenseCategories(getIt<TransactionCategoryRepository>());
+    if (!mounted) return;
+    setState(() {
+      _expenseCategories = categories;
+      _loadingCategories = false;
+      if (preselectedId != null) {
+        try {
+          _selectedCategory =
+              _expenseCategories.firstWhere((c) => c.id == preselectedId);
+        } catch (_) {}
+      }
+    });
   }
 
   Future<void> _pickCategory() async {
@@ -94,29 +90,10 @@ class _RecurringPaymentFormScreenState
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => DraggableScrollableSheet(
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        expand: false,
-        builder: (_, scrollCtrl) => ListView.builder(
-          controller: scrollCtrl,
-          itemCount: _expenseCategories.length,
-          itemBuilder: (_, i) {
-            final cat = _expenseCategories[i];
-            final name =
-                locale.languageCode == 'en' && cat.nameEn != null
-                    ? cat.nameEn!
-                    : cat.namePtBr;
-            return ListTile(
-              title: Text(name),
-              trailing: _selectedCategory?.id == cat.id
-                  ? Icon(Icons.check,
-                      color: Theme.of(ctx).colorScheme.primary)
-                  : null,
-              onTap: () => Navigator.of(ctx).pop(cat),
-            );
-          },
-        ),
+      builder: (_) => CategoryPickerSheet(
+        categories: _expenseCategories,
+        selectedCategoryId: _selectedCategory?.id,
+        locale: locale,
       ),
     );
     if (picked != null && mounted) {
@@ -150,54 +127,40 @@ class _RecurringPaymentFormScreenState
     if (_selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text(AppLocalizations.of(context).errorCategoryRequired),
+          content: Text(AppLocalizations.of(context).errorCategoryRequired),
           behavior: SnackBarBehavior.floating,
         ),
       );
       return;
     }
 
-    final raw = _amountController.text
-        .replaceAll(',', '.')
-        .replaceAll(RegExp(r'[^\d.]'), '');
-    final parsed = double.tryParse(raw);
-    if (parsed == null || parsed <= 0) {
+    final amountCents = parseAmountCentsOrNull(_amountController.text);
+    if (amountCents == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text(AppLocalizations.of(context).errorAmountRequired),
+          content: Text(AppLocalizations.of(context).errorAmountRequired),
           behavior: SnackBarBehavior.floating,
         ),
       );
       return;
     }
-    final amountCents = (parsed * 100).round();
-    final now = DateTime.now();
-    final cubit = context.read<RecurringPaymentCubit>();
 
+    final now = DateTime.now();
+    final payment = buildRecurringPaymentToSave(
+      isEditing: _isEditing,
+      original: widget.payment,
+      title: _titleController.text.trim(),
+      amountCents: amountCents,
+      categoryId: _selectedCategory!.id,
+      cycle: _cycle,
+      nextDueDate: _nextDueDate,
+      now: now,
+    );
+
+    final cubit = context.read<RecurringPaymentCubit>();
     if (_isEditing) {
-      final updated = widget.payment!.copyWith(
-        title: _titleController.text.trim(),
-        amountCents: amountCents,
-        categoryId: _selectedCategory!.id,
-        cycle: _cycle,
-        nextDueDate: _nextDueDate,
-        updatedAt: now,
-      );
-      await cubit.updatePayment(updated);
+      await cubit.updatePayment(payment);
     } else {
-      final payment = RecurringPayment(
-        id: 0,
-        title: _titleController.text.trim(),
-        amountCents: amountCents,
-        categoryId: _selectedCategory!.id,
-        cycle: _cycle,
-        nextDueDate: _nextDueDate,
-        isActive: true,
-        createdAt: now,
-        updatedAt: now,
-      );
       await cubit.createPayment(payment);
     }
 
@@ -214,8 +177,7 @@ class _RecurringPaymentFormScreenState
     final locale = Localizations.localeOf(context);
 
     final catDisplay = _selectedCategory != null
-        ? (locale.languageCode == 'en' &&
-                _selectedCategory!.nameEn != null
+        ? (locale.languageCode == 'en' && _selectedCategory!.nameEn != null
             ? _selectedCategory!.nameEn!
             : _selectedCategory!.namePtBr)
         : l10n.fieldCategory;
@@ -243,14 +205,13 @@ class _RecurringPaymentFormScreenState
       body: Form(
         key: _formKey,
         child: ListView(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           children: [
-            _FormCard(
+            FormCard(
               child: Column(
                 children: [
                   // Title
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.title_outlined,
                     child: TextFormField(
                       controller: _titleController,
@@ -269,10 +230,10 @@ class _RecurringPaymentFormScreenState
                       },
                     ),
                   ),
-                  const _FieldDivider(),
+                  const FieldDivider(),
 
                   // Amount
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.attach_money_outlined,
                     child: TextFormField(
                       controller: _amountController,
@@ -296,10 +257,10 @@ class _RecurringPaymentFormScreenState
                       },
                     ),
                   ),
-                  const _FieldDivider(),
+                  const FieldDivider(),
 
                   // Category
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.category_outlined,
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -325,10 +286,10 @@ class _RecurringPaymentFormScreenState
                           _loadingCategories ? null : _pickCategory,
                     ),
                   ),
-                  const _FieldDivider(),
+                  const FieldDivider(),
 
                   // Cycle
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.repeat_outlined,
                     child: DropdownButtonFormField<RecurringCycle>(
                       initialValue: _cycle,
@@ -350,10 +311,10 @@ class _RecurringPaymentFormScreenState
                       },
                     ),
                   ),
-                  const _FieldDivider(),
+                  const FieldDivider(),
 
                   // Next due date
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.calendar_today_outlined,
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -380,52 +341,5 @@ class _RecurringPaymentFormScreenState
         ),
       ),
     );
-  }
-}
-
-class _FormCard extends StatelessWidget {
-  const _FormCard({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Card(
-      elevation: 0,
-      color: cs.surfaceContainerLow,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: child,
-    );
-  }
-}
-
-class _FieldRow extends StatelessWidget {
-  const _FieldRow({required this.icon, required this.child});
-  final IconData icon;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: cs.onSurfaceVariant),
-          const SizedBox(width: 12),
-          Expanded(child: child),
-        ],
-      ),
-    );
-  }
-}
-
-class _FieldDivider extends StatelessWidget {
-  const _FieldDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Divider(height: 1, indent: 48, endIndent: 16);
   }
 }
