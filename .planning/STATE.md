@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 03.1-16-PLAN.md (Wave 3) — domain/finance nested, 93 consumer files repointed
-last_updated: "2026-08-12T13:13:22.939Z"
+status: verifying
+stopped_at: Completed 03.1-18-PLAN.md (Wave 5) — SC-3 closed, guard enforcing in CI; phase 03.1 ready for verification
+last_updated: "2026-08-12T13:35:26.746Z"
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 33
-  completed_plans: 32
-  percent: 97
+  completed_plans: 33
+  percent: 100
 ---
 
 # Project State
@@ -26,14 +26,28 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 
 Phase: 03.1 (architecture-compliance) — EXECUTING
 Plan: 18 of 18
-Status: Ready to execute
+Status: Phase complete — ready for verification
 
 **Resume state — read before dispatching anything:**
+
+- **ALL 18 PLANS COMPLETE.** `03.1-01` through `03.1-18`, SUMMARY.md written for each. All five waves closed. Phase 03.1 is ready for verification.
+- `03.1-18` (Wave 5) DONE — READMEs written for all 36 directories under `lib/presentation/` + `lib/application/` (34 new, 2 refreshed), closing **SC-3**. `tool/check_architecture.dart` flipped from informational-only to **enforcing** (exit 1 on violation, violations to stderr) and wired into `.github/workflows/ci.yml` as an `Architecture guard` step between Analyze and Test. `readmeExemptDirs` stays empty — umbrella directories carry short pointer READMEs rather than exemptions.
+- `03.1-18` settled the two open questions left for it: **`dart format` was NOT added to CI** (measured: 103 of 258 files differ from `dart format` output, several would cross the 150-line cap if reformatted) and **no raw column-width guard was added** (88 raw lines exceed 80 chars while `lines_longer_than_80_chars` reports 0, because the lint exempts unsplittable import URIs). Both blockers below are therefore resolved-by-decision, not deferred.
+
+Post-Wave-5 measurements (03.1-18 branch, all verified not assumed):
+
+- `dart run tool/check_architecture.dart`: **PASS, exit 0** — zero violations of all three rules. Exit-1 path exercised deliberately by deleting one README (reported the violation, exited 1) and restoring it.
+- `flutter test --no-pub`: **265/265 passing**, exit 0.
+- `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, 65 infos — unchanged from baseline.
+- 36 directories, 36 READMEs, diffed one-to-one.
+- **NOT verified:** no on-device / emulator run — none available in the execution environment. 03.1-18 changed zero `lib/` source files, so runtime behaviour cannot have moved; the standing advice from 03.1-16/17 (a human on-device pass before merging the phase as a whole) still applies.
+
+Earlier waves, for reference:
 
 - `03.1-01` through `03.1-17` COMPLETE, SUMMARY.md written for each. Waves 1, 2, 3 and 4 of 5 are closed.
 - `03.1-16` (Wave 3) DONE — `lib/domain/finance/` nested into six per-entity subfolders (`transaction/`, `budget/`, `goal/`, `debt/`, `recurring/`, `category/`) via `git mv`; 93 consumer files across `lib/` and `test/` repointed; `injection.config.dart` regenerated.
 - `03.1-17` (Wave 4) DONE — `lib/data/finance/` nested into **the identical six subfolders**; 24 files moved via `git mv` (18 hand-written + 6 Isar `.g.dart`, each model co-moved with its companion in one command); 27 consumer files repointed; `build_runner` re-run, `injection.config.dart` genuinely regenerated (alias numbers changed). `lib/infrastructure/finance/` was **not** nested — 6 files, under the cap, only its imports were rewritten.
-- `03.1-18` (Wave 5) NEXT. Wires the guard into CI; everything else has landed.
+- `03.1-18` (Wave 5) — see above; it has now landed too.
 
 Post-Wave-4 measurements (03.1-17 branch):
 
@@ -77,7 +91,7 @@ Phase 03 (finance-core) remains open behind it: code complete, but 3 UAT issues 
 
 Baseline entering Phase 3.1: 230 tests passing, `flutter analyze` clean, 21 files over 150 lines, 2 directories over 10 files, 2 of 30 feature nests carrying a README.
 
-Progress: [██████████] 97%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -102,6 +116,7 @@ Progress: [██████████] 97%
 *Updated after each plan completion*
 | Phase 03.1 P16 | 35min | 2 tasks | 102 files |
 | Phase 03.1 P17 | 25min | 2 tasks | 51 files |
+| Phase 03.1 P18 | 45min | 3 tasks | 39 files |
 
 ## Accumulated Context
 
@@ -125,6 +140,8 @@ Recent decisions affecting current work:
 - **Phase 2**: `go_router` declared in pubspec but routing handled via `IndexedStack` + modal routes in Phase 2; go_router guard wired in Phase 5
 - [Phase ?]: Phase 3.1: domain/finance nested into six per-entity subfolders (transaction, budget, goal, debt, recurring, category) — the same six names 03.1-17 must apply to data/finance
 - [Phase ?]: Phase 3.1: data/finance nested into the same six per-entity subfolders as domain/finance (transaction, budget, goal, debt, recurring, category); Isar .g.dart companions co-located with their models — architecture guard now reports ZERO directory-size and ZERO line-count violations
+- [Phase ?]: Phase 3.1: architecture guard is now ENFORCING in CI (exit 1 on violation, step runs between Analyze and Test); all 36 lib/presentation + lib/application directories carry a README, readmeExemptDirs stays empty
+- [Phase ?]: Phase 3.1: dart format is NOT enforced in CI and no raw column-width guard was added — measured, 103/258 files differ from dart format output and 88 raw lines exceed 80 cols while the lint reports 0; width policing defers to lines_longer_than_80_chars
 
 ### Pending Todos
 
@@ -137,7 +154,9 @@ None.
 - **Phase 4 research flag**: PT-BR comma decimal separator in CSV round-trip (`1.234,56`) has edge cases; dedicate a spike to locale-aware parsing before the backup feature spec is written
 - **Phase 5 research flag**: iOS `inactive` vs `paused` lifecycle states for lock triggering behave differently on simulator vs real device; spike recommended before Phase 5 app lock implementation
 - **RESOLVED (2026-06-02, commit ae397ae)**: Budget-limit-save `_dependents.isEmpty` crash. True root cause was a `TextEditingController` disposed too early (method-scope dispose right after the `showModalBottomSheet` await → "used after being disposed" during the dismiss transition → cascaded to the overlay `_dependents.isEmpty` assertion). Fixed by moving the sheet body into `_BudgetLimitSheet` (StatefulWidget that owns/disposes the controller). Reproducing widget test added (budget_limit_sheet_test.dart). Earlier provider-scope/pop-order attempts were unrelated to this cause.
-- CONTRADICTION for 03.1-18 to settle: the 03.1-16 brief claimed 'dart format --set-exit-if-changed is clean' project-wide, but measured on main (f2c612f) it is NOT — 103 of 258 files in lib/+test/ differ from dart format output. STATE.md's narrower claim ('clean on every touched file') is the accurate one. 03.1-16 therefore verified format PARITY with baseline (dirty set byte-identical) rather than cleanliness. 03.1-18 must decide whether dart format is the project's formatter before wiring it into CI; enforcing it wholesale would reformat ~103 files and push several past the 150-line cap.
+- **RESOLVED by 03.1-18 (decision: do not enforce).** `dart format` was deliberately NOT wired into CI. The measurement below was re-confirmed and the reformat would push several files past the 150-line cap, breaking SC-1 in the same commit that locks it in. If the project later adopts `dart format`, it must be its own plan: reformat first, re-split whatever crosses the cap, then enforce. Original note: the
+- **RESOLVED by 03.1-18 (decision: defer to the lint).** No raw column-width guard was added; `lines_longer_than_80_chars` remains the only width authority. Original note follows.
+- CONTRADICTION 03.1-18 settled: the 03.1-16 brief claimed 'dart format --set-exit-if-changed is clean' project-wide, but measured on main (f2c612f) it is NOT — 103 of 258 files in lib/+test/ differ from dart format output. STATE.md's narrower claim ('clean on every touched file') is the accurate one. 03.1-16 therefore verified format PARITY with baseline (dirty set byte-identical) rather than cleanliness. 03.1-18 must decide whether dart format is the project's formatter before wiring it into CI; enforcing it wholesale would reformat ~103 files and push several past the 150-line cap.
 - For 03.1-18 (column-width guard): two domain/finance import URIs unavoidably exceed 80 columns after 03.1-16's nesting — '…/recurring/recurring_payment_repository.dart' (83) and '…/category/transaction_category_repository.dart' (85). A plain 'import uri;' has no legal line break, so a raw column-width guard would flag 16 unfixable import lines. The enforced lints_longer_than_80_chars lint exempts directive URIs and still reports 0. Any guard 03.1-18 adds must mirror that exemption.
 
 ### Quick Tasks Completed
@@ -150,6 +169,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-08-12T13:13:10.648Z
-Stopped at: Completed 03.1-16-PLAN.md (Wave 3) — domain/finance nested, 93 consumer files repointed
+Last session: 2026-08-12T13:35:26.723Z
+Stopped at: Completed 03.1-18-PLAN.md (Wave 5) — SC-3 closed, guard enforcing in CI; phase 03.1 ready for verification
 Resume file: None
