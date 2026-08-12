@@ -1,5 +1,5 @@
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
 
 /// Abstract repository interface for financial transactions.
 ///

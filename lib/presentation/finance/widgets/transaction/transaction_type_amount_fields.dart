@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/widgets/finance_form_primitives.dart';
 import 'package:flutter/material.dart';

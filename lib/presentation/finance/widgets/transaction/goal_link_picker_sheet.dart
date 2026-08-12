@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
 import 'package:flutter/material.dart';
 
 /// Bottom-sheet content for linking (or clearing the link to) a

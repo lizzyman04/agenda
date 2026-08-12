@@ -1,5 +1,5 @@
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/debt.dart';
+import 'package:agenda/domain/finance/debt/debt.dart';
 
 /// Abstract repository interface for debts (to pay and to receive).
 ///

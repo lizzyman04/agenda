@@ -1,5 +1,5 @@
 import 'package:agenda/core/failures/failure.dart';
-import 'package:agenda/domain/finance/recurring_payment.dart';
+import 'package:agenda/domain/finance/recurring/recurring_payment.dart';
 import 'package:equatable/equatable.dart';
 
 /// Base sealed class for all RecurringPayment states.

@@ -1,11 +1,11 @@
 import 'package:agenda/application/finance/goal/goal_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/goal_repository.dart';
-import 'package:agenda/domain/finance/savings_goal.dart';
-import 'package:agenda/domain/finance/savings_goal_contribution.dart';
-import 'package:agenda/domain/finance/transaction.dart';
-import 'package:agenda/domain/finance/transaction_repository.dart';
+import 'package:agenda/domain/finance/goal/goal_repository.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction_repository.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/goals/screens/goal_detail_screen.dart';
 import 'package:flutter/material.dart';

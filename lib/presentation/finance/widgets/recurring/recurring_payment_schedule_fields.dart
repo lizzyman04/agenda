@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/recurring_cycle.dart';
+import 'package:agenda/domain/finance/recurring/recurring_cycle.dart';
 import 'package:agenda/presentation/finance/widgets/finance_form_primitives.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

@@ -1,7 +1,7 @@
 import 'package:agenda/application/finance/debt/debt_cubit.dart';
 import 'package:agenda/core/utils/amount_parser.dart';
-import 'package:agenda/domain/finance/debt.dart';
-import 'package:agenda/domain/finance/debt_direction.dart';
+import 'package:agenda/domain/finance/debt/debt.dart';
+import 'package:agenda/domain/finance/debt/debt_direction.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/debt_form_logic.dart';
 import 'package:agenda/presentation/finance/widgets/debt/debt_direction_toggle.dart';

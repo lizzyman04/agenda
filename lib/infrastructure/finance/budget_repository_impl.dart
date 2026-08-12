@@ -2,8 +2,8 @@ import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/data/finance/budget_dao.dart';
 import 'package:agenda/data/finance/budget_mapper.dart';
-import 'package:agenda/domain/finance/budget.dart';
-import 'package:agenda/domain/finance/budget_repository.dart';
+import 'package:agenda/domain/finance/budget/budget.dart';
+import 'package:agenda/domain/finance/budget/budget_repository.dart';
 import 'package:injectable/injectable.dart';
 
 /// Concrete implementation of [BudgetRepository].

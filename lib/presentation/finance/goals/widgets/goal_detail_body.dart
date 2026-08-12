@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/goals/widgets/contribution_history_list.dart';
 import 'package:agenda/presentation/finance/goals/widgets/goal_progress_card.dart';

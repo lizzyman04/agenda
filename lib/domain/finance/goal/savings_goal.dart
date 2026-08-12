@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/savings_goal_contribution.dart';
+import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
 
 /// Sentinel value used by [SavingsGoal.copyWith] to distinguish
 /// "not provided" from "explicitly set to null" for nullable fields.

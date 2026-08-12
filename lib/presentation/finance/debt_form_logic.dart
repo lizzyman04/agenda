@@ -1,5 +1,5 @@
-import 'package:agenda/domain/finance/debt.dart';
-import 'package:agenda/domain/finance/debt_direction.dart';
+import 'package:agenda/domain/finance/debt/debt.dart';
+import 'package:agenda/domain/finance/debt/debt_direction.dart';
 
 /// Pure function that builds the [Debt] to persist from validated form
 /// field values.

@@ -1,9 +1,9 @@
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/recurring_cycle.dart';
-import 'package:agenda/domain/finance/recurring_payment.dart';
-import 'package:agenda/domain/finance/transaction_category.dart';
-import 'package:agenda/domain/finance/transaction_category_repository.dart';
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
+import 'package:agenda/domain/finance/category/transaction_category_repository.dart';
+import 'package:agenda/domain/finance/recurring/recurring_cycle.dart';
+import 'package:agenda/domain/finance/recurring/recurring_payment.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 
 /// Pure logic extracted from `RecurringPaymentFormScreen`'s `_loadCategories`
 /// and `_save` methods, so the screen widget can stay under the

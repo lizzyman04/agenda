@@ -1,7 +1,7 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
-import 'package:agenda/domain/finance/debt_repository.dart';
-import 'package:agenda/domain/finance/goal_repository.dart';
+import 'package:agenda/domain/finance/debt/debt_repository.dart';
+import 'package:agenda/domain/finance/goal/goal_repository.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/tasks/form/task_form_fields_model.dart';

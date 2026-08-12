@@ -1,10 +1,10 @@
 import 'package:agenda/application/finance/goal/goal_state.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/goal_repository.dart';
-import 'package:agenda/domain/finance/savings_goal.dart';
-import 'package:agenda/domain/finance/savings_goal_contribution.dart';
-import 'package:agenda/domain/finance/transaction.dart';
-import 'package:agenda/domain/finance/transaction_repository.dart';
+import 'package:agenda/domain/finance/goal/goal_repository.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 

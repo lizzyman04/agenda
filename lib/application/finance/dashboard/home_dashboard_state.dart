@@ -1,5 +1,5 @@
 import 'package:agenda/core/failures/failure.dart';
-import 'package:agenda/domain/finance/transaction_category.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
 import 'package:equatable/equatable.dart';
 
 /// Base sealed class for all HomeDashboard states.

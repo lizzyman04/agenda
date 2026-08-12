@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:agenda/application/finance/goal/goal_list_state.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/goal_repository.dart';
-import 'package:agenda/domain/finance/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/goal_repository.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 

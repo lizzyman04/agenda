@@ -1,9 +1,9 @@
-import 'package:agenda/domain/finance/debt.dart';
-import 'package:agenda/domain/finance/debt_direction.dart';
-import 'package:agenda/domain/finance/savings_goal.dart';
-import 'package:agenda/domain/finance/savings_goal_contribution.dart';
-import 'package:agenda/domain/finance/transaction.dart';
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/debt/debt.dart';
+import 'package:agenda/domain/finance/debt/debt_direction.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
+import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Computes the current balance from a list of transactions.

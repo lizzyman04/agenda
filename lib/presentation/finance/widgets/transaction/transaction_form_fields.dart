@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 import 'package:agenda/presentation/finance/widgets/transaction/transaction_category_date_note_fields.dart';
 import 'package:agenda/presentation/finance/widgets/transaction/transaction_type_amount_fields.dart';
 import 'package:flutter/material.dart';

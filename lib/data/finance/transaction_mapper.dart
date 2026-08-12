@@ -1,6 +1,7 @@
 import 'package:agenda/data/finance/transaction_model.dart' as data;
-import 'package:agenda/domain/finance/transaction.dart';
-import 'package:agenda/domain/finance/transaction_type.dart' as domain;
+import 'package:agenda/domain/finance/transaction/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart'
+    as domain;
 
 /// Converts between [data.TransactionModel] (Isar) and [Transaction] (domain).
 class TransactionMapper {

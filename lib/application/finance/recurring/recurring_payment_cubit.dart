@@ -1,7 +1,7 @@
 import 'package:agenda/application/finance/recurring/recurring_payment_state.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/recurring_payment.dart';
-import 'package:agenda/domain/finance/recurring_payment_repository.dart';
+import 'package:agenda/domain/finance/recurring/recurring_payment.dart';
+import 'package:agenda/domain/finance/recurring/recurring_payment_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 

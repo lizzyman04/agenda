@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 
 /// Sentinel value used by [TransactionCategory.copyWith] to distinguish
 /// "not provided" from "explicitly set to null" for nullable fields.

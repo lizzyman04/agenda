@@ -1,5 +1,5 @@
 import 'package:agenda/core/failures/failure.dart';
-import 'package:agenda/domain/finance/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
 import 'package:equatable/equatable.dart';
 
 /// Base sealed class for all Transaction states.

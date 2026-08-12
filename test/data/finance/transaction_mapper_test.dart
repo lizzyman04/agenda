@@ -1,7 +1,8 @@
 import 'package:agenda/data/finance/transaction_mapper.dart';
 import 'package:agenda/data/finance/transaction_model.dart';
-import 'package:agenda/domain/finance/transaction.dart';
-import 'package:agenda/domain/finance/transaction_type.dart' as domain;
+import 'package:agenda/domain/finance/transaction/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart'
+    as domain;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

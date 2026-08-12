@@ -1,4 +1,4 @@
-import 'package:agenda/domain/finance/debt_direction.dart';
+import 'package:agenda/domain/finance/debt/debt_direction.dart';
 
 /// Sentinel value used by [Debt.copyWith] to distinguish
 /// "not provided" from "explicitly set to null" for nullable fields.

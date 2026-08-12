@@ -1,7 +1,7 @@
 import 'package:agenda/application/finance/budget/budget_aggregator.dart';
-import 'package:agenda/domain/finance/budget.dart';
-import 'package:agenda/domain/finance/transaction.dart';
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/budget/budget.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 import 'package:test/test.dart';
 
 DateTime _jan2026(int day) => DateTime(2026, 1, day);

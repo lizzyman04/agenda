@@ -1,5 +1,5 @@
-import 'package:agenda/domain/finance/transaction_category.dart';
-import 'package:agenda/domain/finance/transaction_type.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
+import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 import 'package:agenda/presentation/finance/widgets/spending_pie_chart.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:agenda/application/finance/transaction/transaction_state.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/transaction.dart';
-import 'package:agenda/domain/finance/transaction_repository.dart';
+import 'package:agenda/domain/finance/transaction/transaction.dart';
+import 'package:agenda/domain/finance/transaction/transaction_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 

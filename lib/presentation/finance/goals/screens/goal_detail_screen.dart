@@ -1,7 +1,7 @@
 import 'package:agenda/application/finance/goal/goal_cubit.dart';
 import 'package:agenda/application/finance/goal/goal_state.dart';
 import 'package:agenda/config/di/injection.dart';
-import 'package:agenda/domain/finance/savings_goal_contribution.dart';
+import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/goals/screens/goal_form_screen.dart';
 import 'package:agenda/presentation/finance/goals/widgets/add_contribution_sheet.dart';

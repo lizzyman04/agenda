@@ -1,5 +1,5 @@
 import 'package:agenda/core/utils/amount_formatter.dart';
-import 'package:agenda/domain/finance/savings_goal_contribution.dart';
+import 'package:agenda/domain/finance/goal/savings_goal_contribution.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

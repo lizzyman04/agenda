@@ -43,14 +43,15 @@ import 'package:agenda/data/finance/transaction_dao.dart' as _i264;
 import 'package:agenda/data/finance/transaction_mapper.dart' as _i851;
 import 'package:agenda/data/tasks/item_dao.dart' as _i409;
 import 'package:agenda/data/tasks/item_mapper.dart' as _i546;
-import 'package:agenda/domain/finance/budget_repository.dart' as _i618;
-import 'package:agenda/domain/finance/debt_repository.dart' as _i537;
-import 'package:agenda/domain/finance/goal_repository.dart' as _i482;
-import 'package:agenda/domain/finance/recurring_payment_repository.dart'
-    as _i577;
-import 'package:agenda/domain/finance/transaction_category_repository.dart'
-    as _i583;
-import 'package:agenda/domain/finance/transaction_repository.dart' as _i687;
+import 'package:agenda/domain/finance/budget/budget_repository.dart' as _i877;
+import 'package:agenda/domain/finance/category/transaction_category_repository.dart'
+    as _i200;
+import 'package:agenda/domain/finance/debt/debt_repository.dart' as _i169;
+import 'package:agenda/domain/finance/goal/goal_repository.dart' as _i858;
+import 'package:agenda/domain/finance/recurring/recurring_payment_repository.dart'
+    as _i385;
+import 'package:agenda/domain/finance/transaction/transaction_repository.dart'
+    as _i585;
 import 'package:agenda/domain/tasks/item_repository.dart' as _i565;
 import 'package:agenda/domain/tasks/recurrence_engine.dart' as _i44;
 import 'package:agenda/infrastructure/finance/budget_repository_impl.dart'
@@ -122,68 +123,63 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i409.ItemDao>(
       () => tasksModule.itemDao(gh<_i43.IsarService>()),
     );
-    gh.lazySingleton<_i618.BudgetRepository>(
+    gh.lazySingleton<_i877.BudgetRepository>(
       () => _i576.BudgetRepositoryImpl(
         gh<_i337.BudgetDao>(),
         gh<_i289.BudgetMapper>(),
       ),
     );
-    gh.lazySingleton<_i583.TransactionCategoryRepository>(
+    gh.lazySingleton<_i200.TransactionCategoryRepository>(
       () => _i986.TransactionCategoryRepositoryImpl(
         gh<_i514.TransactionCategoryDao>(),
         gh<_i906.TransactionCategoryMapper>(),
       ),
     );
-    gh.lazySingleton<_i687.TransactionRepository>(
-      () => _i47.TransactionRepositoryImpl(
-        gh<_i264.TransactionDao>(),
-        gh<_i851.TransactionMapper>(),
-      ),
-    );
-    gh.lazySingleton<_i482.GoalRepository>(
+    gh.lazySingleton<_i858.GoalRepository>(
       () => _i904.GoalRepositoryImpl(
         gh<_i782.SavingsGoalDao>(),
         gh<_i1064.GoalMapper>(),
       ),
     );
+    gh.lazySingleton<_i585.TransactionRepository>(
+      () => _i47.TransactionRepositoryImpl(
+        gh<_i264.TransactionDao>(),
+        gh<_i851.TransactionMapper>(),
+      ),
+    );
     gh.lazySingleton<_i44.RecurrenceEngine>(
       () => const _i317.RecurrenceEngineImpl(),
     );
-    gh.factory<_i759.BudgetCubit>(
-      () => _i759.BudgetCubit(
-        gh<_i687.TransactionRepository>(),
-        gh<_i618.BudgetRepository>(),
-        gh<_i583.TransactionCategoryRepository>(),
-      ),
+    gh.factory<_i665.GoalListCubit>(
+      () => _i665.GoalListCubit(gh<_i858.GoalRepository>()),
     );
     gh.factory<_i1065.TransactionCubit>(
-      () => _i1065.TransactionCubit(gh<_i687.TransactionRepository>()),
+      () => _i1065.TransactionCubit(gh<_i585.TransactionRepository>()),
     );
     gh.factory<_i101.LocaleCubit>(
       () => _i101.LocaleCubit(gh<_i460.SharedPreferences>()),
     );
-    gh.factory<_i316.GoalCubit>(
-      () => _i316.GoalCubit(
-        gh<_i482.GoalRepository>(),
-        gh<_i687.TransactionRepository>(),
+    gh.factory<_i759.BudgetCubit>(
+      () => _i759.BudgetCubit(
+        gh<_i585.TransactionRepository>(),
+        gh<_i877.BudgetRepository>(),
+        gh<_i200.TransactionCategoryRepository>(),
       ),
     );
-    gh.lazySingleton<_i577.RecurringPaymentRepository>(
-      () => _i574.RecurringPaymentRepositoryImpl(
-        gh<_i488.RecurringPaymentDao>(),
-        gh<_i352.RecurringPaymentMapper>(),
-      ),
-    );
-    gh.lazySingleton<_i537.DebtRepository>(
+    gh.lazySingleton<_i169.DebtRepository>(
       () =>
           _i763.DebtRepositoryImpl(gh<_i647.DebtDao>(), gh<_i630.DebtMapper>()),
     );
-    gh.factory<_i428.HomeDashboardCubit>(
-      () => _i428.HomeDashboardCubit(
-        gh<_i687.TransactionRepository>(),
-        gh<_i482.GoalRepository>(),
-        gh<_i537.DebtRepository>(),
-        gh<_i583.TransactionCategoryRepository>(),
+    gh.factory<_i316.GoalCubit>(
+      () => _i316.GoalCubit(
+        gh<_i858.GoalRepository>(),
+        gh<_i585.TransactionRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i385.RecurringPaymentRepository>(
+      () => _i574.RecurringPaymentRepositoryImpl(
+        gh<_i488.RecurringPaymentDao>(),
+        gh<_i352.RecurringPaymentMapper>(),
       ),
     );
     gh.lazySingleton<_i565.ItemRepository>(
@@ -193,11 +189,16 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i44.RecurrenceEngine>(),
       ),
     );
-    gh.factory<_i665.GoalListCubit>(
-      () => _i665.GoalListCubit(gh<_i482.GoalRepository>()),
-    );
     gh.factory<_i275.RecurringPaymentCubit>(
-      () => _i275.RecurringPaymentCubit(gh<_i577.RecurringPaymentRepository>()),
+      () => _i275.RecurringPaymentCubit(gh<_i385.RecurringPaymentRepository>()),
+    );
+    gh.factory<_i428.HomeDashboardCubit>(
+      () => _i428.HomeDashboardCubit(
+        gh<_i585.TransactionRepository>(),
+        gh<_i858.GoalRepository>(),
+        gh<_i169.DebtRepository>(),
+        gh<_i200.TransactionCategoryRepository>(),
+      ),
     );
     gh.factory<_i646.ProjectCubit>(
       () => _i646.ProjectCubit(gh<_i565.ItemRepository>()),
@@ -209,7 +210,7 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.factory<_i710.DebtCubit>(
-      () => _i710.DebtCubit(gh<_i537.DebtRepository>()),
+      () => _i710.DebtCubit(gh<_i169.DebtRepository>()),
     );
     return this;
   }

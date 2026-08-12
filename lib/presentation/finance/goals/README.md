@@ -6,7 +6,7 @@ reachable from it.
 ## Responsibility
 
 Rendering and user interaction for savings goals only. This slice holds no
-business rules: progress arithmetic lives in `domain/finance/savings_goal.dart`,
+business rules: progress arithmetic lives in `domain/finance/goal/savings_goal.dart`,
 and orchestration lives in `application/finance/goal/goal_cubit.dart`.
 
 ## Layout
