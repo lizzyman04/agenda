@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 
 Phase: 03.1 (architecture-compliance) — EXECUTING
 Plan: 16 of 18
-Status: Executing Phase 03.1 — Waves 1 and 2 complete, Wave 3 next
+Status: Executing Phase 03.1 — Waves 1 and 2 complete, Wave 3 dispatched
 
 **Resume state — read before dispatching anything:**
 
@@ -39,15 +39,20 @@ Post-Wave-2 measurements (main, after merge):
 - `flutter test`: 265/265 passing (baseline entering the phase was 230).
 - `flutter analyze --no-fatal-infos --fatal-warnings` (the CI invocation): exit 0.
 
-**Known tension for 03.1-18 to rule on:** the 150-line cap and `lines_longer_than_80_chars`
-conflict in the densest split files. `task_form_screen.dart` (148) and
-`task_form_fields.dart` (150) sit at the cap only because they use compact,
-non-`dart format` formatting; running `dart format` on them pushes them to 178 and 195.
-Commit `a0869cc` reverted that formatting to keep SC-1. 25 more long lines arrived with
-the Wave 2 splits (`transaction_form_screen.dart` at exactly 150,
-`recurring_payment_form_fields.dart` at 138) for the same reason. `lines_longer_than_80_chars`
-is info-severity and does not fail CI; closing it properly needs further extraction, not
-reflowing. Decide in 03.1-18 whether the guard should also police column width.
+**RESOLVED (commit `227d030`) — the 150-line vs 80-column tension.** The four densest
+split files (`task_form_screen.dart`, `task_form_fields.dart`,
+`transaction_form_screen.dart`, `recurring_payment_form_fields.dart`) previously sat under
+the 150-line cap only by using compact, non-`dart format` formatting; formatting them
+pushed them to 178/195/190/188. That was closed by extraction rather than reflowing:
+11 new files (form models, picker helpers, app-bar builders, submit helpers, scaffolds),
+after which all four are both `dart format`-clean **and** under the cap (149/141/144/141).
+
+Current state on main: `lines_longer_than_80_chars` is **0 project-wide** (was 58), and
+`dart format --set-exit-if-changed` is clean on every touched file. **03.1-18 should
+therefore make the guard police column width and require `dart format`** — the tree
+already satisfies both, so wiring them into CI is now a no-op guard rather than a
+migration. Note the extracted screens still have no widget tests, so this was verified
+by `flutter analyze` + the existing 265-test suite, not by UI-level regression tests.
 
 Phase 03 (finance-core) remains open behind it: code complete, but 3 UAT issues are unresolved (test 2 — category-name stub showing `#id` and a duplicated note; test 3 — SnackBar queueing on a second swipe inside the undo window; test 9 — task-link chip showing a raw id) plus an undiagnosed app-wide undo-timer defect where 5s SnackBars never dismiss. None of these block Phase 3.1, which is a pure refactor.
 
