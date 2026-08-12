@@ -1,6 +1,6 @@
 import 'package:agenda/domain/finance/savings_goal.dart';
 
-/// Pure construction logic for [GoalFormScreen]'s save flow.
+/// Pure construction logic for the goal form screen's save flow.
 ///
 /// Extracted from `_save()` — builds the [SavingsGoal] to persist, either as
 /// a brand-new goal (create) or as a `copyWith` of [original] (edit). Does
