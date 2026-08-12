@@ -1,0 +1,149 @@
+---
+phase: 06-architecture-compliance
+plan: 11
+subsystem: data
+tags: [flutter, isar, dart, mapper, refactor, dependency-injection, injectable]
+
+# Dependency graph
+requires:
+  - phase: 06-architecture-compliance
+    provides: research findings on Split-or-Exempt classification (finance_mappers.dart ruled SPLIT)
+provides:
+  - Six per-entity mapper files replacing finance_mappers.dart (transaction_mapper.dart, transaction_category_mapper.dart, budget_mapper.dart, goal_mapper.dart, debt_mapper.dart, recurring_payment_mapper.dart)
+  - All finance repository impls and DI module repointed to per-entity mapper imports
+  - Regenerated injection.config.dart with correct import paths
+affects: [06-17 (data/finance directory nesting — depends on these six files existing as-is)]
+
+# Tech tracking
+tech-stack:
+  added: []
+  patterns: ["One mapper class per file, named `<entity>_mapper.dart`, matching the DAO/model file-naming convention already used in lib/data/finance/"]
+
+key-files:
+  created:
+    - lib/data/finance/transaction_mapper.dart
+    - lib/data/finance/transaction_category_mapper.dart
+    - lib/data/finance/budget_mapper.dart
+    - lib/data/finance/goal_mapper.dart
+    - lib/data/finance/debt_mapper.dart
+    - lib/data/finance/recurring_payment_mapper.dart
+  modified:
+    - lib/infrastructure/finance/transaction_repository_impl.dart
+    - lib/infrastructure/finance/transaction_category_repository_impl.dart
+    - lib/infrastructure/finance/budget_repository_impl.dart
+    - lib/infrastructure/finance/goal_repository_impl.dart
+    - lib/infrastructure/finance/debt_repository_impl.dart
+    - lib/infrastructure/finance/recurring_payment_repository_impl.dart
+    - lib/config/di/finance_module.dart
+    - lib/config/di/injection.config.dart
+    - test/data/finance/transaction_mapper_test.dart
+    - test/data/finance/savings_goal_mapper_test.dart
+    - test/infrastructure/finance/goal_repository_add_contribution_test.dart
+
+key-decisions:
+  - "Each mapper class moved verbatim byte-for-byte (bodies, doc comments, import aliases as data/as domain) — zero behavioral change to any toDomain/toModel conversion"
+  - "finance_mappers.dart deleted via git rm in the same commit as its six replacement files reading as a clean split, not delete-plus-unrelated-adds"
+  - "Discovered and fixed one consumer not listed in the plan's files_modified: test/infrastructure/finance/goal_repository_add_contribution_test.dart also imported finance_mappers.dart for GoalMapper — repointed to goal_mapper.dart (Rule 3: blocking issue, grep -rl finance_mappers would not have returned zero matches otherwise)"
+
+patterns-established:
+  - "Pattern: one mapper class per file, imports pruned to only what that specific class needs (no more shared 16-import block across six unrelated classes)"
+
+requirements-completed: []
+
+# Metrics
+duration: ~13min
+completed: 2026-08-11
+---
+
+# Phase 06 Plan 11: Split finance_mappers.dart into six per-entity mapper files Summary
+
+**Split the 327-line `finance_mappers.dart` monolith into six independent per-entity mapper files (transaction, transaction_category, budget, goal, debt, recurring_payment), each ≤64 lines, with every `toDomain`/`toModel` conversion moved verbatim and all nine consumers (6 repository impls, DI module, 3 test files) repointed.**
+
+## Performance
+
+- **Duration:** ~13 min (18:03 build_runner start to 18:04 second commit)
+- **Started:** 2026-08-11T17:55:00+02:00 (approx.)
+- **Completed:** 2026-08-11T18:04:06+02:00
+- **Tasks:** 2
+- **Files modified:** 18 (6 created, 1 deleted, 11 modified)
+
+## Accomplishments
+- `finance_mappers.dart` (327 lines) fully removed, replaced by six per-entity files (largest is 64 lines — `recurring_payment_mapper.dart`)
+- Every mapper class (`TransactionMapper`, `TransactionCategoryMapper`, `BudgetMapper`, `GoalMapper`, `DebtMapper`, `RecurringPaymentMapper`) moved with byte-identical field mappings, `autoIncrement`-id guards, and enum switch expressions — including the `GoalMapper`'s "CRITICAL: initialize as growable list" comment and logic
+- All 6 `infrastructure/finance/*_repository_impl.dart` files, `finance_module.dart`, and `injection.config.dart` repointed to the correct single-mapper import each
+- Zero remaining references to `finance_mappers` anywhere in `lib/` or `test/` (`grep -rl` confirms)
+- Full `flutter test --no-pub` suite green: 256 tests passed (baseline requirement was ≥230)
+- `flutter analyze` clean of any new errors/warnings — the only info-level lint touching a changed file (`goal_mapper.dart:7` line-length) is a verbatim carry-over from the original file's same doc-comment line (confirmed pre-existing via analysis of the original file before the split)
+
+## Task Commits
+
+Each task was committed atomically:
+
+1. **Task 1: Create the six per-entity mapper files** - `f63b8c6` (feat)
+2. **Task 2: Delete finance_mappers.dart and repoint every consumer** - `4daef20` (refactor)
+
+**Plan metadata:** (this commit, added by orchestrator)
+
+## Files Created/Modified
+- `lib/data/finance/transaction_mapper.dart` - `TransactionMapper`, moved verbatim
+- `lib/data/finance/transaction_category_mapper.dart` - `TransactionCategoryMapper`, moved verbatim
+- `lib/data/finance/budget_mapper.dart` - `BudgetMapper`, moved verbatim
+- `lib/data/finance/goal_mapper.dart` - `GoalMapper`, moved verbatim (incl. growable-list contribution mapping)
+- `lib/data/finance/debt_mapper.dart` - `DebtMapper`, moved verbatim
+- `lib/data/finance/recurring_payment_mapper.dart` - `RecurringPaymentMapper`, moved verbatim
+- `lib/data/finance/finance_mappers.dart` - deleted (git rm)
+- `lib/infrastructure/finance/{transaction,transaction_category,budget,goal,debt,recurring_payment}_repository_impl.dart` - import repointed to the one specific mapper each uses
+- `lib/config/di/finance_module.dart` - import block updated to the six new mapper files (DI registrations for the mapper singletons unchanged)
+- `lib/config/di/injection.config.dart` - regenerated via `dart run build_runner build --delete-conflicting-outputs`
+- `test/data/finance/transaction_mapper_test.dart` - import repointed to `transaction_mapper.dart`
+- `test/data/finance/savings_goal_mapper_test.dart` - import repointed to `debt_mapper.dart` + `goal_mapper.dart`
+- `test/infrastructure/finance/goal_repository_add_contribution_test.dart` - import repointed to `goal_mapper.dart` (discovered consumer not listed in plan frontmatter)
+
+## Decisions Made
+- Moved every class verbatim with zero "improvements" to field mappings, argument order, or null-coalescing defaults — per plan's explicit instruction that mapper code is a data-corruption boundary
+- `finance_mappers.dart` deletion and the six new files committed together (Task 1 created the six files; Task 2 deleted the old file and repointed consumers — the delete and its replacement additions are adjacent commits in the same plan, reading cleanly as a split when viewed together)
+- Import ordering within each file follows existing alphabetical-directives convention; new mapper imports inserted at their correct alphabetical position relative to sibling DAO imports
+
+## Deviations from Plan
+
+### Auto-fixed Issues
+
+**1. [Rule 3 - Blocking] Repointed an undocumented consumer of finance_mappers.dart**
+- **Found during:** Task 2 (Delete finance_mappers.dart and repoint every consumer)
+- **Issue:** Plan's `files_modified` frontmatter and task 2's file list did not include `test/infrastructure/finance/goal_repository_add_contribution_test.dart`, which also imported `finance_mappers.dart` for `GoalMapper`. Deleting `finance_mappers.dart` without fixing this import would have broken compilation and left a dangling reference (`grep -rl finance_mappers` would not have returned zero matches).
+- **Fix:** Repointed its import to `package:agenda/data/finance/goal_mapper.dart`.
+- **Files modified:** test/infrastructure/finance/goal_repository_add_contribution_test.dart
+- **Verification:** `grep -rl "finance_mappers" lib/ test/` returns no matches; `flutter test --no-pub` full suite passes (256 tests, including this file's 3 tests).
+- **Committed in:** 4daef20 (Task 2 commit)
+
+---
+
+**Total deviations:** 1 auto-fixed (1 blocking)
+**Impact on plan:** Necessary to satisfy the plan's own acceptance criterion ("grep -rl finance_mappers reports no matches"). No scope creep — same mechanical repointing pattern as the six files already planned.
+
+## Issues Encountered
+- During pre-Task-1 verification, an ad hoc `git stash` / `git stash pop` invocation (used only to diff a lint result against the pre-split file, not part of the plan's task list) surfaced a pre-existing, unrelated stash entry in this repository's shared stash list (`stash@{0}: rewrite`, containing stale Astro docs-site build output and a conflicting `.gitignore` edit predating commit `6a0ebaa`). The pop produced merge conflicts on `.gitignore`, `docs/index.html`, and `docs/terms/index.html`. These were resolved by restoring all three paths to their exact `HEAD` content (`.gitignore` matched `HEAD` byte-for-byte after restore; the two `docs/` files are untracked at `HEAD` and were removed). The stash entry itself was left untouched and undropped for its original owner. No plan-scoped files were affected; `git status --short` was clean of any residue before Task 1's commit. Lesson: avoid `git stash` entirely in worktree contexts going forward — the stash ref is shared with the main repository and other worktrees, not local to the worktree.
+
+## User Setup Required
+
+None - no external service configuration required.
+
+## Next Phase Readiness
+- The six per-entity mapper files (`transaction_mapper.dart`, `transaction_category_mapper.dart`, `budget_mapper.dart`, `goal_mapper.dart`, `debt_mapper.dart`, `recurring_payment_mapper.dart`) now exist exactly where plan `6-17`'s `data/finance` directory-nesting plan needs them — that plan can `git mv` these files into per-entity subfolders without also having to decompose a monolith.
+- No blockers. Full test suite green, `flutter analyze` clean of new issues, `dart run tool/check_architecture.dart` shows no new LINES violations from this plan's files (the remaining informational violations are pre-existing FILES/README gaps tracked separately per the architecture guard's own note that it is "informational only — not yet enforced in CI, see 06-18").
+
+---
+*Phase: 06-architecture-compliance*
+*Completed: 2026-08-11*
+
+## Self-Check: PASSED
+
+- FOUND: lib/data/finance/transaction_mapper.dart
+- FOUND: lib/data/finance/transaction_category_mapper.dart
+- FOUND: lib/data/finance/budget_mapper.dart
+- FOUND: lib/data/finance/goal_mapper.dart
+- FOUND: lib/data/finance/debt_mapper.dart
+- FOUND: lib/data/finance/recurring_payment_mapper.dart
+- CONFIRMED_DELETED: lib/data/finance/finance_mappers.dart
+- FOUND commit: f63b8c6 (Task 1)
+- FOUND commit: 4daef20 (Task 2)

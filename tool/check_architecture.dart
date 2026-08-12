@@ -9,11 +9,11 @@
 //
 // Run: dart run tool/check_architecture.dart
 //
-// ENFORCING (Phase 03.1-18). Exits 1 on any violation and runs in CI on
+// ENFORCING (Phase 06-18). Exits 1 on any violation and runs in CI on
 // every push/PR, immediately after the Analyze step
 // (.github/workflows/ci.yml). It ran in informational mode for the length
-// of Phase 03.1 (introduced by 03.1-01, always exiting 0) while the tree
-// was brought into compliance; enforcement was switched on by 03.1-18 once
+// of Phase 06 (introduced by 06-01, always exiting 0) while the tree
+// was brought into compliance; enforcement was switched on by 06-18 once
 // the last violation was closed.
 //
 // The three checks below are exposed as standalone functions (each taking

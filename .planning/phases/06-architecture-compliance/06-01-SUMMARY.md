@@ -1,0 +1,102 @@
+---
+phase: 06-architecture-compliance
+plan: 01
+subsystem: testing
+tags: [dart, ci-tooling, architecture-guard, dart-io, package-test]
+
+# Dependency graph
+requires: []
+provides:
+  - "tool/check_architecture.dart — dev-tool guard checking file line-count (150), directory-size (10 hand-written files), and README presence (every dir under lib/presentation/ + lib/application/)"
+  - "tool/architecture_exemptions.dart — justified line-limit exemption allowlist (currencies.dart, first entry) + empty README-exemption set"
+  - "test/tool/check_architecture_test.dart — fixture-based unit tests proving all three checks independent of the live lib/ tree"
+affects: [06-02, 06-03, 06-04, 06-05, 06-06, 06-07, 06-08, 06-09, 06-10, 06-11, 06-12, 06-13, 06-14, 06-15, 06-16, 06-17, 06-18]
+
+# Tech tracking
+tech-stack:
+  added: []
+  patterns:
+    - "dart:io-only CI/dev-tool scripts (zero pubspec dependencies) for mechanical repo-structure checks not covered by any lint package"
+    - "Guard checks exposed as standalone functions taking an injectable root Directory, so package:test can exercise them against Directory.systemTemp fixtures instead of the live tree"
+    - "Justified exemption allowlist (Map<path, reason>) instead of inline // ignore comments, kept visible on every guard run via a 'Documented exemptions in effect' printout"
+
+key-files:
+  created:
+    - tool/check_architecture.dart
+    - tool/architecture_exemptions.dart
+    - test/tool/check_architecture_test.dart
+  modified: []
+
+key-decisions:
+  - "Guard runs in informational-only mode this plan: always exit(0) even with violations present. CI wiring and enforcement mode (exit 1) deferred to plan 06-18 per the plan's explicit sequencing directive — wiring now would turn every subsequent plan's CI run red."
+  - "currencies.dart resolved as EXEMPT (not split) per 06-RESEARCH.md's Split-or-Exempt table (D-02): a flat ISO 4217 data table where splitting by line range would fragment a single semantic unit and destroy Ctrl+F lookup for zero readability gain. Recorded as the first, and currently only, entry in lineLimitExemptions with a full justification string."
+  - "readmeExemptDirs is empty by design — every directory under lib/presentation/ and lib/application/ requires a README.md, no exemptions, per the plan's README-scope decision (literal 'every directory' reading, matching the roadmap's 30-directory baseline exactly)."
+
+patterns-established:
+  - "Architecture compliance guard pattern: tool/check_architecture.dart's three checks (checkLineLengths, checkDirectorySizes, checkReadmes) are the mechanical 'done' definition every later 06 plan measures itself against, replacing ad hoc wc -l spot checks."
+
+requirements-completed: []
+
+# Metrics
+duration: ~20min
+completed: 2026-08-11
+---
+
+# Phase 6 Plan 01: Architecture Compliance Guard Summary
+
+Built the dependency-free Dart CI guard (`tool/check_architecture.dart`) that enforces the phase's three house rules — 150-line file cap, 10-file directory cap, README-per-nest — in informational mode only, unit-tested against synthetic fixtures independent of the live tree, and confirmed it reproduces the exact measured baseline (20 line-count violations + 1 documented exemption, 2 directory-size violations, 28 missing-README violations) with zero crashes.
+
+## Performance
+
+- **Duration:** ~20 min
+- **Started:** 2026-08-11 (worktree agent spawn)
+- **Completed:** 2026-08-11T10:56:00Z
+- **Tasks:** 2/2 completed
+- **Files modified:** 3 (all created, none modified)
+
+## Accomplishments
+- `tool/check_architecture.dart` runs cleanly against the live `lib/` tree and reproduces the exact plan baseline: 21 files over 150 lines (20 reported as violations + `currencies.dart` as a documented exemption), 2 directory-size violations (`lib/domain/finance` at 16 files, `lib/data/finance` at 13 files), and 28 of 30 directories under `lib/presentation/` + `lib/application/` missing a README — confirmed against `find lib/presentation lib/application -type d | wc -l` = 30 and a manual `wc -l` cross-check of every file over 150 lines.
+- `tool/architecture_exemptions.dart` closes the `currencies.dart` split-or-exempt hard case with a written justification (not a bare path), resolving decision D-02 with zero code churn.
+- All three checks (`checkLineLengths`, `checkDirectorySizes`, `checkReadmes`) are refactored into standalone, independently testable functions and proven correct by 8 fixture-based unit tests in `test/tool/check_architecture_test.dart`, covering all 4 required behaviors from the plan plus symmetric "not flagged" cases.
+- Guard remains informational-only (`exit(0)` always) and `.github/workflows/ci.yml` is untouched, as required — CI enforcement is explicitly deferred to plan 06-18.
+
+## Task Commits
+
+Each task was committed atomically:
+
+1. **Task 1: Write the guard script and the exemption allowlist** - `9a46836` (feat)
+2. **Task 2: Unit-test the guard's three checks against synthetic fixtures** - `f07bd82` (test)
+
+**Plan metadata:** (this commit) `docs(06-01): complete architecture compliance guard plan`
+
+## Files Created/Modified
+- `tool/check_architecture.dart` - Dev-tool guard script: `checkLineLengths`, `checkDirectorySizes`, `checkReadmes` functions plus a thin `main()` wrapper; mirrors `analysis_options.yaml`'s exclude list (`**/*.g.dart`, `lib/config/di/injection.config.dart`, `lib/generated/**`) via `isGenerated()`; informational mode, always exits 0
+- `tool/architecture_exemptions.dart` - `lineLimitExemptions` map (one entry: `currencies.dart`, with justification) and empty `readmeExemptDirs` set
+- `test/tool/check_architecture_test.dart` - `package:test` fixture-based coverage: 8 tests across the three checks, using `Directory.systemTemp.createTempSync()` per test with `setUp`/`tearDown` cleanup
+
+## Decisions Made
+- Guard checks were refactored into functions accepting an injectable root `Directory` (rather than hardcoding `Directory('lib')`) directly during Task 1's design, anticipating Task 2's requirement — this kept Task 2 a pure additive test-writing task with no behavior change to the already-verified Task 1 output (confirmed identical guard output against the live tree before and after the refactor).
+- `currencies.dart`: EXEMPT, not split — see key-decisions above and `06-RESEARCH.md` Split-or-Exempt Recommendations.
+- README-scope: literal "every directory" interpretation (30 total dirs, 28 flagged) — matches the roadmap's committed baseline exactly, per Open Question 1 in `06-RESEARCH.md`.
+
+## Deviations from Plan
+
+None - plan executed as written. One minor addition beyond the plan's literal task list: after writing the initial test file, `flutter analyze tool/ test/tool/` surfaced 6 lint infos (an unnecessary `// ignore` comment, two `avoid_redundant_argument_values`, two line-length-over-80, one missing-ignore-documentation). These were cleaned up before committing Task 2 so `flutter analyze` is fully clean (0 issues) rather than merely non-fatal — not a plan deviation requiring a rule citation, just polish within Task 2's own commit, verified via `flutter analyze --no-fatal-infos --fatal-warnings tool/ test/tool/` before and after.
+
+## Issues Encountered
+None. The guard's output matched the plan's stated baseline (21/2/28) exactly on the first run, with no investigation needed into whether the script or the baseline was wrong (per the plan-specific note in the executor prompt).
+
+## User Setup Required
+None. This is a dev-tool script with zero new dependencies (`test: any` was already a `dev_dependency` in `pubspec.yaml`); no environment changes, no manual steps.
+
+## Next Steps
+- Plan 06-02 onward: use `dart run tool/check_architecture.dart` after each slice's split as an informational progress check (per `06-VALIDATION.md`'s sampling rate — full suite + guard at every wave boundary).
+- Plan 06-18 (final): flip the guard to enforcing mode (non-zero exit on violations) and wire it into `.github/workflows/ci.yml` right after the `Analyze` step, once the tree is compliant.
+
+## Self-Check: PASSED
+
+- FOUND: tool/check_architecture.dart
+- FOUND: tool/architecture_exemptions.dart
+- FOUND: test/tool/check_architecture_test.dart
+- FOUND commit: 9a46836
+- FOUND commit: f07bd82

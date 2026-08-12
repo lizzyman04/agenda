@@ -1,0 +1,131 @@
+---
+phase: 06-architecture-compliance
+plan: 08
+subsystem: ui
+tags: [flutter, finance, forms, refactor, dart, testing]
+
+# Dependency graph
+requires: []
+provides:
+  - "lib/presentation/finance/widgets/finance_form_primitives.dart — public FormCard/FieldRow/FieldDivider for finance forms"
+  - "lib/presentation/finance/widgets/category_picker_sheet.dart — CategoryPickerSheet stateless bottom-sheet content"
+  - "lib/core/utils/amount_parser.dart — parseAmountCentsOrNull / formatCentsForInput"
+affects: [6-12, 6-13, 6-14, 6-15]
+
+# Tech tracking
+tech-stack:
+  added: []
+  patterns:
+    - "Shared presentation-only widgets live under presentation/finance/widgets/, mirroring the existing presentation/tasks/form/widgets/ convention"
+    - "Bottom-sheet content widgets are pure StatelessWidgets that resolve their result exclusively via Navigator.pop — never mutate caller state — per the controller-ownership rule in presentation/finance/goals/README.md"
+
+key-files:
+  created:
+    - lib/presentation/finance/widgets/finance_form_primitives.dart
+    - lib/presentation/finance/widgets/category_picker_sheet.dart
+    - lib/core/utils/amount_parser.dart
+    - test/core/utils/amount_parser_test.dart
+  modified: []
+
+key-decisions:
+  - "Preserved the exact pre-existing amount-parsing quirks (thousands-dot input fails to parse; leading minus sign is stripped rather than rejected) instead of the plan's stated <behavior> expectations for those two cases, because the plan's own threat model and interfaces sections require literal replication of the 4 forms' existing inline logic, not an idealized re-design; the plan's two conflicting example outputs were a computation error, verified by executing the actual duplicated expression against both inputs"
+  - "CategoryPickerSheet does not fetch data — caller passes the already-loaded category list — keeping it a pure display widget usable identically by transaction_form_screen.dart and recurring_payment_form_screen.dart in Wave 2"
+
+patterns-established:
+  - "Pattern: shared finance-form widgets go in presentation/finance/widgets/, matching the already-established presentation/tasks/form/widgets/ naming and structure"
+
+requirements-completed: []
+
+# Metrics
+duration: 15min
+completed: 2026-08-11
+---
+
+# Phase 06 Plan 08: Shared Finance Form Utilities Summary
+
+**Extracted FormCard/FieldRow/FieldDivider, CategoryPickerSheet, and a PT-BR-aware amount-cents parser out of 4 duplicated finance form screens — zero screens touched yet, ready for Wave 2 adoption**
+
+## Performance
+
+- **Duration:** ~15 min
+- **Started:** 2026-08-11T17:35:00+02:00 (approx, no explicit start marker recorded)
+- **Completed:** 2026-08-11T17:50:29+02:00
+- **Tasks:** 2 completed
+- **Files modified:** 4 (all new)
+
+## Accomplishments
+- Deduplicated the byte-for-byte identical `_FormCard`/`_FieldRow`/`_FieldDivider` trio that was independently declared in `transaction_form_screen.dart`, `recurring_payment_form_screen.dart`, `debt_form_screen.dart` (all three: `_FormCard`+`_FieldRow`+`_FieldDivider`), and `goal_form_screen.dart` (`_FormCard` only) into a single public `finance_form_primitives.dart`, mirroring the existing `presentation/tasks/form/widgets/form_primitives.dart`.
+- Deduplicated the near-identical category-picker bottom sheet from `transaction_form_screen.dart._pickCategory()` and `recurring_payment_form_screen.dart._pickCategory()` into `CategoryPickerSheet`, a pure `StatelessWidget` that never fetches data and resolves its result exclusively via `Navigator.pop`.
+- Extracted `parseAmountCentsOrNull`/`formatCentsForInput` from the identical inline expression duplicated across all 4 forms, test-driven (RED then GREEN), preserving exact current parsing quirks rather than introducing a smarter/idealized parser.
+
+## Task Commits
+
+Each task was committed atomically:
+
+1. **Task 1: Extract shared form primitives and the category picker sheet** - `ca9f161` (refactor)
+2. **Task 2: Extract and test the amount-cents parser** - `581e75b` (test, RED) → `a32de7b` (feat, GREEN)
+
+**Plan metadata:** committed after this SUMMARY (see final commit below)
+
+_TDD Gate Compliance: RED commit `581e75b` precedes GREEN commit `a32de7b`. No REFACTOR commit — none needed, implementation was correct on first pass._
+
+## Files Created/Modified
+- `lib/presentation/finance/widgets/finance_form_primitives.dart` - Public `FormCard`, `FieldRow`, `FieldDivider`; 63 lines
+- `lib/presentation/finance/widgets/category_picker_sheet.dart` - `CategoryPickerSheet` stateless widget; 97 lines
+- `lib/core/utils/amount_parser.dart` - `parseAmountCentsOrNull(String)`, `formatCentsForInput(int)`; 58 lines
+- `test/core/utils/amount_parser_test.dart` - 9 test cases covering both functions; 78 lines
+
+## Decisions Made
+- Confirmed by direct inspection that `_FormCard`/`_FieldRow`/`_FieldDivider` are truly byte-for-byte identical across all 4 form screens before unifying (per plan instruction) — no reconciliation was needed, the duplicates matched exactly.
+- Confirmed by direct inspection that the amount-parsing expression (`replaceAll(',', '.').replaceAll(RegExp(r'[^\d.]'), '')` → `double.tryParse` → `<= 0` check → `(parsed * 100).round()`) is identical across all 4 forms, including the pre-fill formatting expression.
+- Chose to preserve exact existing parsing behavior over the plan's literal `<behavior>` bullet list where the two conflicted (see Deviations below).
+
+## Deviations from Plan
+
+### Auto-fixed Issues
+
+**1. [Rule 1 — plan-spec correction] Two `<behavior>` test-case expectations contradicted the actual duplicated inline logic they were meant to describe**
+
+- **Found during:** Task 2 (writing the RED test file against the plan's `<behavior>` block)
+- **Issue:** The plan's `<behavior>` block asserted `parseAmountCentsOrNull('1.250,50')` should return `125050`, and `parseAmountCentsOrNull('-5')` should return `null`. I executed the actual expression already present in all 4 forms (`raw.replaceAll(',', '.').replaceAll(RegExp(r'[^\d.]'), '')` → `double.tryParse` → `<=0` check → `round()`) against both inputs directly (via a scratch `dart run` script) before writing the parser, and confirmed:
+  - `'1.250,50'` → after `,`→`.` conversion becomes `'1.250.50'` (two dots) → the `[^\d.]` filter keeps both dots since they're not stripped → `double.tryParse('1.250.50')` is invalid double syntax → returns `null`, not `125050`. The 4 forms do not actually support thousands separators today; this was a computation error in the plan's behavior spec, not a real behavior of the app.
+  - `'-5'` → the `[^\d.]` filter strips the `-` (only digits and dots survive) → `'5'` → parses to `5.0` → `(5.0*100).round()` = `500`, not `null`. The existing forms do not reject negative-looking input; the minus sign is silently discarded.
+  - Both the plan's `<interfaces>` section (giving the literal expression to copy) and its `<threat_model>` (T-06-08-01: "tests written first against the exact behavior of the 4 existing inline implementations... not against an idealized re-design") explicitly prioritize literal quirk preservation over the specific numeric outputs listed in `<behavior>`. I treated the `<behavior>` bullets for these two cases as the plan author's error and implemented/tested the actual current app behavior instead, to avoid silently changing what counts as valid amount input across the 4 forms that will adopt this utility in Wave 2.
+- **Fix:** Test file asserts `null` for `'1.250,50'` and `500` for `'-5'`, each with an inline doc comment explaining the discrepancy and the verification method. Implementation replicates the exact 4-form expression with no smoothing/idealization.
+- **Files modified:** `test/core/utils/amount_parser_test.dart`, `lib/core/utils/amount_parser.dart`
+- **Verification:** Ran the literal expression standalone via `dart run` against all 6 spec inputs before writing any test assertions; all 9 final test cases pass against the implementation that mirrors the 4 forms verbatim.
+- **Committed in:** `581e75b` (test), `a32de7b` (feat)
+
+---
+
+**Total deviations:** 1 (plan-spec correction, not a code bug — no Rule 1-4 category maps perfectly, closest is Rule 1 in spirit: the actual/current behavior is authoritative over an incorrectly-computed example in the plan text)
+**Impact on plan:** None on scope — the shared parser matches the 4 duplicated implementations exactly, which is what the plan's `<threat_model>` mandates. If Wave 2 authors want stronger validation (e.g. rejecting negative input, supporting thousands separators), that is a deliberate behavior change to raise separately, not something to introduce silently while deduplicating.
+
+## Issues Encountered
+- `dart test` fails immediately with "Dart library 'dart:ui' is not available on this platform" for any test importing `flutter_test` — this project's tests must run via `flutter test`, not `dart test`. Not a plan issue, just an environment note for future executors in this repo.
+
+## User Setup Required
+None - no external service configuration required.
+
+## Next Phase Readiness
+- `finance_form_primitives.dart`, `category_picker_sheet.dart`, and `amount_parser.dart` are ready for import by plans `6-12` through `6-15` (the four finance form screen splits), which can now delete their local `_FormCard`/`_FieldRow`/`_FieldDivider`/`_pickCategory()`/inline-parsing duplicates and depend on this plan.
+- No screens were modified in this plan, so there is zero regression risk to existing finance forms; wiring is entirely deferred to Wave 2.
+- `lib/presentation/finance/widgets/` now holds 8 files (6 pre-existing + 2 new), still under the 10-file architecture-guard threshold noted in the plan.
+
+---
+*Phase: 06-architecture-compliance*
+*Completed: 2026-08-11*
+
+## Self-Check: PASSED
+
+All created files verified present on disk:
+- `lib/presentation/finance/widgets/finance_form_primitives.dart` — FOUND
+- `lib/presentation/finance/widgets/category_picker_sheet.dart` — FOUND
+- `lib/core/utils/amount_parser.dart` — FOUND
+- `test/core/utils/amount_parser_test.dart` — FOUND
+- `.planning/phases/06-architecture-compliance/06-08-SUMMARY.md` — FOUND
+
+All task commit hashes verified present in git log:
+- `ca9f161` — FOUND
+- `581e75b` — FOUND
+- `a32de7b` — FOUND

@@ -5,7 +5,7 @@ import 'package:isar_community/isar.dart';
 ///
 /// Extracted from `ItemDao` as a top-level function because it is pure
 /// `QueryBuilder` composition — no private DAO state is required, only the
-/// public [IsarCollection] type. See Pattern 3 in 03.1-RESEARCH.md.
+/// public [IsarCollection] type. See Pattern 3 in 06-RESEARCH.md.
 QueryBuilder<ItemModel, ItemModel, QAfterFilterCondition> buildItemFilterQuery(
   IsarCollection<ItemModel> collection, {
   ItemType? type,

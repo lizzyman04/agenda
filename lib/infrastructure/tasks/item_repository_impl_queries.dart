@@ -8,7 +8,7 @@ part of 'item_repository_impl.dart';
 /// [ItemRepositoryImpl]'s private fields of the same name — no import, no
 /// interface change, no separate DI registration. [ItemRepositoryImpl]
 /// remains one class implementing [ItemRepository] with all 12 methods,
-/// exactly as before the split. See Pattern 4 in 03.1-RESEARCH.md.
+/// exactly as before the split. See Pattern 4 in 06-RESEARCH.md.
 mixin _ItemRepositoryImplQueries {
   ItemDao get _dao;
   ItemMapper get _mapper;

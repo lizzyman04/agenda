@@ -1,0 +1,110 @@
+---
+phase: 06-architecture-compliance
+plan: 10
+subsystem: ui
+tags: [flutter, bloc, fl_chart, finance, refactor]
+
+# Dependency graph
+requires:
+  - phase: 06-architecture-compliance (plan 09)
+    provides: "the per-entity widgets/<name>/ subfolder convention (debt/, budget/, recurring/)"
+  - phase: 06-architecture-compliance (plan 07)
+    provides: "dashboard_aggregator.dart — the already-extracted, already-tested data source this screen renders"
+provides:
+  - "finance_dashboard_screen.dart reduced to a 56-line DefaultTabController+TabBarView shell"
+  - "DashboardTab (widgets/dashboard/dashboard_tab.dart) — the Resumo tab's cubit-driven state and loaded-state composition"
+  - "MonthNavigationHeader + EmptyChartMessage (widgets/dashboard/dashboard_month_header.dart), moved verbatim"
+affects: [finance-dashboard, architecture-compliance]
+
+tech-stack:
+  added: []
+  patterns:
+    - "widgets/dashboard/ per-entity subfolder, matching widgets/debt/, widgets/budget/, widgets/recurring/ from 6-09"
+
+key-files:
+  created:
+    - lib/presentation/finance/widgets/dashboard/dashboard_month_header.dart
+    - lib/presentation/finance/widgets/dashboard/dashboard_tab.dart
+  modified:
+    - lib/presentation/finance/screens/finance_dashboard_screen.dart
+
+key-decisions:
+  - "Added super.key to the two newly-public widgets (MonthNavigationHeader, EmptyChartMessage, DashboardTab) even though the plan said 'renamed... moved verbatim' — private widgets never took a key since they were only const-constructed in one place; public widgets in this codebase's convention (see DebtCard) always accept super.key. No behavioral change."
+
+patterns-established: []
+
+requirements-completed: []
+
+# Metrics
+duration: 4min
+completed: 2026-08-11
+---
+
+# Phase 06 Plan 10: Finance Dashboard Screen Split Summary
+
+**Split the 269-line finance_dashboard_screen.dart into a 56-line TabBarView shell plus DashboardTab and MonthNavigationHeader/EmptyChartMessage in a new widgets/dashboard/ subfolder, moving all fl_chart configuration and the HomeDashboardCubit wiring verbatim.**
+
+## Performance
+
+- **Duration:** 4 min
+- **Started:** 2026-08-11T15:51:04Z
+- **Completed:** 2026-08-11T15:54:59Z
+- **Tasks:** 2 completed
+- **Files modified:** 3 (2 created, 1 rewritten)
+
+## Accomplishments
+- `finance_dashboard_screen.dart` cut from 269 to 56 lines — now purely the `DefaultTabController`/`TabBar`/`TabBarView` shell
+- `DashboardTab` (143 lines) extracted with `HomeDashboardCubit.start()` wiring, the `BlocBuilder` switch, and `_buildLoaded` — including the `SpendingPieChart`/`SpendingBarChart` configuration and the `_currencySymbol` constant — moved verbatim
+- `MonthNavigationHeader` (D-10 forward-arrow-disable behavior) and `EmptyChartMessage` (UI-SPEC "keep chart visible" behavior) extracted to their own file with doc comments intact
+- New `widgets/dashboard/` subfolder mirrors the `widgets/debt/`, `widgets/budget/`, `widgets/recurring/` convention established in 6-09
+
+## Task Commits
+
+Each task was committed atomically:
+
+1. **Task 1: Extract the month-navigation header and empty-chart message** - `bea1d73` (refactor)
+2. **Task 2: Extract the dashboard tab and wire everything into the shell** - `d45423f` (refactor)
+
+**Plan metadata:** pending (this commit)
+
+## Files Created/Modified
+- `lib/presentation/finance/widgets/dashboard/dashboard_month_header.dart` - `MonthNavigationHeader` (prev/next month row, forward arrow disabled on current month per D-10) + `EmptyChartMessage` (no-expenses-this-month placeholder, chart section stays visible per UI-SPEC)
+- `lib/presentation/finance/widgets/dashboard/dashboard_tab.dart` - `DashboardTab`/`DashboardTabState` — starts `HomeDashboardCubit`, switches on `HomeDashboardState`, composes `DashboardSummaryCard` + `MonthNavigationHeader` + `SpendingPieChart`/`SpendingBarChart`
+- `lib/presentation/finance/screens/finance_dashboard_screen.dart` - Now only `FinanceDashboardScreen`, the 6-tab shell; `TabBarView` first child changed from `const _DashboardTab()` to `const DashboardTab()`
+
+## Decisions Made
+- Added `super.key` to the three widgets that moved from private to public (`MonthNavigationHeader`, `EmptyChartMessage`, `DashboardTab`) to match the codebase convention for public presentation widgets (e.g. `DebtCard`). This is additive, not a behavior change — none of the call sites pass a key today.
+
+## Deviations from Plan
+
+None - plan executed exactly as written. The one addition (`super.key` on the newly-public widgets) is covered by existing codebase convention, not a functional deviation, and is documented above under Decisions Made rather than as a Rule-based auto-fix since it changes no behavior.
+
+## Issues Encountered
+
+`dart run tool/check_architecture.dart` flags `lib/presentation/finance/widgets/dashboard` as missing a `README.md`. This is a pre-existing, codebase-wide gap — the sibling subfolders `widgets/debt/`, `widgets/budget/`, `widgets/recurring/` (all created in plan 6-09) and roughly 30 other `lib/` subdirectories are missing README.md too. Out of scope per the deviation-rules scope boundary (only fix issues directly caused by this task's changes); not fixed here.
+
+`flutter analyze lib/presentation/finance/` reports 31 pre-existing `info`-level lint issues across the finance slice (import ordering, `discarded_futures`, line-length, etc.), none newly introduced by this plan — confirmed by diffing against the pre-plan `finance_dashboard_screen.dart` (commit `4659244`), which already had the same import-ordering issue on the same lines. No `error` or `warning` severity issues present.
+
+## Verification Performed
+
+- `wc -l lib/presentation/finance/widgets/dashboard/dashboard_month_header.dart` → 78 lines (≤150 ✓)
+- `dart analyze lib/presentation/finance/widgets/dashboard/dashboard_month_header.dart` → No issues found
+- `wc -l lib/presentation/finance/screens/finance_dashboard_screen.dart lib/presentation/finance/widgets/dashboard/dashboard_tab.dart` → 56 and 143 lines respectively (both ≤150 ✓)
+- `flutter analyze lib/presentation/finance/` → 31 pre-existing info-level issues, zero new errors/warnings, zero issues attributable to this plan's files beyond the pre-existing import-order pattern
+- `flutter test test/presentation/finance/spending_pie_chart_test.dart` → 4/4 tests passed
+- `dart run tool/check_architecture.dart` → neither `finance_dashboard_screen.dart` nor `dashboard_tab.dart` appear in the LINES-violation list
+
+**Not performed:** No widget test exists for `FinanceDashboardScreen` or `DashboardTab` (confirmed — no such test file in `test/presentation/finance/`), and none was added by this plan. The manual on-device/`flutter run` smoke pass described in the plan's acceptance criteria (open the Finance tab, confirm all 6 tabs reachable, confirm Resumo tab shows balance/net-worth/charts, confirm forward-arrow disabled on current month) was **not performed** in this execution — this worktree has no attached device/emulator and no display server (the `flutter test` invocation above surfaced a "Building Linux applications requires clang/cmake/ninja/GTK" message, confirming no build target is available here). The `spending_pie_chart_test.dart` pass and the source-level verbatim-move review are the only behavioral evidence for this split; the chart configuration (`FinanceColors`, `fl_chart` section data, label formatting) was moved unmodified — line-by-line diff shows no edits inside `SpendingPieChart`/`SpendingBarChart` call sites — but this has not been visually confirmed on a running app.
+
+## User Setup Required
+
+None - no external service configuration required.
+
+## Next Phase Readiness
+`finance_dashboard_screen.dart` is now at 56 lines, well under the 150-line architecture limit, closing this violation. The `widgets/dashboard/` subfolder is available for any future dashboard-tab sub-widgets. Recommend a follow-up (or the next architecture-compliance sweep) add a widget test for `DashboardTab` and perform the manual on-device smoke pass this execution could not run, plus batch-close the ~30 missing-README gaps flagged by `check_architecture.dart` across `lib/presentation/` and `lib/application/`.
+
+---
+*Phase: 06-architecture-compliance*
+*Completed: 2026-08-11*
+
+## Self-Check: PASSED

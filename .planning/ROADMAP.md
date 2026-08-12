@@ -2,22 +2,20 @@
 
 ## Overview
 
-AGENDA is built in five dependency-ordered phases. Phase 1 lays the architectural foundation — database, DI, l10n — that every other phase builds on. Phase 2 completes the task domain, establishing the patterns (entity shapes, Cubit conventions, Isar query style) that finance inherits. Phase 3 delivers the finance domain on those proven patterns. Phase 4 wires all notifications and backup together with the now-stable domain, because budget alerts and debt reminders are finance's primary value-add. Phase 5 adds app lock, settings, and the final polish that makes the app release-ready.
+AGENDA is built in six dependency-ordered phases. Phase 1 lays the architectural foundation — database, DI, l10n — that every other phase builds on. Phase 2 completes the task domain, establishing the patterns (entity shapes, Cubit conventions, Isar query style) that finance inherits. Phase 3 delivers the finance domain on those proven patterns. Phase 4 wires all notifications and backup together with the now-stable domain, because budget alerts and debt reminders are finance's primary value-add. Phase 5 adds app lock, settings, and the final polish that makes the app release-ready. Phase 6 is the architecture-compliance rework.
 
 ## Phases
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
-
-Decimal phases appear between their surrounding integers in numeric order.
+**Phase Numbering:** integer phases only. Phase 6 was executed out of order — the
+architecture rework was carried out immediately after Phase 3, before Phases 4 and 5 —
+but it is numbered as a normal phase rather than a decimal insertion.
 
 - [x] **Phase 1: Foundation** - Architecture scaffold, Isar + migration runner, DI wiring, l10n setup, offline guarantee
 - [x] **Phase 2: Task Core** - Complete task domain — projects, subtasks, CRUD, recurring, Eisenhower, 1-3-5, GTD, search, filter
 - [ ] **Phase 3: Finance Core** - Complete finance domain — transactions, budgets, goals, debts, recurring payments, dashboard, charts
-- [ ] **Phase 3.1: Architecture Compliance** (INSERTED) - 150-line file limit, nested feature modules, per-nest README docs
 - [ ] **Phase 4: Notifications + Backup** - All notification types with boot-safe rescheduling; JSON + CSV export/import
 - [ ] **Phase 5: App Lock + Settings + Polish** - PIN + biometric lock, settings screen, onboarding, empty states
+- [x] **Phase 6: Architecture Compliance** - 150-line file limit, nested feature modules, per-nest README docs
 
 ## Phase Details
 
@@ -89,53 +87,6 @@ Plans:
 
 ---
 
-### Phase 3.1: Architecture Compliance (INSERTED)
-
-**Goal**: Every hand-written source file is under 150 lines, every directory is nested by responsibility with no more than ~10 related files, and every feature nest carries a README documenting its responsibility and rules
-**Depends on**: Phase 3
-**Inserted**: 2026-08-11 — house rules adopted mid-project; applied to the goals slice in quick task 260811-97x, rest of the codebase still non-compliant
-**Verified**: 2026-08-12 — all 5 success criteria confirmed by independent re-measurement (03.1-VERIFICATION.md). Guard enforces in CI. **Not closed**: on-device UAT never ran (no emulator in the execution environment) — cold start against pre-3.1 seeded data, manual smoke of the five extracted form screens, keyboard/focus/scroll behaviour.
-**Requirements**: (none — internal quality)
-**Success Criteria** (what must be TRUE):
-  1. No hand-written file under lib/ exceeds 150 lines (generated *.g.dart and injection.config.dart exempt)
-  2. No directory under lib/ holds more than 10 related source files
-  3. Every feature directory under lib/presentation/ and lib/application/ contains a README.md stating its responsibility, its contents, and any slice-specific rules
-  4. The full test suite passes unchanged — this is a pure refactor with no behaviour change
-  5. `flutter analyze` reports no new errors or warnings
-**Plans**: 18 plans (planned 2026-08-11 — expanded from the original 5-plan estimate; see plan-level rationale below)
-**UI hint**: no
-
-**Scope baseline** (re-measured 2026-08-11 after the goals slice and GTD sub-slice landed):
-21 files over 150 lines · 2 directories over 10 files · 2 of 30 feature nests carry a README.
-
-**Planner deviation from the 5-plan estimate**: 18 plans across 5 waves. Each of the 21
-over-limit files needs concrete, per-file extraction seams (not a mechanical batch action) to
-stay within a single plan's context budget, and two of the planner's own decomposition choices
-(shared finance-form primitives, per-entity `presentation/finance/widgets/<entity>/` subfolders)
-were required to avoid the split work itself creating *new* directory-size violations. See
-plan `3.1-08`'s objective for why the four finance form screens share a Wave 1 prerequisite
-plan, and plan `3.1-16`'s objective for why the two folder-nesting plans run last.
-
-Plans:
-- [x] 3.1-01: Architecture guard scaffold — tool/check_architecture.dart + exemption allowlist (currencies.dart), informational mode; guard unit-tested against fixtures
-- [x] 3.1-02: task_form_screen.dart remainder — field groups, finance-link picker, save path (completes the partial 3.1-01 work from commits 6c06312/04c4f84)
-- [x] 3.1-03: task_detail_screen.dart split (563 lines) — hero card, section atoms, action bar
-- [x] 3.1-04: item.dart split-or-exempt (SPLIT: sentinel + copyWith extension) + task_list_cubit.dart pure-function extraction
-- [x] 3.1-05: item_dao.dart query-builder extraction + item_repository_impl.dart part/part-of split
-- [x] 3.1-06: task_list_screen.dart + day_planner_screen.dart + project_screen.dart splits
-- [x] 3.1-07: home_dashboard_cubit.dart + budget_cubit.dart aggregation-math extraction
-- [x] 3.1-08: Shared finance-form utilities (FormCard/FieldRow/FieldDivider, CategoryPickerSheet, amount_parser) — prerequisite for 3.1-12..15
-- [x] 3.1-09: debt_list_screen.dart + recurring_payment_screen.dart + budget_overview_screen.dart splits
-- [x] 3.1-10: finance_dashboard_screen.dart split
-- [x] 3.1-11: finance_mappers.dart split-or-exempt (SPLIT into 6 per-entity mapper files) — prerequisite for 3.1-17
-- [x] 3.1-12: transaction_form_screen.dart split (587 lines, largest presentation/finance file) — depends on 3.1-08
-- [x] 3.1-13: recurring_payment_form_screen.dart split — depends on 3.1-08
-- [x] 3.1-14: debt_form_screen.dart split — depends on 3.1-08
-- [x] 3.1-15: goal_form_screen.dart split — depends on 3.1-08
-- [x] 3.1-16: domain/finance folder nesting (16 → 6 subfolders) — depends on every finance-touching plan above
-- [x] 3.1-17: data/finance folder nesting (18 → 6 subfolders, using 3.1-11's mapper files) — depends on 3.1-16
-- [x] 3.1-18: README per nest (all directories under presentation/+application/, literal reading) + guard enforcement wired into CI — final plan
-
 ### Phase 4: Notifications + Backup
 **Goal**: All notification types are scheduled, delivered reliably after device reboot, and controlled by the user; data can be exported as JSON or CSV and restored from backup with transactional safety
 **Depends on**: Phase 3
@@ -178,6 +129,54 @@ Plans:
 
 ---
 
+### Phase 6: Architecture Compliance ✅ Complete
+
+**Goal**: Every hand-written source file is under 150 lines, every directory is nested by responsibility with no more than ~10 related files, and every feature nest carries a README documenting its responsibility and rules
+**Depends on**: Phase 3
+**Executed**: 2026-08-11 → 2026-08-12 — house rules adopted mid-project; applied to the goals slice in quick task 260811-97x, rest of the codebase still non-compliant. Carried out immediately after Phase 3, ahead of Phases 4 and 5, hence the out-of-order number.
+**Verified**: 2026-08-12 — all 5 success criteria confirmed by independent re-measurement (06-VERIFICATION.md). Guard enforces in CI.
+**UAT**: 2026-08-12 — PASSED on a physical Infinix X6831 (Android 13, arm64). The pre-phase build (installed 2026-08-11, 1 MB Isar db) was upgraded in place and cold-started: all pre-existing tasks, transactions, goals and debts survived, balance unchanged at MT 3.800,00, no Isar or Dart errors in logcat. All six regenerated `*_model.g.dart` files are byte-identical to their pre-move versions, so the schema never moved. Transaction and task forms were exercised end-to-end (create → categorise → save → delete → undo); the extracted pickers, scaffolds, app bars and finance-link card all behave. Three UI defects were found and all three were confirmed **pre-existing** by diffing against the pre-refactor sources — see 06-VERIFICATION.md.
+**Requirements**: (none — internal quality)
+**Success Criteria** (what must be TRUE):
+  1. No hand-written file under lib/ exceeds 150 lines (generated *.g.dart and injection.config.dart exempt)
+  2. No directory under lib/ holds more than 10 related source files
+  3. Every feature directory under lib/presentation/ and lib/application/ contains a README.md stating its responsibility, its contents, and any slice-specific rules
+  4. The full test suite passes unchanged — this is a pure refactor with no behaviour change
+  5. `flutter analyze` reports no new errors or warnings
+**Plans**: 18 plans (planned 2026-08-11 — expanded from the original 5-plan estimate; see plan-level rationale below)
+**UI hint**: no
+
+**Scope baseline** (re-measured 2026-08-11 after the goals slice and GTD sub-slice landed):
+21 files over 150 lines · 2 directories over 10 files · 2 of 30 feature nests carry a README.
+
+**Planner deviation from the 5-plan estimate**: 18 plans across 5 waves. Each of the 21
+over-limit files needs concrete, per-file extraction seams (not a mechanical batch action) to
+stay within a single plan's context budget, and two of the planner's own decomposition choices
+(shared finance-form primitives, per-entity `presentation/finance/widgets/<entity>/` subfolders)
+were required to avoid the split work itself creating *new* directory-size violations. See
+plan `6-08`'s objective for why the four finance form screens share a Wave 1 prerequisite
+plan, and plan `6-16`'s objective for why the two folder-nesting plans run last.
+
+Plans:
+- [x] 6-01: Architecture guard scaffold — tool/check_architecture.dart + exemption allowlist (currencies.dart), informational mode; guard unit-tested against fixtures
+- [x] 6-02: task_form_screen.dart remainder — field groups, finance-link picker, save path (completes the partial 6-01 work from commits 6c06312/04c4f84)
+- [x] 6-03: task_detail_screen.dart split (563 lines) — hero card, section atoms, action bar
+- [x] 6-04: item.dart split-or-exempt (SPLIT: sentinel + copyWith extension) + task_list_cubit.dart pure-function extraction
+- [x] 6-05: item_dao.dart query-builder extraction + item_repository_impl.dart part/part-of split
+- [x] 6-06: task_list_screen.dart + day_planner_screen.dart + project_screen.dart splits
+- [x] 6-07: home_dashboard_cubit.dart + budget_cubit.dart aggregation-math extraction
+- [x] 6-08: Shared finance-form utilities (FormCard/FieldRow/FieldDivider, CategoryPickerSheet, amount_parser) — prerequisite for 6-12..15
+- [x] 6-09: debt_list_screen.dart + recurring_payment_screen.dart + budget_overview_screen.dart splits
+- [x] 6-10: finance_dashboard_screen.dart split
+- [x] 6-11: finance_mappers.dart split-or-exempt (SPLIT into 6 per-entity mapper files) — prerequisite for 6-17
+- [x] 6-12: transaction_form_screen.dart split (587 lines, largest presentation/finance file) — depends on 6-08
+- [x] 6-13: recurring_payment_form_screen.dart split — depends on 6-08
+- [x] 6-14: debt_form_screen.dart split — depends on 6-08
+- [x] 6-15: goal_form_screen.dart split — depends on 6-08
+- [x] 6-16: domain/finance folder nesting (16 → 6 subfolders) — depends on every finance-touching plan above
+- [x] 6-17: data/finance folder nesting (18 → 6 subfolders, using 6-11's mapper files) — depends on 6-16
+- [x] 6-18: README per nest (all directories under presentation/+application/, literal reading) + guard enforcement wired into CI — final plan
+
 ## Progress
 
 **Execution Order:**
@@ -188,6 +187,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 5/5 | In verification | - |
-| 3.1. Architecture Compliance | 18/18 | Verified — awaiting on-device UAT | Guard enforcing in CI; see 03.1-VERIFICATION.md |
 | 4. Notifications + Backup | 0/5 | Not started | - |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
+| 6. Architecture Compliance | 18/18 | ✅ Complete | 2026-08-12 |

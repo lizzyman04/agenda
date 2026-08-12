@@ -24,7 +24,7 @@ void main() {
     // and returns null. The 4 forms do NOT actually support thousands
     // separators — inputting "1.250,50" today silently fails validation.
     // This function replicates that exact (undesirable but pre-existing)
-    // behavior per the plan's own threat model (T-03.1-08-01): preserve the
+    // behavior per the plan's own threat model (T-06-08-01): preserve the
     // exact behavior of the 4 existing inline implementations, not an
     // idealized re-design. See PLAN SUMMARY for full deviation note.
     test(

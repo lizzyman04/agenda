@@ -25,7 +25,7 @@ part 'item_repository_impl_queries.dart';
 /// methods satisfying [ItemRepository] while sharing this class's private
 /// `_dao`/`_mapper` fields via same-library (`part of`) scope. This remains
 /// a single class with a single DI registration — see Pattern 4 in
-/// 03.1-RESEARCH.md.
+/// 06-RESEARCH.md.
 @LazySingleton(as: ItemRepository)
 class ItemRepositoryImpl extends Object
     with _ItemRepositoryImplQueries

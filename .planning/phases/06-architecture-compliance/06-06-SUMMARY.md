@@ -1,0 +1,149 @@
+---
+phase: 06-architecture-compliance
+plan: 06
+subsystem: ui
+tags: [flutter, bloc, widget-extraction, architecture-compliance]
+
+# Dependency graph
+requires:
+  - phase: 06-architecture-compliance
+    provides: "task_detail_screen.dart decomposition pattern (screens own state, widgets take data + callbacks, sheets return via Navigator.pop) established in plan 06-03"
+provides:
+  - "task_list_screen.dart, day_planner_screen.dart, project_screen.dart all reduced to ≤150 lines"
+  - "TaskListEmptyState, TaskListView, TaskSearchBar in widgets/task_list_view.dart"
+  - "SlotSize, WarningBanner, TaskPickerSheet in widgets/task_picker_sheet.dart"
+  - "AddSubtaskSheet/AddSubtaskSheetState in widgets/add_subtask_sheet.dart"
+  - "First widget test for project_screen.dart (test/presentation/tasks/project_screen_test.dart)"
+affects: [presentation/tasks]
+
+# Tech tracking
+tech-stack:
+  added: []
+  patterns:
+    - "Screen-bottom private widget extraction: verbatim move + rename to public, no logic changes"
+    - "Sheets are StatefulWidgets owning/disposing their own controllers, returning via Navigator.pop (WR-03 pattern, now also documented via AddSubtaskSheet)"
+
+key-files:
+  created:
+    - lib/presentation/tasks/widgets/task_list_view.dart
+    - lib/presentation/tasks/widgets/task_picker_sheet.dart
+    - lib/presentation/tasks/widgets/add_subtask_sheet.dart
+    - test/presentation/tasks/project_screen_test.dart
+  modified:
+    - lib/presentation/tasks/screens/task_list_screen.dart
+    - lib/presentation/tasks/screens/day_planner_screen.dart
+    - lib/presentation/tasks/screens/project_screen.dart
+
+key-decisions:
+  - "task_list_screen.dart needed a second extraction beyond the plan's primary one (TaskListEmptyState/TaskListView) because it was still 151 lines afterward; per the plan's own fallback instruction, also extracted the AppBar SearchBar into a new TaskSearchBar widget (implements PreferredSizeWidget), bringing the screen to 143 lines"
+  - "project_screen.dart had no existing widget test; rather than relying on an unautomatable manual on-device smoke pass (no emulator/device available in this sandboxed worktree — Linux desktop build tooling and mobile emulators are both unavailable), added test/presentation/tasks/project_screen_test.dart with 3 tests that directly exercise the extracted AddSubtaskSheet: FAB opens it, valid submit calls cubit.addSubtask and closes without a post-dispose controller crash, empty submit keeps it open"
+
+patterns-established:
+  - "When a plan's primary extraction leaves a screen 1 line over budget, extract the next self-contained inline block (e.g., an AppBar's PreferredSize+SearchBar) rather than reshaping the primary extraction"
+
+requirements-completed: []
+
+# Metrics
+duration: 12min
+completed: 2026-08-11
+---
+
+# Phase 06 Plan 06: Extract task-list/day-planner/project screen widgets Summary
+
+**Reduced task_list_screen.dart (201→143), day_planner_screen.dart (200→121), and project_screen.dart (185→110) below the 150-line architecture limit by moving each screen's self-contained private widgets into `lib/presentation/tasks/widgets/`, with zero behavior changes.**
+
+## Performance
+
+- **Duration:** ~12 min (17:31–17:43 local)
+- **Started:** 2026-08-11T17:31:00+02:00 (approx, worktree init)
+- **Completed:** 2026-08-11T17:43:00+02:00 (approx)
+- **Tasks:** 3
+- **Files modified:** 6 (3 screens modified, 3 widget files created) + 1 new test file
+
+## Accomplishments
+- `task_list_screen.dart` 201→143 lines: extracted `TaskListEmptyState`, `TaskListView`, and (to clear the 150-line bar) `TaskSearchBar` into `widgets/task_list_view.dart` (86 lines)
+- `day_planner_screen.dart` 200→121 lines: extracted `SlotSize` enum, `WarningBanner`, and `TaskPickerSheet` into `widgets/task_picker_sheet.dart` (88 lines)
+- `project_screen.dart` 185→110 lines: extracted `AddSubtaskSheet`/`AddSubtaskSheetState` into `widgets/add_subtask_sheet.dart` (90 lines), preserving the WR-03 controller `initState`/`dispose` lifecycle exactly
+- Added `test/presentation/tasks/project_screen_test.dart` (3 tests) — the first widget test coverage for this screen, directly exercising the moved `AddSubtaskSheet`
+- `lib/presentation/tasks/widgets/` now holds 7 files + the pre-existing `detail/` subdirectory — still under the 10-file directory limit
+
+## Task Commits
+
+Each task was committed atomically:
+
+1. **Task 1: Extract task_list_screen.dart's list/empty-state widgets** - `76b98cc` (refactor)
+2. **Task 2: Extract day_planner_screen.dart's task-picker sheet** - `cf459a6` (refactor)
+3. **Task 3: Extract project_screen.dart's add-subtask sheet** - `500a515` (refactor)
+
+**Plan metadata:** (this commit, made after SUMMARY.md)
+
+## Files Created/Modified
+- `lib/presentation/tasks/widgets/task_list_view.dart` - `TaskListEmptyState`, `TaskListView`, `TaskSearchBar` (public, moved verbatim from private classes + one new extraction)
+- `lib/presentation/tasks/widgets/task_picker_sheet.dart` - `SlotSize` enum, `WarningBanner`, `TaskPickerSheet` (public, moved verbatim)
+- `lib/presentation/tasks/widgets/add_subtask_sheet.dart` - `AddSubtaskSheet`/`AddSubtaskSheetState` (public, moved verbatim, controller lifecycle unchanged)
+- `lib/presentation/tasks/screens/task_list_screen.dart` - now imports and references `TaskListEmptyState`/`TaskListView`/`TaskSearchBar`; 201→143 lines
+- `lib/presentation/tasks/screens/day_planner_screen.dart` - now imports and references `SlotSize`/`WarningBanner`/`TaskPickerSheet`; 200→121 lines
+- `lib/presentation/tasks/screens/project_screen.dart` - now imports and references `AddSubtaskSheet`; 185→110 lines
+- `test/presentation/tasks/project_screen_test.dart` - new: 3 widget tests covering the add-subtask flow
+
+## Decisions Made
+- Task 1's plan-specified extraction alone left `task_list_screen.dart` at 151 lines (1 over budget). Per the plan's own contingency instruction, additionally extracted the inline `AppBar.bottom` `PreferredSize`+`SearchBar` block into a new `TaskSearchBar` widget (implements `PreferredSizeWidget`) in the same file, bringing the screen to 143 lines.
+- Task 3's acceptance criteria called for manual on-device verification since no test previously existed for `project_screen.dart`. This sandboxed worktree has no usable device (Linux desktop build requires unavailable system packages — clang/cmake/ninja/GTK dev libs; no mobile emulator is running). Per the plan-specific instruction ("add a widget test or state plainly... the change is not behaviourally verified"), added a real widget test instead of an unverifiable manual claim. The 3 new tests assert the exact failure mode the WR-03 comment guards against (no crash on submit-then-close) and the empty-title guard.
+
+## Deviations from Plan
+
+### Auto-fixed Issues
+
+**1. [Rule 1 - scope-compliant extension of Task 1] `task_list_screen.dart` still over 150 lines after primary extraction**
+- **Found during:** Task 1
+- **Issue:** After moving `_EmptyState`/`_TaskList` to `TaskListEmptyState`/`TaskListView`, the screen was 151 lines — 1 over the ≤150 acceptance criterion.
+- **Fix:** Extracted the `AppBar`'s inline `PreferredSize`+`SearchBar` block into a new `TaskSearchBar` widget in the same new file, exactly as the plan's action block anticipated for this scenario.
+- **Files modified:** `lib/presentation/tasks/screens/task_list_screen.dart`, `lib/presentation/tasks/widgets/task_list_view.dart`
+- **Verification:** `wc -l` both files ≤150; `flutter test test/presentation/tasks/task_list_screen_test.dart` — 4/4 pass, same count as before.
+- **Committed in:** `76b98cc` (Task 1 commit)
+
+**2. [Rule 2 - missing regression coverage] Added widget test for previously-untested `project_screen.dart`**
+- **Found during:** Task 3
+- **Issue:** The plan's acceptance criteria for Task 3 specified manual on-device verification since no test exists for this screen. No device/emulator is available in this sandboxed environment.
+- **Fix:** Wrote `test/presentation/tasks/project_screen_test.dart` (3 tests: sheet opens from FAB, valid submit calls `cubit.addSubtask` and closes cleanly, empty submit keeps the sheet open) instead of relying on an unautomatable manual claim.
+- **Files modified:** `test/presentation/tasks/project_screen_test.dart` (new)
+- **Verification:** `flutter test test/presentation/tasks/project_screen_test.dart` — 3/3 pass; `flutter analyze test/presentation/tasks/project_screen_test.dart` — no issues.
+- **Committed in:** `500a515` (Task 3 commit)
+
+---
+
+**Total deviations:** 2 auto-fixed (1 plan-anticipated fallback extraction, 1 test-coverage addition in place of unavailable manual verification)
+**Impact on plan:** No scope creep — both were explicitly anticipated by the plan's own task instructions/notes. No architectural changes.
+
+## Issues Encountered
+None.
+
+## Stub Tracking
+No stubs introduced — all three extractions are verbatim moves with renamed (private → public) classes; no data source, prop, or rendering path was changed to a placeholder value.
+
+## Threat Flags
+None — no new trust boundaries, network, auth, or schema surface introduced. The one file with a controller (`AddSubtaskSheet`) preserves the pre-existing WR-03 ownership pattern unchanged, per the plan's threat register.
+
+## User Setup Required
+None - no external service configuration required.
+
+## Next Phase Readiness
+- All three tasks-side screens targeted by this plan are now ≤150 lines: `task_list_screen.dart` (143), `day_planner_screen.dart` (121), `project_screen.dart` (110).
+- `lib/presentation/tasks/widgets/` is at 7 files (+ `detail/` subdir) — still under the 10-file directory limit; no new subfolder needed yet, but the next widget added to this directory should prompt a re-check.
+- `dart run tool/check_architecture.dart` reports no LINES violations for any file touched in this plan. Pre-existing LINES violations remain in `lib/data/tasks/item_dao.dart` (178) and `lib/infrastructure/tasks/item_repository_impl.dart` (227) — out of scope for this plan, unchanged.
+- Pre-existing README gaps under `lib/presentation/tasks/**` (screens/, widgets/, widgets/detail/, form/gtd/**, application/tasks/**) are unchanged by this plan — out of scope, flagged for a future documentation-focused plan.
+- The undo-snackbar 5-second delete flow in `task_list_screen.dart` was preserved byte-for-byte (moved as `TaskListView`'s `onDelete` callback into the cubit call, screen-side `BlocConsumer.listener` untouched) — the documented, still-undiagnosed timer-never-fires defect was NOT touched or investigated in this plan, per instructions.
+
+## Self-Check: PASSED
+
+- FOUND: lib/presentation/tasks/widgets/task_list_view.dart
+- FOUND: lib/presentation/tasks/widgets/task_picker_sheet.dart
+- FOUND: lib/presentation/tasks/widgets/add_subtask_sheet.dart
+- FOUND: test/presentation/tasks/project_screen_test.dart
+- FOUND commit 76b98cc
+- FOUND commit cf459a6
+- FOUND commit 500a515
+
+---
+*Phase: 06-architecture-compliance*
+*Completed: 2026-08-11*

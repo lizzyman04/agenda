@@ -9,7 +9,7 @@ import 'package:agenda/domain/finance/transaction/transaction_type.dart';
 /// Collapses the screen's seven separate `_selected*`/`_all*`/`_loading*`
 /// members into one object so the screen stays under the architecture
 /// line-count limit. Mirrors `presentation/tasks/form/task_form_fields_model.dart`,
-/// the same pattern plan 3.1-02 introduced for the task form.
+/// the same pattern plan 6-02 introduced for the task form.
 ///
 /// Holds no controllers — the screen still owns and disposes those.
 class TransactionFormModel {
