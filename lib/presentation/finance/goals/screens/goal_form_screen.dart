@@ -1,7 +1,10 @@
 import 'package:agenda/application/finance/goal/goal_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
+import 'package:agenda/core/utils/amount_parser.dart';
 import 'package:agenda/domain/finance/savings_goal.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/finance/goal_form_logic.dart';
+import 'package:agenda/presentation/finance/widgets/finance_form_primitives.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -65,11 +68,8 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final rawAmount = _targetController.text
-        .replaceAll(',', '.')
-        .replaceAll(RegExp(r'[^\d.]'), '');
-    final parsed = double.tryParse(rawAmount);
-    if (parsed == null || parsed <= 0) {
+    final targetCents = parseAmountCentsOrNull(_targetController.text);
+    if (targetCents == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).errorAmountRequired),
@@ -78,29 +78,21 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
       );
       return;
     }
-    final targetCents = (parsed * 100).round();
     final now = DateTime.now();
+
+    final goal = buildGoalToSave(
+      isEditing: _isEditing,
+      original: widget.goal,
+      title: _titleController.text.trim(),
+      targetAmountCents: targetCents,
+      deadline: _deadline,
+      now: now,
+    );
 
     if (_isEditing) {
       final goalCubit = getIt<GoalCubit>();
-      final updated = widget.goal!.copyWith(
-        title: _titleController.text.trim(),
-        targetAmountCents: targetCents,
-        deadline: _deadline,
-        updatedAt: now,
-      );
-      await goalCubit.updateGoal(updated);
+      await goalCubit.updateGoal(goal);
     } else {
-      final goal = SavingsGoal(
-        id: 0,
-        title: _titleController.text.trim(),
-        targetAmountCents: targetCents,
-        contributions: const [],
-        isCompleted: false,
-        deadline: _deadline,
-        createdAt: now,
-        updatedAt: now,
-      );
       // Use GoalListCubit from context if available, else create via GoalCubit
       try {
         final goalCubit = getIt<GoalCubit>();
@@ -147,7 +139,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
           padding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           children: [
-            _FormCard(
+            FormCard(
               child: Column(
                 children: [
                   // Title
@@ -264,23 +256,6 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _FormCard extends StatelessWidget {
-  const _FormCard({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Card(
-      elevation: 0,
-      color: cs.surfaceContainerLow,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: child,
     );
   }
 }
