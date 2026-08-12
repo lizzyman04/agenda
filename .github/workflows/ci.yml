@@ -38,6 +38,9 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos --fatal-warnings
 
+      - name: Architecture guard
+        run: dart run tool/check_architecture.dart
+
       - name: Test
         run: flutter test --no-pub --coverage
 
