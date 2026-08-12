@@ -15,8 +15,13 @@
         t["nav-dev"] }}</a></li>
   </ul>
   <div class="nav-right">
-    {% comment %} alt_url is set in default.html layout and available here via shared scope {% endcomment %}
-    <a href="{{ alt_url }}" class="lang-btn" id="lang-btn" aria-label="Switch language">
+    {% comment %}
+    alt_url is set in default.html layout and available here via shared scope.
+    It already points at the *other* language, so it must bypass polyglot's
+    relativizer -- otherwise on a PT page the EN target `/agenda/terms/` gets
+    rewritten back to `/agenda/pt/terms/`. `static_href` marks it as final.
+    {% endcomment %}
+    <a {% static_href %}href="{{ alt_url }}"{% endstatic_href %} class="lang-btn" id="lang-btn" aria-label="Switch language">
       {% if site.active_lang == 'pt' %}EN{% else %}PT{% endif %}
     </a>
   </div>

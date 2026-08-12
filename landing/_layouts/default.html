@@ -1,35 +1,36 @@
 <!DOCTYPE html>
 {% assign t = site.data.translations[site.active_lang] %}
-{% comment %} Compute the alternate-language URL for hreflang + JS redirect {% endcomment %}
+{% comment %}
+Compute both language paths for this page, site-root-relative and WITHOUT the
+baseurl -- `relative_url` / `absolute_url` add it below. `page.url` never
+carries the `/pt` prefix (polyglot writes the PT copy to a prefixed directory
+but leaves `page.url` alone), so the EN path is `page.url` in both languages.
+{% endcomment %}
+{% assign en_path = page.url | remove_first: '/pt' %}
+{% if en_path == "" %}{% assign en_path = "/" %}{% endif %}
 {% if site.active_lang == 'pt' %}
+{% assign pt_path = '/pt' | append: en_path %}
 {% if page.ref %}
 {% assign _xlated = site.posts | where: "ref", page.ref | where_exp: "p", "p.lang == 'en'" %}
-{% if _xlated.size > 0 %}
-{% assign alt_url = _xlated[0].url %}
-{% else %}
-{% assign alt_url = page.url | remove_first: '/pt' %}
-{% if alt_url == "" %}{% assign alt_url = "/" %}{% endif %}
+{% if _xlated.size > 0 %}{% assign en_path = _xlated[0].url %}{% endif %}
 {% endif %}
+{% assign alt_path = en_path %}
 {% else %}
-{% assign alt_url = page.url | remove_first: '/pt' %}
-{% if alt_url == "" %}{% assign alt_url = "/" %}{% endif %}
-{% endif %}
-{% assign en_url = site.url | append: alt_url %}
-{% assign pt_url = site.url | append: page.url %}
-{% else %}
+{% assign pt_path = '/pt' | append: en_path %}
 {% if page.ref %}
 {% assign _xlated = site.posts | where: "ref", page.ref | where_exp: "p", "p.lang == 'pt'" %}
-{% if _xlated.size > 0 %}
-{% assign alt_url = '/pt' | append: _xlated[0].url %}
-{% else %}
-{% assign alt_url = '/pt' | append: page.url %}
+{% if _xlated.size > 0 %}{% assign pt_path = '/pt' | append: _xlated[0].url %}{% endif %}
 {% endif %}
-{% else %}
-{% assign alt_url = '/pt' | append: page.url %}
+{% assign alt_path = pt_path %}
 {% endif %}
-{% assign en_url = site.url | append: page.url %}
-{% assign pt_url = site.url | append: alt_url %}
-{% endif %}
+{% comment %}
+`alt_url` is the finished, baseurl-qualified href the language toggle and the
+`i18n.js` redirect both use. Emitted through `static_href` in nav.html so
+polyglot does not re-prefix it with the active language.
+{% endcomment %}
+{% assign alt_url = alt_path | relative_url %}
+{% assign en_url = en_path | absolute_url %}
+{% assign pt_url = pt_path | absolute_url %}
 {% comment %} Per-language title and description {% endcomment %}
 {% if site.active_lang == 'pt' %}
 {% assign meta_title = page.title_pt | default: page.title %}
@@ -46,8 +47,8 @@
   <meta name="description" content="{{ meta_desc }}" />
   <meta property="og:title" content="{{ meta_title | default: site.title }}" />
   <meta property="og:description" content="{{ meta_desc }}" />
-  <meta property="og:image" content="{{ site.url }}/assets/img/agenda.png" />
-  <meta property="og:url" content="{{ site.url }}{{ page.url }}" />
+  <meta property="og:image" content="{{ '/assets/img/agenda.png' | absolute_url }}" />
+  <meta property="og:url" content="{% if site.active_lang == 'pt' %}{{ pt_url }}{% else %}{{ en_url }}{% endif %}" />
   <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}" />
   {% if page.layout == 'post' %}
   <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}" />
