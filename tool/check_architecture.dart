@@ -9,9 +9,12 @@
 //
 // Run: dart run tool/check_architecture.dart
 //
-// NOTE: informational mode only (Phase 03.1-01). This script always exits 0
-// for now — it is not yet wired into CI. Enforcement (exit 1 on violations,
-// CI wiring) is deferred to plan 03.1-18, once the tree is compliant.
+// ENFORCING (Phase 03.1-18). Exits 1 on any violation and runs in CI on
+// every push/PR, immediately after the Analyze step
+// (.github/workflows/ci.yml). It ran in informational mode for the length
+// of Phase 03.1 (introduced by 03.1-01, always exiting 0) while the tree
+// was brought into compliance; enforcement was switched on by 03.1-18 once
+// the last violation was closed.
 //
 // The three checks below are exposed as standalone functions (each taking
 // its own root `Directory`/list of roots) so they can be unit-tested
@@ -164,14 +167,16 @@ void main() {
     exit(0);
   }
 
-  stdout.writeln(
-    'Architecture guard: FAIL (${violations.length} violation(s)) '
-    '[informational only — not yet enforced in CI, see 03.1-18]',
+  stderr.writeln(
+    'Architecture guard: FAIL (${violations.length} violation(s))',
   );
   for (final v in violations) {
-    stdout.writeln('  - $v');
+    stderr.writeln('  - $v');
   }
-  // Informational mode (Phase 03.1-01): always exit 0. Enforcement mode
-  // (exit 1 on violations) is deferred to plan 03.1-18.
-  exit(0);
+  stderr.writeln(
+    '\nSplit the file, nest the directory, or add a documented, justified '
+    'entry to tool/architecture_exemptions.dart. An exemption without a '
+    'written justification is a rule with a hole in it.',
+  );
+  exit(1);
 }
