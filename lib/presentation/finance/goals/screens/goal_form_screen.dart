@@ -4,10 +4,8 @@ import 'package:agenda/core/utils/amount_parser.dart';
 import 'package:agenda/domain/finance/savings_goal.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/goal_form_logic.dart';
-import 'package:agenda/presentation/finance/widgets/finance_form_primitives.dart';
+import 'package:agenda/presentation/finance/goals/widgets/goal_form_fields.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 
 /// Form screen for creating or editing a savings goal.
 ///
@@ -38,9 +36,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     final goal = widget.goal;
     _titleController = TextEditingController(text: goal?.title ?? '');
     final targetStr = goal != null
-        ? (goal.targetAmountCents / 100)
-            .toStringAsFixed(2)
-            .replaceAll('.', ',')
+        ? (goal.targetAmountCents / 100).toStringAsFixed(2).replaceAll('.', ',')
         : '';
     _targetController = TextEditingController(text: targetStr);
     _deadline = goal?.deadline;
@@ -111,7 +107,6 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final dateFormat = DateFormat('dd/MM/yyyy');
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -136,121 +131,15 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           children: [
-            FormCard(
-              child: Column(
-                children: [
-                  // Title
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 2),
-                    child: Row(
-                      children: [
-                        Icon(Icons.title_outlined,
-                            size: 20, color: cs.onSurfaceVariant),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _titleController,
-                            autofocus: !_isEditing,
-                            decoration: InputDecoration(
-                              labelText: l10n.fieldTitle,
-                              border: InputBorder.none,
-                              isDense: true,
-                            ),
-                            textCapitalization: TextCapitalization.sentences,
-                            validator: (val) {
-                              if (val == null || val.trim().isEmpty) {
-                                return l10n.errorTitleRequired;
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1, indent: 48, endIndent: 16),
-
-                  // Target amount
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 2),
-                    child: Row(
-                      children: [
-                        Icon(Icons.attach_money_outlined,
-                            size: 20, color: cs.onSurfaceVariant),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _targetController,
-                            keyboardType:
-                                const TextInputType.numberWithOptions(
-                                    decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[\d,.]')),
-                            ],
-                            decoration: InputDecoration(
-                              labelText: l10n.fieldAmount,
-                              hintText: '0,00',
-                              border: InputBorder.none,
-                              isDense: true,
-                            ),
-                            validator: (val) {
-                              if (val == null || val.trim().isEmpty) {
-                                return l10n.errorAmountRequired;
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1, indent: 48, endIndent: 16),
-
-                  // Optional deadline
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 2),
-                    child: Row(
-                      children: [
-                        Icon(Icons.calendar_today_outlined,
-                            size: 20, color: cs.onSurfaceVariant),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            dense: true,
-                            title: Text(
-                              l10n.fieldDueDate,
-                              style: theme.textTheme.bodySmall
-                                  ?.copyWith(color: cs.onSurfaceVariant),
-                            ),
-                            subtitle: Text(
-                              _deadline != null
-                                  ? dateFormat.format(_deadline!)
-                                  : l10n.noDueDate,
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                            trailing: _deadline != null
-                                ? IconButton(
-                                    icon: const Icon(Icons.clear, size: 18),
-                                    onPressed: () =>
-                                        setState(() => _deadline = null),
-                                  )
-                                : const Icon(Icons.edit_calendar_outlined),
-                            onTap: _pickDeadline,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            GoalFormFields(
+              titleController: _titleController,
+              targetController: _targetController,
+              isEditing: _isEditing,
+              deadline: _deadline,
+              onPickDeadline: _pickDeadline,
+              onClearDeadline: () => setState(() => _deadline = null),
             ),
             const SizedBox(height: 32),
           ],
