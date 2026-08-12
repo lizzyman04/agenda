@@ -28,7 +28,7 @@ const Map<String, String> lineLimitExemptions = {
 /// directory under `lib/presentation/` and `lib/application/` requires a
 /// README.md, with no exemptions.
 ///
-/// Confirmed empty by 03.1-18, which wrote the last 33 of those READMEs and
+/// Confirmed empty by 03.1-18, which wrote the last 34 of those READMEs and
 /// switched the guard to enforcing mode. All 36 directories comply on their
 /// own merits — including pure-umbrella ones such as `lib/application/` and
 /// `lib/presentation/`, which carry short pointer READMEs rather than an
