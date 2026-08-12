@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: 03-04 human-verify checkpoint (Finance UI on device)
-last_updated: "2026-08-12T05:24:41.985Z"
+stopped_at: Completed 03.1-16-PLAN.md (Wave 3) — domain/finance nested, 93 consumer files repointed
+last_updated: "2026-08-12T12:53:16.149Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 33
-  completed_plans: 26
-  percent: 79
+  completed_plans: 31
+  percent: 94
 ---
 
 # Project State
@@ -25,19 +25,22 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 03.1 (architecture-compliance) — EXECUTING
-Plan: 16 of 18
-Status: Executing Phase 03.1 — Waves 1 and 2 complete, Wave 3 dispatched
+Plan: 17 of 18
+Status: Ready to execute
 
 **Resume state — read before dispatching anything:**
 
-- `03.1-01` through `03.1-15` COMPLETE, merged to main, SUMMARY.md written for each. Waves 1 and 2 of 5 are closed.
-- `03.1-16` (Wave 3) NEXT — nest `lib/domain/finance/` into six per-entity subfolders.
-- `03.1-17` (Wave 4) and `03.1-18` (Wave 5) NOT STARTED. 03.1-18 wires the guard into CI and is gated on everything else landing.
+- `03.1-01` through `03.1-16` COMPLETE, SUMMARY.md written for each. Waves 1, 2 and 3 of 5 are closed.
+- `03.1-16` (Wave 3) DONE — `lib/domain/finance/` nested into six per-entity subfolders (`transaction/`, `budget/`, `goal/`, `debt/`, `recurring/`, `category/`) via `git mv`; 93 consumer files across `lib/` and `test/` repointed; `injection.config.dart` regenerated.
+- `03.1-17` (Wave 4) NEXT — nest `lib/data/finance/` (18 files, the last directory violation) using **the identical six entity names** 03.1-16 established. Note: `data/finance` carries generated `.g.dart` companions that must move alongside their models, and `build_runner` must be re-run after the move.
+- `03.1-18` (Wave 5) NOT STARTED. Wires the guard into CI; gated on everything else landing.
 
-Post-Wave-2 measurements (main, after merge):
-- `dart run tool/check_architecture.dart`: **zero line-count violations** — SC-1 is met. Remaining guard output is the 2 directory violations (`lib/domain/finance/`, `lib/data/finance/` — closed by 03.1-16 and 03.1-17) and the missing per-nest READMEs (closed by 03.1-18).
-- `flutter test`: 265/265 passing (baseline entering the phase was 230).
-- `flutter analyze --no-fatal-infos --fatal-warnings` (the CI invocation): exit 0.
+Post-Wave-3 measurements (03.1-16 branch):
+
+- `dart run tool/check_architecture.dart`: **zero line-count violations**; **`lib/domain/finance/` directory violation CLOSED** (36 → 35 violations). Remaining: 1 directory violation (`lib/data/finance/` — 03.1-17) + 34 missing per-nest READMEs (03.1-18).
+- `flutter test`: 265/265 passing — no regression from the Wave-2 baseline.
+- `flutter analyze --no-fatal-infos --fatal-warnings` (the CI invocation): exit 0. Info count 82 → 65 (03.1-16 re-sorted the 15 import blocks its own path change had unsorted).
+- `dart format` parity: the format-dirty file set is byte-identical to the pre-plan baseline. See Blockers for the contradiction 03.1-18 must settle.
 
 **RESOLVED (commit `227d030`) — the 150-line vs 80-column tension.** The four densest
 split files (`task_form_screen.dart`, `task_form_fields.dart`,
@@ -58,7 +61,7 @@ Phase 03 (finance-core) remains open behind it: code complete, but 3 UAT issues 
 
 Baseline entering Phase 3.1: 230 tests passing, `flutter analyze` clean, 21 files over 150 lines, 2 directories over 10 files, 2 of 30 feature nests carrying a README.
 
-Progress: [████████░░] 87%
+Progress: [█████████░] 94%
 
 ## Performance Metrics
 
@@ -81,6 +84,7 @@ Progress: [████████░░] 87%
 - Trend: On track
 
 *Updated after each plan completion*
+| Phase 03.1 P16 | 35min | 2 tasks | 102 files |
 
 ## Accumulated Context
 
@@ -102,6 +106,7 @@ Recent decisions affecting current work:
 - **Phase 2**: EisenhowerQuadrant computed from isUrgent + isImportant flags at domain layer — not stored in Isar
 - **Phase 2**: Soft delete via `deletedAt` field on ItemModel; 500-item query cap on active items
 - **Phase 2**: `go_router` declared in pubspec but routing handled via `IndexedStack` + modal routes in Phase 2; go_router guard wired in Phase 5
+- [Phase ?]: Phase 3.1: domain/finance nested into six per-entity subfolders (transaction, budget, goal, debt, recurring, category) — the same six names 03.1-17 must apply to data/finance
 
 ### Pending Todos
 
@@ -114,6 +119,8 @@ None.
 - **Phase 4 research flag**: PT-BR comma decimal separator in CSV round-trip (`1.234,56`) has edge cases; dedicate a spike to locale-aware parsing before the backup feature spec is written
 - **Phase 5 research flag**: iOS `inactive` vs `paused` lifecycle states for lock triggering behave differently on simulator vs real device; spike recommended before Phase 5 app lock implementation
 - **RESOLVED (2026-06-02, commit ae397ae)**: Budget-limit-save `_dependents.isEmpty` crash. True root cause was a `TextEditingController` disposed too early (method-scope dispose right after the `showModalBottomSheet` await → "used after being disposed" during the dismiss transition → cascaded to the overlay `_dependents.isEmpty` assertion). Fixed by moving the sheet body into `_BudgetLimitSheet` (StatefulWidget that owns/disposes the controller). Reproducing widget test added (budget_limit_sheet_test.dart). Earlier provider-scope/pop-order attempts were unrelated to this cause.
+- CONTRADICTION for 03.1-18 to settle: the 03.1-16 brief claimed 'dart format --set-exit-if-changed is clean' project-wide, but measured on main (f2c612f) it is NOT — 103 of 258 files in lib/+test/ differ from dart format output. STATE.md's narrower claim ('clean on every touched file') is the accurate one. 03.1-16 therefore verified format PARITY with baseline (dirty set byte-identical) rather than cleanliness. 03.1-18 must decide whether dart format is the project's formatter before wiring it into CI; enforcing it wholesale would reformat ~103 files and push several past the 150-line cap.
+- For 03.1-18 (column-width guard): two domain/finance import URIs unavoidably exceed 80 columns after 03.1-16's nesting — '…/recurring/recurring_payment_repository.dart' (83) and '…/category/transaction_category_repository.dart' (85). A plain 'import uri;' has no legal line break, so a raw column-width guard would flag 16 unfixable import lines. The enforced lints_longer_than_80_chars lint exempts directive URIs and still reports 0. Any guard 03.1-18 adds must mirror that exemption.
 
 ### Quick Tasks Completed
 
@@ -125,6 +132,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-06-01T00:00:00.000Z
-Stopped at: 03-04 human-verify checkpoint (Finance UI on device)
-Resume file: .planning/phases/03-finance-core/03-04-PLAN.md
+Last session: 2026-08-12T12:53:16.128Z
+Stopped at: Completed 03.1-16-PLAN.md (Wave 3) — domain/finance nested, 93 consumer files repointed
+Resume file: None
