@@ -17,8 +17,8 @@ import 'package:injectable/injectable.dart';
 ///
 /// DAOs registered here (plain classes — no @injectable annotation on them).
 /// Mapper singletons registered here via const-constructable getters.
-/// Repository impls self-register via @LazySingleton(as: ...) class annotations —
-/// injectable_generator picks them up automatically.
+/// Repository impls self-register via @LazySingleton(as: ...) class
+/// annotations — injectable_generator picks them up automatically.
 @module
 abstract class FinanceModule {
   // --- DAOs ---

@@ -48,13 +48,14 @@ void main() {
         return DebtCubit(mockRepo);
       },
       act: (cubit) => cubit.start(),
-      expect: () => [
-        isA<DebtLoaded>().having(
-          (s) => s.debts.length,
-          'debts.length',
-          1,
-        ),
-      ],
+      expect:
+          () => [
+            isA<DebtLoaded>().having(
+              (s) => s.debts.length,
+              'debts.length',
+              1,
+            ),
+          ],
     );
 
     blocTest<DebtCubit, DebtState>(
@@ -76,8 +77,9 @@ void main() {
         when(() => mockRepo.togglePaid(1)).thenAnswer(
           (_) async => Success(paidDebt),
         );
-        when(() => mockRepo.getDebts())
-            .thenAnswer((_) async => Success([paidDebt]));
+        when(
+          () => mockRepo.getDebts(),
+        ).thenAnswer((_) async => Success([paidDebt]));
         return DebtCubit(mockRepo);
       },
       act: (cubit) => cubit.togglePaid(1),
@@ -89,10 +91,11 @@ void main() {
     blocTest<DebtCubit, DebtState>(
       'togglePaid() emits DebtLoaded with updated debt',
       build: () {
-        final unpaidDebt = _makeDebt();
         final paidDebt = _makeDebt(isPaid: true);
         // Simulate watchChanges firing after togglePaid triggers a repo change
-        when(() => mockRepo.watchChanges()).thenAnswer((_) => const Stream.empty());
+        when(
+          () => mockRepo.watchChanges(),
+        ).thenAnswer((_) => const Stream.empty());
         when(() => mockRepo.togglePaid(1)).thenAnswer(
           (_) async => Success(paidDebt),
         );
@@ -102,13 +105,14 @@ void main() {
         return DebtCubit(mockRepo);
       },
       act: (cubit) => cubit.togglePaid(1),
-      expect: () => [
-        isA<DebtLoaded>().having(
-          (s) => s.debts.first.isPaid,
-          'isPaid',
-          true,
-        ),
-      ],
+      expect:
+          () => [
+            isA<DebtLoaded>().having(
+              (s) => s.debts.first.isPaid,
+              'isPaid',
+              true,
+            ),
+          ],
     );
   });
 }

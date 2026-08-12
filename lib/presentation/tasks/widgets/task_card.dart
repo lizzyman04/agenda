@@ -11,7 +11,11 @@ import 'package:intl/intl.dart';
 /// Does NOT import Isar — only domain types are used.
 class TaskCard extends StatelessWidget {
   const TaskCard({
-    required this.item, required this.onComplete, required this.onDelete, required this.onTap, super.key,
+    required this.item,
+    required this.onComplete,
+    required this.onDelete,
+    required this.onTap,
+    super.key,
   });
 
   final Item item;
@@ -34,9 +38,10 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dueDateText = item.dueDate != null
-        ? DateFormat(_dateFormat).format(item.dueDate!)
-        : null;
+    final dueDateText =
+        item.dueDate != null
+            ? DateFormat(_dateFormat).format(item.dueDate!)
+            : null;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -71,8 +76,10 @@ class TaskCard extends StatelessWidget {
                             item.priority.name,
                             style: const TextStyle(fontSize: 11),
                           ),
-                          backgroundColor:
-                              _priorityColor(context, item.priority),
+                          backgroundColor: _priorityColor(
+                            context,
+                            item.priority,
+                          ),
                           padding: EdgeInsets.zero,
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,

@@ -18,6 +18,8 @@ class TaskDetailFinanceChip extends StatelessWidget {
 
     final l10n = AppLocalizations.of(context);
     final cs = Theme.of(context).colorScheme;
+    final isGoal = item.linkedGoalId != null;
+    final kindLabel = isGoal ? l10n.goalsTabLabel : l10n.debtsTabLabel;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 12, 4, 0),
@@ -26,8 +28,7 @@ class TaskDetailFinanceChip extends StatelessWidget {
           ActionChip(
             avatar: const Icon(Icons.link, size: 16),
             label: Text(
-              '${l10n.linkedTo} '
-              '${item.linkedGoalId != null ? l10n.goalsTabLabel : l10n.debtsTabLabel} '
+              '${l10n.linkedTo} $kindLabel '
               '#${item.linkedGoalId ?? item.linkedDebtId}',
             ),
             backgroundColor: cs.secondaryContainer,

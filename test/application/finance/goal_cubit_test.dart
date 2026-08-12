@@ -33,7 +33,11 @@ SavingsGoal _makeGoal({
   );
 }
 
-Transaction _makeTaggedTx({int id = 10, int amountCents = 5000, int goalId = 1}) {
+Transaction _makeTaggedTx({
+  int id = 10,
+  int amountCents = 5000,
+  int goalId = 1,
+}) {
   return Transaction(
     id: id,
     type: TransactionType.expense,
@@ -53,8 +57,9 @@ void main() {
   setUp(() {
     mockGoalRepo = MockGoalRepository();
     mockTxRepo = MockTransactionRepository();
-    when(() => mockGoalRepo.watchChanges())
-        .thenAnswer((_) => const Stream.empty());
+    when(
+      () => mockGoalRepo.watchChanges(),
+    ).thenAnswer((_) => const Stream.empty());
     registerFallbackValue(
       SavingsGoalContribution(amountCents: 1, date: _d(2026, 1, 1)),
     );
@@ -78,15 +83,20 @@ void main() {
         return GoalCubit(mockGoalRepo, mockTxRepo);
       },
       act: (cubit) => cubit.loadGoal(1),
-      expect: () => [
-        isA<GoalLoading>(),
-        isA<GoalLoaded>()
-            .having((s) => s.taggedTransactionsCents, 'taggedCents', 3000),
-      ],
+      expect:
+          () => [
+            isA<GoalLoading>(),
+            isA<GoalLoaded>().having(
+              (s) => s.taggedTransactionsCents,
+              'taggedCents',
+              3000,
+            ),
+          ],
     );
 
     blocTest<GoalCubit, GoalState>(
-      'addContribution() calls goalRepo.addContribution and re-emits GoalLoaded',
+      'addContribution() calls goalRepo.addContribution and re-emits '
+      'GoalLoaded',
       build: () {
         final goal = _makeGoal();
         final contribution = SavingsGoalContribution(
@@ -96,10 +106,12 @@ void main() {
         final updatedGoal = _makeGoal(
           contributions: [contribution],
         );
-        when(() => mockGoalRepo.getGoal(1))
-            .thenAnswer((_) async => Success(goal));
-        when(() => mockTxRepo.getByLinkedGoal(1))
-            .thenAnswer((_) async => const Success([]));
+        when(
+          () => mockGoalRepo.getGoal(1),
+        ).thenAnswer((_) async => Success(goal));
+        when(
+          () => mockTxRepo.getByLinkedGoal(1),
+        ).thenAnswer((_) async => const Success([]));
         when(() => mockGoalRepo.addContribution(1, any())).thenAnswer(
           (_) async => Success(updatedGoal),
         );

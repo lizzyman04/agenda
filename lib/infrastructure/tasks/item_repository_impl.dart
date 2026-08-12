@@ -112,7 +112,9 @@ class ItemRepositoryImpl extends Object
       // to findById. Do NOT call getItem() — it may exclude soft-deleted rows.
       final model = await _dao.findById(id);
       if (model == null) {
-        return Err<Item>(DatabaseFailure('Item $id not found after softDelete'));
+        return Err<Item>(
+          DatabaseFailure('Item $id not found after softDelete'),
+        );
       }
       return Success<Item>(_mapper.toDomain(model));
     } on Object catch (e) {

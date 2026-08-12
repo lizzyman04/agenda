@@ -12,8 +12,9 @@ final class _Absent {
 ///
 /// Progress is tracked via two paths (D-11):
 /// 1. [contributions] — manual contribution entries on this goal.
-/// 2. taggedTransactionsCents — sum passed from the caller (TransactionRepository
-///    returns tagged transactions; caller aggregates and passes the sum).
+/// 2. taggedTransactionsCents — sum passed from the caller
+///    (TransactionRepository returns tagged transactions; caller
+///    aggregates and passes the sum).
 ///
 /// Computed getters take [taggedTransactionsCents] as a parameter so the
 /// domain stays pure — no repository calls inside this class.

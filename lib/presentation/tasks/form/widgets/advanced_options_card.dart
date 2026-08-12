@@ -34,22 +34,30 @@ class AdvancedOptionsCard extends StatelessWidget {
           InkWell(
             onTap: onToggle,
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               child: Row(
                 children: [
-                  Icon(Icons.tune_outlined, size: 20, color: cs.onSurfaceVariant),
+                  Icon(
+                    Icons.tune_outlined,
+                    size: 20,
+                    color: cs.onSurfaceVariant,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(label,
-                        style: theme.textTheme.titleSmall
-                            ?.copyWith(color: cs.onSurfaceVariant)),
+                    child: Text(
+                      label,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
                   ),
                   AnimatedRotation(
                     turns: expanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 200),
-                    child: Icon(Icons.keyboard_arrow_down,
-                        color: cs.onSurfaceVariant),
+                    child: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: cs.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -58,9 +66,8 @@ class AdvancedOptionsCard extends StatelessWidget {
           AnimatedSize(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,
-            child: expanded
-                ? Column(children: children)
-                : const SizedBox.shrink(),
+            child:
+                expanded ? Column(children: children) : const SizedBox.shrink(),
           ),
         ],
       ),

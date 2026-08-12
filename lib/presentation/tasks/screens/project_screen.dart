@@ -30,10 +30,11 @@ class _ProjectScreenState extends State<ProjectScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => AddSubtaskSheet(
-        projectId: widget.projectId,
-        cubit: context.read<ProjectCubit>(),
-      ),
+      builder:
+          (_) => AddSubtaskSheet(
+            projectId: widget.projectId,
+            cubit: context.read<ProjectCubit>(),
+          ),
     );
   }
 
@@ -46,7 +47,9 @@ class _ProjectScreenState extends State<ProjectScreen> {
         title: BlocBuilder<ProjectCubit, ProjectState>(
           builder: (context, state) {
             return Text(
-              state is ProjectLoaded ? state.project.title : l10n.projectScreenTitle,
+              state is ProjectLoaded
+                  ? state.project.title
+                  : l10n.projectScreenTitle,
             );
           },
         ),
@@ -60,11 +63,11 @@ class _ProjectScreenState extends State<ProjectScreen> {
         builder: (context, state) {
           return switch (state) {
             ProjectInitial() || ProjectLoading() => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: CircularProgressIndicator(),
+            ),
             ProjectError(:final failure) => Center(
-                child: Text(failure.message),
-              ),
+              child: Text(failure.message),
+            ),
             ProjectLoaded(
               :final subtasks,
               :final completedCount,
@@ -89,12 +92,14 @@ class _ProjectScreenState extends State<ProjectScreen> {
                         final subtask = subtasks[index];
                         return TaskCard(
                           item: subtask,
-                          onComplete: () => context
-                              .read<ProjectCubit>()
-                              .completeSubtask(subtask),
-                          onDelete: () => context
-                              .read<ProjectCubit>()
-                              .deleteSubtask(subtask.id),
+                          onComplete:
+                              () => context
+                                  .read<ProjectCubit>()
+                                  .completeSubtask(subtask),
+                          onDelete:
+                              () => context.read<ProjectCubit>().deleteSubtask(
+                                subtask.id,
+                              ),
                           onTap: () {},
                         );
                       },

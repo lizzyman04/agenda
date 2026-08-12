@@ -9,7 +9,8 @@ import 'package:injectable/injectable.dart';
 /// Concrete implementation of [TransactionRepository].
 ///
 /// Wraps [TransactionDao] in try/catch blocks and maps results to [Result<T>].
-/// Never throws — all errors returned as Err(DatabaseFailure or ValidationFailure).
+/// Never throws — all errors returned as Err(DatabaseFailure or
+/// ValidationFailure).
 ///
 /// Validation (T-03-02-01):
 /// - amountCents must be > 0
@@ -114,7 +115,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
   AsyncResult<Transaction> softDelete(int id) async {
     try {
       await _dao.softDelete(id);
-      // Read model directly by id — bypasses the deletedAtIsNull filter in findAll.
+      // Read model directly by id — bypasses the deletedAtIsNull
+      // filter in findAll.
       final model = await _dao.findById(id);
       if (model == null) {
         return Err(

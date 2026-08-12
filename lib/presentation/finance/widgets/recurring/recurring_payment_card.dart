@@ -23,24 +23,26 @@ class RecurringPaymentCard extends StatelessWidget {
   final VoidCallback onToggleActive;
 
   String _cycleLabel(RecurringCycle cycle) => switch (cycle) {
-        RecurringCycle.daily => 'Diário',
-        RecurringCycle.weekly => 'Semanal',
-        RecurringCycle.biweekly => 'Quinzenal',
-        RecurringCycle.monthly => 'Mensal',
-        RecurringCycle.quarterly => 'Trimestral',
-        RecurringCycle.yearly => 'Anual',
-      };
+    RecurringCycle.daily => 'Diário',
+    RecurringCycle.weekly => 'Semanal',
+    RecurringCycle.biweekly => 'Quinzenal',
+    RecurringCycle.monthly => 'Mensal',
+    RecurringCycle.quarterly => 'Trimestral',
+    RecurringCycle.yearly => 'Anual',
+  };
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final nextDueLabel = DateFormat(
+      'dd/MM/yyyy',
+    ).format(payment.nextDueDate);
 
     return Card(
       elevation: 0,
       color: cs.surfaceContainerLow,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: InkWell(
         onTap: onTap,
@@ -54,15 +56,16 @@ class RecurringPaymentCard extends StatelessWidget {
                 style: theme.textTheme.titleMedium,
               ),
               subtitle: Text(
-                '${_cycleLabel(payment.cycle)} · '
-                'Próximo: ${DateFormat('dd/MM/yyyy').format(payment.nextDueDate)}',
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: cs.onSurfaceVariant),
+                '${_cycleLabel(payment.cycle)} · Próximo: $nextDueLabel',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
               ),
               trailing: Text(
                 formatAmount(payment.amountCents, currencySymbol, locale),
-                style: theme.textTheme.bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.w500),
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             SwitchListTile(
@@ -73,8 +76,7 @@ class RecurringPaymentCard extends StatelessWidget {
               ),
               value: payment.isActive,
               onChanged: (_) => onToggleActive(),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             ),
           ],
         ),

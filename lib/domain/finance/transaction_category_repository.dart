@@ -20,7 +20,8 @@ abstract class TransactionCategoryRepository {
   AsyncResult<TransactionCategory> create(TransactionCategory category);
 
   /// Updates a user-defined category.
-  /// Default categories (isDefault = true) must be rejected by the implementation.
+  /// Default categories (isDefault = true) must be rejected by the
+  /// implementation.
   AsyncResult<TransactionCategory> update(TransactionCategory category);
 
   /// Hard-deletes a user-defined category by [id].

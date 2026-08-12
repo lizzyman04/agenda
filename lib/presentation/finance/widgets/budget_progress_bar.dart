@@ -14,7 +14,12 @@ import 'package:flutter/material.dart';
 /// Per Phase 3 UI-SPEC Budget Progress Card Contract.
 class BudgetProgressBar extends StatelessWidget {
   const BudgetProgressBar({
-    required this.categoryName, required this.spentCents, required this.limitCents, required this.currencySymbol, required this.locale, super.key,
+    required this.categoryName,
+    required this.spentCents,
+    required this.limitCents,
+    required this.currencySymbol,
+    required this.locale,
+    super.key,
     this.noLimitLabel = 'Sem limite definido',
   });
 

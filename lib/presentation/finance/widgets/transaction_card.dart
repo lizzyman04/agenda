@@ -13,7 +13,13 @@ import 'package:intl/intl.dart';
 /// No Isar imports — only domain types.
 class TransactionCard extends StatelessWidget {
   const TransactionCard({
-    required this.transaction, required this.onDelete, required this.onTap, required this.categoryName, required this.currencySymbol, required this.locale, super.key,
+    required this.transaction,
+    required this.onDelete,
+    required this.onTap,
+    required this.categoryName,
+    required this.currencySymbol,
+    required this.locale,
+    super.key,
   });
 
   final Transaction transaction;
@@ -31,11 +37,13 @@ class TransactionCard extends StatelessWidget {
     final isIncome = transaction.type == TransactionType.income;
     final amountColor =
         isIncome ? FinanceColors.incomeGreen : FinanceColors.expenseRed;
-    final typeIcon =
-        isIncome ? Icons.arrow_upward : Icons.arrow_downward;
+    final typeIcon = isIncome ? Icons.arrow_upward : Icons.arrow_downward;
 
-    final formattedAmount =
-        formatAmount(transaction.amountCents, currencySymbol, locale);
+    final formattedAmount = formatAmount(
+      transaction.amountCents,
+      currencySymbol,
+      locale,
+    );
     final formattedDate = DateFormat('dd/MM/yyyy').format(transaction.date);
     final hasNote =
         transaction.note != null && transaction.note != categoryName;
@@ -56,8 +64,7 @@ class TransactionCard extends StatelessWidget {
       child: Card(
         elevation: 0,
         color: cs.surfaceContainerLow,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: InkWell(
           onTap: onTap,

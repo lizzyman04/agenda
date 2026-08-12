@@ -127,94 +127,105 @@ void main() {
     mockGoalRepo = MockGoalRepository();
     mockDebtRepo = MockDebtRepository();
     mockCatRepo = MockCategoryRepository();
-    when(() => mockTxRepo.watchChanges())
-        .thenAnswer((_) => const Stream.empty());
+    when(
+      () => mockTxRepo.watchChanges(),
+    ).thenAnswer((_) => const Stream.empty());
   });
 
   group('HomeDashboardCubit', () {
     blocTest<HomeDashboardCubit, HomeDashboardState>(
-      '_reload() emits HomeDashboardLoaded with correct balanceCents (income - expense)',
-      build: () => _buildCubit(
-        txRepo: mockTxRepo,
-        goalRepo: mockGoalRepo,
-        debtRepo: mockDebtRepo,
-        catRepo: mockCatRepo,
-        transactions: [
-          _makeTx(),
-          _makeTx(id: 2, amountCents: 3000),
-          _makeTx(id: 3, type: TransactionType.expense, amountCents: 2000),
-        ],
-      ),
+      '_reload() emits HomeDashboardLoaded with correct balanceCents '
+      '(income - expense)',
+      build:
+          () => _buildCubit(
+            txRepo: mockTxRepo,
+            goalRepo: mockGoalRepo,
+            debtRepo: mockDebtRepo,
+            catRepo: mockCatRepo,
+            transactions: [
+              _makeTx(),
+              _makeTx(id: 2, amountCents: 3000),
+              _makeTx(id: 3, type: TransactionType.expense, amountCents: 2000),
+            ],
+          ),
       act: (cubit) => cubit.start(),
-      expect: () => [
-        isA<HomeDashboardLoaded>().having(
-          (s) => s.balanceCents,
-          'balanceCents == 5000+3000-2000 == 6000',
-          6000,
-        ),
-      ],
+      expect:
+          () => [
+            isA<HomeDashboardLoaded>().having(
+              (s) => s.balanceCents,
+              'balanceCents == 5000+3000-2000 == 6000',
+              6000,
+            ),
+          ],
     );
 
     blocTest<HomeDashboardCubit, HomeDashboardState>(
-      '_reload() computes netWorthCents: balance + goals.amountSaved - toPay debts',
-      build: () => _buildCubit(
-        txRepo: mockTxRepo,
-        goalRepo: mockGoalRepo,
-        debtRepo: mockDebtRepo,
-        catRepo: mockCatRepo,
-        transactions: [
-          _makeTx(),
-          _makeTx(id: 2, amountCents: 3000),
-          _makeTx(id: 3, type: TransactionType.expense, amountCents: 2000),
-        ],
-        goals: [
-          _makeGoal(), // contributions = [], taggedCents = 0 → amountSaved = 0
-        ],
-        debts: [
-          _makeDebt(),
-        ],
-      ),
+      '_reload() computes netWorthCents: balance + goals.amountSaved '
+      '- toPay debts',
+      build:
+          () => _buildCubit(
+            txRepo: mockTxRepo,
+            goalRepo: mockGoalRepo,
+            debtRepo: mockDebtRepo,
+            catRepo: mockCatRepo,
+            transactions: [
+              _makeTx(),
+              _makeTx(id: 2, amountCents: 3000),
+              _makeTx(id: 3, type: TransactionType.expense, amountCents: 2000),
+            ],
+            goals: [
+              // contributions = [], taggedCents = 0 → amountSaved = 0
+              _makeGoal(),
+            ],
+            debts: [
+              _makeDebt(),
+            ],
+          ),
       act: (cubit) => cubit.start(),
-      expect: () => [
-        isA<HomeDashboardLoaded>().having(
-          (s) => s.netWorthCents,
-          'netWorthCents == 6000 + 0 - 1500 == 4500',
-          4500,
-        ),
-      ],
+      expect:
+          () => [
+            isA<HomeDashboardLoaded>().having(
+              (s) => s.netWorthCents,
+              'netWorthCents == 6000 + 0 - 1500 == 4500',
+              4500,
+            ),
+          ],
     );
 
     blocTest<HomeDashboardCubit, HomeDashboardState>(
       '_reload() excludes toReceive debts from net worth formula (D-08)',
-      build: () => _buildCubit(
-        txRepo: mockTxRepo,
-        goalRepo: mockGoalRepo,
-        debtRepo: mockDebtRepo,
-        catRepo: mockCatRepo,
-        transactions: [
-          _makeTx(amountCents: 6000),
-        ],
-        debts: [
-          // toReceive debt — must NOT be subtracted from net worth
-          _makeDebt(
-            id: 2,
-            amountCents: 3000,
-            direction: DebtDirection.toReceive,
+      build:
+          () => _buildCubit(
+            txRepo: mockTxRepo,
+            goalRepo: mockGoalRepo,
+            debtRepo: mockDebtRepo,
+            catRepo: mockCatRepo,
+            transactions: [
+              _makeTx(amountCents: 6000),
+            ],
+            debts: [
+              // toReceive debt — must NOT be subtracted from net worth
+              _makeDebt(
+                id: 2,
+                amountCents: 3000,
+                direction: DebtDirection.toReceive,
+              ),
+            ],
           ),
-        ],
-      ),
       act: (cubit) => cubit.start(),
-      expect: () => [
-        isA<HomeDashboardLoaded>().having(
-          (s) => s.netWorthCents,
-          'netWorthCents == 6000 (toReceive debt not subtracted)',
-          6000,
-        ),
-      ],
+      expect:
+          () => [
+            isA<HomeDashboardLoaded>().having(
+              (s) => s.netWorthCents,
+              'netWorthCents == 6000 (toReceive debt not subtracted)',
+              6000,
+            ),
+          ],
     );
 
     blocTest<HomeDashboardCubit, HomeDashboardState>(
-      '_reload() categorySpend groups expense txs by categoryId for selectedMonth only',
+      '_reload() categorySpend groups expense txs by categoryId for '
+      'selectedMonth only',
       build: () {
         // Jan 2026 expenses in category 1 and 2
         // Feb 2026 expense — must NOT appear in categorySpend (different month)
@@ -242,26 +253,31 @@ void main() {
               id: 3,
               type: TransactionType.expense,
               amountCents: 999,
-              date: DateTime(now.year, now.month - 1 == 0 ? 12 : now.month - 1, 5),
+              date: DateTime(
+                now.year,
+                now.month - 1 == 0 ? 12 : now.month - 1,
+                5,
+              ),
             ),
           ],
           categories: [_makeCategory(), _makeCategory(id: 2)],
         );
       },
       act: (cubit) => cubit.start(),
-      expect: () => [
-        isA<HomeDashboardLoaded>()
-            .having(
-              (s) => s.categorySpend[1],
-              'categorySpend[1] == 1000 (current month only)',
-              1000,
-            )
-            .having(
-              (s) => s.categorySpend[2],
-              'categorySpend[2] == 2000',
-              2000,
-            ),
-      ],
+      expect:
+          () => [
+            isA<HomeDashboardLoaded>()
+                .having(
+                  (s) => s.categorySpend[1],
+                  'categorySpend[1] == 1000 (current month only)',
+                  1000,
+                )
+                .having(
+                  (s) => s.categorySpend[2],
+                  'categorySpend[2] == 2000',
+                  2000,
+                ),
+          ],
     );
 
     blocTest<HomeDashboardCubit, HomeDashboardState>(
@@ -294,74 +310,82 @@ void main() {
         await cubit.start();
         await cubit.selectMonth(DateTime(2026, 3));
       },
-      expect: () => [
-        // First emit from start() — uses DateTime.now() as selectedMonth
-        isA<HomeDashboardLoaded>(),
-        // Second emit from selectMonth(March) — categorySpend for March only
-        isA<HomeDashboardLoaded>()
-            .having(
-              (s) => s.selectedMonth.month,
-              'selectedMonth.month == 3',
-              3,
-            )
-            .having(
-              (s) => s.categorySpend[1],
-              'categorySpend[1] == 5000 (March only)',
-              5000,
-            )
-            .having(
-              (s) => s.categorySpend.containsKey(2),
-              'April tx NOT in March categorySpend',
-              false,
-            ),
-      ],
+      expect:
+          () => [
+            // First emit from start() — uses DateTime.now() as selectedMonth
+            isA<HomeDashboardLoaded>(),
+            // Second emit from selectMonth(March) — categorySpend for
+            // March only
+            isA<HomeDashboardLoaded>()
+                .having(
+                  (s) => s.selectedMonth.month,
+                  'selectedMonth.month == 3',
+                  3,
+                )
+                .having(
+                  (s) => s.categorySpend[1],
+                  'categorySpend[1] == 5000 (March only)',
+                  5000,
+                )
+                .having(
+                  (s) => s.categorySpend.containsKey(2),
+                  'April tx NOT in March categorySpend',
+                  false,
+                ),
+          ],
     );
 
     blocTest<HomeDashboardCubit, HomeDashboardState>(
-      '_reload() emits empty categorySpend when no expense txs in selected month',
-      build: () => _buildCubit(
-        txRepo: mockTxRepo,
-        goalRepo: mockGoalRepo,
-        debtRepo: mockDebtRepo,
-        catRepo: mockCatRepo,
-        transactions: [
-          // Income only — no expense
-          _makeTx(),
-        ],
-      ),
+      '_reload() emits empty categorySpend when no expense txs in '
+      'selected month',
+      build:
+          () => _buildCubit(
+            txRepo: mockTxRepo,
+            goalRepo: mockGoalRepo,
+            debtRepo: mockDebtRepo,
+            catRepo: mockCatRepo,
+            transactions: [
+              // Income only — no expense
+              _makeTx(),
+            ],
+          ),
       act: (cubit) => cubit.start(),
-      expect: () => [
-        isA<HomeDashboardLoaded>().having(
-          (s) => s.categorySpend.isEmpty,
-          'categorySpend is empty',
-          true,
-        ),
-      ],
+      expect:
+          () => [
+            isA<HomeDashboardLoaded>().having(
+              (s) => s.categorySpend.isEmpty,
+              'categorySpend is empty',
+              true,
+            ),
+          ],
     );
 
     blocTest<HomeDashboardCubit, HomeDashboardState>(
       '_reload() excludes soft-deleted transactions from all aggregations',
-      build: () => _buildCubit(
-        txRepo: mockTxRepo,
-        goalRepo: mockGoalRepo,
-        debtRepo: mockDebtRepo,
-        catRepo: mockCatRepo,
-        // Note: TransactionRepository.getTransactions() already excludes
-        // soft-deleted (deletedAtIsNull filter in DAO). We confirm the
-        // cubit correctly aggregates only what the repo returns.
-        transactions: [
-          _makeTx(),
-          // Repo already excludes soft-deleted — simulate by returning only active
-        ],
-      ),
+      build:
+          () => _buildCubit(
+            txRepo: mockTxRepo,
+            goalRepo: mockGoalRepo,
+            debtRepo: mockDebtRepo,
+            catRepo: mockCatRepo,
+            // Note: TransactionRepository.getTransactions() already excludes
+            // soft-deleted (deletedAtIsNull filter in DAO). We confirm the
+            // cubit correctly aggregates only what the repo returns.
+            transactions: [
+              _makeTx(),
+              // Repo already excludes soft-deleted — simulate by
+              // returning only active
+            ],
+          ),
       act: (cubit) => cubit.start(),
-      expect: () => [
-        isA<HomeDashboardLoaded>().having(
-          (s) => s.balanceCents,
-          'balanceCents includes only active txs',
-          5000,
-        ),
-      ],
+      expect:
+          () => [
+            isA<HomeDashboardLoaded>().having(
+              (s) => s.balanceCents,
+              'balanceCents includes only active txs',
+              5000,
+            ),
+          ],
     );
   });
 }

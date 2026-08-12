@@ -19,16 +19,15 @@ Item _makeItem(
   String title = 'Task',
   bool isUrgent = false,
   bool isImportant = false,
-}) =>
-    Item(
-      id: id,
-      type: ItemType.task,
-      title: title,
-      isUrgent: isUrgent,
-      isImportant: isImportant,
-      createdAt: DateTime(2024),
-      updatedAt: DateTime(2024),
-    );
+}) => Item(
+  id: id,
+  type: ItemType.task,
+  title: title,
+  isUrgent: isUrgent,
+  isImportant: isImportant,
+  createdAt: DateTime(2024),
+  updatedAt: DateTime(2024),
+);
 
 Widget _buildTestWidget(TaskListCubit cubit) {
   return MaterialApp(
@@ -62,8 +61,7 @@ void main() {
         Stream<TaskListState>.fromIterable([
           const TaskListLoaded(items: []),
         ]),
-        initialState:
-            const TaskListLoaded(items: []),
+        initialState: const TaskListLoaded(items: []),
       );
 
       await tester.pumpWidget(_buildTestWidget(cubit));
@@ -77,37 +75,38 @@ void main() {
     });
 
     testWidgets(
-        'task with isUrgent=true and isImportant=true appears in Do Now section',
-        (tester) async {
-      final urgentImportant = _makeItem(
-        1,
-        title: 'Fix production bug',
-        isUrgent: true,
-        isImportant: true,
-      );
+      'task with isUrgent=true and isImportant=true appears in Do Now section',
+      (tester) async {
+        final urgentImportant = _makeItem(
+          1,
+          title: 'Fix production bug',
+          isUrgent: true,
+          isImportant: true,
+        );
 
-      when(() => cubit.state).thenReturn(
-        TaskListLoaded(
-          items: [urgentImportant],
-        ),
-      );
-      whenListen(
-        cubit,
-        Stream<TaskListState>.fromIterable([
+        when(() => cubit.state).thenReturn(
           TaskListLoaded(
             items: [urgentImportant],
           ),
-        ]),
-        initialState: TaskListLoaded(
-          items: [urgentImportant],
-        ),
-      );
+        );
+        whenListen(
+          cubit,
+          Stream<TaskListState>.fromIterable([
+            TaskListLoaded(
+              items: [urgentImportant],
+            ),
+          ]),
+          initialState: TaskListLoaded(
+            items: [urgentImportant],
+          ),
+        );
 
-      await tester.pumpWidget(_buildTestWidget(cubit));
-      await tester.pump();
+        await tester.pumpWidget(_buildTestWidget(cubit));
+        await tester.pump();
 
-      // The task title should appear inside the Do Now quadrant card
-      expect(find.text('Fix production bug'), findsOneWidget);
-    });
+        // The task title should appear inside the Do Now quadrant card
+        expect(find.text('Fix production bug'), findsOneWidget);
+      },
+    );
   });
 }

@@ -9,7 +9,13 @@ import 'package:flutter/material.dart';
 /// buttons, and an "Add" action.
 class SlotSection extends StatelessWidget {
   const SlotSection({
-    required this.label, required this.maxSlots, required this.currentItems, required this.isOverCapacity, required this.onTapAdd, required this.onRemove, super.key,
+    required this.label,
+    required this.maxSlots,
+    required this.currentItems,
+    required this.isOverCapacity,
+    required this.onTapAdd,
+    required this.onRemove,
+    super.key,
   });
 
   final String label;
@@ -33,8 +39,8 @@ class SlotSection extends StatelessWidget {
           child: Text(
             '$label ($currentCount/$maxSlots)',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
 
@@ -50,8 +56,11 @@ class SlotSection extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.warning_amber_rounded,
-                    color: Colors.amber.shade800, size: 18),
+                Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.amber.shade800,
+                  size: 18,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   l10n.slotLimitExceeded,

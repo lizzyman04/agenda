@@ -24,15 +24,19 @@ class AgendaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Finance cubits are provided ABOVE MaterialApp (above the Navigator) so that
-    // every pushed route inherits them. Providers placed in MaterialApp.home sit
-    // below the Navigator and are NOT visible to pushed routes — re-providing them
-    // per-route via BlocProvider.value duplicated a single instance across two live
-    // InheritedProviders and triggered a `_dependents.isEmpty` framework assertion.
+    // Finance cubits are provided ABOVE MaterialApp (above the
+    // Navigator) so that every pushed route inherits them. Providers
+    // placed in MaterialApp.home sit below the Navigator and are NOT
+    // visible to pushed routes — re-providing them per-route via
+    // BlocProvider.value duplicated a single instance across two live
+    // InheritedProviders and triggered a `_dependents.isEmpty`
+    // framework assertion.
     return MultiBlocProvider(
       providers: [
         BlocProvider<LocaleCubit>(create: (_) => getIt<LocaleCubit>()),
-        BlocProvider<TransactionCubit>(create: (_) => getIt<TransactionCubit>()),
+        BlocProvider<TransactionCubit>(
+          create: (_) => getIt<TransactionCubit>(),
+        ),
         BlocProvider<BudgetCubit>(create: (_) => getIt<BudgetCubit>()),
         BlocProvider<GoalListCubit>(create: (_) => getIt<GoalListCubit>()),
         BlocProvider<DebtCubit>(create: (_) => getIt<DebtCubit>()),
@@ -106,8 +110,8 @@ class _AppShellState extends State<_AppShell> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) =>
-            setState(() => _selectedIndex = index),
+        onDestinationSelected:
+            (index) => setState(() => _selectedIndex = index),
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.check_box_outline_blank),

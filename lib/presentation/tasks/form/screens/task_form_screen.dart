@@ -38,13 +38,18 @@ class _TaskFormScreenState extends State<TaskFormScreen>
     super.initState();
     final item = widget.item;
     _titleController = TextEditingController(text: item?.title ?? '');
-    _descriptionController = TextEditingController(text: item?.description ?? '');
+    _descriptionController = TextEditingController(
+      text: item?.description ?? '',
+    );
     _gtdContextController = TextEditingController(text: item?.gtdContext ?? '');
     _waitingForController = TextEditingController(text: item?.waitingFor ?? '');
     _f = TaskFormFieldsModel.fromItem(item);
-    loadFinanceLinks(getIt<GoalRepository>(), getIt<DebtRepository>(),
-            linkedGoalId: _f.linkedGoalId, linkedDebtId: _f.linkedDebtId)
-        .then((s) {
+    loadFinanceLinks(
+      getIt<GoalRepository>(),
+      getIt<DebtRepository>(),
+      linkedGoalId: _f.linkedGoalId,
+      linkedDebtId: _f.linkedDebtId,
+    ).then((s) {
       if (mounted) setState(() => _f.applySnapshot(s));
     });
   }
@@ -61,19 +66,29 @@ class _TaskFormScreenState extends State<TaskFormScreen>
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     final item = buildFormItem(
-      isEditing: _isEditing, original: widget.item, fields: _f,
+      isEditing: _isEditing,
+      original: widget.item,
+      fields: _f,
       title: _titleController.text.trim(),
-      description: _descriptionController.text.trim().isEmpty
-          ? null : _descriptionController.text.trim(),
-      gtdContext: _gtdContextController.text.trim().isEmpty
-          ? null : _gtdContextController.text.trim(),
-      waitingFor: _waitingForController.text.trim().isEmpty
-          ? null : _waitingForController.text.trim(),
+      description:
+          _descriptionController.text.trim().isEmpty
+              ? null
+              : _descriptionController.text.trim(),
+      gtdContext:
+          _gtdContextController.text.trim().isEmpty
+              ? null
+              : _gtdContextController.text.trim(),
+      waitingFor:
+          _waitingForController.text.trim().isEmpty
+              ? null
+              : _waitingForController.text.trim(),
       now: DateTime.now(),
     );
     final cubit = context.read<TaskListCubit>();
     final ok =
-        _isEditing ? await cubit.updateItem(item) : await cubit.createItem(item);
+        _isEditing
+            ? await cubit.updateItem(item)
+            : await cubit.createItem(item);
     if (!mounted) return;
     _handleSaveResult(ok);
   }
@@ -83,11 +98,13 @@ class _TaskFormScreenState extends State<TaskFormScreen>
       // The cubit returned false → it emitted a TaskListError for THIS
       // save, so the current state carries the relevant failure message.
       final state = context.read<TaskListCubit>().state;
-      final message = state is TaskListError
-          ? state.failure.message
-          : AppLocalizations.of(context).errorSaveFailed;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+      final message =
+          state is TaskListError
+              ? state.failure.message
+              : AppLocalizations.of(context).errorSaveFailed;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
       return;
     }
     Navigator.of(context).pop();
@@ -96,14 +113,19 @@ class _TaskFormScreenState extends State<TaskFormScreen>
   Future<void> _openGtdGuide() async {
     final l10n = AppLocalizations.of(context);
     final result = await showModalBottomSheet<GtdResult>(
-      context: context, isScrollControlled: true, useSafeArea: true,
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (_) => GtdGuideSheet(l10n: l10n),
     );
     if (result == null || !mounted) return;
-    final v =
-        applyGtdResult(result, currentDescription: _descriptionController.text);
+    final v = applyGtdResult(
+      result,
+      currentDescription: _descriptionController.text,
+    );
     setState(() {
       if (v.title.isNotEmpty) _titleController.text = v.title;
       if (v.description != null) _descriptionController.text = v.description!;
@@ -123,24 +145,32 @@ class _TaskFormScreenState extends State<TaskFormScreen>
       backgroundColor: cs.surface,
       appBar: AppBar(
         title: Text(
-            _isEditing ? l10n.taskFormTitleEdit : l10n.taskFormTitleCreate,
-            style: theme.textTheme.titleLarge),
+          _isEditing ? l10n.taskFormTitleEdit : l10n.taskFormTitleCreate,
+          style: theme.textTheme.titleLarge,
+        ),
         centerTitle: false,
         elevation: 0,
         scrolledUnderElevation: 1,
-        actions: [Padding(
+        actions: [
+          Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: FilledButton(onPressed: _save, child: Text(l10n.saveButton)))],
+            child: FilledButton(onPressed: _save, child: Text(l10n.saveButton)),
+          ),
+        ],
       ),
       body: Form(
         key: _formKey,
         child: TaskFormFields(
-          l10n: l10n, theme: theme, cs: cs, model: _f,
+          l10n: l10n,
+          theme: theme,
+          cs: cs,
+          model: _f,
           onModelChanged: (mutate) => setState(() => mutate(_f)),
           titleController: _titleController,
           descriptionController: _descriptionController,
           waitingForController: _waitingForController,
-          isEditing: _isEditing, onOpenGtdGuide: _openGtdGuide,
+          isEditing: _isEditing,
+          onOpenGtdGuide: _openGtdGuide,
         ),
       ),
     );

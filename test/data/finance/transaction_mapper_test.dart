@@ -10,14 +10,15 @@ void main() {
 
   group('TransactionMapper.toDomain', () {
     test('preserves amountCents exactly (no floating-point corruption)', () {
-      final model = TransactionModel()
-        ..id = 1
-        ..type = TransactionType.expense
-        ..amountCents = 123456
-        ..categoryId = 2
-        ..date = now
-        ..createdAt = now
-        ..updatedAt = now;
+      final model =
+          TransactionModel()
+            ..id = 1
+            ..type = TransactionType.expense
+            ..amountCents = 123456
+            ..categoryId = 2
+            ..date = now
+            ..createdAt = now
+            ..updatedAt = now;
 
       final domain = mapper.toDomain(model);
 
@@ -25,14 +26,15 @@ void main() {
     });
 
     test('maps TransactionType.income correctly', () {
-      final model = TransactionModel()
-        ..id = 1
-        ..type = TransactionType.income
-        ..amountCents = 1000
-        ..categoryId = 1
-        ..date = now
-        ..createdAt = now
-        ..updatedAt = now;
+      final model =
+          TransactionModel()
+            ..id = 1
+            ..type = TransactionType.income
+            ..amountCents = 1000
+            ..categoryId = 1
+            ..date = now
+            ..createdAt = now
+            ..updatedAt = now;
 
       final result = mapper.toDomain(model);
 
@@ -40,14 +42,15 @@ void main() {
     });
 
     test('maps TransactionType.expense correctly', () {
-      final model = TransactionModel()
-        ..id = 1
-        ..type = TransactionType.expense
-        ..amountCents = 5000
-        ..categoryId = 3
-        ..date = now
-        ..createdAt = now
-        ..updatedAt = now;
+      final model =
+          TransactionModel()
+            ..id = 1
+            ..type = TransactionType.expense
+            ..amountCents = 5000
+            ..categoryId = 3
+            ..date = now
+            ..createdAt = now
+            ..updatedAt = now;
 
       final result = mapper.toDomain(model);
 
@@ -69,7 +72,8 @@ void main() {
 
       final model = mapper.toModel(tx);
 
-      // When id == 0, the model id should remain Isar.autoIncrement (9223372036854775807)
+      // When id == 0, the model id should remain Isar.autoIncrement
+      // (9223372036854775807)
       // and not be set to 0 (which would overwrite the record with id=0)
       expect(model.id, isNot(equals(0)));
     });

@@ -14,7 +14,12 @@ import 'package:intl/intl.dart';
 /// Per Phase 3 UI-SPEC Goal Progress Card Contract.
 class GoalProgressCard extends StatelessWidget {
   const GoalProgressCard({
-    required this.goal, required this.taggedTransactionsCents, required this.onTap, required this.currencySymbol, required this.locale, super.key,
+    required this.goal,
+    required this.taggedTransactionsCents,
+    required this.onTap,
+    required this.currencySymbol,
+    required this.locale,
+    super.key,
   });
 
   final SavingsGoal goal;
@@ -35,12 +40,17 @@ class GoalProgressCard extends StatelessWidget {
     final cappedRatio = min(1.0, progressRatio);
     final percentText = '${(cappedRatio * 100).toStringAsFixed(0)}%';
     final savedCents = goal.amountSavedCents(taggedTransactionsCents);
+    final savedLabel = formatAmount(savedCents, currencySymbol, locale);
+    final targetLabel = formatAmount(
+      goal.targetAmountCents,
+      currencySymbol,
+      locale,
+    );
 
     return Card(
       elevation: 0,
       color: cs.surfaceContainerLow,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: InkWell(
         onTap: onTap,
@@ -78,8 +88,7 @@ class GoalProgressCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '${formatAmount(savedCents, currencySymbol, locale)} de '
-                '${formatAmount(goal.targetAmountCents, currencySymbol, locale)}',
+                '$savedLabel de $targetLabel',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: cs.onSurfaceVariant,
                 ),

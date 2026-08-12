@@ -21,7 +21,6 @@ class MockIsarCollection extends Mock
 /// varies per call. Instead, this fake implementation executes the callback
 /// and tracks call count.
 class FakeIsar extends Fake implements Isar {
-
   FakeIsar(this._categoryCollection);
   int writeTxnCallCount = 0;
   bool shouldExecuteCallback = true;
@@ -71,8 +70,9 @@ void main() {
       () async {
         // Arrange
         when(() => mockPrefs.getInt('schema_version')).thenReturn(null);
-        when(() => mockPrefs.setInt('schema_version', any()))
-            .thenAnswer((_) async => true);
+        when(
+          () => mockPrefs.setInt('schema_version', any()),
+        ).thenAnswer((_) async => true);
         // Case 3 guard: categories already exist so no writeTxn needed
         when(() => mockCollection.count()).thenAnswer((_) async => 13);
 
@@ -116,8 +116,7 @@ void main() {
   group('MigrationRunner case 3 — category seeding', () {
     setUp(() {
       // Pre-requisite: setInt must be mockable for all versions
-      when(() => mockPrefs.setInt(any(), any()))
-          .thenAnswer((_) async => true);
+      when(() => mockPrefs.setInt(any(), any())).thenAnswer((_) async => true);
       // Start from version 2 so only case 3 runs
       when(() => mockPrefs.getInt('schema_version')).thenReturn(2);
     });
@@ -125,37 +124,43 @@ void main() {
     test('calls count() guard — seeding triggered from version 2', () async {
       // Arrange — empty DB (no categories yet)
       when(() => mockCollection.count()).thenAnswer((_) async => 0);
-      when(() => mockCollection.putAll(any()))
-          .thenAnswer((_) async => [1, 2, 3]);
+      when(
+        () => mockCollection.putAll(any()),
+      ).thenAnswer((_) async => [1, 2, 3]);
 
       // Act
       await MigrationRunner.run(fakeIsar, mockPrefs);
 
-      // Assert — count() was called (guard check), writeTxn was called (seeding)
+      // Assert — count() was called (guard check), writeTxn was
+      // called (seeding)
       verify(() => mockCollection.count()).called(1);
       expect(fakeIsar.writeTxnCallCount, equals(1));
     });
 
-    test('does NOT seed when categories already exist (idempotency guard)',
-        () async {
-      // Arrange — categories already exist
-      when(() => mockCollection.count()).thenAnswer((_) async => 13);
+    test(
+      'does NOT seed when categories already exist (idempotency guard)',
+      () async {
+        // Arrange — categories already exist
+        when(() => mockCollection.count()).thenAnswer((_) async => 13);
 
-      // Act
-      await MigrationRunner.run(fakeIsar, mockPrefs);
+        // Act
+        await MigrationRunner.run(fakeIsar, mockPrefs);
 
-      // Assert — count() was called but writeTxn was NOT called (guard short-circuits)
-      verify(() => mockCollection.count()).called(1);
-      expect(fakeIsar.writeTxnCallCount, equals(0));
-    });
+        // Assert — count() was called but writeTxn was NOT called
+        // (guard short-circuits)
+        verify(() => mockCollection.count()).called(1);
+        expect(fakeIsar.writeTxnCallCount, equals(0));
+      },
+    );
 
     test('putAll receives exactly 13 models on first seed', () async {
       // Arrange
       final capturedModels = <List<TransactionCategoryModel>>[];
       when(() => mockCollection.count()).thenAnswer((_) async => 0);
       when(() => mockCollection.putAll(any())).thenAnswer((invocation) async {
-        capturedModels
-            .add(invocation.positionalArguments[0] as List<TransactionCategoryModel>);
+        capturedModels.add(
+          invocation.positionalArguments[0] as List<TransactionCategoryModel>,
+        );
         return List.generate(
           (invocation.positionalArguments[0] as List).length,
           (i) => i + 1,
@@ -184,13 +189,27 @@ void main() {
       // Act
       await MigrationRunner.run(fakeIsar, mockPrefs);
 
-      final expenseCategories = capturedModels
-          .where((m) => m.type == TransactionType.expense)
-          .map((m) => m.namePtBr)
-          .toList();
+      final expenseCategories =
+          capturedModels
+              .where((m) => m.type == TransactionType.expense)
+              .map((m) => m.namePtBr)
+              .toList();
 
       // Assert D-04: all 9 expense categories present
-      expect(expenseCategories, containsAll(['Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Educação', 'Lazer', 'Roupas', 'Tecnologia', 'Outros']));
+      expect(
+        expenseCategories,
+        containsAll([
+          'Alimentação',
+          'Transporte',
+          'Moradia',
+          'Saúde',
+          'Educação',
+          'Lazer',
+          'Roupas',
+          'Tecnologia',
+          'Outros',
+        ]),
+      );
       expect(expenseCategories.length, equals(9));
     });
 
@@ -208,14 +227,17 @@ void main() {
       // Act
       await MigrationRunner.run(fakeIsar, mockPrefs);
 
-      final incomeCategories = capturedModels
-          .where((m) => m.type == TransactionType.income)
-          .map((m) => m.namePtBr)
-          .toList();
+      final incomeCategories =
+          capturedModels
+              .where((m) => m.type == TransactionType.income)
+              .map((m) => m.namePtBr)
+              .toList();
 
       // Assert D-05: all 4 income categories present
-      expect(incomeCategories,
-          containsAll(['Salário', 'Freelance', 'Investimentos', 'Outros']));
+      expect(
+        incomeCategories,
+        containsAll(['Salário', 'Freelance', 'Investimentos', 'Outros']),
+      );
       expect(incomeCategories.length, equals(4));
     });
 

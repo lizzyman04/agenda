@@ -4,7 +4,8 @@ import 'package:agenda/domain/finance/savings_goal_contribution.dart';
 
 /// Converts between [SavingsGoalModel] and [SavingsGoal].
 ///
-/// GoalContribution (embedded) maps to SavingsGoalContribution (domain value object).
+/// GoalContribution (embedded) maps to SavingsGoalContribution (domain
+/// value object).
 class GoalMapper {
   const GoalMapper();
 
@@ -14,15 +15,16 @@ class GoalMapper {
       title: model.title,
       targetAmountCents: model.targetAmountCents,
       deadline: model.deadline,
-      contributions: model.contributions
-          .map(
-            (c) => SavingsGoalContribution(
-              amountCents: c.amountCents,
-              date: c.date,
-              note: c.note,
-            ),
-          )
-          .toList(),
+      contributions:
+          model.contributions
+              .map(
+                (c) => SavingsGoalContribution(
+                  amountCents: c.amountCents,
+                  date: c.date,
+                  note: c.note,
+                ),
+              )
+              .toList(),
       isCompleted: model.isCompleted,
       deletedAt: model.deletedAt,
       createdAt: model.createdAt,

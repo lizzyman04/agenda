@@ -12,7 +12,8 @@ abstract class RecurringPaymentRepository {
   /// Creates a new recurring payment and returns it with the assigned Isar id.
   AsyncResult<RecurringPayment> createPayment(RecurringPayment payment);
 
-  /// Returns the recurring payment with [id], or Err(DatabaseFailure) if not found.
+  /// Returns the recurring payment with [id], or Err(DatabaseFailure)
+  /// if not found.
   AsyncResult<RecurringPayment> getPayment(int id);
 
   /// Returns all active (non-deleted, isActive=true) recurring payments.

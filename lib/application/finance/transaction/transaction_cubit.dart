@@ -70,7 +70,8 @@ class TransactionCubit extends Cubit<TransactionState> {
     final Transaction tx;
     switch (getResult) {
       case Err<Transaction>():
-        // Transaction not found — silently ignore (already permanently deleted).
+        // Transaction not found — silently ignore (already
+        // permanently deleted).
         return;
       case Success<Transaction>(:final value):
         tx = value;

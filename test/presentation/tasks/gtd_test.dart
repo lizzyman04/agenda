@@ -90,8 +90,9 @@ void main() {
       expect(chip.selected, isTrue);
     });
 
-    testWidgets('calls onSelected(true) when tapped while unselected',
-        (tester) async {
+    testWidgets('calls onSelected(true) when tapped while unselected', (
+      tester,
+    ) async {
       bool? receivedValue;
 
       await tester.pumpWidget(
@@ -124,8 +125,7 @@ void main() {
       whenListen(
         cubit,
         const Stream<TaskListState>.empty(),
-        initialState:
-            const TaskListLoaded(items: []),
+        initialState: const TaskListLoaded(items: []),
       );
       when(() => cubit.applyFilter(any())).thenAnswer((_) async {});
 
@@ -139,7 +139,8 @@ void main() {
 
     testWidgets('renders chips for each distinct GTD context', (tester) async {
       when(() => repository.getDistinctGtdContexts()).thenAnswer(
-        (_) async => const Success<List<String>>(['@home', '@office', '@phone']),
+        (_) async =>
+            const Success<List<String>>(['@home', '@office', '@phone']),
       );
 
       await tester.pumpWidget(_buildFilterScreenWidget(cubit));
@@ -152,32 +153,35 @@ void main() {
     });
 
     testWidgets(
-        'tapping a chip and pressing Apply calls cubit.applyFilter with selected context',
-        (tester) async {
-      when(() => repository.getDistinctGtdContexts()).thenAnswer(
-        (_) async =>
-            const Success<List<String>>(['@home', '@work']),
-      );
+      'tapping a chip and pressing Apply calls cubit.applyFilter with '
+      'selected context',
+      (tester) async {
+        when(() => repository.getDistinctGtdContexts()).thenAnswer(
+          (_) async => const Success<List<String>>(['@home', '@work']),
+        );
 
-      await tester.pumpWidget(_buildFilterScreenWidget(cubit));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(_buildFilterScreenWidget(cubit));
+        await tester.pumpAndSettle();
 
-      // Tap the @work chip
-      await tester.tap(find.text('@work'));
-      await tester.pump();
+        // Tap the @work chip
+        await tester.tap(find.text('@work'));
+        await tester.pump();
 
-      // Tap Apply button (l10n.applyFilter = "Apply")
-      await tester.tap(find.text('Apply'));
-      await tester.pump();
+        // Tap Apply button (l10n.applyFilter = "Apply")
+        await tester.tap(find.text('Apply'));
+        await tester.pump();
 
-      verify(
-        () => cubit.applyFilter(
-          const TaskListFilter(gtdContext: '@work'),
-        ),
-      ).called(1);
-    });
+        verify(
+          () => cubit.applyFilter(
+            const TaskListFilter(gtdContext: '@work'),
+          ),
+        ).called(1);
+      },
+    );
 
-    testWidgets('shows empty state text when no contexts exist', (tester) async {
+    testWidgets('shows empty state text when no contexts exist', (
+      tester,
+    ) async {
       when(() => repository.getDistinctGtdContexts()).thenAnswer(
         (_) async => const Success<List<String>>([]),
       );

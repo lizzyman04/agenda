@@ -16,7 +16,8 @@ int computeBalance(List<Transaction> transactions) {
 }
 
 /// Computes net worth per D-08 formula.
-/// netWorth = balance + Σ(goal.amountSavedCents(0)) - Σ(toPay unpaid debt.amountCents)
+/// netWorth = balance + Σ(goal.amountSavedCents(0))
+///            - Σ(toPay unpaid debt.amountCents)
 int computeNetWorth(
   int balance,
   List<SavingsGoal> goals,
@@ -113,7 +114,8 @@ void main() {
 
   group('computeNetWorth', () {
     test(
-      'computeNetWorth(balance:6000, goalAmountSaved:2000, toPayDebts:[4000]) == 4000',
+      'computeNetWorth(balance:6000, goalAmountSaved:2000, '
+      'toPayDebts:[4000]) == 4000',
       () {
         final goals = [
           SavingsGoal(

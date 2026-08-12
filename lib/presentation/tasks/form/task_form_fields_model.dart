@@ -10,8 +10,10 @@ import 'package:flutter/material.dart' show TimeOfDay;
 /// Active goals/debts to choose from, plus titles for whatever is linked.
 class FinanceLinksSnapshot {
   const FinanceLinksSnapshot({
-    this.activeGoals = const [], this.activeDebts = const [],
-    this.linkedGoalTitle, this.linkedDebtTitle,
+    this.activeGoals = const [],
+    this.activeDebts = const [],
+    this.linkedGoalTitle,
+    this.linkedDebtTitle,
   });
 
   final List<SavingsGoal> activeGoals;
@@ -22,11 +24,17 @@ class FinanceLinksSnapshot {
 
 /// Field values a GTD walkthrough maps onto the form. `null` text fields
 /// mean "leave alone"; `isNextAction` isn't here — it always becomes true.
-typedef GtdFormValues = ({
-  String title, String? description, Priority priority,
-  bool isUrgent, bool isImportant, DateTime? dueDate,
-  String? waitingFor, String? gtdContext,
-});
+typedef GtdFormValues =
+    ({
+      String title,
+      String? description,
+      Priority priority,
+      bool isUrgent,
+      bool isImportant,
+      DateTime? dueDate,
+      String? waitingFor,
+      String? gtdContext,
+    });
 
 /// Mutable holder for every task-form field the screen doesn't keep in a
 /// `TextEditingController`.
@@ -41,12 +49,21 @@ typedef GtdFormValues = ({
 /// stay one line each.
 class TaskFormFieldsModel {
   TaskFormFieldsModel({
-    required this.itemType, required this.priority, required this.sizeCategory,
-    required this.isUrgent, required this.isImportant, required this.isNextAction,
-    this.dueDate, this.dueTime, this.recurrenceRule,
-    this.linkedGoalId, this.linkedDebtId,
-    this.activeGoals = const [], this.activeDebts = const [],
-    this.linkedGoalTitle, this.linkedDebtTitle,
+    required this.itemType,
+    required this.priority,
+    required this.sizeCategory,
+    required this.isUrgent,
+    required this.isImportant,
+    required this.isNextAction,
+    this.dueDate,
+    this.dueTime,
+    this.recurrenceRule,
+    this.linkedGoalId,
+    this.linkedDebtId,
+    this.activeGoals = const [],
+    this.activeDebts = const [],
+    this.linkedGoalTitle,
+    this.linkedDebtTitle,
     this.advancedExpanded = false,
   });
 
@@ -64,9 +81,11 @@ class TaskFormFieldsModel {
       isUrgent: item?.isUrgent ?? false,
       isImportant: item?.isImportant ?? false,
       isNextAction: item?.isNextAction ?? false,
-      dueDate: item?.dueDate, dueTime: dueTime,
+      dueDate: item?.dueDate,
+      dueTime: dueTime,
       recurrenceRule: item?.recurrenceRule,
-      linkedGoalId: item?.linkedGoalId, linkedDebtId: item?.linkedDebtId,
+      linkedGoalId: item?.linkedGoalId,
+      linkedDebtId: item?.linkedDebtId,
     );
   }
 

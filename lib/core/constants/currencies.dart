@@ -48,7 +48,11 @@ abstract final class Currencies {
     Currency(code: 'ARS', name: 'Argentine Peso', symbol: r'$'),
     Currency(code: 'AWG', name: 'Aruban Florin', symbol: 'ƒ'),
     Currency(code: 'AZN', name: 'Azerbaijani Manat', symbol: '₼'),
-    Currency(code: 'BAM', name: 'Bosnia-Herzegovina Convertible Mark', symbol: 'KM'),
+    Currency(
+      code: 'BAM',
+      name: 'Bosnia-Herzegovina Convertible Mark',
+      symbol: 'KM',
+    ),
     Currency(code: 'BBD', name: 'Barbadian Dollar', symbol: r'Bds$'),
     Currency(code: 'BDT', name: 'Bangladeshi Taka', symbol: '৳'),
     Currency(code: 'BGN', name: 'Bulgarian Lev', symbol: 'лв'),

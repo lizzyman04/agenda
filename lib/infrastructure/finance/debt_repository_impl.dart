@@ -91,7 +91,8 @@ class DebtRepositoryImpl implements DebtRepository {
         return Err(DatabaseFailure('Debt $id not found'));
       }
 
-      // Toggle isPaid: if false → set true + record paidAt; if true → clear both
+      // Toggle isPaid: if false → set true + record paidAt;
+      // if true → clear both
       final now = DateTime.now();
       if (!model.isPaid) {
         model

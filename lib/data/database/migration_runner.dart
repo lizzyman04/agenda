@@ -44,7 +44,8 @@ class MigrationRunner {
         // No data migration needed — new empty collection.
         return;
       case 3:
-        // Finance collections added. Seed default TransactionCategories (D-04, D-05).
+        // Finance collections added. Seed default
+        // TransactionCategories (D-04, D-05).
         await _seedDefaultCategories(isar);
         return;
     }
@@ -55,8 +56,7 @@ class MigrationRunner {
   /// Idempotency guard: if any categories already exist, skip seeding.
   /// This prevents double-seeding on repeated launches or test scenarios.
   static Future<void> _seedDefaultCategories(Isar isar) async {
-    final count =
-        await isar.collection<TransactionCategoryModel>().count();
+    final count = await isar.collection<TransactionCategoryModel>().count();
     if (count > 0) return;
 
     final now = DateTime.now();
@@ -84,20 +84,22 @@ class MigrationRunner {
 
     final models = [
       ...expenseData.map(
-        (pair) => TransactionCategoryModel()
-          ..namePtBr = pair.$1
-          ..nameEn = pair.$2
-          ..type = TransactionType.expense
-          ..isDefault = true
-          ..createdAt = now,
+        (pair) =>
+            TransactionCategoryModel()
+              ..namePtBr = pair.$1
+              ..nameEn = pair.$2
+              ..type = TransactionType.expense
+              ..isDefault = true
+              ..createdAt = now,
       ),
       ...incomeData.map(
-        (pair) => TransactionCategoryModel()
-          ..namePtBr = pair.$1
-          ..nameEn = pair.$2
-          ..type = TransactionType.income
-          ..isDefault = true
-          ..createdAt = now,
+        (pair) =>
+            TransactionCategoryModel()
+              ..namePtBr = pair.$1
+              ..nameEn = pair.$2
+              ..type = TransactionType.income
+              ..isDefault = true
+              ..createdAt = now,
       ),
     ];
 

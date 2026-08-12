@@ -9,7 +9,10 @@ import 'package:flutter/material.dart';
 /// [items] is empty.
 class QuadrantCard extends StatelessWidget {
   const QuadrantCard({
-    required this.label, required this.items, required this.headerColor, super.key,
+    required this.label,
+    required this.items,
+    required this.headerColor,
+    super.key,
   });
 
   final String label;
@@ -33,41 +36,42 @@ class QuadrantCard extends StatelessWidget {
             child: Text(
               label,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                fontWeight: FontWeight.bold,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ),
           Expanded(
-            child: items.isEmpty
-                ? Center(
-                    child: Text(
-                      l10n.quadrantEmpty,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(4),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final item = items[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2),
-                        child: Chip(
-                          label: Text(
-                            item.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 11),
+            child:
+                items.isEmpty
+                    ? Center(
+                      child: Text(
+                        l10n.quadrantEmpty,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    )
+                    : ListView.builder(
+                      padding: const EdgeInsets.all(4),
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2),
+                          child: Chip(
+                            label: Text(
+                              item.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            padding: EdgeInsets.zero,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
                           ),
-                          padding: EdgeInsets.zero,
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
           ),
         ],
       ),
