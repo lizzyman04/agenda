@@ -50,12 +50,26 @@ pushed them to 178/195/190/188. That was closed by extraction rather than reflow
 11 new files (form models, picker helpers, app-bar builders, submit helpers, scaffolds),
 after which all four are both `dart format`-clean **and** under the cap (149/141/144/141).
 
-Current state on main: `lines_longer_than_80_chars` is **0 project-wide** (was 58), and
-`dart format --set-exit-if-changed` is clean on every touched file. **03.1-18 should
-therefore make the guard police column width and require `dart format`** — the tree
-already satisfies both, so wiring them into CI is now a no-op guard rather than a
-migration. Note the extracted screens still have no widget tests, so this was verified
-by `flutter analyze` + the existing 265-test suite, not by UI-level regression tests.
+Current state on main: `lines_longer_than_80_chars` is **0 project-wide** (was 58). Note
+the extracted screens still have no widget tests, so this was verified by
+`flutter analyze` + the existing 265-test suite, not by UI-level regression tests.
+
+**CORRECTION — an earlier version of this note told 03.1-18 that requiring `dart format`
+would be a no-op. That was wrong; do not act on it.** The clean-format claim was only ever
+true of the ~16 files the extraction pass touched, not the tree. Measured on `f2c612f`:
+`dart format --set-exit-if-changed lib test` reports **103 of 258 files changed**.
+Enforcing `dart format` is therefore a real migration that would reformat ~103 untouched
+files, and several of them would cross the 150-line cap and break SC-1. **03.1-18 must
+decide the order deliberately** — most likely raise or exempt the cap first, or scope
+formatting to changed files only.
+
+Column width is the separate, easier half: the two limits do **not** in fact conflict,
+because `lines_longer_than_80_chars` exempts lines with no whitespace past column 80.
+88 raw lines in non-generated code exceed 80 characters while the lint reports 0 — 83 are
+`import`/`export` URIs (unsplittable; 03.1-16's nesting made them longer and there is no
+legal break point) and 5 are trailing unbreakable tokens. So a guard that counts raw
+columns would flag 88 files the analyzer considers clean. If 03.1-18 polices width, it
+should defer to the lint rather than measure columns itself.
 
 Phase 03 (finance-core) remains open behind it: code complete, but 3 UAT issues are unresolved (test 2 — category-name stub showing `#id` and a duplicated note; test 3 — SnackBar queueing on a second swipe inside the undo window; test 9 — task-link chip showing a raw id) plus an undiagnosed app-wide undo-timer defect where 5s SnackBars never dismiss. None of these block Phase 3.1, which is a pure refactor.
 
