@@ -116,21 +116,21 @@ plan `3.1-08`'s objective for why the four finance form screens share a Wave 1 p
 plan, and plan `3.1-16`'s objective for why the two folder-nesting plans run last.
 
 Plans:
-- [ ] 3.1-01: Architecture guard scaffold — tool/check_architecture.dart + exemption allowlist (currencies.dart), informational mode; guard unit-tested against fixtures
-- [ ] 3.1-02: task_form_screen.dart remainder — field groups, finance-link picker, save path (completes the partial 3.1-01 work from commits 6c06312/04c4f84)
-- [ ] 3.1-03: task_detail_screen.dart split (563 lines) — hero card, section atoms, action bar
-- [ ] 3.1-04: item.dart split-or-exempt (SPLIT: sentinel + copyWith extension) + task_list_cubit.dart pure-function extraction
-- [ ] 3.1-05: item_dao.dart query-builder extraction + item_repository_impl.dart part/part-of split
-- [ ] 3.1-06: task_list_screen.dart + day_planner_screen.dart + project_screen.dart splits
-- [ ] 3.1-07: home_dashboard_cubit.dart + budget_cubit.dart aggregation-math extraction
-- [ ] 3.1-08: Shared finance-form utilities (FormCard/FieldRow/FieldDivider, CategoryPickerSheet, amount_parser) — prerequisite for 3.1-12..15
-- [ ] 3.1-09: debt_list_screen.dart + recurring_payment_screen.dart + budget_overview_screen.dart splits
-- [ ] 3.1-10: finance_dashboard_screen.dart split
-- [ ] 3.1-11: finance_mappers.dart split-or-exempt (SPLIT into 6 per-entity mapper files) — prerequisite for 3.1-17
-- [ ] 3.1-12: transaction_form_screen.dart split (587 lines, largest presentation/finance file) — depends on 3.1-08
-- [ ] 3.1-13: recurring_payment_form_screen.dart split — depends on 3.1-08
-- [ ] 3.1-14: debt_form_screen.dart split — depends on 3.1-08
-- [ ] 3.1-15: goal_form_screen.dart split — depends on 3.1-08
+- [x] 3.1-01: Architecture guard scaffold — tool/check_architecture.dart + exemption allowlist (currencies.dart), informational mode; guard unit-tested against fixtures
+- [x] 3.1-02: task_form_screen.dart remainder — field groups, finance-link picker, save path (completes the partial 3.1-01 work from commits 6c06312/04c4f84)
+- [x] 3.1-03: task_detail_screen.dart split (563 lines) — hero card, section atoms, action bar
+- [x] 3.1-04: item.dart split-or-exempt (SPLIT: sentinel + copyWith extension) + task_list_cubit.dart pure-function extraction
+- [x] 3.1-05: item_dao.dart query-builder extraction + item_repository_impl.dart part/part-of split
+- [x] 3.1-06: task_list_screen.dart + day_planner_screen.dart + project_screen.dart splits
+- [x] 3.1-07: home_dashboard_cubit.dart + budget_cubit.dart aggregation-math extraction
+- [x] 3.1-08: Shared finance-form utilities (FormCard/FieldRow/FieldDivider, CategoryPickerSheet, amount_parser) — prerequisite for 3.1-12..15
+- [x] 3.1-09: debt_list_screen.dart + recurring_payment_screen.dart + budget_overview_screen.dart splits
+- [x] 3.1-10: finance_dashboard_screen.dart split
+- [x] 3.1-11: finance_mappers.dart split-or-exempt (SPLIT into 6 per-entity mapper files) — prerequisite for 3.1-17
+- [x] 3.1-12: transaction_form_screen.dart split (587 lines, largest presentation/finance file) — depends on 3.1-08
+- [x] 3.1-13: recurring_payment_form_screen.dart split — depends on 3.1-08
+- [x] 3.1-14: debt_form_screen.dart split — depends on 3.1-08
+- [x] 3.1-15: goal_form_screen.dart split — depends on 3.1-08
 - [ ] 3.1-16: domain/finance folder nesting (16 → 6 subfolders) — depends on every finance-touching plan above
 - [ ] 3.1-17: data/finance folder nesting (18 → 6 subfolders, using 3.1-11's mapper files) — depends on 3.1-16
 - [ ] 3.1-18: README per nest (all directories under presentation/+application/, literal reading) + guard enforcement wired into CI — final plan
@@ -187,6 +187,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 5/5 | In verification | - |
-| 3.1. Architecture Compliance | 0/18 | In progress | - |
+| 3.1. Architecture Compliance | 15/18 | In progress | - |
 | 4. Notifications + Backup | 0/5 | Not started | - |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
