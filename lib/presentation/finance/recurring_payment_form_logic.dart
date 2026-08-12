@@ -24,6 +24,20 @@ Future<List<TransactionCategory>> loadExpenseCategories(
   return const [];
 }
 
+/// Returns the category in [categories] matching [id], or `null` if [id]
+/// is `null` or no category matches. Pure lookup used to preselect a
+/// category after `loadExpenseCategories` resolves.
+TransactionCategory? findCategoryById(
+  List<TransactionCategory> categories,
+  int? id,
+) {
+  if (id == null) return null;
+  for (final category in categories) {
+    if (category.id == id) return category;
+  }
+  return null;
+}
+
 /// Builds the [RecurringPayment] to persist, mirroring the previous inline
 /// `_save()` construction verbatim — including the `isActive: true`
 /// create-default.
