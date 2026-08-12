@@ -1,7 +1,10 @@
 import 'package:agenda/application/finance/debt/debt_cubit.dart';
+import 'package:agenda/core/utils/amount_parser.dart';
 import 'package:agenda/domain/finance/debt.dart';
 import 'package:agenda/domain/finance/debt_direction.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/finance/debt_form_logic.dart';
+import 'package:agenda/presentation/finance/widgets/finance_form_primitives.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,11 +72,8 @@ class _DebtFormScreenState extends State<DebtFormScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final raw = _amountController.text
-        .replaceAll(',', '.')
-        .replaceAll(RegExp(r'[^\d.]'), '');
-    final parsed = double.tryParse(raw);
-    if (parsed == null || parsed <= 0) {
+    final amountCents = parseAmountCentsOrNull(_amountController.text);
+    if (amountCents == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:
@@ -83,32 +83,22 @@ class _DebtFormScreenState extends State<DebtFormScreen> {
       );
       return;
     }
-    final amountCents = (parsed * 100).round();
-    final now = DateTime.now();
+
+    final debt = buildDebtToSave(
+      isEditing: _isEditing,
+      original: widget.debt,
+      title: _titleController.text.trim(),
+      amountCents: amountCents,
+      direction: _direction,
+      counterparty: _counterpartyController.text.trim(),
+      dueDate: _dueDate,
+      now: DateTime.now(),
+    );
     final cubit = context.read<DebtCubit>();
 
     if (_isEditing) {
-      final updated = widget.debt!.copyWith(
-        title: _titleController.text.trim(),
-        amountCents: amountCents,
-        direction: _direction,
-        counterparty: _counterpartyController.text.trim(),
-        dueDate: _dueDate,
-        updatedAt: now,
-      );
-      await cubit.updateDebt(updated);
+      await cubit.updateDebt(debt);
     } else {
-      final debt = Debt(
-        id: 0,
-        title: _titleController.text.trim(),
-        amountCents: amountCents,
-        direction: _direction,
-        counterparty: _counterpartyController.text.trim(),
-        dueDate: _dueDate,
-        isPaid: false,
-        createdAt: now,
-        updatedAt: now,
-      );
       await cubit.createDebt(debt);
     }
 
@@ -150,7 +140,7 @@ class _DebtFormScreenState extends State<DebtFormScreen> {
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           children: [
             // Direction toggle
-            _FormCard(
+            FormCard(
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -175,11 +165,11 @@ class _DebtFormScreenState extends State<DebtFormScreen> {
             ),
             const SizedBox(height: 12),
 
-            _FormCard(
+            FormCard(
               child: Column(
                 children: [
                   // Title
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.title_outlined,
                     child: TextFormField(
                       controller: _titleController,
@@ -198,10 +188,10 @@ class _DebtFormScreenState extends State<DebtFormScreen> {
                       },
                     ),
                   ),
-                  const _FieldDivider(),
+                  const FieldDivider(),
 
                   // Amount
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.attach_money_outlined,
                     child: TextFormField(
                       controller: _amountController,
@@ -225,10 +215,10 @@ class _DebtFormScreenState extends State<DebtFormScreen> {
                       },
                     ),
                   ),
-                  const _FieldDivider(),
+                  const FieldDivider(),
 
                   // Counterparty
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.person_outline,
                     child: TextFormField(
                       controller: _counterpartyController,
@@ -246,10 +236,10 @@ class _DebtFormScreenState extends State<DebtFormScreen> {
                       },
                     ),
                   ),
-                  const _FieldDivider(),
+                  const FieldDivider(),
 
                   // Due date
-                  _FieldRow(
+                  FieldRow(
                     icon: Icons.calendar_today_outlined,
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -276,52 +266,5 @@ class _DebtFormScreenState extends State<DebtFormScreen> {
         ),
       ),
     );
-  }
-}
-
-class _FormCard extends StatelessWidget {
-  const _FormCard({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Card(
-      elevation: 0,
-      color: cs.surfaceContainerLow,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: child,
-    );
-  }
-}
-
-class _FieldRow extends StatelessWidget {
-  const _FieldRow({required this.icon, required this.child});
-  final IconData icon;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: cs.onSurfaceVariant),
-          const SizedBox(width: 12),
-          Expanded(child: child),
-        ],
-      ),
-    );
-  }
-}
-
-class _FieldDivider extends StatelessWidget {
-  const _FieldDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Divider(height: 1, indent: 48, endIndent: 16);
   }
 }
