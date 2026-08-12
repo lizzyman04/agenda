@@ -132,7 +132,7 @@ Plans:
 - [x] 3.1-14: debt_form_screen.dart split — depends on 3.1-08
 - [x] 3.1-15: goal_form_screen.dart split — depends on 3.1-08
 - [x] 3.1-16: domain/finance folder nesting (16 → 6 subfolders) — depends on every finance-touching plan above
-- [ ] 3.1-17: data/finance folder nesting (18 → 6 subfolders, using 3.1-11's mapper files) — depends on 3.1-16
+- [x] 3.1-17: data/finance folder nesting (18 → 6 subfolders, using 3.1-11's mapper files) — depends on 3.1-16
 - [ ] 3.1-18: README per nest (all directories under presentation/+application/, literal reading) + guard enforcement wired into CI — final plan
 
 ### Phase 4: Notifications + Backup
@@ -187,6 +187,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 5/5 | In verification | - |
-| 3.1. Architecture Compliance | 16/18 | In Progress|  |
+| 3.1. Architecture Compliance | 17/18 | In Progress|  |
 | 4. Notifications + Backup | 0/5 | Not started | - |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
