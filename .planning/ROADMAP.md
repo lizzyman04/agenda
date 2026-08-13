@@ -75,7 +75,7 @@ Plans:
   3. User can create a savings goal with a target amount and optional deadline, contribute to it, and see the percentage progress update with each contribution
   4. User can log a debt (to pay or to receive) with amount and due date, and log a recurring payment (subscription or bill) with amount and billing cycle
   5. All screens — transaction list, budget overview, goals list, debt list — display meaningful empty states with a clear action prompt when no data exists yet; the dashboard shows current balance and net worth; the spending chart renders a monthly category breakdown as pie and bar
-**Plans**: 5 plans
+**Plans**: 8 plans (5 build + 3 UAT gap closure)
 **UI hint**: yes
 
 Plans:
@@ -84,6 +84,9 @@ Plans:
 - [x] 03-03-PLAN.md — Finance application layer: TransactionCubit, BudgetCubit, GoalCubit + GoalListCubit, DebtCubit, RecurringPaymentCubit, HomeDashboardCubit (single-pass balance + net worth + chart aggregation) *(post-fix 2026-06-01: build_runner re-run to regenerate injection.config.dart with cubit factories)*
 - [x] 03-04-PLAN.md — Finance presentation: 10 screens (transaction list/form, budget overview, goal list/detail/form, debt list/form, recurring list/form), 4 widgets (TransactionCard, BudgetProgressBar, GoalProgressCard, FinanceEmptyState), Finance tab in NavigationBar, task↔finance link display + task form picker *(checkpoint approved 2026-06-01; provider-scope crash fixed in 260601-u6q; budget-save BottomSheet crash deferred as known non-blocking bug — see STATE.md)*
 - [x] 03-05-PLAN.md — Dashboard + charts: DashboardSummaryCard (displaySmall balance), SpendingPieChart + SpendingBarChart (fl_chart 1.2.0), month navigation, empty states for dashboard and no-expenses-in-month *(code complete + merged 2026-06-01; human-verify checkpoint pending; HomeDashboardCubit.start() made idempotent)*
+- [ ] 03-06-PLAN.md — Gap closure (UAT test 2): expose the category list on TransactionLoaded, resolve categoryId → localized name on the transaction list, and stop the note rendering twice on the card
+- [ ] 03-07-PLAN.md — Gap closure (UAT test 3): hide the current undo SnackBar before showing the next one, so a second swipe-delete inside the undo window replaces it instead of queueing behind it
+- [ ] 03-08-PLAN.md — Gap closure (UAT test 9): resolve the linked goal/debt title in the task detail finance chip instead of rendering the raw entity id
 
 ---
 
