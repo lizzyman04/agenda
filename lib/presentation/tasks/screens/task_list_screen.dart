@@ -106,6 +106,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 duration: AppConstants.undoSnackbarDuration,
+                // persist defaults to `action != null` since Flutter 3.38,
+                // which suppresses auto-dismiss entirely. The undo window
+                // must expire on its own, so opt back out explicitly.
+                persist: false,
                 content: Text(l10n.taskDeleted),
                 action: SnackBarAction(
                   label: l10n.undo,

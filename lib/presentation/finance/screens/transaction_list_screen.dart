@@ -45,6 +45,10 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
       SnackBar(
         content: Text(AppLocalizations.of(context).transactionDeleted),
         duration: AppConstants.undoSnackbarDuration,
+        // persist defaults to `action != null` since Flutter 3.38, which
+        // suppresses auto-dismiss entirely. The undo window must expire on
+        // its own, so opt back out explicitly.
+        persist: false,
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
           label: AppLocalizations.of(context).undo,
