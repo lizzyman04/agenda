@@ -1,9 +1,11 @@
 import 'package:agenda/application/finance/transaction/transaction_cubit.dart';
 import 'package:agenda/application/finance/transaction/transaction_state.dart';
 import 'package:agenda/core/constants/app_constants.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
 import 'package:agenda/domain/finance/transaction/transaction.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/finance/screens/transaction_form_screen.dart';
+import 'package:agenda/presentation/finance/transaction_form_logic.dart';
 import 'package:agenda/presentation/finance/widgets/finance_empty_state.dart';
 import 'package:agenda/presentation/finance/widgets/transaction_card.dart';
 import 'package:flutter/material.dart';
@@ -61,8 +63,6 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // Use MT as dev default; production reads from SharedPreferences
-    const currencySymbol = 'MT';
     final locale = Localizations.localeOf(context);
 
     return BlocBuilder<TransactionCubit, TransactionState>(
@@ -81,43 +81,60 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
               ctaLabel: l10n.addTransaction,
               onCta: _openForm,
             ),
-          TransactionLoaded(:final transactions) => Stack(
-              children: [
-                ListView.builder(
-                  padding: const EdgeInsets.only(top: 8, bottom: 88),
-                  itemCount: transactions.length,
-                  itemBuilder: (ctx, i) {
-                    final tx = transactions[i];
-                    return TransactionCard(
-                      transaction: tx,
-                      categoryName: _categoryName(tx, locale.languageCode),
-                      currencySymbol: currencySymbol,
-                      locale: locale,
-                      onDelete: () => _handleDelete(context, tx),
-                      onTap: () => _openForm(transaction: tx),
-                    );
-                  },
-                ),
-                Positioned(
-                  right: 16,
-                  bottom: 16,
-                  child: FloatingActionButton(
-                    tooltip: l10n.addTransaction,
-                    onPressed: _openForm,
-                    child: const Icon(Icons.add),
-                  ),
-                ),
-              ],
-            ),
+          TransactionLoaded(:final transactions, :final categories) =>
+            _buildList(context, transactions, categories, locale, l10n),
         };
       },
     );
   }
 
-  /// Returns the category display name from cached category or id fallback.
-  String _categoryName(Transaction tx, String langCode) {
-    // Category lookup is best-effort — full lookup is done via cubit state
-    // if categories are passed. For now, use a placeholder that works.
-    return '#${tx.categoryId}';
+  Widget _buildList(
+    BuildContext context,
+    List<Transaction> transactions,
+    List<TransactionCategory> categories,
+    Locale locale,
+    AppLocalizations l10n,
+  ) {
+    // Use MT as dev default; production reads from SharedPreferences
+    const currencySymbol = 'MT';
+    // Built once per state, not once per itemBuilder call.
+    final categoryById = {for (final c in categories) c.id: c};
+    final preferEnglish = locale.languageCode == 'en';
+
+    return Stack(
+      children: [
+        ListView.builder(
+          padding: const EdgeInsets.only(top: 8, bottom: 88),
+          itemCount: transactions.length,
+          itemBuilder: (ctx, i) {
+            final tx = transactions[i];
+            return TransactionCard(
+              transaction: tx,
+              // '#<id>' is the genuine no-such-category fallback — the same
+              // one spending_pie_chart.dart and spending_bar_chart.dart use
+              // for an orphaned categoryId. It is not the removed stub.
+              categoryName: resolveCategoryDisplay(
+                categoryById[tx.categoryId],
+                preferEnglish: preferEnglish,
+                fallback: '#${tx.categoryId}',
+              ),
+              currencySymbol: currencySymbol,
+              locale: locale,
+              onDelete: () => _handleDelete(context, tx),
+              onTap: () => _openForm(transaction: tx),
+            );
+          },
+        ),
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: FloatingActionButton(
+            tooltip: l10n.addTransaction,
+            onPressed: _openForm,
+            child: const Icon(Icons.add),
+          ),
+        ),
+      ],
+    );
   }
 }

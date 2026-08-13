@@ -14,7 +14,7 @@ files in `../`.
 | File | Lines | Role |
 |------|------:|------|
 | `finance_dashboard_screen.dart` | 56 | `TabBar`/`TabBarView` shell for the whole finance section: Resumo (`../widgets/dashboard/dashboard_tab.dart`), transactions, budgets, debts, recurring payments, and goals |
-| `transaction_list_screen.dart` | 119 | The transaction list — swipe-to-delete (via `TransactionCard`'s `Dismissible`) with an `AppConstants.undoSnackbarDuration` undo snackbar, tap to edit |
+| `transaction_list_screen.dart` | 140 | The transaction list — resolves each `categoryId` to a localized name via `resolveCategoryDisplay`; swipe-to-delete (via `TransactionCard`'s `Dismissible`) with an `AppConstants.undoSnackbarDuration` undo snackbar, tap to edit |
 | `transaction_form_screen.dart` | 149 | Create/edit a transaction; owns the controllers and `TransactionFormModel`, delegates loading, submission and pickers |
 | `budget_overview_screen.dart` | 126 | Per-category budget vs. spend, with the limit sheet |
 | `debt_list_screen.dart` | 93 | Debts to pay and to receive, with the paid toggle |
