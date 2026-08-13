@@ -14,7 +14,9 @@ updated: 2026-08-11T05:20:00Z
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-[testing complete — 4 issues diagnosed, ready for /gsd-plan-phase 3 --gaps]
+[testing complete — 4 issues diagnosed. Undo-timer gap FIXED in d102f2b (debug session
+undo-timer-never-fires, still open pending on-device re-test). Remaining 3 gaps planned as
+03-06/03-07/03-08 — ready for /gsd-execute-phase 03 --gaps-only]
 
 ## Device Test Session (2026-08-11)
 
@@ -110,7 +112,10 @@ issues: 3
 pending: 0
 skipped: 0
 blocked: 0
-resolved: 1  # test 5 blocker fixed in quick task 260811-97x
+resolved: 2  # gap-level count, not test-level: (1) test 5 blocker fixed in quick task 260811-97x;
+             # (2) undo-timer/auto-dismiss gap fixed in d102f2b. Test 3 still counts as an open
+             # issue above — it carried TWO distinct gaps and only the auto-dismiss half is closed;
+             # the SnackBar FIFO-queueing half is still open, planned as 03-07.
 
 ## Gaps
 
@@ -174,21 +179,25 @@ resolved: 1  # test 5 blocker fixed in quick task 260811-97x
   debug_session: ""
 
 - truth: "The 5-second undo window expires on its own: the undo SnackBar auto-dismisses and the pending soft delete commits."
-  status: failed
+  status: resolved  # 2026-08-13, commit d102f2b — debug session undo-timer-never-fires
   reason: "Device test: undo SnackBars never auto-dismiss. Fresh app, single swipe-delete, AppConstants.undoSnackbarDuration = 5s — the SnackBar was still on screen at 16s, and in an earlier run one stayed up for ~5 minutes. Reproduced on BOTH Finanças (transaction_list_screen) and Tarefas (task_list_screen), so it is app-wide, not finance-specific. Related symptom: after deleting a task and restarting the app, the task reappeared, suggesting the TaskListCubit's Timer(5s) commit never fired either."
   severity: major
   test: 3
-  root_cause: "NOT ISOLATED — needs a debug session. Ruled out so far: (a) Flutter's documented behaviour of suppressing the SnackBar auto-dismiss timer when MediaQuery.accessibleNavigation is true — `dumpsys accessibility` reports touchExplorationEnabled=false (only a JacyBOT USSD service is bound, capabilities=33, no touch exploration), so accessibleNavigation should be false; (b) device animation scales — window and transition scales are both 1.0. Remaining suspects: a global timeDilation / test hook left enabled, a suppressed or non-firing Ticker, or an OEM (Transsion XOS) power-management behaviour throttling Dart timers. This finding makes the test-3 queueing defect far worse: because the first SnackBar never expires, every later one is stuck behind it indefinitely."
+  root_cause: "ISOLATED AND FIXED (2026-08-13, commit d102f2b). Not a device, OEM or Dart-timer problem — a Flutter 3.38 breaking change the project silently inherited. `SnackBar` now computes `persist = persist ?? action != null` (snack_bar.dart:303), and `ScaffoldMessengerState`'s timeout callback opens with `if (snackBar.persist) { return; }` (scaffold.dart:622) before it would reach `hideCurrentSnackBar`. The timer fires exactly on schedule; it just declines to hide anything. All three undo SnackBars pass a SnackBarAction and never set persist, so all three persisted forever. Blast radius matches exactly: 3 of the 11 showSnackBar call sites in lib/ carry an action, and those are precisely the 3 reported stuck. pubspec.yaml pins flutter >=3.38.1, so the app has never run on a version without this behaviour — which is why it was never observed working. Earlier suspects are all eliminated: accessibleNavigation (touchExplorationEnabled=false), animation scales (both 1.0), and timeDilation (zero matches in lib/ and test/; scheduler.dart never imported)."
+  resolved: "Fix is `persist: false` at the three undo call sites — the official migration from the Flutter breaking-change note. No timer, cubit, repository or Isar code was touched. Three regression tests added in test/presentation/undo_snackbar_auto_dismiss_test.dart that drive the real screens rather than synthetic SnackBars; they fail 0-passed/3-failed against the pre-fix code and pass with it (verified by stashing the lib/ change and re-running). Gate after fix: architecture guard exit 0, flutter analyze exit 0 with 65 infos, flutter test 268/268. Ref: https://docs.flutter.dev/release/breaking-changes/snackbar-with-action-behavior-update"
+  caveat: "Verified host-side only — no Android device was attached at fix time. The debug session stays OPEN at status awaiting_human_verify pending on-device re-test. Symptom 2 (deleted task reappearing after restart) is explained by inference, not observation: ItemDao.restoreItem is the only path that clears deletedAt and is reachable only from the undo action, so a permanently-visible Desfazer above the NavigationBar likely absorbed stray nav taps. If that inference is right, persist:false fixes symptom 2 as a side effect. Unproven either way — the delete-then-restart check on hardware is what settles it."
   artifacts:
     - path: "lib/core/constants/app_constants.dart"
-      issue: "undoSnackbarDuration = 5s is correct; the timers built on it are not firing on device."
+      issue: "undoSnackbarDuration = 5s was always correct and was never the bug. CORRECTED: the timers built on it DO fire — the framework declined to act on them. No change made here."
     - path: "lib/presentation/finance/screens/transaction_list_screen.dart"
-      issue: "Undo SnackBar never auto-dismisses (line 47 duration ignored in practice)."
+      issue: "FIXED in d102f2b — `persist: false` added alongside the existing duration. Note this file still has the SEPARATE, still-open test-3 queueing defect (missing hideCurrentSnackBar), closed by plan 03-07."
     - path: "lib/presentation/tasks/screens/task_list_screen.dart"
-      issue: "Same non-dismissing SnackBar at line 116 — confirms app-wide scope."
+      issue: "FIXED in d102f2b — `persist: false` added. This call site is what confirmed the app-wide scope."
+    - path: "lib/presentation/tasks/screens/task_detail_screen.dart"
+      issue: "FIXED in d102f2b — third undo call site, same defect; found by auditing all 11 showSnackBar sites rather than from a device report."
     - path: "lib/application/tasks/task_list/task_list_cubit.dart"
-      issue: "Timer at line 78 that commits the soft delete appears not to fire — deleted task returned after app restart."
+      issue: "CORRECTED: no defect found and no change made. The original inference (Timer at line 78 never fires) does not hold — softDelete awaits the Isar writeTxn BEFORE the timer is created, and the timer body only calls _reload(). See the caveat field for what actually explains the reappearing task."
   missing:
-    - "Run /gsd-debug on this: instrument whether the Dart Timer fires at all (log in the TaskListCubit undo timer callback) to separate a Flutter SnackBar-layer problem from a device-level timer-throttling problem."
-    - "Re-test on a second device or emulator to confirm whether this is Transsion/XOS-specific before changing app code."
-  debug_session: ""
+    - "DONE — the debug session separated the two layers and found the cause is neither the Dart timer nor the device. No emulator comparison was needed; the defect reproduces deterministically in `flutter test` with nothing attached."
+    - "REMAINING — on-device re-test when the Infinix X6831 is reattached: (a) swipe-delete in Finanças and in Tarefas, plus task-detail delete-confirm, each SnackBar must vanish on its own at ~5s; (b) delete a task, wait past 5s WITHOUT touching the screen, force-stop, relaunch, the task must stay deleted. Step (b) settles symptom 2."
+  debug_session: ".planning/debug/undo-timer-never-fires.md"
