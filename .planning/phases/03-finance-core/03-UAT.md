@@ -1,5 +1,5 @@
 ---
-status: diagnosed
+status: resolved  # all 5 gaps closed in code; 3 still owe an on-device re-test
 phase: 03-finance-core
 source:
   - 03-01-SUMMARY.md
@@ -8,15 +8,20 @@ source:
   - 03-04-SUMMARY.md
   - 03-05-SUMMARY.md
 started: 2026-06-15T00:00:00Z
-updated: 2026-08-11T05:20:00Z
+updated: 2026-08-14T00:00:00Z
 ---
 
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-[testing complete — 4 issues diagnosed. Undo-timer gap FIXED in d102f2b (debug session
-undo-timer-never-fires, still open pending on-device re-test). Remaining 3 gaps planned as
-03-06/03-07/03-08 — ready for /gsd-execute-phase 03 --gaps-only]
+[testing complete — all 4 diagnosed issues are now CLOSED IN CODE. Undo-timer gap fixed in
+d102f2b; the three gap-closure plans 03-06 / 03-07 / 03-08 are all executed, merged into main,
+and gated green together (guard exit 0, analyze exit 0 with 65 infos, 281/281 tests).
+
+REMAINING WORK IS ON-DEVICE ONLY. Every fix in this phase is widget-test-proven and none has
+been re-run on hardware — no Android device is attached. Tests 2, 3 and 9 each need a device
+pass before this phase can honestly be called done, and the debug session
+`.planning/debug/undo-timer-never-fires.md` stays open at awaiting_human_verify until then.]
 
 ## Device Test Session (2026-08-11)
 
@@ -108,16 +113,22 @@ tested_by: claude-adb
 
 total: 10
 passed: 7
-issues: 3
+issues: 0        # was 3 — tests 2, 3 and 9 all closed host-side; recomputed 2026-08-14
 pending: 0
 skipped: 0
 blocked: 0
-resolved: 3  # gap-level count, not test-level: (1) test 5 blocker fixed in quick task 260811-97x;
-             # (2) undo-timer/auto-dismiss gap fixed in d102f2b; (3) the SnackBar FIFO-queueing
-             # half of test 3 fixed by plan 03-07 (8a349d4). Both of test 3's distinct gaps are
-             # now closed host-side. The test-level tallies above are deliberately left for phase
-             # verification to recompute — tests 2 and 9 were likewise closed (03-06, 03-08)
-             # without touching them. Test 3 still awaits on-device re-verification.
+awaiting_device_reverify: 3   # tests 2, 3, 9 — fixed and host-verified, never re-run on hardware
+resolved: 5  # gap-level count, not test-level. All five gaps are now closed:
+             # (1) test 5 blocker — quick task 260811-97x
+             # (2) test 3, undo-timer/auto-dismiss half — d102f2b
+             # (3) test 3, SnackBar FIFO-queueing half — plan 03-07 (8a349d4)
+             # (4) test 2, category-name stub + double-rendered note — plan 03-06 (merged 0b7c47d)
+             # (5) test 9, finance-chip raw id — plan 03-08 (merged 562e8fc)
+             # Gaps 4 and 5 were closed in worktrees whose executors were told not to touch shared
+             # artifacts, so their statuses lagged the code; the orchestrator re-verified both
+             # against the merged tree on 2026-08-14 before marking them, rather than trusting
+             # the SUMMARYs. NONE of tests 2, 3 or 9 has been re-run on a device — every fix in
+             # this phase is widget-test-proven only, and the Infinix X6831 is not attached.
 
 ## Gaps
 
@@ -137,7 +148,9 @@ resolved: 3  # gap-level count, not test-level: (1) test 5 blocker fixed in quic
     - "DONE — widget test added: two deletes inside the undo window leave one SnackBar and its Undo restores the most recently deleted transaction."
 
 - truth: "The transaction list card shows the transaction's category name, and shows the note once."
-  status: failed
+  status: resolved  # 2026-08-14, plan 03-06, merged in 0b7c47d — verified on the merged tree, not from the SUMMARY
+  resolved: "Plan 03-06. `TransactionLoaded` now carries the category list, and the screen resolves categoryId through `resolveCategoryDisplay` (transaction_list_screen.dart:124) — the `_categoryName` '#id' stub is gone. `transaction_card.dart` settled on one layout: category name as the ListTile title (line 76), date in the subtitle, note only in the Chip (line 92-94), so a note renders exactly once. Tests: transaction_card_test.dart and transaction_list_screen_test.dart, both pinning locale explicitly. Red state was proven by temporary revert — restoring the '#id' stub produced `Found 0 widgets` for both resolution tests. Gate on the merged tree: guard exit 0, analyze exit 0 with 65 infos, 281/281 tests."
+  caveat: "Widget-test-proven only. No Android device attached — folds into the same pending on-device re-test as tests 3 and 9."
   reason: "Device test: cards render the raw category id ('#10', '#1', '#2') instead of the category name, in both title and subtitle. When a note exists it is shown twice — as the card title and again as a chip."
   severity: major
   test: 2
@@ -170,7 +183,9 @@ resolved: 3  # gap-level count, not test-level: (1) test 5 blocker fixed in quic
   debug_session: ""
 
 - truth: "The task detail screen's finance-link chip names the linked goal or debt."
-  status: failed
+  status: resolved  # 2026-08-14, plan 03-08, merged in 562e8fc — verified on the merged tree, not from the SUMMARY
+  resolved: "Plan 03-08. The chip was extracted by Phase 06 into `lib/presentation/tasks/widgets/detail/task_detail_finance_chip.dart` (the `task_detail_screen.dart:303` reference in root_cause below is STALE — that line no longer exists). It now resolves the linked goal/debt title in `initState` via the existing `loadFinanceLinks`, using `unawaited(...)` rather than a bare `.then` so the 65-info analyzer budget holds. The raw `#id` at line 70 survives only as the documented fallback for a link whose goal/debt has since been deleted. Test: task_detail_screen_test.dart. Mutation-tested — reverting the label to the raw id failed exactly the new debt-name test. Gate on the merged tree: guard exit 0, analyze exit 0 with 65 infos, 281/281 tests."
+  caveat: "Widget-test-proven only. No Android device attached — folds into the same pending on-device re-test as tests 2 and 3."
   reason: "Device test: chip reads 'Ligado a Dívidas #1' instead of 'Ligado a Empréstimo Joao'. The link itself is correct and persisted, and the task FORM shows the proper name — only the detail chip shows the raw id."
   severity: minor
   test: 9
