@@ -19,7 +19,7 @@ files in `../`.
 | `budget_overview_screen.dart` | 126 | Per-category budget vs. spend, with the limit sheet |
 | `debt_list_screen.dart` | 130 | Debts to pay and to receive, with the paid toggle; swipe-to-delete (via `DebtCard`'s `Dismissible`) with the same hide-then-show undo snackbar the transaction list uses |
 | `debt_form_screen.dart` | 150 | Create/edit a debt |
-| `recurring_payment_screen.dart` | 95 | The recurring payments list |
+| `recurring_payment_screen.dart` | 98 | The recurring payments list, paused rows included |
 | `recurring_payment_form_screen.dart` | 147 | Create/edit a recurring payment |
 
 ## Conventions in this slice

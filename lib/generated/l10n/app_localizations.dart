@@ -1353,6 +1353,18 @@ abstract class AppLocalizations {
   /// **'Dívida excluída'**
   String get debtDeleted;
 
+  /// Rótulo do interruptor num pagamento recorrente ativo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Ativo'**
+  String get recurringActive;
+
+  /// Rótulo do interruptor num pagamento recorrente pausado
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Pausado'**
+  String get recurringPaused;
+
   /// Título da AppBar ao editar uma transação
   ///
   /// In pt_BR, this message translates to:

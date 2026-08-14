@@ -14,7 +14,7 @@ and the next-due-date maths are domain concepts
 | File | Lines | Role |
 |------|------:|------|
 | `recurring_payment_cubit.dart` | 76 | `RecurringPaymentCubit` — `start`, `createPayment`, `updatePayment`, `softDelete`, each followed by a reload |
-| `recurring_payment_state.dart` | 41 | Sealed state family: Initial / Loading / Loaded / Error |
+| `recurring_payment_state.dart` | 43 | Sealed state family: Initial / Loading / Loaded / Error |
 
 ## Conventions in this slice
 

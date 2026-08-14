@@ -651,6 +651,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get debtDeleted => 'Dívida excluída';
 
   @override
+  String get recurringActive => 'Ativo';
+
+  @override
+  String get recurringPaused => 'Pausado';
+
+  @override
   String get editTransaction => 'Editar transação';
 
   @override
@@ -1350,6 +1356,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get debtDeleted => 'Dívida excluída';
+
+  @override
+  String get recurringActive => 'Ativo';
+
+  @override
+  String get recurringPaused => 'Pausado';
 
   @override
   String get editTransaction => 'Editar transação';

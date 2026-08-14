@@ -8,10 +8,13 @@ import 'package:agenda/presentation/finance/widgets/recurring/recurring_payment_
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Displays the list of active recurring payments.
+/// Displays the list of recurring payments, paused ones included.
 ///
 /// Each payment shows title, amount, cycle, next due date, and an isActive
 /// SwitchListTile. FAB navigates to [RecurringPaymentFormScreen].
+///
+/// Paused payments are listed here rather than hidden because this screen
+/// renders the only control that can resume one (CR-02).
 class RecurringPaymentScreen extends StatefulWidget {
   const RecurringPaymentScreen({super.key});
 

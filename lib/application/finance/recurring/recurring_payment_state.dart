@@ -25,7 +25,9 @@ final class RecurringPaymentLoading extends RecurringPaymentState {
 final class RecurringPaymentLoaded extends RecurringPaymentState {
   const RecurringPaymentLoaded({required this.payments});
 
-  /// Active (isActive=true, non-deleted) recurring payments.
+  /// Every non-deleted recurring payment, paused ones included.
+  ///
+  /// Paused rows sort last; read `isActive` per row to tell them apart.
   final List<RecurringPayment> payments;
 
   @override
