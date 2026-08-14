@@ -1,37 +1,102 @@
 {
   "version": "1.0",
-  "timestamp": "2026-08-13T18:03:03.965Z",
+  "timestamp": "2026-08-14T00:00:00.000Z",
   "phase": "03",
   "phase_name": "finance-core",
   "phase_dir": ".planning/phases/03-finance-core",
   "plan": 6,
-  "task": 3,
-  "total_tasks": 3,
+  "task": 2,
+  "total_tasks": 6,
   "status": "paused",
-  "paused_mid_wave": true,
+  "paused_mid_wave": false,
   "completed_tasks": [
-    {"id": 1, "name": "03-08 T1: resolve linked goal/debt title in task detail finance chip", "status": "done", "commit": "fec622d", "location": "worktree-agent-a61e24f07fe8ace8d (UNMERGED)"},
-    {"id": 2, "name": "03-08 T2: pin the resolved finance-link name and its fallback", "status": "done", "commit": "c360c25", "location": "worktree-agent-a61e24f07fe8ace8d (UNMERGED)"},
-    {"id": 3, "name": "03-08 SUMMARY.md", "status": "done", "commit": "ecb9a80", "location": "worktree-agent-a61e24f07fe8ace8d (UNMERGED)"},
-    {"id": 4, "name": "03-06 T1: carry the category list on TransactionLoaded", "status": "done", "commit": "76f7a89", "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)"},
-    {"id": 5, "name": "03-06 T2: show category names on transaction cards, render the note once", "status": "done", "commit": "6066031", "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)"},
-    {"id": 6, "name": "03-06 T3: pin category resolution and single-note card layout", "status": "done", "commit": "b22e87a", "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)"},
-    {"id": 7, "name": "03-06 SUMMARY.md", "status": "done", "commit": "8666c41", "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)", "note": "Landed moments after the pause was requested. Both wave-1 plans are now COMPLETE in their worktrees; only the merge is outstanding."}
+    {
+      "id": 1,
+      "name": "03-08 T1: resolve linked goal/debt title in task detail finance chip",
+      "status": "done",
+      "commit": "fec622d",
+      "location": "worktree-agent-a61e24f07fe8ace8d (UNMERGED)"
+    },
+    {
+      "id": 2,
+      "name": "03-08 T2: pin the resolved finance-link name and its fallback",
+      "status": "done",
+      "commit": "c360c25",
+      "location": "worktree-agent-a61e24f07fe8ace8d (UNMERGED)"
+    },
+    {
+      "id": 3,
+      "name": "03-08 SUMMARY.md",
+      "status": "done",
+      "commit": "ecb9a80",
+      "location": "worktree-agent-a61e24f07fe8ace8d (UNMERGED)"
+    },
+    {
+      "id": 4,
+      "name": "03-06 T1: carry the category list on TransactionLoaded",
+      "status": "done",
+      "commit": "76f7a89",
+      "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)"
+    },
+    {
+      "id": 5,
+      "name": "03-06 T2: show category names on transaction cards, render the note once",
+      "status": "done",
+      "commit": "6066031",
+      "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)"
+    },
+    {
+      "id": 6,
+      "name": "03-06 T3: pin category resolution and single-note card layout",
+      "status": "done",
+      "commit": "b22e87a",
+      "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)"
+    },
+    {
+      "id": 7,
+      "name": "03-06 SUMMARY.md",
+      "status": "done",
+      "commit": "8666c41",
+      "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)",
+      "note": "Landed moments after the pause was requested. Both wave-1 plans are now COMPLETE in their worktrees; only the merge is outstanding."
+    },
+    {
+      "id": 8,
+      "name": "Merge both wave-1 worktree branches into main",
+      "status": "done",
+      "commit": "see merge commits for a02b75e60f0b5ed1c (03-06) and a61e24f07fe8ace8d (03-08)",
+      "location": "main"
+    },
+    {
+      "id": 9,
+      "name": "Run the post-merge gate (guard + analyze + full test suite) on the merged tree",
+      "status": "done",
+      "note": "MEASURED on the merged tree, not inferred: guard PASS exit 0; flutter analyze --no-fatal-infos --fatal-warnings exit 0 with 65 infos (baseline unchanged); flutter test 279/279 passing exit 0."
+    }
   ],
   "remaining_tasks": [
-    {"id": 8, "name": "Merge both wave-1 worktree branches into main", "status": "not_started"},
-    {"id": 9, "name": "Run the post-merge gate (guard + analyze + full test suite) on the merged tree", "status": "not_started"},
-    {"id": 10, "name": "Execute wave 2 = plan 03-07 (SnackBar FIFO queueing)", "status": "not_started"},
-    {"id": 11, "name": "Run gsd-verifier over phase 03 and update STATE.md / ROADMAP.md", "status": "not_started"},
-    {"id": 12, "name": "Fix the 3 pre-existing UI defects (double X close button, Tamanho SegmentedButton wrap, hardcoded unlocalised strings)", "status": "not_started"},
-    {"id": 13, "name": "On-device re-test of the undo-timer fix; only then move the debug session to resolved/", "status": "not_started"}
+    {
+      "id": 10,
+      "name": "Execute wave 2 = plan 03-07 (SnackBar FIFO queueing)",
+      "status": "not_started"
+    },
+    {
+      "id": 11,
+      "name": "Run gsd-verifier over phase 03 and update STATE.md / ROADMAP.md",
+      "status": "not_started"
+    },
+    {
+      "id": 12,
+      "name": "Fix the 3 pre-existing UI defects (double X close button, Tamanho SegmentedButton wrap, hardcoded unlocalised strings)",
+      "status": "not_started"
+    },
+    {
+      "id": 13,
+      "name": "On-device re-test of the undo-timer fix; only then move the debug session to resolved/",
+      "status": "not_started"
+    }
   ],
   "blockers": [
-    {
-      "description": "Two wave-1 worktree branches are UNMERGED. Their commits exist only on worktree-agent-* branches, not on main. Do not delete these worktrees or branches before merging.",
-      "type": "technical",
-      "workaround": "git merge worktree-agent-a02b75e60f0b5ed1c and worktree-agent-a61e24f07fe8ace8d into main, then run the gate."
-    },
     {
       "description": "A fresh worktree has no .dart_tool/ (gitignored), so `flutter test --no-pub` crashes with `Bad state: No element` in native-assets instead of running. Every future worktree executor hits this.",
       "type": "technical",
@@ -56,12 +121,28 @@
     }
   ],
   "decisions": [
-    {"decision": "Narrowed the debug session to the undo-timer defect only, instead of all four Phase 03 UAT defects", "rationale": "The other three already had confirmed root causes and prescribed fixes recorded in 03-UAT.md. Debugging them would have rediagnosed known causes. 03-UAT.md itself prescribed /gsd-debug for the timer defect specifically.", "phase": "03"},
-    {"decision": "Fixed the undo-timer defect with persist: false rather than any timer or cubit change", "rationale": "Root cause is a Flutter 3.38 breaking change: SnackBar computes persist = persist ?? action != null, and ScaffoldMessenger's timeout callback early-returns on persist before reaching hideCurrentSnackBar. The timer always fired. persist: false is the official migration.", "phase": "03"},
-    {"decision": "Used unawaited(...) in 03-08 instead of copying the analog's bare .then", "rationale": "The analog at task_form_screen.dart:52 is itself one of the 65 accepted discarded_futures infos; copying it would have made 66 and failed the gate. unawaited is the wider presentation-layer convention (4 uses). Measured 25 discarded_futures before and after.", "phase": "03"},
-    {"decision": "Pinned an explicit locale on every MaterialApp in the new 03-06 tests", "rationale": "This project's widget tests default to en, not pt_BR. resolveCategoryDisplay returns nameEn whenever preferEnglish && nameEn != null, so a locale-less test would render 'Food' and the intended 'Alimentacao' assertion would fail.", "phase": "03"}
+    {
+      "decision": "Narrowed the debug session to the undo-timer defect only, instead of all four Phase 03 UAT defects",
+      "rationale": "The other three already had confirmed root causes and prescribed fixes recorded in 03-UAT.md. Debugging them would have rediagnosed known causes. 03-UAT.md itself prescribed /gsd-debug for the timer defect specifically.",
+      "phase": "03"
+    },
+    {
+      "decision": "Fixed the undo-timer defect with persist: false rather than any timer or cubit change",
+      "rationale": "Root cause is a Flutter 3.38 breaking change: SnackBar computes persist = persist ?? action != null, and ScaffoldMessenger's timeout callback early-returns on persist before reaching hideCurrentSnackBar. The timer always fired. persist: false is the official migration.",
+      "phase": "03"
+    },
+    {
+      "decision": "Used unawaited(...) in 03-08 instead of copying the analog's bare .then",
+      "rationale": "The analog at task_form_screen.dart:52 is itself one of the 65 accepted discarded_futures infos; copying it would have made 66 and failed the gate. unawaited is the wider presentation-layer convention (4 uses). Measured 25 discarded_futures before and after.",
+      "phase": "03"
+    },
+    {
+      "decision": "Pinned an explicit locale on every MaterialApp in the new 03-06 tests",
+      "rationale": "This project's widget tests default to en, not pt_BR. resolveCategoryDisplay returns nameEn whenever preferEnglish && nameEn != null, so a locale-less test would render 'Food' and the intended 'Alimentacao' assertion would fail.",
+      "phase": "03"
+    }
   ],
   "uncommitted_files": [],
-  "next_action": "Merge both wave-1 branches into main (worktree-agent-a02b75e60f0b5ed1c for 03-06, worktree-agent-a61e24f07fe8ace8d for 03-08), then re-run the full gate on the MERGED tree - neither branch's numbers were measured against the other. Only then dispatch wave 2 (plan 03-07).",
-  "context_notes": "Paused after wave 1 of phase 03 gap closure completed but before the merge. Main is at c10f314 and is CLEAN - all wave-1 work lives on two unmerged worktree branches, both now COMPLETE with SUMMARY.md committed. Reported gates are per-branch and were never measured together: 03-06 reported 277 tests, 03-08 reported 270, both against a 268 baseline, both with 65 infos and guard exit 0. The merged count should land near 279 but MUST be measured, not inferred. Wave 2 (03-07) is deliberately serialized behind 03-06 because both edit transaction_list_screen.dart - 03-07 must be re-based on the merged main so it sees 03-06's version of that file. A caveman-mode output hook is active in this session; it affects chat prose only, never code, commits, or file content."
+  "next_action": "Execute wave 2 = plan 03-07 (SnackBar FIFO queueing) via /gsd-execute-phase 03. It was deliberately serialized behind 03-06 because both edit transaction_list_screen.dart; it now rebases cleanly on merged main, which carries 03-06's version of that file.",
+  "context_notes": "Wave 1 of phase 03 gap closure is MERGED into main and gated. Both worktree branches (worktree-agent-a02b75e60f0b5ed1c = 03-06, worktree-agent-a61e24f07fe8ace8d = 03-08) merged with --no-ff, zero conflicts, no file overlap between them. Post-merge gate measured on the merged tree: guard exit 0, analyze exit 0 / 65 infos, 279/279 tests. The per-branch counts (277 and 270 against a 268 baseline) are superseded by this single measurement. Worktrees are now safe to remove. Remaining: wave 2 (03-07), phase 03 verification, the 3 pre-existing UI defects, and the on-device undo-timer re-test which still needs the Infinix X6831 reattached."
 }
