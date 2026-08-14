@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 03 wave 3 in progress — code review found 4 Critical bugs, all independently confirmed. 03-09 (CR-04, wrong balance) DONE. 03-10/03-11/03-12 not started. All 3 UAT gaps closed host-side. Phase 06 COMPLETE; Phases 04 and 05 not started.
-last_updated: "2026-08-14T21:00:00.000Z"
+stopped_at: Phase 03 wave 3 in progress — code review found 4 Critical bugs, all independently confirmed. 03-09 (CR-04, wrong balance) and 03-10 (CR-01, unrecoverable debt delete) DONE. 03-11/03-12 not started. All 3 UAT gaps closed host-side. Phase 06 COMPLETE; Phases 04 and 05 not started.
+last_updated: "2026-08-14T22:30:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 46
-  completed_plans: 37
-  percent: 80
+  completed_plans: 38
+  percent: 83
 ---
 
 # Project State
@@ -176,6 +176,7 @@ Progress: [██████████] 100%
 | Phase 06 P17 | 25min | 2 tasks | 51 files |
 | Phase 06 P18 | 45min | 3 tasks | 39 files |
 | Phase 03 P07 | 20min | 2 tasks | 3 files |
+| Phase 03 P10 | 25min | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -231,7 +232,28 @@ None.
 ## Session Continuity
 
 Last session: 2026-08-14
-Stopped at: Completed 03-07-PLAN.md (wave 2) directly on `main` — no worktree. Commits
+Stopped at: Completed 03-10-PLAN.md (wave 3, CR-01) directly on `main` — no worktree.
+Commits `f68b89f` (`DebtCubit.restoreDebt`), `d892b5c` (the undo SnackBar + `debtDeleted`
+in all three ARB files) and `659b0b8` (the regression test).
+
+**Gate measured on main after 03-10 (each command run unpiped, not inferred):**
+
+- `dart run tool/check_architecture.dart`: PASS, exit 0
+- `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — budget held,
+  and `lines_longer_than_80_chars` is still 0 project-wide
+- `flutter test --no-pub`: **289/289 passing**, exit 0 (287 before, +2 from this plan)
+- Mutation check performed: replacing `onPressed: () => cubit.restoreDebt(debt.id)` with an
+  empty closure fails both new tests, test 1 on `No matching calls ... [VERIFIED]
+  MockDebtCubit.softDelete(4)` — the delete lands, no restore follows, exactly CR-01.
+  Reverted; `git diff --stat` on the file came back empty.
+- Note for the remaining wave-3 plans: copying `transaction_list_screen._handleDelete`
+  verbatim costs **2 analyzer infos** (`discarded_futures` + `cascade_invocations`) and
+  breaches the 65 budget. Use `unawaited(...)` and a `messenger` cascade, as 03-10 did.
+
+**Next:** 03-11 (CR-02, deactivated recurring payments hidden permanently), then 03-12
+(CR-03 + WR-07). Test baseline for both is now **289**.
+
+Earlier this session: Completed 03-07-PLAN.md (wave 2) directly on `main` — no worktree. Commits
 `8a349d4` (the `hideCurrentSnackBar()` fix + README) and `2c7a7a5` (the regression test).
 
 **Gate measured on main after 03-07 (not inferred):**
