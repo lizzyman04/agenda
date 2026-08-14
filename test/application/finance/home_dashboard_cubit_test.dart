@@ -101,8 +101,16 @@ HomeDashboardCubit _buildCubit({
   List<Debt>? debts,
   List<TransactionCategory>? categories,
 }) {
-  when(() => txRepo.getTransactions()).thenAnswer(
+  // The dashboard must aggregate from the UNCAPPED read (CR-04), so the
+  // transactions under test are served only by that method.
+  when(() => txRepo.getAllTransactionsForAggregates()).thenAnswer(
     (_) async => Success(transactions ?? []),
+  );
+  // The capped read deliberately returns nothing here: if the cubit ever
+  // regresses to getTransactions(), every balance assertion below breaks
+  // loudly instead of drifting quietly past the 500-row cap.
+  when(() => txRepo.getTransactions()).thenAnswer(
+    (_) async => const Success([]),
   );
   when(() => goalRepo.getActiveGoals()).thenAnswer(
     (_) async => Success(goals ?? []),

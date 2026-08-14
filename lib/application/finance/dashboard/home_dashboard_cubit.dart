@@ -3,13 +3,9 @@ import 'dart:async';
 import 'package:agenda/application/finance/dashboard/dashboard_aggregator.dart';
 import 'package:agenda/application/finance/dashboard/home_dashboard_state.dart';
 import 'package:agenda/core/failures/result.dart';
-import 'package:agenda/domain/finance/category/transaction_category.dart';
 import 'package:agenda/domain/finance/category/transaction_category_repository.dart';
-import 'package:agenda/domain/finance/debt/debt.dart';
 import 'package:agenda/domain/finance/debt/debt_repository.dart';
 import 'package:agenda/domain/finance/goal/goal_repository.dart';
-import 'package:agenda/domain/finance/goal/savings_goal.dart';
-import 'package:agenda/domain/finance/transaction/transaction.dart';
 import 'package:agenda/domain/finance/transaction/transaction_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -64,48 +60,33 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
   Future<void> _reload() async {
     if (isClosed) return;
 
-    // All non-deleted transactions (DAO applies deletedAtIsNull)
-    final txResult = await _transactionRepository.getTransactions();
+    // Uncapped on purpose (CR-04). Everything this cubit produces is a
+    // TOTAL, never a display list, so it must see every non-deleted row.
+    // The capped read (getTransactions) keeps only the newest 500 — summing
+    // that yields a silently WRONG balance rather than an obviously missing
+    // one, which is exactly how the original defect stayed invisible.
+    // Do not "optimise" this back to the capped query.
+    final txResult =
+        await _transactionRepository.getAllTransactionsForAggregates();
     if (isClosed) return;
-
-    final List<Transaction> allTx;
-    switch (txResult) {
-      case Err<List<Transaction>>(:final failure):
-        emit(HomeDashboardError(failure));
-        return;
-      case Success<List<Transaction>>(:final value):
-        allTx = value;
-    }
+    final allTx = _unwrap(txResult);
+    if (allTx == null) return;
 
     final balance = computeBalance(allTx);
 
     // Active goals; tagged-tx amounts are computed from allTx (no N+1)
     final goalsResult = await _goalRepository.getActiveGoals();
     if (isClosed) return;
-
-    final List<SavingsGoal> goals;
-    switch (goalsResult) {
-      case Err<List<SavingsGoal>>(:final failure):
-        emit(HomeDashboardError(failure));
-        return;
-      case Success<List<SavingsGoal>>(:final value):
-        goals = value;
-    }
+    final goals = _unwrap(goalsResult);
+    if (goals == null) return;
 
     final taggedByGoal = computeTaggedByGoal(allTx);
     final goalsSavedTotal = computeGoalsSavedTotal(goals, taggedByGoal);
 
     final debtsResult = await _debtRepository.getDebts();
     if (isClosed) return;
-
-    final List<Debt> debts;
-    switch (debtsResult) {
-      case Err<List<Debt>>(:final failure):
-        emit(HomeDashboardError(failure));
-        return;
-      case Success<List<Debt>>(:final value):
-        debts = value;
-    }
+    final debts = _unwrap(debtsResult);
+    if (debts == null) return;
 
     final debtTotal = computeDebtTotal(debts);
     final netWorth = computeNetWorth(
@@ -123,15 +104,8 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
     // Category labels for chart display
     final catResult = await _categoryRepository.getAll();
     if (isClosed) return;
-
-    final List<TransactionCategory> categories;
-    switch (catResult) {
-      case Err<List<TransactionCategory>>(:final failure):
-        emit(HomeDashboardError(failure));
-        return;
-      case Success<List<TransactionCategory>>(:final value):
-        categories = value;
-    }
+    final categories = _unwrap(catResult);
+    if (categories == null) return;
 
     emit(HomeDashboardLoaded(
       balanceCents: balance,
@@ -140,6 +114,21 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
       categorySpend: categorySpend,
       categories: categories,
     ));
+  }
+
+  /// Unwraps a list [result], emitting [HomeDashboardError] and returning
+  /// null when it failed — callers `return` on null.
+  ///
+  /// Identical error path to the four inline switches it replaces; factored
+  /// out only so `_reload` and its CR-04 rationale fit the 150-line cap.
+  List<T>? _unwrap<T>(Result<List<T>> result) {
+    switch (result) {
+      case Err<List<T>>(:final failure):
+        emit(HomeDashboardError(failure));
+        return null;
+      case Success<List<T>>(:final value):
+        return value;
+    }
   }
 
   @override

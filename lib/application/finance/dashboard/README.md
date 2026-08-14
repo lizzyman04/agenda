@@ -13,7 +13,7 @@ balance, net worth and per-category spend from that one set of reads
 
 | File | Lines | Role |
 |------|------:|------|
-| `home_dashboard_cubit.dart` | 150 | `HomeDashboardCubit` — fetches the repository data, delegates the maths, handles `selectMonth`; subscribes to `TransactionRepository.watchChanges()` |
+| `home_dashboard_cubit.dart` | 139 | `HomeDashboardCubit` — fetches the repository data, delegates the maths, handles `selectMonth`; subscribes to `TransactionRepository.watchChanges()` |
 | `dashboard_aggregator.dart` | 85 | Pure functions: `computeBalance`, `computeTaggedByGoal`, `computeGoalsSavedTotal`, `computeDebtTotal`, `computeNetWorth`, `computeCategorySpend` |
 | `home_dashboard_state.dart` | 74 | Sealed state family; `HomeDashboardLoaded` carries the balance, net worth, selected month, category spend map and category list |
 
@@ -27,6 +27,11 @@ balance, net worth and per-category spend from that one set of reads
   numbers a user checks first.
 - **Month selection is state, not a new cubit.** `selectMonth` re-runs the
   same reload against a different window.
+- **Aggregate from the uncapped read, always.** The cubit calls
+  `TransactionRepository.getAllTransactionsForAggregates()`, never the
+  capped `getTransactions()`. A capped read makes a total silently wrong
+  past 500 transactions instead of visibly incomplete — that was CR-04,
+  and it is the reason the two reads are separate methods.
 
 ## Upstream dependencies
 
