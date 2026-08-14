@@ -42,8 +42,16 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
 
   void _handleDelete(BuildContext context, Transaction tx) {
     final cubit = context.read<TransactionCubit>();
+    final messenger = ScaffoldMessenger.of(context);
     cubit.softDelete(tx.id);
-    ScaffoldMessenger.of(context).showSnackBar(
+    // ScaffoldMessenger queues SnackBars FIFO. Without an explicit hide, a
+    // second swipe inside the undo window waits behind the first instead of
+    // replacing it, and the visible SnackBar keeps the FIRST delete's action
+    // closure — Desfazer then restores the wrong transaction and the queued
+    // SnackBar pops up after it. Distinct from the auto-dismiss fix below
+    // (that governs WHEN a SnackBar leaves, not WHICH one). Keep both.
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
       SnackBar(
         content: Text(AppLocalizations.of(context).transactionDeleted),
         duration: AppConstants.undoSnackbarDuration,

@@ -14,7 +14,7 @@ files in `../`.
 | File | Lines | Role |
 |------|------:|------|
 | `finance_dashboard_screen.dart` | 56 | `TabBar`/`TabBarView` shell for the whole finance section: Resumo (`../widgets/dashboard/dashboard_tab.dart`), transactions, budgets, debts, recurring payments, and goals |
-| `transaction_list_screen.dart` | 140 | The transaction list — resolves each `categoryId` to a localized name via `resolveCategoryDisplay`; swipe-to-delete (via `TransactionCard`'s `Dismissible`) with an `AppConstants.undoSnackbarDuration` undo snackbar, tap to edit |
+| `transaction_list_screen.dart` | 148 | The transaction list — resolves each `categoryId` to a localized name via `resolveCategoryDisplay`; swipe-to-delete (via `TransactionCard`'s `Dismissible`) with an `AppConstants.undoSnackbarDuration` undo snackbar that hides the previous one before showing itself, tap to edit |
 | `transaction_form_screen.dart` | 149 | Create/edit a transaction; owns the controllers and `TransactionFormModel`, delegates loading, submission and pickers |
 | `budget_overview_screen.dart` | 126 | Per-category budget vs. spend, with the limit sheet |
 | `debt_list_screen.dart` | 93 | Debts to pay and to receive, with the paid toggle |
@@ -32,6 +32,13 @@ files in `../`.
   screen applies it in `setState` and only then calls the cubit. Never
   `unawaited(...)` from inside a sheet — that emits during teardown and
   races controller disposal.
+- **An undo SnackBar hides the current one before showing itself.**
+  `ScaffoldMessenger` queues SnackBars FIFO, so a destructive action must
+  capture the messenger once, call `hideCurrentSnackBar()` and only then
+  `showSnackBar(...)`. Without it a second delete inside the undo window
+  queues behind the first, and the SnackBar the user sees carries the
+  earlier delete's action closure — undo restores the wrong record. The
+  visible undo must always belong to the most recent action.
 - **Form screens sit close to the 150-line cap by design.** Four of the
   eight are at 126–150 lines after Phase 3.1's extractions; adding a field
   means adding it to the corresponding `*_form_fields.dart`, not here.
