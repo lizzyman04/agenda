@@ -12,7 +12,7 @@ Render the recurring payment list row and form. Load/save logic lives in
 
 | File | Lines | Role |
 |------|------:|------|
-| `recurring_payment_card.dart` | 92 | One list row: title, cycle, next due date, amount, and the active-status toggle. Renders a paused payment dimmed, with the toggle left at full opacity |
+| `recurring_payment_card.dart` | 95 | One list row: title, cycle, next due date, amount, and the active-status toggle. Renders a paused payment dimmed, with the toggle left at full opacity |
 | `recurring_payment_form_fields.dart` | 141 | Title/amount/category card plus the schedule half, composed from the shared `FormCard`/`FieldRow`/`FieldDivider` primitives. Does not own its controllers |
 | `recurring_payment_schedule_fields.dart` | 87 | The cycle and next-due-date half, rendered as a bare `Column` of `FieldRow`s so the caller keeps ownership of the surrounding `FormCard`. Also exports the PT-BR label for a `RecurringCycle`, shared with the list card |
 | `recurring_payment_form_pickers.dart` | 50 | `BuildContext`-driven category and date pickers; the category picker presents the shared `CategoryPickerSheet` and returns the selection or `null` |

@@ -49,6 +49,9 @@ class RecurringPaymentCard extends StatelessWidget {
         child: Column(
           children: [
             Opacity(
+              // Keyed so a test can read this row's dim level without
+              // matching the Opacity widgets Material builds internally.
+              key: Key('recurring-dim-${payment.id}'),
               opacity: isPaused ? 0.55 : 1,
               child: ListTile(
                 leading: Icon(
