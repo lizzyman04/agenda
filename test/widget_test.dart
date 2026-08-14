@@ -105,6 +105,10 @@ class _StubTransactionRepository implements TransactionRepository {
   AsyncResult<List<Transaction>> getTransactions() async => const Success([]);
 
   @override
+  AsyncResult<List<Transaction>> getAllTransactionsForAggregates() async =>
+      const Success([]);
+
+  @override
   AsyncResult<List<Transaction>> getByMonth(int month, int year) async =>
       const Success([]);
 

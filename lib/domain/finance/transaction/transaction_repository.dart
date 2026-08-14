@@ -12,8 +12,17 @@ abstract class TransactionRepository {
   /// Returns the transaction with [id], or Err(DatabaseFailure) if not found.
   AsyncResult<Transaction> getTransaction(int id);
 
-  /// Returns all active (non-deleted) transactions. Limit 500.
+  /// Returns the newest 500 active (non-deleted) transactions.
+  ///
+  /// For display lists only. Never aggregate from this — the cap makes
+  /// totals silently wrong past 500 rows (CR-04).
   AsyncResult<List<Transaction>> getTransactions();
+
+  /// Returns every active (non-deleted) transaction, uncapped.
+  ///
+  /// The read behind balance, net worth and category spend: those figures
+  /// must reflect the user's complete history, not a page of it.
+  AsyncResult<List<Transaction>> getAllTransactionsForAggregates();
 
   /// Returns expense transactions for the given [month] and [year].
   /// Used for budget progress and chart rendering (D-09).

@@ -70,6 +70,18 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
+  AsyncResult<List<Transaction>> getAllTransactionsForAggregates() async {
+    try {
+      final models = await _dao.findAllForAggregates();
+      return Success(models.map(_mapper.toDomain).toList());
+    } on Object catch (e) {
+      return Err(
+        DatabaseFailure('getAllTransactionsForAggregates failed: $e'),
+      );
+    }
+  }
+
+  @override
   AsyncResult<List<Transaction>> getByMonth(int month, int year) async {
     try {
       final models = await _dao.findByMonth(month, year);
