@@ -112,25 +112,29 @@ issues: 3
 pending: 0
 skipped: 0
 blocked: 0
-resolved: 2  # gap-level count, not test-level: (1) test 5 blocker fixed in quick task 260811-97x;
-             # (2) undo-timer/auto-dismiss gap fixed in d102f2b. Test 3 still counts as an open
-             # issue above — it carried TWO distinct gaps and only the auto-dismiss half is closed;
-             # the SnackBar FIFO-queueing half is still open, planned as 03-07.
+resolved: 3  # gap-level count, not test-level: (1) test 5 blocker fixed in quick task 260811-97x;
+             # (2) undo-timer/auto-dismiss gap fixed in d102f2b; (3) the SnackBar FIFO-queueing
+             # half of test 3 fixed by plan 03-07 (8a349d4). Both of test 3's distinct gaps are
+             # now closed host-side. The test-level tallies above are deliberately left for phase
+             # verification to recompute — tests 2 and 9 were likewise closed (03-06, 03-08)
+             # without touching them. Test 3 still awaits on-device re-verification.
 
 ## Gaps
 
 - truth: "Swiping a transaction deletes it and a SnackBar with Undo restores that exact transaction; balance reverts."
-  status: failed
+  status: resolved  # 2026-08-14, plan 03-07, commits 8a349d4 (fix) + 2c7a7a5 (test)
   reason: "User reported: If multiple transactions are added, then a switch-to-delete and undo is performed, it doesn't always restore the transaction that was actually dropped; it might restore a different one. And in other tests, the SnackBar didn't appear."
   severity: major
   test: 3
   root_cause: "transaction_list_screen.dart `_handleDelete` calls ScaffoldMessenger.showSnackBar without hiding the current one first. Material queues SnackBars FIFO, so a second swipe within the 5s undo window does not replace the visible SnackBar — it waits behind it. The visible SnackBar's SnackBarAction closure still captures the FIRST deleted tx.id, so Desfazer restores the earlier transaction while the just-swiped one stays deleted. The undo itself is correctly id-based (`cubit.restoreTransaction(tx.id)`), so this is purely a SnackBar-lifecycle defect, not a wrong-id lookup."
+  resolved: "Plan 03-07. `_handleDelete` now captures one `ScaffoldMessenger` local and calls `hideCurrentSnackBar()` before `showSnackBar(...)`, so each delete replaces the previous undo prompt instead of queueing behind it. Regression test `test/presentation/finance/transaction_list_undo_test.dart` drives the real screen: two swipes one second apart leave exactly one SnackBar, its Undo calls `restoreTransaction(8)` and never `restoreTransaction(7)`, and nothing pops back up afterwards. Mutation-checked — deleting the `hideCurrentSnackBar()` line makes that test fail with `No matching calls ... MockTransactionCubit.restoreTransaction(7)`, which is the reported symptom verbatim. Gate after fix: architecture guard exit 0, flutter analyze exit 0 with 65 infos, flutter test 281/281."
+  caveat: "Verified host-side only, like the d102f2b fix — no Android device attached. Folds into the same pending on-device re-test of test 3."
   artifacts:
     - path: "lib/presentation/finance/screens/transaction_list_screen.dart"
-      issue: "_handleDelete (lines 40-54) shows a SnackBar without calling hideCurrentSnackBar()/clearSnackBars() first, so overlapping deletes queue instead of replacing."
+      issue: "FIXED in 8a349d4 — `_handleDelete` hid nothing before showing, so overlapping deletes queued instead of replacing. The undo was always correctly id-based; only the SnackBar lifecycle was wrong."
   missing:
-    - "Call ScaffoldMessenger.of(context).hideCurrentSnackBar() immediately before showSnackBar in _handleDelete so each delete replaces the previous undo prompt."
-    - "Add a widget test: delete two transactions within the undo window, assert only the most recent SnackBar is visible and that its Undo restores the most recently deleted transaction."
+    - "DONE — hideCurrentSnackBar() added ahead of showSnackBar in _handleDelete."
+    - "DONE — widget test added: two deletes inside the undo window leave one SnackBar and its Undo restores the most recently deleted transaction."
 
 - truth: "The transaction list card shows the transaction's category name, and shows the note once."
   status: failed
@@ -190,7 +194,7 @@ resolved: 2  # gap-level count, not test-level: (1) test 5 blocker fixed in quic
     - path: "lib/core/constants/app_constants.dart"
       issue: "undoSnackbarDuration = 5s was always correct and was never the bug. CORRECTED: the timers built on it DO fire — the framework declined to act on them. No change made here."
     - path: "lib/presentation/finance/screens/transaction_list_screen.dart"
-      issue: "FIXED in d102f2b — `persist: false` added alongside the existing duration. Note this file still has the SEPARATE, still-open test-3 queueing defect (missing hideCurrentSnackBar), closed by plan 03-07."
+      issue: "FIXED in d102f2b — `persist: false` added alongside the existing duration. The SEPARATE test-3 queueing defect (missing hideCurrentSnackBar) in the same method is now also closed, by plan 03-07 in 8a349d4."
     - path: "lib/presentation/tasks/screens/task_list_screen.dart"
       issue: "FIXED in d102f2b — `persist: false` added. This call site is what confirmed the app-wide scope."
     - path: "lib/presentation/tasks/screens/task_detail_screen.dart"

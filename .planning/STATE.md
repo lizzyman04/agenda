@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 03 gap-closure wave 1 (03-06, 03-08) MERGED into main and gated green. Wave 2 (03-07) not started. Phase 06 COMPLETE; Phases 04 and 05 not started.
-last_updated: "2026-08-14T00:00:00.000Z"
+stopped_at: Phase 03 gap closure COMPLETE — wave 1 (03-06, 03-08) merged, wave 2 (03-07) executed on main and gated green. All 3 phase-03 UAT gaps closed host-side; phase 03 verification and on-device re-test still open. Phase 06 COMPLETE; Phases 04 and 05 not started.
+last_updated: "2026-08-14T16:50:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 42
-  completed_plans: 35
-  percent: 83
+  completed_plans: 36
+  percent: 86
 ---
 
 # Project State
@@ -145,7 +145,7 @@ legal break point) and 5 are trailing unbreakable tokens. So a guard that counts
 columns would flag 88 files the analyzer considers clean. If 06-18 polices width, it
 should defer to the lint rather than measure columns itself.
 
-Phase 03 (finance-core) remains open behind it: code complete, but 3 UAT issues are unresolved (test 2 — category-name stub showing `#id` and a duplicated note; test 3 — SnackBar queueing on a second swipe inside the undo window; test 9 — task-link chip showing a raw id) plus an undiagnosed app-wide undo-timer defect where 5s SnackBars never dismiss. None of these block Phase 6, which is a pure refactor.
+Phase 03 (finance-core): all 3 UAT gaps are now closed host-side — test 2 (category-name stub + duplicated note) by 03-06, test 9 (task-link chip raw id) by 03-08, test 3 (SnackBar FIFO queueing) by 03-07, and the app-wide undo-timer defect by `d102f2b`. What remains for phase 03 is verification and the on-device re-test. None of these block Phase 6, which is a pure refactor.
 
 Baseline entering Phase 6: 230 tests passing, `flutter analyze` clean, 21 files over 150 lines, 2 directories over 10 files, 2 of 30 feature nests carrying a README.
 
@@ -175,6 +175,7 @@ Progress: [██████████] 100%
 | Phase 06 P16 | 35min | 2 tasks | 102 files |
 | Phase 06 P17 | 25min | 2 tasks | 51 files |
 | Phase 06 P18 | 45min | 3 tasks | 39 files |
+| Phase 03 P07 | 20min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -199,6 +200,8 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 6: domain/finance nested into six per-entity subfolders (transaction, budget, goal, debt, recurring, category) — the same six names 06-17 must apply to data/finance
 - [Phase ?]: Phase 6: data/finance nested into the same six per-entity subfolders as domain/finance (transaction, budget, goal, debt, recurring, category); Isar .g.dart companions co-located with their models — architecture guard now reports ZERO directory-size and ZERO line-count violations
 - [Phase ?]: Phase 6: architecture guard is now ENFORCING in CI (exit 1 on violation, step runs between Analyze and Test); all 36 lib/presentation + lib/application directories carry a README, readmeExemptDirs stays empty
+- [Phase 03]: A destructive action's undo SnackBar hides the current SnackBar before showing its own — one captured `ScaffoldMessenger` local, `hideCurrentSnackBar()` then `showSnackBar(...)`. `ScaffoldMessenger` queues FIFO, so without it the visible undo belongs to an earlier action and restores the wrong record. Recorded as a convention in `lib/presentation/finance/screens/README.md`.
+- [Phase 03]: Widget tests that need a shrinking list drive a mocked cubit through a `StreamController` and emit a `List.of(...)` COPY per state — `TransactionLoaded` is `Equatable` over `transactions`, so re-emitting the same mutated list makes states compare equal and the `Dismissible` gets rebuilt after dismissal.
 - [Phase ?]: Phase 6: dart format is NOT enforced in CI and no raw column-width guard was added — measured, 103/258 files differ from dart format output and 88 raw lines exceed 80 cols while the lint reports 0; width policing defers to lines_longer_than_80_chars
 
 ### Pending Todos
@@ -228,7 +231,21 @@ None.
 ## Session Continuity
 
 Last session: 2026-08-14
-Stopped at: Merged phase 03 gap-closure wave 1 into main — `worktree-agent-a02b75e60f0b5ed1c`
+Stopped at: Completed 03-07-PLAN.md (wave 2) directly on `main` — no worktree. Commits
+`8a349d4` (the `hideCurrentSnackBar()` fix + README) and `2c7a7a5` (the regression test).
+
+**Gate measured on main after 03-07 (not inferred):**
+
+- `dart run tool/check_architecture.dart`: PASS, exit 0
+- `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — baseline unchanged,
+  none from the new test file
+- `flutter test --no-pub`: **281/281 passing**, exit 0 (279 before, +2 from this plan)
+- `transaction_list_screen.dart` is **148 lines**, 2 under the cap, and its README row matches
+- Mutation check performed: deleting the `hideCurrentSnackBar()` line makes the first new test
+  fail with `No matching calls ... MockTransactionCubit.restoreTransaction(7)` — the reported
+  wrong-transaction symptom reproduced exactly. Line restored, tree byte-identical to `8a349d4`.
+
+Earlier this session: merged phase 03 gap-closure wave 1 into main — `worktree-agent-a02b75e60f0b5ed1c`
 (plan 03-06, category names + single note) and `worktree-agent-a61e24f07fe8ace8d` (plan 03-08,
 finance-chip title), both `--no-ff`, zero conflicts, no file overlap between them.
 
@@ -241,9 +258,9 @@ finance-chip title), both `--no-ff`, zero conflicts, no file overlap between the
 The per-branch counts (03-06 reported 277, 03-08 reported 270, both against a 268 baseline) are
 superseded by this single measurement. The two worktrees are now safe to remove.
 
-**Next:** wave 2 = plan 03-07 (SnackBar FIFO queueing). It was deliberately serialized behind
-03-06 because both edit `transaction_list_screen.dart`; it now rebases on a main that already
-carries 03-06's version of that file. Then phase 03 verification, the 3 pre-existing UI defects,
-and the on-device undo-timer re-test (still blocked on reattaching the Infinix X6831).
+**Next:** phase 03 verification (all 8 plans now have SUMMARYs), then the 3 pre-existing UI
+defects, then the on-device re-test of UAT test 3 — both halves (auto-dismiss from `d102f2b`
+and queueing from `03-07`) are verified host-side only and still need the Infinix X6831
+reattached. After that, Phase 04.
 
 Resume file: .planning/HANDOFF.json (updated — 2 of 6 remaining tasks now closed)
