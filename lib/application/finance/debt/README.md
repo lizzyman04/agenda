@@ -4,14 +4,15 @@ Owns the **debt list** — money to pay and money to receive.
 
 ## Responsibility
 
-Load, create, update, mark paid, and soft-delete debts. Which direction a
-debt runs is a domain concept (`DebtDirection`), not a flag invented here.
+Load, create, update, mark paid, soft-delete and restore debts. Which
+direction a debt runs is a domain concept (`DebtDirection`), not a flag
+invented here.
 
 ## Files
 
 | File | Lines | Role |
 |------|------:|------|
-| `debt_cubit.dart` | 93 | `DebtCubit` — subscribes to `DebtRepository.watchChanges()`; `createDebt`, `updateDebt`, `togglePaid`, `softDelete` |
+| `debt_cubit.dart` | 127 | `DebtCubit` — subscribes to `DebtRepository.watchChanges()`; `createDebt`, `updateDebt`, `togglePaid`, `softDelete`, `restoreDebt` |
 | `debt_state.dart` | 41 | Sealed state family: `DebtInitial`, `DebtLoading`, `DebtLoaded`, `DebtError` |
 
 ## Conventions in this slice
@@ -21,6 +22,11 @@ debt runs is a domain concept (`DebtDirection`), not a flag invented here.
 - **`togglePaid` is a repository call, not a local flip** — the paid state
   must survive a restart, so it round-trips through Isar before the list
   reloads.
+- **Restore is composed, not delegated.** `DebtRepository` has no restore
+  method by design. `restoreDebt` does `getDebt` → `copyWith(deletedAt:
+  null)` → `updateDebt`, exactly as `TransactionCubit.restoreTransaction`
+  does. A missing record returns silently — it is already permanently gone,
+  and an error state would be noise on an undo the user can no longer act on.
 - **Factory, not singleton** — a fresh instance per debt screen.
 
 ## Upstream dependencies

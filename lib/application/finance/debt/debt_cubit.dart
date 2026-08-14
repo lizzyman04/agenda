@@ -68,6 +68,40 @@ class DebtCubit extends Cubit<DebtState> {
     // watchChanges() fires reload automatically
   }
 
+  /// Restores a soft-deleted debt by clearing its deletedAt field.
+  ///
+  /// Used by the undo snackbar action after a swipe-to-delete. Mirrors
+  /// TransactionCubit.restoreTransaction: no repository-level restore
+  /// method exists, so the restore is composed from getDebt + updateDebt.
+  Future<void> restoreDebt(int id) async {
+    final getResult = await _repository.getDebt(id);
+    final Debt debt;
+    switch (getResult) {
+      case Err<Debt>():
+        // Debt not found — silently ignore (already permanently deleted).
+        return;
+      case Success<Debt>(:final value):
+        debt = value;
+    }
+    // Debt.copyWith defaults deletedAt to the clearField sentinel, so an
+    // explicit null genuinely clears the tombstone instead of reading as
+    // "not provided".
+    final restored = debt.copyWith(deletedAt: null, updatedAt: DateTime.now());
+    final result = await _repository.updateDebt(restored);
+
+    // The cubit can be closed while the two awaits above are in flight —
+    // the undo snackbar outlives the screen that owns this cubit.
+    if (isClosed) return;
+
+    if (result is Err<Debt>) {
+      emit(DebtError(result.failure));
+      return;
+    }
+    // Explicitly reload, matching togglePaid — this cubit does not trust
+    // watchChanges() alone for state the user is waiting to see.
+    await _reload();
+  }
+
   // --- Private ---
 
   Future<void> _reload() async {
