@@ -16,8 +16,14 @@ abstract class RecurringPaymentRepository {
   /// if not found.
   AsyncResult<RecurringPayment> getPayment(int id);
 
-  /// Returns all active (non-deleted, isActive=true) recurring payments.
-  AsyncResult<List<RecurringPayment>> getActivePayments();
+  /// Returns all non-deleted recurring payments, paused ones included.
+  ///
+  /// Renamed from `getActivePayments` when CR-02 was closed: the query
+  /// behind it stopped filtering isActive, and a name promising "active"
+  /// while returning paused rows is how a total silently starts counting
+  /// the wrong thing. Anything that must see only unpaused payments has to
+  /// say so at its own call site.
+  AsyncResult<List<RecurringPayment>> getPayments();
 
   /// Overwrites the stored payment with [payment].
   /// The implementation updates updatedAt = DateTime.now() before writing.

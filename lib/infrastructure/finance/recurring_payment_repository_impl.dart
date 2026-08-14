@@ -63,12 +63,12 @@ class RecurringPaymentRepositoryImpl implements RecurringPaymentRepository {
   }
 
   @override
-  AsyncResult<List<RecurringPayment>> getActivePayments() async {
+  AsyncResult<List<RecurringPayment>> getPayments() async {
     try {
       final models = await _dao.findAll();
       return Success(models.map(_mapper.toDomain).toList());
     } on Object catch (e) {
-      return Err(DatabaseFailure('getActivePayments failed: $e'));
+      return Err(DatabaseFailure('getPayments failed: $e'));
     }
   }
 

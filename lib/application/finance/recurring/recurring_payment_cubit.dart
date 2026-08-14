@@ -5,7 +5,11 @@ import 'package:agenda/domain/finance/recurring/recurring_payment_repository.dar
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-/// Owns the list of active recurring payments.
+/// Owns the list of recurring payments, paused ones included.
+///
+/// A paused payment stays in this list on purpose — the list screen holds
+/// the only control that can un-pause it, so filtering paused rows out here
+/// would make pausing irreversible (CR-02).
 ///
 /// Recurring payments are not reactive — no watchChanges stream on
 /// RecurringPaymentRepository. Loaded on demand via [start].
@@ -18,7 +22,7 @@ class RecurringPaymentCubit extends Cubit<RecurringPaymentState> {
 
   final RecurringPaymentRepository _repository;
 
-  /// Loads all active recurring payments.
+  /// Loads all non-deleted recurring payments, paused ones included.
   Future<void> start() async {
     await _reload();
   }
@@ -58,7 +62,7 @@ class RecurringPaymentCubit extends Cubit<RecurringPaymentState> {
   Future<void> _reload() async {
     if (isClosed) return;
 
-    final result = await _repository.getActivePayments();
+    final result = await _repository.getPayments();
 
     if (isClosed) return;
 

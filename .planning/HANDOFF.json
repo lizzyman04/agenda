@@ -1,148 +1,66 @@
 {
   "version": "1.0",
-  "timestamp": "2026-08-14T00:00:00.000Z",
+  "timestamp": "2026-08-14T22:10:00.000Z",
   "phase": "03",
   "phase_name": "finance-core",
   "phase_dir": ".planning/phases/03-finance-core",
-  "plan": 6,
-  "task": 2,
-  "total_tasks": 6,
+  "plan": 11,
+  "task": 1,
+  "total_tasks": 3,
   "status": "paused",
-  "paused_mid_wave": false,
+  "paused_mid_plan": true,
   "completed_tasks": [
-    {
-      "id": 1,
-      "name": "03-08 T1: resolve linked goal/debt title in task detail finance chip",
-      "status": "done",
-      "commit": "fec622d",
-      "location": "worktree-agent-a61e24f07fe8ace8d (UNMERGED)"
-    },
-    {
-      "id": 2,
-      "name": "03-08 T2: pin the resolved finance-link name and its fallback",
-      "status": "done",
-      "commit": "c360c25",
-      "location": "worktree-agent-a61e24f07fe8ace8d (UNMERGED)"
-    },
-    {
-      "id": 3,
-      "name": "03-08 SUMMARY.md",
-      "status": "done",
-      "commit": "ecb9a80",
-      "location": "worktree-agent-a61e24f07fe8ace8d (UNMERGED)"
-    },
-    {
-      "id": 4,
-      "name": "03-06 T1: carry the category list on TransactionLoaded",
-      "status": "done",
-      "commit": "76f7a89",
-      "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)"
-    },
-    {
-      "id": 5,
-      "name": "03-06 T2: show category names on transaction cards, render the note once",
-      "status": "done",
-      "commit": "6066031",
-      "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)"
-    },
-    {
-      "id": 6,
-      "name": "03-06 T3: pin category resolution and single-note card layout",
-      "status": "done",
-      "commit": "b22e87a",
-      "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)"
-    },
-    {
-      "id": 7,
-      "name": "03-06 SUMMARY.md",
-      "status": "done",
-      "commit": "8666c41",
-      "location": "worktree-agent-a02b75e60f0b5ed1c (UNMERGED)",
-      "note": "Landed moments after the pause was requested. Both wave-1 plans are now COMPLETE in their worktrees; only the merge is outstanding."
-    },
-    {
-      "id": 8,
-      "name": "Merge both wave-1 worktree branches into main",
-      "status": "done",
-      "commit": "see merge commits for a02b75e60f0b5ed1c (03-06) and a61e24f07fe8ace8d (03-08)",
-      "location": "main"
-    },
-    {
-      "id": 9,
-      "name": "Run the post-merge gate (guard + analyze + full test suite) on the merged tree",
-      "status": "done",
-      "note": "MEASURED on the merged tree, not inferred: guard PASS exit 0; flutter analyze --no-fatal-infos --fatal-warnings exit 0 with 65 infos (baseline unchanged); flutter test 279/279 passing exit 0."
-    }
+    {"id": 1, "name": "03-09 T1: separate uncapped aggregate read from capped list read", "status": "done", "commit": "5c9be2f"},
+    {"id": 2, "name": "03-09 T2: aggregate the dashboard from the complete transaction set", "status": "done", "commit": "6ea2602"},
+    {"id": 3, "name": "03-09 T3: pin aggregate completeness and newest-first capping", "status": "done", "commit": "c3a0c80", "note": "Finished inline by the orchestrator after the executor hit a session limit."},
+    {"id": 4, "name": "03-09 SUMMARY + tracking", "status": "done", "commit": "494b072"},
+    {"id": 5, "name": "03-10 T1: DebtCubit.restoreDebt", "status": "done", "commit": "f68b89f"},
+    {"id": 6, "name": "03-10 T2: undo SnackBar on the debt swipe", "status": "done", "commit": "d892b5c"},
+    {"id": 7, "name": "03-10 T3: regression test, mutation-checked", "status": "done", "commit": "659b0b8"},
+    {"id": 8, "name": "03-10 SUMMARY + FIN-05→FIN-07 correction", "status": "done", "commit": "13c5e24, d7873b1"},
+    {"id": 9, "name": "03-11 T1: stop the list query hiding deactivated payments", "status": "done_uncommitted", "note": "Edits complete and GATED GREEN by the orchestrator, but NOT committed — the executor was stopped by the pause request immediately before it ran its own Task 1 gate. 6 modified files in the working tree."}
   ],
   "remaining_tasks": [
-    {
-      "id": 10,
-      "name": "Execute wave 2 = plan 03-07 (SnackBar FIFO queueing)",
-      "status": "not_started"
-    },
-    {
-      "id": 11,
-      "name": "Run gsd-verifier over phase 03 and update STATE.md / ROADMAP.md",
-      "status": "not_started"
-    },
-    {
-      "id": 12,
-      "name": "Fix the 3 pre-existing UI defects (double X close button, Tamanho SegmentedButton wrap, hardcoded unlocalised strings)",
-      "status": "not_started"
-    },
-    {
-      "id": 13,
-      "name": "On-device re-test of the undo-timer fix; only then move the debug session to resolved/",
-      "status": "not_started"
-    }
+    {"id": 10, "name": "03-11 T2: make a paused payment look paused and stay reactivatable", "status": "not_started"},
+    {"id": 11, "name": "03-11 T3: regression test (pause then resume) + mutation check", "status": "not_started"},
+    {"id": 12, "name": "03-11 SUMMARY.md + STATE/ROADMAP tracking", "status": "not_started"},
+    {"id": 13, "name": "03-12: CR-03 (task-detail undo reads a dead context) + WR-07 (fifth inline amount parser)", "status": "not_started"},
+    {"id": 14, "name": "Run gsd-verifier over phase 03 and write 03-VERIFICATION.md", "status": "not_started"},
+    {"id": 15, "name": "Fix the 3 pre-existing UI defects (double X close button, Tamanho SegmentedButton wrap, hardcoded unlocalised strings)", "status": "not_started"},
+    {"id": 16, "name": "On-device re-test of UAT tests 2, 3, 9; only then move the undo-timer debug session to resolved/", "status": "not_started"}
   ],
   "blockers": [
     {
-      "description": "A fresh worktree has no .dart_tool/ (gitignored), so `flutter test --no-pub` crashes with `Bad state: No element` in native-assets instead of running. Every future worktree executor hits this.",
+      "description": "03-11 Task 1 is complete in the WORKING TREE but was never committed by its executor. It is committed as WIP by the pause. Do not redo Task 1 — read the diff first.",
       "type": "technical",
-      "workaround": "Run `flutter pub get` as the first action inside any new worktree before invoking the test gate."
+      "workaround": "git show HEAD --stat on the wip commit shows exactly which 6 files carry it. Verify with: grep -n 'getPayments' lib/domain/finance/recurring/recurring_payment_repository.dart"
     },
     {
-      "description": "A pt_BR MaterialApp without GlobalCupertinoLocalizations.delegate emits a 'not supported by all of its localization delegates' warning that flutter_test records as a pending exception, failing the test. Latent in test/presentation/undo_snackbar_auto_dismiss_test.dart, which only escapes it by loading the en locale.",
-      "type": "technical",
-      "workaround": "Add GlobalCupertinoLocalizations.delegate to any harness that mounts a pt_BR MaterialApp. Fix undo_snackbar_auto_dismiss_test.dart if pt_BR cases are ever added there."
+      "description": "An executor agent hit an account session limit mid-plan during 03-09 and terminated with work uncommitted and no SUMMARY. The limit reset around 21:30 Africa/Maputo. Further agent dispatches may hit it again.",
+      "type": "external",
+      "workaround": "If an executor dies mid-plan, do NOT dispatch a fresh one blindly. Read what landed, gate it by hand, then finish inline — that is how 03-09 was recovered."
     },
     {
       "description": "No Android device attached. adb devices is empty.",
       "type": "external",
-      "workaround": "The undo-timer fix (d102f2b) is verified host-side only. Its debug session stays open at awaiting_human_verify until the Infinix X6831 is reattached."
+      "workaround": "Every phase-03 fix is widget-test-proven only. The undo-timer debug session stays at awaiting_human_verify until the Infinix X6831 is reattached."
     }
   ],
   "human_actions_pending": [
     {
-      "action": "Reattach the Infinix X6831 and run the on-device undo-timer re-test",
-      "context": "Two steps: (a) swipe-delete in Financas and in Tarefas plus task-detail delete-confirm, each SnackBar must vanish on its own at ~5s; (b) delete a task, wait past 5s WITHOUT touching the screen, force-stop, relaunch, the task must stay deleted. Step (b) settles whether the reappearing-task symptom shares the persist root cause.",
+      "action": "Reattach the Infinix X6831 and re-test UAT tests 2, 3 and 9 on device",
+      "context": "All three UAT gaps plus all four Critical code-review fixes are host-verified only. Test 3 needs two checks: (a) each undo SnackBar vanishes on its own at ~5s, (b) delete a task, wait past 5s without touching the screen, force-stop, relaunch — the task must stay deleted.",
       "blocking": false
     }
   ],
   "decisions": [
-    {
-      "decision": "Narrowed the debug session to the undo-timer defect only, instead of all four Phase 03 UAT defects",
-      "rationale": "The other three already had confirmed root causes and prescribed fixes recorded in 03-UAT.md. Debugging them would have rediagnosed known causes. 03-UAT.md itself prescribed /gsd-debug for the timer defect specifically.",
-      "phase": "03"
-    },
-    {
-      "decision": "Fixed the undo-timer defect with persist: false rather than any timer or cubit change",
-      "rationale": "Root cause is a Flutter 3.38 breaking change: SnackBar computes persist = persist ?? action != null, and ScaffoldMessenger's timeout callback early-returns on persist before reaching hideCurrentSnackBar. The timer always fired. persist: false is the official migration.",
-      "phase": "03"
-    },
-    {
-      "decision": "Used unawaited(...) in 03-08 instead of copying the analog's bare .then",
-      "rationale": "The analog at task_form_screen.dart:52 is itself one of the 65 accepted discarded_futures infos; copying it would have made 66 and failed the gate. unawaited is the wider presentation-layer convention (4 uses). Measured 25 discarded_futures before and after.",
-      "phase": "03"
-    },
-    {
-      "decision": "Pinned an explicit locale on every MaterialApp in the new 03-06 tests",
-      "rationale": "This project's widget tests default to en, not pt_BR. resolveCategoryDisplay returns nameEn whenever preferEnglish && nameEn != null, so a locale-less test would render 'Food' and the intended 'Alimentacao' assertion would fail.",
-      "phase": "03"
-    }
+    {"decision": "Fixed the four Critical code-review findings BEFORE running phase verification", "rationale": "CR-04 made phase 03's own success criterion 1 factually false — the dashboard balance goes wrong past 500 transactions. Verifying first would have passed a goal the code did not meet. The user chose this over deferring to a follow-on phase.", "phase": "03"},
+    {"decision": "Ran wave 3 sequentially on the main tree instead of in parallel worktrees", "rationale": "Three of the four plans touch sibling READMEs that the architecture guard requires be accurate, and a worktree merge race on those is what caused this session's earlier pause. No parallelism was worth that.", "phase": "03"},
+    {"decision": "03-11: renamed getActivePayments to getPayments rather than keeping the name", "rationale": "The query behind it stopped filtering isActive. A name promising 'active' while returning paused rows is exactly how a total silently starts counting the wrong thing. The rename forces every call site to be revisited via compile error. Verified: only one consumer exists (recurring_payment_cubit.dart:65), so nothing silently changed meaning.", "phase": "03"},
+    {"decision": "03-10: did NOT add confirmDismiss to the debt swipe", "rationale": "The undo SnackBar is the recovery mechanism. A confirmation dialog would tax every correct swipe to guard against the rare wrong one.", "phase": "03"},
+    {"decision": "03-12 will remove the duplicate amount parser but NOT fix the shared one", "rationale": "The shared parseAmountCentsOrNull PT-BR separator bug is a standing, deliberately deferred task. Fixing it inside a plan scoped to one call site would change behaviour for all five.", "phase": "03"}
   ],
   "uncommitted_files": [],
-  "next_action": "Execute wave 2 = plan 03-07 (SnackBar FIFO queueing) via /gsd-execute-phase 03. It was deliberately serialized behind 03-06 because both edit transaction_list_screen.dart; it now rebases cleanly on merged main, which carries 03-06's version of that file.",
-  "context_notes": "Wave 1 of phase 03 gap closure is MERGED into main and gated. Both worktree branches (worktree-agent-a02b75e60f0b5ed1c = 03-06, worktree-agent-a61e24f07fe8ace8d = 03-08) merged with --no-ff, zero conflicts, no file overlap between them. Post-merge gate measured on the merged tree: guard exit 0, analyze exit 0 / 65 infos, 279/279 tests. The per-branch counts (277 and 270 against a 268 baseline) are superseded by this single measurement. Worktrees are now safe to remove. Remaining: wave 2 (03-07), phase 03 verification, the 3 pre-existing UI defects, and the on-device undo-timer re-test which still needs the Infinix X6831 reattached."
+  "next_action": "Resume 03-11 at Task 2. Task 1 is already done and gated green — read its diff (the wip commit) before touching anything, do NOT redo it. Task 2 restyles lib/presentation/finance/widgets/recurring/recurring_payment_card.dart; note line 74 currently renders hardcoded PT-BR 'Ativo'/'Pausado', which is the same defect class the project tracks and should be routed through AppLocalizations as part of this task. Also update the now-stale doc comment at lib/application/finance/recurring/recurring_payment_state.dart:28, which still claims the list is 'Active (isActive=true, non-deleted)'.",
+  "context_notes": "Phase 03 grew from 8 plans to 12 because a standard-depth code review over 73 files found 4 Critical bugs, all of which I re-verified against the source myself before acting. None was a regression from this session — all date to plans 03-02 and 03-04. 03-09 (CR-04, wrong balance) and 03-10 (CR-01, unrecoverable debt delete) are landed and gated. 03-11 (CR-02) is one task in. 03-12 (CR-03 + WR-07) is untouched. Gate on the wip commit, measured by me unpiped: guard exit 0, analyze exit 0 with 65 infos and lines_longer_than_80_chars at 0, flutter test 289/289. The 65-info budget and the 0 long-line count are both load-bearing and asserted all over this phase's artifacts. A caveman-mode output hook is active in this session; it affects chat prose only, never code, commits, or file content."
 }

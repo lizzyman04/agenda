@@ -222,7 +222,7 @@ class _StubRecurringPaymentRepository implements RecurringPaymentRepository {
       const Err(DatabaseFailure('stub'));
 
   @override
-  AsyncResult<List<RecurringPayment>> getActivePayments() async =>
+  AsyncResult<List<RecurringPayment>> getPayments() async =>
       const Success([]);
 
   @override
