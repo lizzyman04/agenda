@@ -89,7 +89,7 @@ Plans:
 - [x] 03-08-PLAN.md — Gap closure (UAT test 9): resolve the linked goal/debt title in the task detail finance chip instead of rendering the raw entity id *(wave 1, merged 2026-08-14)*
 - [x] 03-09-PLAN.md — Gap closure (code review CR-04, Critical): split the uncapped aggregate read from a newest-first capped list read, so the dashboard balance stops going silently wrong past 500 transactions *(wave 3, 2026-08-14; both mutations run — the balance one reproduced Expected 1049999 / Actual 50000)*
 - [x] 03-10-PLAN.md — Gap closure (code review CR-01, Critical): add DebtCubit.restoreDebt and an undo SnackBar to the debt swipe, which currently destroys a debt with no recovery path at any layer *(wave 3, 2026-08-14; mutation run — emptying the undo action fails both tests on `No matching calls ... [VERIFIED] MockDebtCubit.softDelete(4)`)*
-- [ ] 03-11-PLAN.md — Gap closure (code review CR-02, Critical): stop the active-only list query hiding deactivated recurring payments permanently, and make paused rows visibly paused and resumable *(wave 3)*
+- [x] 03-11-PLAN.md — Gap closure (code review CR-02, Critical): stop the active-only list query hiding deactivated recurring payments permanently, and make paused rows visibly paused and resumable *(wave 3, 2026-08-15; both mutations run — restoring the isActive filter fails the query-shape test on `Expected: false / Actual: <true>`)*
 - [ ] 03-12-PLAN.md — Gap closure (code review CR-03 Critical + WR-07): capture the cubit before popping the route so task-detail Undo actually works, and point the budget limit sheet at the shared amount parser *(wave 3)*
 
 ---

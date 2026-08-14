@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 03 wave 3 in progress — code review found 4 Critical bugs, all independently confirmed. 03-09 (CR-04, wrong balance) and 03-10 (CR-01, unrecoverable debt delete) DONE. 03-11/03-12 not started. All 3 UAT gaps closed host-side. Phase 06 COMPLETE; Phases 04 and 05 not started.
-last_updated: "2026-08-14T22:30:00.000Z"
+stopped_at: Phase 03 wave 3 — code review found 4 Critical bugs, all independently confirmed. 03-09 (CR-04, wrong balance), 03-10 (CR-01, unrecoverable debt delete) and 03-11 (CR-02, paused payment hidden permanently) DONE. Only 03-12 (CR-03 + WR-07) is left, then phase verification. All 3 UAT gaps closed host-side. Phase 06 COMPLETE; Phases 04 and 05 not started.
+last_updated: "2026-08-15T00:00:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 46
-  completed_plans: 38
-  percent: 83
+  completed_plans: 39
+  percent: 85
 ---
 
 # Project State
@@ -177,6 +177,7 @@ Progress: [██████████] 100%
 | Phase 06 P18 | 45min | 3 tasks | 39 files |
 | Phase 03 P07 | 20min | 2 tasks | 3 files |
 | Phase 03 P10 | 25min | 3 tasks | 11 files |
+| Phase 03 P11 | 40min | 3 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -203,6 +204,8 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 6: architecture guard is now ENFORCING in CI (exit 1 on violation, step runs between Analyze and Test); all 36 lib/presentation + lib/application directories carry a README, readmeExemptDirs stays empty
 - [Phase 03]: A destructive action's undo SnackBar hides the current SnackBar before showing its own — one captured `ScaffoldMessenger` local, `hideCurrentSnackBar()` then `showSnackBar(...)`. `ScaffoldMessenger` queues FIFO, so without it the visible undo belongs to an earlier action and restores the wrong record. Recorded as a convention in `lib/presentation/finance/screens/README.md`.
 - [Phase 03]: Widget tests that need a shrinking list drive a mocked cubit through a `StreamController` and emit a `List.of(...)` COPY per state — `TransactionLoaded` is `Equatable` over `transactions`, so re-emitting the same mutated list makes states compare equal and the `Dismissible` gets rebuilt after dismissal.
+- [Phase 03]: `isActive` on a recurring payment is a PAUSE flag, not a delete flag — only `deletedAt` removes a row from a list read. The list query returns paused rows because the list screen holds the only control that can un-pause one; anything needing unpaused rows only must filter at its own call site and say so. The repository method was renamed `getActivePayments` → `getPayments` so no call site can keep trusting a name that promises active-only.
+- [Phase 03]: A dimmed "disabled-looking" row must leave its recovery control undimmed — the recurring card wraps only its `ListTile` in `Opacity`, never the `SwitchListTile` that resumes the payment.
 - [Phase ?]: Phase 6: dart format is NOT enforced in CI and no raw column-width guard was added — measured, 103/258 files differ from dart format output and 88 raw lines exceed 80 cols while the lint reports 0; width policing defers to lines_longer_than_80_chars
 
 ### Pending Todos
@@ -231,8 +234,32 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-08-14
-Stopped at: Completed 03-10-PLAN.md (wave 3, CR-01) directly on `main` — no worktree.
+Last session: 2026-08-15
+Stopped at: Completed 03-11-PLAN.md (wave 3, CR-02) directly on `main` — no worktree.
+Task 1 arrived pre-committed in the pause WIP commit `ebf71ff`; the resume read its
+diff before writing anything, rather than redoing a rename that had already propagated
+through five files. Then `c5594ec` (the paused card treatment + `recurringActive` /
+`recurringPaused` in all three ARB files) and `915ef27` (the regression suite).
+
+**Gate measured on main after 03-11 (each command run unpiped, not inferred):**
+
+- `dart run tool/check_architecture.dart`: PASS, exit 0
+- `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — budget held,
+  and `lines_longer_than_80_chars` is still **0** project-wide
+- `flutter test --no-pub`: **295/295 passing**, exit 0 (289 before, +6 from this plan)
+- Both mutations run. Restoring `.isActiveEqualTo(true)` to the DAO fails the query-shape
+  test on `Expected: false / Actual: <true>`. Pinning the card at `opacity: 1` with a
+  fixed `recurringActive` label fails the screen test on
+  `Found 0 widgets with text "Paused"`. Both reverted.
+- **Trap worth remembering:** undoing mutation B with `git checkout -- <file>` reset the
+  card to its last commit and so *also* deleted a test key added after that commit.
+  Reverting a mutation with `git checkout` restores the last commit, not the working
+  state. Grep the file after any such revert.
+
+**Next:** 03-12 (CR-03 + WR-07) — the last wave-3 plan — then `gsd-verifier` over phase
+03. Test baseline for 03-12 is now **295**.
+
+Earlier this session: Completed 03-10-PLAN.md (wave 3, CR-01) directly on `main` — no worktree.
 Commits `f68b89f` (`DebtCubit.restoreDebt`), `d892b5c` (the undo SnackBar + `debtDeleted`
 in all three ARB files) and `659b0b8` (the regression test).
 
