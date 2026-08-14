@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:agenda/application/finance/transaction/transaction_state.dart';
 import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/domain/finance/category/transaction_category.dart';
+import 'package:agenda/domain/finance/category/transaction_category_repository.dart';
 import 'package:agenda/domain/finance/transaction/transaction.dart';
 import 'package:agenda/domain/finance/transaction/transaction_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,15 +17,31 @@ import 'package:injectable/injectable.dart';
 /// Factory (not singleton) — a fresh instance per screen.
 @injectable
 class TransactionCubit extends Cubit<TransactionState> {
-  TransactionCubit(this._repository) : super(const TransactionInitial());
+  TransactionCubit(this._repository, this._categoryRepository)
+      : super(const TransactionInitial());
 
   final TransactionRepository _repository;
+  final TransactionCategoryRepository _categoryRepository;
   StreamSubscription<void>? _watchSubscription;
+
+  /// Categories used to resolve each transaction's categoryId to a label.
+  List<TransactionCategory> _categories = const [];
 
   /// Subscribes to collection changes and loads the initial list.
   ///
   /// Call once from the transaction list screen's initState.
   Future<void> start() async {
+    // Categories are seeded at migration time and change infrequently, and
+    // TransactionCategoryRepository is explicitly non-reactive (see its
+    // interface doc) — so one load per cubit lifetime is correct and
+    // _reload() must not re-query them on every transaction change.
+    final catResult = await _categoryRepository.getAll();
+    if (catResult is Success<List<TransactionCategory>>) {
+      _categories = catResult.value;
+    }
+    // On Err, _categories stays empty: a category-lookup failure degrades to
+    // the '#<id>' fallback and must never blank the transaction list.
+
     _watchSubscription = _repository.watchChanges().listen((_) async {
       await _reload();
     });
@@ -96,7 +114,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     switch (result) {
       case Success<List<Transaction>>(:final value):
-        emit(TransactionLoaded(transactions: value));
+        emit(TransactionLoaded(transactions: value, categories: _categories));
       case Err<List<Transaction>>(:final failure):
         emit(TransactionError(failure));
     }

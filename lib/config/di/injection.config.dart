@@ -208,7 +208,10 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.factory<_i1065.TransactionCubit>(
-      () => _i1065.TransactionCubit(gh<_i585.TransactionRepository>()),
+      () => _i1065.TransactionCubit(
+        gh<_i585.TransactionRepository>(),
+        gh<_i200.TransactionCategoryRepository>(),
+      ),
     );
     gh.factory<_i759.BudgetCubit>(
       () => _i759.BudgetCubit(

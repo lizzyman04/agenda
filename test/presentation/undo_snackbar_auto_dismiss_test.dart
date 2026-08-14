@@ -119,12 +119,19 @@ void main() {
       final cubit = MockTransactionCubit();
       when(cubit.start).thenAnswer((_) async {});
       when(() => cubit.softDelete(any())).thenAnswer((_) async {});
-      when(() => cubit.state)
-          .thenReturn(TransactionLoaded(transactions: [_transaction(7)]));
+      when(() => cubit.state).thenReturn(
+        TransactionLoaded(
+          transactions: [_transaction(7)],
+          categories: const [],
+        ),
+      );
       whenListen(
         cubit,
         const Stream<TransactionState>.empty(),
-        initialState: TransactionLoaded(transactions: [_transaction(7)]),
+        initialState: TransactionLoaded(
+          transactions: [_transaction(7)],
+          categories: const [],
+        ),
       );
 
       await tester.pumpWidget(

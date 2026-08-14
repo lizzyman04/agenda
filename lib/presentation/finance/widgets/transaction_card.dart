@@ -45,8 +45,10 @@ class TransactionCard extends StatelessWidget {
       locale,
     );
     final formattedDate = DateFormat('dd/MM/yyyy').format(transaction.date);
-    final hasNote =
-        transaction.note != null && transaction.note != categoryName;
+    // Each piece of information renders in exactly one place: the category
+    // in the title, the date in the subtitle, the note in the chip below.
+    final note = transaction.note?.trim();
+    final hasNote = note != null && note.isNotEmpty;
 
     return Dismissible(
       key: Key('tx-${transaction.id}'),
@@ -72,7 +74,7 @@ class TransactionCard extends StatelessWidget {
           child: ListTile(
             leading: Icon(typeIcon, color: amountColor, size: 24),
             title: Text(
-              transaction.note ?? categoryName,
+              categoryName,
               style: theme.textTheme.bodyLarge,
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
@@ -81,7 +83,7 @@ class TransactionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '$categoryName · $formattedDate',
+                  formattedDate,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: cs.onSurfaceVariant,
                   ),
@@ -89,7 +91,7 @@ class TransactionCard extends StatelessWidget {
                 if (hasNote)
                   Chip(
                     label: Text(
-                      transaction.note!,
+                      note,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),

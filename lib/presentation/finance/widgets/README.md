@@ -30,7 +30,7 @@ widgets/
 | `finance_form_primitives.dart` | 63 | `FormCard`, `FieldRow`, `FieldDivider` — the layout atoms shared by all four finance forms |
 | `category_picker_sheet.dart` | 97 | `CategoryPickerSheet` — one picker shared by the transaction and recurring payment forms, replacing the near-identical `_pickCategory()` sheets each used to have |
 | `finance_empty_state.dart` | 70 | Empty state for every finance list — body text plus a CTA `FilledButton` (extends the Phase 2 UX-04 pattern) |
-| `transaction_card.dart` | 114 | One transaction row: swipe-to-delete via `Dismissible`, tap to edit, income/expense colours from `FinanceColors` |
+| `transaction_card.dart` | 116 | One transaction row. Layout contract: the title is the category name, the subtitle is the date, and the note appears exactly once as a chip. Swipe-to-delete via `Dismissible`, tap to edit, income/expense colours from `FinanceColors` |
 | `budget_progress_bar.dart` | 114 | Spend-vs-limit bar for one category, with a three-state colour ramp |
 | `dashboard_summary_card.dart` | 84 | The Resumo anchor: lifetime balance (D-07) in `displaySmall`, net worth (D-08) below |
 | `spending_pie_chart.dart` | 135 | Donut chart of expense spend by category, with a legend |
