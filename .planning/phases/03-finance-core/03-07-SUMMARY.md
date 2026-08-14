@@ -194,3 +194,8 @@ the same pending on-device re-test that the `d102f2b` auto-dismiss fix is
 waiting on (the Infinix X6831). The `flutter test` reproduction is
 deterministic, so the logic is proven; what hardware would add is confirmation
 that real touch timing on a real 5-second window behaves the same.
+
+## Self-Check: PASSED
+
+All three claimed files exist on disk; all three claimed commits
+(`8a349d4`, `2c7a7a5`, `16f3fc8`) are in `git log`; working tree clean.
