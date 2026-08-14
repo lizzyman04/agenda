@@ -537,6 +537,8 @@
   "@expense": {"description": "Label for expense transaction type"},
   "transactionDeleted": "Transaction deleted",
   "@transactionDeleted": {"description": "SnackBar content after soft-deleting a transaction"},
+  "debtDeleted": "Debt deleted",
+  "@debtDeleted": {"description": "SnackBar content after soft-deleting a debt"},
   "editTransaction": "Edit transaction",
   "@editTransaction": {"description": "AppBar title when editing a transaction"},
   "deleteGoal": "Delete goal",

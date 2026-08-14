@@ -1347,6 +1347,12 @@ abstract class AppLocalizations {
   /// **'Transação excluída'**
   String get transactionDeleted;
 
+  /// Conteúdo da SnackBar após exclusão suave de dívida
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Dívida excluída'**
+  String get debtDeleted;
+
   /// Título da AppBar ao editar uma transação
   ///
   /// In pt_BR, this message translates to:

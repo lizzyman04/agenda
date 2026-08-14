@@ -537,6 +537,8 @@
   "@expense": {"description": "Rótulo para o tipo de transação despesa"},
   "transactionDeleted": "Transação excluída",
   "@transactionDeleted": {"description": "Conteúdo da SnackBar após exclusão suave de transação"},
+  "debtDeleted": "Dívida excluída",
+  "@debtDeleted": {"description": "Conteúdo da SnackBar após exclusão suave de dívida"},
   "editTransaction": "Editar transação",
   "@editTransaction": {"description": "Título da AppBar ao editar uma transação"},
   "deleteGoal": "Excluir objetivo",

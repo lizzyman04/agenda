@@ -17,7 +17,7 @@ files in `../`.
 | `transaction_list_screen.dart` | 148 | The transaction list — resolves each `categoryId` to a localized name via `resolveCategoryDisplay`; swipe-to-delete (via `TransactionCard`'s `Dismissible`) with an `AppConstants.undoSnackbarDuration` undo snackbar that hides the previous one before showing itself, tap to edit |
 | `transaction_form_screen.dart` | 149 | Create/edit a transaction; owns the controllers and `TransactionFormModel`, delegates loading, submission and pickers |
 | `budget_overview_screen.dart` | 126 | Per-category budget vs. spend, with the limit sheet |
-| `debt_list_screen.dart` | 93 | Debts to pay and to receive, with the paid toggle |
+| `debt_list_screen.dart` | 130 | Debts to pay and to receive, with the paid toggle; swipe-to-delete (via `DebtCard`'s `Dismissible`) with the same hide-then-show undo snackbar the transaction list uses |
 | `debt_form_screen.dart` | 150 | Create/edit a debt |
 | `recurring_payment_screen.dart` | 95 | The recurring payments list |
 | `recurring_payment_form_screen.dart` | 147 | Create/edit a recurring payment |

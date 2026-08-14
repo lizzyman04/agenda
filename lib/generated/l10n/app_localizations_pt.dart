@@ -648,6 +648,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get transactionDeleted => 'Transação excluída';
 
   @override
+  String get debtDeleted => 'Dívida excluída';
+
+  @override
   String get editTransaction => 'Editar transação';
 
   @override
@@ -1344,6 +1347,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get transactionDeleted => 'Transação excluída';
+
+  @override
+  String get debtDeleted => 'Dívida excluída';
 
   @override
   String get editTransaction => 'Editar transação';
