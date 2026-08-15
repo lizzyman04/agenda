@@ -14,7 +14,7 @@ dashboard.
 
 | File | Lines | Role |
 |------|------:|------|
-| `budget_limit_sheet.dart` | 114 | `BudgetLimitSheet` — bottom-sheet body for setting a category budget limit; owns and disposes its own `TextEditingController` |
+| `budget_limit_sheet.dart` | 126 | `BudgetLimitSheet` — bottom-sheet body for setting a category budget limit; owns and disposes its own `TextEditingController` |
 
 ## Conventions in this slice
 

@@ -1,3 +1,4 @@
+import 'package:agenda/core/utils/amount_parser.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,8 +12,10 @@ import 'package:flutter/services.dart';
 /// disposed" error during the dismiss transition, which cascaded into the
 /// `InheritedElement._dependents.isEmpty` assertion on the overlay.
 ///
-/// Returns the parsed limit (in cents) via `Navigator.pop`, or `null` when the
-/// input is empty/invalid.
+/// Returns the parsed limit (in cents) via `Navigator.pop` once a valid
+/// amount is entered. An empty or unparseable amount does NOT pop the
+/// sheet — it shows a validation error and leaves the sheet open so the
+/// user can correct the input, instead of silently discarding the save.
 class BudgetLimitSheet extends StatefulWidget {
   const BudgetLimitSheet({
     required this.categoryName,
@@ -49,12 +52,21 @@ class BudgetLimitSheetState extends State<BudgetLimitSheet> {
   }
 
   void _submit() {
-    final raw = _controller.text
-        .replaceAll(',', '.')
-        .replaceAll(RegExp(r'[^\d.]'), '');
-    final parsed = double.tryParse(raw);
-    final limitCents =
-        (parsed != null && parsed > 0) ? (parsed * 100).round() : null;
+    // Shared parser, not a sixth inline copy. Note: `parseAmountCentsOrNull`
+    // currently rejects a PT-BR thousands separator — '1.250,00' becomes
+    // '1.250.50' (two dots) and parses to null. That is a known,
+    // deliberately deferred defect in amount_parser.dart, not fixed here;
+    // this call site's job is only to stop swallowing the rejection.
+    final limitCents = parseAmountCentsOrNull(_controller.text);
+    if (limitCents == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).errorAmountRequired),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
     Navigator.of(context).pop(limitCents);
   }
 
