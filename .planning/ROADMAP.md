@@ -75,7 +75,7 @@ Plans:
   3. User can create a savings goal with a target amount and optional deadline, contribute to it, and see the percentage progress update with each contribution
   4. User can log a debt (to pay or to receive) with amount and due date, and log a recurring payment (subscription or bill) with amount and billing cycle
   5. All screens — transaction list, budget overview, goals list, debt list — display meaningful empty states with a clear action prompt when no data exists yet; the dashboard shows current balance and net worth; the spending chart renders a monthly category breakdown as pie and bar
-**Plans**: 12 plans (5 build + 3 UAT gap closure + 4 code-review gap closure)
+**Plans**: 14 plans (5 build + 3 UAT gap closure + 4 code-review gap closure + 2 verification gap closure)
 **UI hint**: yes
 
 Plans:
@@ -91,6 +91,8 @@ Plans:
 - [x] 03-10-PLAN.md — Gap closure (code review CR-01, Critical): add DebtCubit.restoreDebt and an undo SnackBar to the debt swipe, which currently destroys a debt with no recovery path at any layer *(wave 3, 2026-08-14; mutation run — emptying the undo action fails both tests on `No matching calls ... [VERIFIED] MockDebtCubit.softDelete(4)`)*
 - [x] 03-11-PLAN.md — Gap closure (code review CR-02, Critical): stop the active-only list query hiding deactivated recurring payments permanently, and make paused rows visibly paused and resumable *(wave 3, 2026-08-15; both mutations run — restoring the isActive filter fails the query-shape test on `Expected: false / Actual: <true>`)*
 - [x] 03-12-PLAN.md — Gap closure (code review CR-03 Critical + WR-07): capture the cubit before popping the route so task-detail Undo actually works, and point the budget limit sheet at the shared amount parser *(wave 3)*
+- [ ] 03-13-PLAN.md — Gap closure (verification BL-01, wave 1): build IsarTestHarness, a reusable real-isar_community test helper (Isar.initializeIsarCore(download: true) against an isolated temp dir), plus a self-test proving open/write/read/teardown
+- [ ] 03-14-PLAN.md — Gap closure (verification BL-01, wave 2, depends on 03-13): uncap TransactionDao.findByMonth and findByLinkedGoal (feeding BudgetCubit spend and GoalCubit tagged progress), correct the class doc's false single-exception claim, add real-Isar behavioral regression tests
 
 ---
 
