@@ -1,610 +1,482 @@
 ---
 phase: 03-finance-core
-reviewed: 2026-08-14T16:59:51Z
+reviewed: 2026-08-15T06:47:41Z
 depth: standard
-files_reviewed: 73
+scope: delta
+prior_review: .planning/phases/03-finance-core/03-REVIEW-pre-gap-closure.md
+files_reviewed: 22
 files_reviewed_list:
-  - lib/app.dart
-  - lib/application/finance/budget/budget_cubit.dart
-  - lib/application/finance/budget/budget_state.dart
+  - lib/data/finance/transaction/transaction_dao.dart
+  - lib/domain/finance/transaction/transaction_repository.dart
+  - lib/infrastructure/finance/transaction_repository_impl.dart
   - lib/application/finance/dashboard/home_dashboard_cubit.dart
-  - lib/application/finance/dashboard/home_dashboard_state.dart
   - lib/application/finance/debt/debt_cubit.dart
-  - lib/application/finance/debt/debt_state.dart
-  - lib/application/finance/goal/goal_cubit.dart
-  - lib/application/finance/goal/goal_list_cubit.dart
-  - lib/application/finance/goal/goal_list_state.dart
-  - lib/application/finance/goal/goal_state.dart
+  - lib/presentation/finance/screens/debt_list_screen.dart
+  - lib/data/finance/recurring/recurring_payment_dao.dart
+  - lib/domain/finance/recurring/recurring_payment_repository.dart
+  - lib/infrastructure/finance/recurring_payment_repository_impl.dart
   - lib/application/finance/recurring/recurring_payment_cubit.dart
   - lib/application/finance/recurring/recurring_payment_state.dart
-  - lib/application/finance/transaction/README.md
-  - lib/application/finance/transaction/transaction_cubit.dart
-  - lib/application/finance/transaction/transaction_state.dart
-  - lib/config/di/finance_module.dart
-  - lib/config/di/injection.config.dart
-  - lib/config/l10n/app_en.arb
-  - lib/config/l10n/app_pt.arb
-  - lib/config/l10n/app_pt_BR.arb
-  - lib/core/config/app_config.dart
-  - lib/core/constants/currencies.dart
-  - lib/core/constants/finance_colors.dart
-  - lib/core/utils/amount_formatter.dart
-  - lib/data/database/migration_runner.dart
-  - lib/generated/l10n/app_localizations.dart
-  - lib/generated/l10n/app_localizations_en.dart
-  - lib/generated/l10n/app_localizations_pt.dart
-  - lib/infrastructure/finance/budget_repository_impl.dart
-  - lib/infrastructure/finance/debt_repository_impl.dart
-  - lib/infrastructure/finance/goal_repository_impl.dart
-  - lib/infrastructure/finance/recurring_payment_repository_impl.dart
-  - lib/infrastructure/finance/transaction_category_repository_impl.dart
-  - lib/infrastructure/finance/transaction_repository_impl.dart
-  - lib/main.dart
-  - lib/presentation/finance/screens/budget_overview_screen.dart
-  - lib/presentation/finance/screens/debt_form_screen.dart
-  - lib/presentation/finance/screens/debt_list_screen.dart
-  - lib/presentation/finance/screens/finance_dashboard_screen.dart
-  - lib/presentation/finance/screens/README.md
-  - lib/presentation/finance/screens/recurring_payment_form_screen.dart
   - lib/presentation/finance/screens/recurring_payment_screen.dart
-  - lib/presentation/finance/screens/transaction_form_screen.dart
-  - lib/presentation/finance/screens/transaction_list_screen.dart
-  - lib/presentation/finance/widgets/budget_progress_bar.dart
-  - lib/presentation/finance/widgets/dashboard_summary_card.dart
-  - lib/presentation/finance/widgets/finance_empty_state.dart
-  - lib/presentation/finance/widgets/README.md
-  - lib/presentation/finance/widgets/spending_bar_chart.dart
-  - lib/presentation/finance/widgets/spending_pie_chart.dart
-  - lib/presentation/finance/widgets/transaction_card.dart
+  - lib/presentation/finance/widgets/recurring/recurring_payment_card.dart
   - lib/presentation/tasks/screens/task_detail_screen.dart
-  - lib/presentation/tasks/widgets/detail/README.md
-  - lib/presentation/tasks/widgets/detail/task_detail_finance_chip.dart
-  - test/application/finance/budget_cubit_test.dart
-  - test/application/finance/debt_cubit_test.dart
-  - test/application/finance/goal_cubit_test.dart
+  - lib/presentation/finance/widgets/budget/budget_limit_sheet.dart
+  - lib/config/l10n/app_en.arb
+  - lib/config/l10n/app_pt_BR.arb
+  - test/presentation/finance/debt_list_undo_test.dart
+  - test/presentation/finance/recurring_payment_visibility_test.dart
+  - test/presentation/tasks/task_detail_undo_test.dart
   - test/application/finance/home_dashboard_cubit_test.dart
-  - test/application/finance/transaction_cubit_test.dart
-  - test/core/utils/amount_formatter_test.dart
-  - test/data/database/migration_runner_test.dart
-  - test/data/finance/savings_goal_mapper_test.dart
-  - test/data/finance/transaction_mapper_test.dart
-  - test/domain/finance/savings_goal_test.dart
-  - test/domain/finance/transaction_test.dart
-  - test/presentation/finance/finance_empty_state_test.dart
-  - test/presentation/finance/spending_pie_chart_test.dart
-  - test/presentation/finance/transaction_card_test.dart
-  - test/presentation/finance/transaction_list_screen_test.dart
-  - test/presentation/finance/transaction_list_undo_test.dart
-  - test/presentation/tasks/task_detail_screen_test.dart
-  - test/presentation/undo_snackbar_auto_dismiss_test.dart
+  - test/data/finance/transaction_dao_ordering_test.dart
 findings:
-  critical: 4
-  warning: 11
-  info: 3
-  total: 18
+  critical: 1
+  warning: 8
+  info: 0
+  total: 9
 status: issues_found
 ---
 
-# Phase 3: Code Review Report
+# Phase 3: Code Review Report (delta — gap closure 03-09 … 03-12)
 
-**Reviewed:** 2026-08-14T16:59:51Z
-**Depth:** standard
-**Files Reviewed:** 73
+**Reviewed:** 2026-08-15T06:47:41Z
+**Depth:** standard (delta)
+**Files Reviewed:** 22
 **Status:** issues_found
 
 ## Summary
 
-The three UAT defects this phase closed (undo SnackBar queueing, undo auto-dismiss,
-category-name resolution) are genuinely fixed and regression-tested, and the
-`TransactionLoaded.categories` addition is correct — `props` covers it, and every
-sibling finance state's `props` covers every field it renders. Cubit `close()`
-overrides cancel their subscriptions, `isClosed` guards bracket the awaits in five of
-six list cubits, and the `clearField` sentinel in `Transaction.copyWith` makes
-`restoreTransaction`'s `deletedAt: null` actually clear the tombstone.
+Four of the five fixes hold. `flutter analyze` reports 65 issues (exactly the
+budget, zero errors, zero `lines_longer_than_80_chars`) and `flutter test`
+passes 297/297, so nothing below is a build or suite failure — every finding is
+a behavioural or maintainability defect that the green suite does not catch.
 
-The defects are concentrated in three places the fixed defects did not touch:
+**Fix verification:**
 
-1. **Recovery paths that only exist for transactions.** Debts are swipe-deleted with
-   no confirm, no SnackBar, no undo and no `restoreDebt` anywhere in the code base
-   (CR-01). Recurring payments have a toggle that hides them from the only screen
-   that lists them, permanently (CR-02). Task-detail undo calls `context.read` on a
-   route that has already been popped (CR-03).
-2. **A silent 500-row ceiling** on every transaction query, with no ordering, which
-   caps the list *and* every derived figure: balance, net worth, category charts, goal
-   progress (CR-04).
-3. **`start()` lifecycle**, which is idempotent in `HomeDashboardCubit` and in none of
-   the other four watch-backed cubits (WR-01), so every tab revisit leaks a live Isar
-   subscription onto an app-scoped cubit.
+| Prior ID | Plan | Verdict |
+|---|---|---|
+| CR-01 debt delete unrecoverable | 03-10 | **Closed** |
+| CR-02 recurring pause is a one-way trap | 03-11 | **Closed** (reversibility); one remedy item from the finding skipped — WR-D4 |
+| CR-03 task-detail undo on a popped route | 03-12 | **Closed** |
+| CR-04 500-row cap on transaction reads | 03-09 | **Partially closed** — BL-01 |
+| WR-07 budget sheet re-implements the parser | 03-12 | **Partially closed** — WR-D1 / WR-D2 |
+
+Detail:
+
+- **CR-01 — closed.** `DebtCubit.restoreDebt` (`debt_cubit.dart:76-103`) is
+  correct end to end, and I traced every link rather than trusting the shape:
+  `DebtRepositoryImpl.getDebt` goes through `DebtDao.findById` (a raw
+  `collection.get`, *not* the `deletedAtIsNull()`-filtered `findAll`), so a
+  tombstoned row is genuinely readable; `Debt.copyWith` uses the `clearField`
+  sentinel (`debt.dart:72-86`) so `deletedAt: null` really clears rather than
+  reading as "not provided"; `DebtMapper.toModel` writes `deletedAt` back, so
+  the `put` persists the cleared tombstone; and `updateDebt`'s own
+  `copyWith(updatedAt:)` cannot re-set it. `debt_list_screen.dart:46-47`
+  captures `cubit` and `messenger` before the row can unmount, and
+  `hideCurrentSnackBar()` precedes `showSnackBar` so a second swipe replaces
+  rather than queues. `debt_list_undo_test.dart:124-127,162-166` actually taps
+  Undo and asserts the *second* delete's id is the one restored — the case that
+  a queued-SnackBar bug would fail.
+- **CR-02 — closed for reversibility.** `recurring_payment_dao.dart:37-43` no
+  longer filters `isActive`, sorts active-first *before* `.limit(500)` (so the
+  cap cannot evict a live payment in favour of a paused one), and still filters
+  `deletedAtIsNull()`. `getPayments()` has exactly one consumer
+  (`recurring_payment_cubit.dart:65`), so the rename cannot have silently
+  changed some other total's meaning — I grepped for every call site.
+  `recurring_payment_card.dart:51-89` dims the row but keeps the toggle at full
+  opacity, and the label is localized. Reversible.
+- **CR-03 — closed.** `task_detail_screen.dart:49-52` resolves the cubit, the
+  messenger *and* both strings into locals before `Navigator.pop()`; the
+  `SnackBarAction` closure (line 69) touches only the captured cubit. The new
+  test pushes a real route, asserts `find.byType(TaskDetailScreen)` is gone, and
+  then taps Undo — the exact sequence the old tests never performed.
+  `TaskListCubit` is app-scoped (`app.dart:68`) and its `close()` cancels the
+  undo timer, so the captured cubit cannot be closed under the SnackBar.
+- **CR-04 — partially closed.** The dashboard path is genuinely fixed
+  (`findAllForAggregates` is uncapped, `home_dashboard_cubit.dart:69-70` uses
+  it, and the list read now sorts before capping). But two other reads that also
+  feed money totals were left capped and unsorted — see **BL-01**.
+- **WR-07 — partially closed.** `budget_limit_sheet.dart:60` now calls the
+  shared `parseAmountCentsOrNull`, and the sheet no longer pops on a rejected
+  value. The error the user is supposed to see, however, is almost certainly
+  invisible — see **WR-D1**.
+
+The new defects below are concentrated in the seams the fixes touched: the
+reads CR-04's fix did not cover, the feedback path WR-07's fix added, and the
+recurring-payment slice CR-02's fix half-remediated.
 
 Findings marked *(dependency)* live in a file outside the submitted list but are
-reachable only through, and caused only by, a file in it; they are cited because
-dropping them would leave the reviewed file's behaviour misdescribed.
+reachable only through, and caused only by, a file in it.
 
 ## Critical Issues
 
-### CR-01: Deleting a debt is unrecoverable — no confirm, no undo, no restore path
+### BL-01: CR-04 is only half closed — budget spend and goal progress still aggregate from a capped, unsorted read
 
-**File:** `lib/presentation/finance/screens/debt_list_screen.dart:73-74`
-(with `lib/application/finance/debt/debt_cubit.dart:63-69` and
-`lib/presentation/finance/widgets/debt/debt_card.dart:44,49` *(dependency)*)
+**File:** `lib/data/finance/transaction/transaction_dao.dart:51-63` and
+`68-75`, consumed by `lib/application/finance/budget/budget_cubit.dart:78-88`
+*(dependency)* and `lib/application/finance/goal/goal_cubit.dart:94-103`
+*(dependency)*
 
-**Issue:** `DebtCard` is a `Dismissible` with `onDismissed: (_) => onDelete()` and no
-`confirmDismiss`; the list wires that straight to
-`ctx.read<DebtCubit>().softDelete(debt.id)`. There is no confirmation dialog, no
-SnackBar, and `DebtCubit` exposes no restore method — `grep -rn "restore" lib/` finds
-restore only for transactions and tasks. Failure path: the user scrolls the Dívidas
-tab, a horizontal drag lands on a card, the debt disappears, and the row (title,
-amount, counterparty, due date, paid history) is gone for good. The row is only
-soft-deleted in Isar, so the data is still on disk and unreachable from any screen —
-which is worse than a hard delete, because nothing tells the user it is recoverable.
-Compare `transaction_list_screen.dart:43-69`, which gets this right.
+**Issue:** The fix split the *list* read from the *aggregate* read and cleaned
+up `findAll`/`findAllForAggregates`, but `findByMonth` and `findByLinkedGoal`
+were left exactly as CR-04 described them: `.limit(500)` with no `sortBy`. Both
+are aggregate reads, not display lists:
 
-**Fix:** Mirror the transaction pattern — add `restoreDebt` to `DebtCubit` (the
-`Debt.copyWith` sentinel already supports `deletedAt: null`) and show the undo
-SnackBar from the list:
+- `BudgetCubit._reload` (line 78) calls `getByMonth(month, year)` and folds the
+  result into per-category spend, which drives the budget progress bars and the
+  over-limit warning.
+- `GoalCubit._refreshGoal` (line 94) calls `getByLinkedGoal(goal.id)` and folds
+  it into `taggedCents`, which is the tagged half of `amountSavedCents` and of
+  `progressPercent`.
+
+Because there is no sort, Isar returns rows in id order and the cap keeps the
+*oldest* 500 — so past the threshold each figure silently omits the user's most
+recent activity and drifts further with every new row, which is the identical
+failure mode and identical invisibility that made CR-04 critical. A budget bar
+that under-reports spend is worse than one that reports nothing: it tells the
+user they are under a limit they have already blown.
+
+The exposure is narrower than CR-04's (500 expense rows *in one month*, or 500
+transactions tagged to *one goal*, versus 500 rows overall), but it is not
+theoretical, and nothing in the code, the tests or the UI would reveal it.
+
+Worse, the class doc that plan 03-09 added at
+`transaction_dao.dart:5-11` now actively misdescribes the file:
+
+> "List queries additionally apply .limit(500) — with the single, deliberate
+> exception of `findAllForAggregates`, which must stay uncapped so dashboard
+> totals are exact"
+
+`findByMonth` and `findByLinkedGoal` are not list queries, and their totals are
+not exact. A future reader who trusts that comment will conclude the aggregate
+problem is fully solved.
+
+**Fix:** Treat these two as the aggregate reads they are — drop the cap, and add
+a sort only where order is consumed:
 
 ```dart
-// debt_cubit.dart
-Future<void> restoreDebt(int id) async {
-  final getResult = await _repository.getDebt(id);
-  if (getResult is! Success<Debt>) return;
-  final restored = getResult.value.copyWith(
-    deletedAt: null,
-    updatedAt: DateTime.now(),
-  );
-  final result = await _repository.updateDebt(restored);
-  if (result is Err<Debt>) emit(DebtError(result.failure));
+/// Returns EVERY active expense in [month]/[year] — deliberately uncapped.
+/// Feeds BudgetCubit's per-category spend, which is a TOTAL: a capped read
+/// makes it silently low rather than obviously incomplete (CR-04).
+Future<List<TransactionModel>> findByMonth(int month, int year) async {
+  final from = DateTime(year, month);
+  final to = DateTime(year, month + 1);
+  return _collection
+      .filter()
+      .deletedAtIsNull()
+      .and()
+      .typeEqualTo(TransactionType.expense)
+      .and()
+      .dateBetween(from, to, includeUpper: false)
+      .findAll();
 }
 
-// debt_list_screen.dart
-void _handleDelete(BuildContext context, Debt debt) {
-  final cubit = context.read<DebtCubit>();
-  final messenger = ScaffoldMessenger.of(context);
-  cubit.softDelete(debt.id);
-  messenger
-    ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(
-      content: Text(AppLocalizations.of(context).debtDeleted),
-      duration: AppConstants.undoSnackbarDuration,
-      persist: false,
-      behavior: SnackBarBehavior.floating,
-      action: SnackBarAction(
-        label: AppLocalizations.of(context).undo,
-        onPressed: () => cubit.restoreDebt(debt.id),
-      ),
-    ));
-}
+/// Returns EVERY active transaction tagged with [goalId] — uncapped, same
+/// reason: goal progress is a total, not a page.
+Future<List<TransactionModel>> findByLinkedGoal(int goalId) async =>
+    _collection
+        .filter()
+        .linkedGoalIdEqualTo(goalId)
+        .and()
+        .deletedAtIsNull()
+        .findAll();
 ```
 
-### CR-02: The recurring-payment "active" switch is a one-way trap
-
-**File:** `lib/presentation/finance/screens/recurring_payment_screen.dart:73-76`
-(with `lib/data/finance/recurring/recurring_payment_dao.dart:22-29` *(dependency)*
-and `lib/infrastructure/finance/recurring_payment_repository_impl.dart:66-73`)
-
-**Issue:** The card's toggle calls
-`updatePayment(payment.copyWith(isActive: !payment.isActive))`. The only query behind
-this screen is `RecurringPaymentDao.findAll()`, which filters
-`.isActiveEqualTo(true)`. So flipping the switch off writes `isActive = false`, the
-reload drops the row, and there is no "show inactive" filter, no archive screen and no
-other caller of `getActivePayments`. Failure path: the user pauses a subscription for
-one month; the row vanishes and can never be turned back on, because the toggle that
-would re-activate it is only rendered for rows the query no longer returns. The record
-is stranded in Isar exactly like CR-01.
-
-Related dead code in the same feature: `RecurringPaymentCubit.softDelete`
-(`recurring_payment_cubit.dart:47-54`) has no caller in `lib/presentation/` — the
-list has no delete affordance at all, so the toggle is the de-facto delete.
-
-**Fix:** Either query all non-deleted payments and render inactive rows in a muted
-state (so the toggle stays reversible), or drop the toggle from the list and expose
-`isActive` only inside `RecurringPaymentFormScreen`, which can still be reached for an
-inactive payment. Minimum change:
-
-```dart
-// recurring_payment_dao.dart — return everything not soft-deleted
-Future<List<RecurringPaymentModel>> findAll() async =>
-    _collection.filter().deletedAtIsNull().limit(500).findAll();
-```
-and let the screen sort/dim by `isActive`. Also wire `softDelete` to a swipe (with
-undo, per CR-01) or delete the unused method.
-
-### CR-03: Task-detail undo reads a provider from a popped route — restore never runs
-
-**File:** `lib/presentation/tasks/screens/task_detail_screen.dart:41-57`
-
-**Issue:** `_confirmDelete` pops the route at line 42 and then hands the SnackBar an
-action closure that calls `context.read<TaskListCubit>()` at line 55 — `context` is
-the `TaskDetailScreen` element, which is unmounted as soon as the pop transition ends
-(~300 ms), long before the 5 s undo window expires. When the user taps "Desfazer",
-`context.read` performs an ancestor lookup on a defunct element: in debug/profile that
-trips `_debugCheckStateIsActiveForAncestorLookup` and throws
-*"Looking up a deactivated widget's ancestor is unsafe"*, so `restoreItem` is never
-called and the task stays soft-deleted with no other recovery UI. In release it
-survives only by reading a defunct element's retained inherited map — undefined
-behaviour, not a guarantee. `ScaffoldMessenger.of(context)` on line 43 is the same
-anti-pattern; it happens to work only because it executes synchronously in the same
-frame as the pop.
-
-The existing tests miss this: `undo_snackbar_auto_dismiss_test.dart:196-211` and
-`task_detail_screen_test.dart:194-209` both let the SnackBar expire without ever
-tapping Undo. `transaction_list_screen.dart:44-45` shows the correct pattern
-(capture `cubit` and `messenger` before the navigation).
-
-**Fix:**
-
-```dart
-if (confirmed == true && context.mounted) {
-  final cubit = context.read<TaskListCubit>();
-  final messenger = ScaffoldMessenger.of(context);
-  unawaited(cubit.softDelete(item.id));
-  Navigator.of(context).pop();
-  messenger
-    ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(
-      duration: AppConstants.undoSnackbarDuration,
-      persist: false,
-      behavior: SnackBarBehavior.floating,
-      content: Text(l10n.taskDeleted),
-      action: SnackBarAction(
-        label: l10n.undo,
-        onPressed: () => unawaited(cubit.restoreItem(item.id)),
-      ),
-    ));
-}
-```
-Add a regression test that taps `l10n.undo` after the pop and verifies
-`restoreItem` is called.
-
-### CR-04: 500-row cap with no ordering silently truncates the list and every money total
-
-**File:** `lib/data/finance/transaction/transaction_dao.dart:22-26` *(dependency)*,
-consumed by `lib/infrastructure/finance/transaction_repository_impl.dart:63-70` and
-`lib/application/finance/dashboard/home_dashboard_cubit.dart:68,80,95,117`
-
-**Issue:** `findAll()` is `.filter().deletedAtIsNull().limit(500).findAll()` — no
-`sortBy`, so Isar returns rows in id (insertion) order and the cap keeps the **oldest**
-500. Every consumer of `getTransactions()` inherits it:
-`computeBalance` (D-07 balance), `computeTaggedByGoal` → `computeGoalsSavedTotal` →
-`computeNetWorth` (D-08 net worth), `computeCategorySpend` (D-09 charts) and the
-Transações list itself. Failure path: a user who records ~2 transactions a day crosses
-500 rows in under a year; from that moment every new transaction is invisible in the
-list and contributes nothing to the balance, so the headline figure on the Resumo tab
-is simply wrong and drifts further every day, with no warning, no pagination and no
-"showing 500 of N" hint. `findByMonth` and `findByLinkedGoal` carry the same cap, so a
-heavy month or a heavily-tagged goal is under-counted the same way.
-
-Secondary defect from the same missing `sortBy`: the list renders oldest-first, so a
-newly added transaction appears at the very bottom.
-
-**Fix:** Sort descending by date and either drop the cap for aggregate queries or
-aggregate in Isar. Minimum viable change:
-
-```dart
-/// Returns active transactions, newest first.
-Future<List<TransactionModel>> findAll() async => _collection
-    .filter()
-    .deletedAtIsNull()
-    .sortByDateDesc()
-    .findAll();
-```
-If a cap must stay for the *list*, give the dashboard its own uncapped aggregate query
-(or `.sum()` / `.count()` on the Isar side) so balance and net worth are never computed
-from a truncated set.
+and correct the class doc so "the single, deliberate exception" is no longer
+claimed. Add the assertion to `transaction_dao_ordering_test.dart` alongside the
+existing `findAllForAggregates` one (see WR-D6 — the current source-text tests
+cannot see either method).
 
 ## Warnings
 
-### WR-01: `start()` is not idempotent — a leaked watch subscription per tab revisit
+### WR-D1: the budget sheet's new validation SnackBar renders behind the sheet that triggered it
 
-**File:** `lib/application/finance/transaction/transaction_cubit.dart:45-48`,
-`lib/application/finance/budget/budget_cubit.dart:38-41`,
-`lib/application/finance/debt/debt_cubit.dart:25-28`,
-`lib/application/finance/goal/goal_list_cubit.dart:25-28`
+**File:** `lib/presentation/finance/widgets/budget/budget_limit_sheet.dart:61-69`
 
-**Issue:** All four cubits are provided **above** `MaterialApp` (`app.dart:34-49`), so
-one instance lives for the whole app session. Their screens are `TabBarView` children
-of `FinanceDashboardScreen` (`finance_dashboard_screen.dart:43-51`); `TabBarView`
-disposes non-adjacent pages, so returning to a tab re-runs `initState` →
-`context.read<XCubit>().start()` (e.g. `transaction_list_screen.dart:30`). Each call
-overwrites `_watchSubscription` **without cancelling the previous one**, so after k
-visits there are k live `watchLazy()` listeners on the same cubit. Every subsequent
-write then fires k concurrent `_reload()` calls; the emits race, so the state that
-lands last is not necessarily the newest query result, and `close()` cancels only the
-most recent subscription. `HomeDashboardCubit.start()` (lines 45-54) already has the
-correct guard — the other four were not updated to match.
+**Issue:** `_submit` reports a rejected amount with
+`ScaffoldMessenger.of(context).showSnackBar(...)` from inside the builder of a
+`showModalBottomSheet` route (`budget_overview_screen.dart:40-51`). The
+`ScaffoldMessenger` found by that lookup is the app-level one created by
+`MaterialApp`; its SnackBar is laid out inside the `Scaffold` underneath, while
+the modal sheet route and its barrier sit above the whole `Scaffold` in the
+`Navigator`. A `SnackBarBehavior.floating` bar is anchored at the bottom of the
+screen — precisely the region the sheet occupies (more so with the keyboard
+open, since `autofocus: true` guarantees it is). So the user types `1.250,00`,
+taps Salvar, and observes: nothing happens.
 
-**Fix:** Apply the `HomeDashboardCubit` guard to each:
+That is the *same symptom* WR-07 recorded ("the sheet closes and no limit is
+saved, with no error shown at all"), minus the silent close. The class doc at
+lines 16-18 asserts the sheet "shows a validation error"; in practice it shows
+one the user cannot see. Note the deferred-parser comment at lines 55-59 makes
+the PT-BR thousands-separator input the *expected* way to hit this branch, so it
+is the common path, not the exotic one.
+
+**Fix:** Keep the feedback inside the sheet, where it is on top of the stack:
 
 ```dart
-Future<void> start() async {
-  if (_watchSubscription != null) {
-    await _reload();
+String? _errorText;
+
+void _submit() {
+  final limitCents = parseAmountCentsOrNull(_controller.text);
+  if (limitCents == null) {
+    setState(() => _errorText = AppLocalizations.of(context).errorAmountRequired);
     return;
   }
-  _watchSubscription = _repository.watchChanges().listen((_) async => _reload());
-  await _reload();
+  Navigator.of(context).pop(limitCents);
 }
 ```
+and pass `errorText: _errorText` into the `TextField`'s `InputDecoration`
+(clearing it in `onChanged`). This also removes the `ScaffoldMessenger` lookup
+from a route that is about to be popped.
 
-### WR-02: `GoalCubit` emits after every await with no `isClosed` guard
+### WR-D2: the branch WR-07's fix added is the one branch with no test
 
-**File:** `lib/application/finance/goal/goal_cubit.dart:29-41`, `93-105`
-(provider that closes it: `lib/presentation/finance/goals/screens/goal_detail_screen.dart:26`
+**File:** `test/presentation/finance/budget_limit_sheet_test.dart:91-120`
+*(dependency)* against
+`lib/presentation/finance/widgets/budget/budget_limit_sheet.dart:60-70`
+
+**Issue:** The existing sheet test enters `'250,00'` and asserts `setLimit` is
+called — the happy path, which behaved identically before the fix. Nothing
+exercises `parseAmountCentsOrNull` returning null: not that the sheet stays
+open, not that `setLimit` is *not* called, not that any error surface appears.
+Every one of the three fix plans in this wave shipped a regression test that
+fails against the pre-fix code; this one did not, which is why WR-D1 could slip
+through with a green suite.
+
+**Fix:** Add a widget test that enters `'1.250,00'`, taps the save button, and
+asserts `find.byType(TextField)` is still present, `setLimit` was never called,
+and the error surface is findable (after WR-D1, `errorText` — assert on the
+rendered `l10n.errorAmountRequired`). Follow the file's existing "never
+`pumpAndSettle` here" note.
+
+### WR-D3: the recurring card localizes the paused label but leaves its subtitle hardcoded PT-BR
+
+**File:** `lib/presentation/finance/widgets/recurring/recurring_payment_card.dart:37-39,64-69`
+(with `lib/presentation/finance/widgets/recurring/recurring_payment_schedule_fields.dart:79-87`
 *(dependency)*)
 
-**Issue:** `GoalDetailScreen` creates the cubit inside a `BlocProvider` and kicks off
-`loadGoal(goalId)` fire-and-forget; `BlocProvider` closes the cubit when the route is
-popped. `loadGoal` emits at lines 30, 35 and (via `_refreshGoal`) 98/104 after awaiting
-two repository calls, with no `isClosed` check anywhere in the file — every other
-finance cubit guards this. Failure path: open a goal, press back before the two Isar
-queries return; `emit` on a closed cubit throws
-`StateError: Cannot emit new states after calling close`, and because the call chain is
-unawaited it surfaces as an unhandled async error. The same window exists for
-`addContribution` and `updateGoal`.
+**Issue:** Plan 03-11 edited this widget specifically to route the active/paused
+label through `AppLocalizations` — and left the line directly above it as
+`'${cycleLabel(payment.cycle)} · Próximo: $nextDueLabel'`. Three separate
+locale defects on that one line:
 
-**Fix:** Guard every emit boundary, matching `transaction_cubit.dart:108-121`:
+1. `Próximo:` is a hardcoded PT-BR literal in a widget that already holds
+   `final l10n = AppLocalizations.of(context)` two lines up.
+2. `cycleLabel` is documented as "PT-BR label" and returns `'Mensal'`,
+   `'Diário'`… unconditionally for every locale.
+3. `DateFormat('dd/MM/yyyy')` is constructed with no locale, ignoring the
+   `locale` field the widget already receives and uses for `formatAmount`.
+
+With the app in EN the row reads "Mensal · Próximo: 10/09/2026" directly under
+the correctly-localized "Paused" — an inconsistency inside a single card.
+CLAUDE.md makes localization of UI text a hard requirement, and the ARB files
+already gained three keys in this wave, so the mechanism was right there.
+
+**Fix:** Add `recurringNextDue` (with a `{date}` placeholder) and six cycle keys
+to `app_en.arb` / `app_pt.arb` / `app_pt_BR.arb`, regenerate, and make
+`cycleLabel` take `AppLocalizations`:
 
 ```dart
-Future<void> _refreshGoal(SavingsGoal goal) async {
-  if (isClosed) return;
-  final txResult = await _transactionRepository.getByLinkedGoal(goal.id);
-  if (isClosed) return;
-  ...
+String cycleLabel(AppLocalizations l10n, RecurringCycle cycle) =>
+    switch (cycle) {
+      RecurringCycle.daily => l10n.cycleDaily,
+      // …
+    };
+
+final nextDueLabel =
+    DateFormat.yMd(locale.toLanguageTag()).format(payment.nextDueDate);
+subtitle: Text('${cycleLabel(l10n, payment.cycle)} · '
+    '${l10n.recurringNextDue(nextDueLabel)}'),
+```
+`recurring_payment_schedule_fields.dart:45` is the other call site and already
+has an `l10n` in scope.
+
+### WR-D4: recurring payments still cannot be deleted — the whole soft-delete chain is unreachable dead code
+
+**File:** `lib/application/finance/recurring/recurring_payment_cubit.dart:50-58`,
+`lib/domain/finance/recurring/recurring_payment_repository.dart:32-34`,
+`lib/infrastructure/finance/recurring_payment_repository_impl.dart:95-109`,
+`lib/data/finance/recurring/recurring_payment_dao.dart:50-57`
+
+**Issue:** CR-02 named this explicitly ("Also wire `softDelete` to a swipe (with
+undo, per CR-01) or delete the unused method") and 03-11 did neither.
+`grep -rn "softDelete" lib/presentation/` returns no recurring-payment hit:
+`RecurringPaymentScreen` has a tap-to-edit, a FAB and a pause toggle, and no
+delete affordance of any kind. Four layers of soft-delete plumbing therefore
+exist with zero callers.
+
+Two costs. First, functional: a user who cancels a subscription has no way to
+remove it — the best available action is pausing, so the list accumulates dead
+rows forever, and the only reason that is not data loss is that it is data
+*accretion*. Second, structural: the CR-02 fix now depends on
+`deletedAtIsNull()` being the real delete filter (see the DAO doc at lines
+23-28), but nothing in the app can ever set `deletedAt` on this collection, so
+that filter is untested by construction and no one will notice if it breaks.
+
+**Fix:** Wire it, following the pattern this wave just built twice — wrap
+`RecurringPaymentCard` in a `Dismissible` and route `onDismissed` through a
+`_handleDelete` that mirrors `debt_list_screen.dart:42-74` (capture cubit +
+messenger, `hideCurrentSnackBar`, `persist: false`, undo action). That also
+needs a `restorePayment` on the cubit, composed exactly like `restoreDebt`
+(`getPayment` → `copyWith(deletedAt: null)` → `updatePayment`; the
+`clearField` sentinel is already in `RecurringPayment.copyWith`). If delete is
+deliberately out of scope for phase 3, delete the four unused methods instead
+and say so in the slice README — do not leave an unreachable delete path in a
+finance app.
+
+### WR-D5: `updatePayment` skips the `categoryId` validation that `createPayment` enforces
+
+**File:** `lib/infrastructure/finance/recurring_payment_repository_impl.dart:76-93`
+
+**Issue:** `createPayment` rejects `title.isEmpty`, `amountCents <= 0` *and*
+`categoryId <= 0` (lines 28-40). `updatePayment` checks only the first two. So a
+payment can be created with a valid category and then updated to
+`categoryId: 0`, which persists a row whose category cannot resolve — the
+charts and forms all look it up by id and fall back to `#0` or a null category.
+`TransactionRepositoryImpl` gets this right: its `updateTransaction`
+(lines 107-116) repeats both checks from `createTransaction`. This is the one
+repository in the finance slice where create and update disagree, which is
+exactly the sort of asymmetry a reader will assume is intentional.
+
+**Fix:** Add the missing guard so the two paths enforce the same invariant:
+
+```dart
+if (payment.categoryId <= 0) {
+  return const Err(
+    ValidationFailure('categoryId must be a valid reference'),
+  );
 }
 ```
-(and the equivalent `if (isClosed) return;` after the awaits in `loadGoal`,
-`addContribution`, `updateGoal`, `createGoal`, `softDeleteGoal`).
 
-### WR-03: Forms report success regardless of whether the write succeeded
+### WR-D6: the new DAO "query shape" tests assert on source text and cannot see the defect they are meant to guard
 
-**File:** `lib/presentation/finance/widgets/transaction/transaction_form_submit.dart:56-58`
-*(dependency)*, `lib/presentation/finance/screens/debt_form_screen.dart:92-95`,
-`lib/presentation/finance/screens/recurring_payment_form_screen.dart:102-104`
+**File:** `test/data/finance/transaction_dao_ordering_test.dart:93-103,195-240`
+and `test/presentation/finance/recurring_payment_visibility_test.dart:81-91,98-151`
 
-**Issue:** `submitTransactionForm` awaits `cubit.createTransaction(tx)` and then
-`return true` unconditionally — the cubit swallows the `Result` and only emits
-`TransactionError`. The screen (`transaction_form_screen.dart:114`) reads that `true`
-and pops. Failure path: the write returns `Err(DatabaseFailure)`; the form closes as if
-saved, and the user lands on the Transações tab which has been replaced wholesale by
-`Center(child: Text(failure.message))` — a raw, unlocalised English/internal string
-(`'createTransaction failed: ...'`, `transaction_list_screen.dart:81-82`). The debt and
-recurring forms pop unconditionally in the same way. Compounding this, every finance
-list screen renders its `*Error` state as a terminal dead end: no retry button, and the
-list only comes back if some *other* write happens to fire the watch stream.
+**Issue:** Both suites read the DAO file with `File(path).readAsStringSync()`
+and assert on substring positions. Three concrete weaknesses:
 
-**Fix:** Return the persistence result and keep the form open on failure:
+1. **They pin one method and imply the file.** `transaction_dao_ordering_test`
+   asserts `findAll()` sorts before capping and `findAllForAggregates()` has no
+   `.limit(`. Every assertion passes against the file as it stands today —
+   with BL-01 live in `findByMonth` and `findByLinkedGoal` two methods below.
+   The suite's own header claims it "pins the fix"; it pins a third of it.
+2. **`_methodBody` assumes an expression body.** It slices from the signature to
+   the first `;`. Convert `findAll()` to a block body (as `findByMonth` already
+   is) and the "body" becomes the first statement only — the sort assertion
+   would fail on correct code, or, with a differently-ordered block, pass on
+   incorrect code. `findByMonth` cannot be asserted with this helper at all,
+   which may be why it was not.
+3. **Substring matching is not semantics.** `body.contains('sortByDateDesc()')`
+   is satisfied by the token appearing anywhere in the slice, including inside a
+   trailing comment.
 
-```dart
-final result = isEditing
-    ? await cubit.updateTransaction(tx)   // make the cubit return Result<Transaction>
-    : await cubit.createTransaction(tx);
-if (result is Err) {
-  showTransactionFormError(context, l10n.errorSaveFailed);
-  return false;
-}
-return true;
-```
-and give the error branch of each list screen a retry action that calls
-`cubit.reload()`.
+These are the only tests standing behind CR-04's and CR-02's query shape, so
+their limits are load-bearing.
 
-### WR-04: Budget empty-state CTA is an inert button
+**Fix:** Short term, extend the source assertions to `findByMonth` and
+`findByLinkedGoal` (after BL-01: assert `.limit(` is absent from both) and make
+`_methodBody` brace-aware, or match on a normalized whitespace-stripped
+signature-to-`findAll()` slice. Medium term, this project's repeated
+"no infrastructure for a real Isar instance in a test" note is now the reason
+three critical findings have text-matching coverage instead of behavioural
+coverage — stand up a single `initializeIsarCore` + temp-directory test helper
+and assert the returned rows, which makes all six of these assertions real and
+the `_methodBody` helper unnecessary.
 
-**File:** `lib/presentation/finance/screens/budget_overview_screen.dart:74-80`
+### WR-D7: cubit docs claim "a fresh instance per screen" while `app.dart` provides one instance for the app's lifetime
 
-**Issue:** When `categories.isEmpty`, the screen renders a `FinanceEmptyState` whose
-CTA is labelled `l10n.setBudgetLimit` and wired to `onCta: () {}` with the comment
-"No categories yet — inform user". Failure path: the user taps a prominent filled
-button and nothing happens at all — no sheet, no message, no navigation. A CTA that
-cannot act should not be rendered as a CTA.
+**File:** `lib/application/finance/debt/debt_cubit.dart:15,92-94`,
+`lib/application/finance/recurring/recurring_payment_cubit.dart:17`
+(against `lib/app.dart:37-47` *(dependency)*)
 
-**Fix:** Give `FinanceEmptyState` optional CTA parameters and omit the button here, or
-point it at something real (e.g. the category-management screen when it exists):
+**Issue:** Both class docs end with "Factory (not singleton) — a fresh instance
+per debt screen / per recurring payment screen". The `@injectable` registration
+is indeed a factory, but `app.dart` calls `getIt<DebtCubit>()` once inside a
+`BlocProvider` mounted *above* `MaterialApp`, so exactly one instance exists per
+app launch and it is never closed while the app runs — as
+`debt_list_screen.dart:34` and `recurring_payment_screen.dart:35` both note in
+their own comments. The docs and the wiring say opposite things about lifetime
+in the same feature.
 
-```dart
-FinanceEmptyState(
-  icon: Icons.donut_large_outlined,
-  heading: l10n.emptyBudgets,
-  body: l10n.emptyBudgetsNoCategoriesBody, // explains why no action is offered
-)
-```
+This is not cosmetic: `restoreDebt`'s new comment at lines 92-93 ("the cubit can
+be closed while the two awaits above are in flight — the undo snackbar outlives
+the screen that owns this cubit") is reasoning from the wrong model. The guard
+it justifies is harmless and worth keeping, but the next person to reason about
+lifetime here — for instance when fixing WR-01's leaked subscriptions, which
+depends entirely on these cubits being app-scoped — will start from a false
+premise. Same wrong premise sits in `lib/application/finance/debt/README.md`
+("Factory, not singleton — a fresh instance per debt screen").
 
-### WR-05: Dashboard hides real data behind a zero-balance heuristic
-
-**File:** `lib/presentation/finance/widgets/dashboard/dashboard_tab.dart:66-78`
-*(dependency)*
-
-**Issue:** `hasNoData = balanceCents == 0 && netWorthCents == 0 && categorySpend.isEmpty`
-is used as a proxy for "the user has never entered anything". Failure path: a user who
-logged 5 000,00 of income and 5 000,00 of expenses last month, has no goals or debts,
-and has not spent yet this month gets `balance == 0`, `netWorth == 0` and an empty
-current-month spend map — so the Resumo tab shows the "add your first transaction"
-empty state and hides the summary card and month navigation, with the real (correct)
-zero balance nowhere on screen. The user cannot navigate to last month's chart from
-there either, because the month header is inside the branch that was skipped.
-
-**Fix:** Derive emptiness from the data set, not from the aggregates — e.g. carry a
-`hasAnyTransaction` flag on `HomeDashboardLoaded` (`allTx.isNotEmpty` in
-`home_dashboard_cubit.dart:76`) and branch on that.
-
-### WR-06: Charts always render PT-BR category names, ignoring the active locale
-
-**File:** `lib/presentation/finance/widgets/spending_pie_chart.dart:59-64`,
-`lib/presentation/finance/widgets/spending_bar_chart.dart:42-51`
-
-**Issue:** Both `_categoryName` and `_shortName` return `c.namePtBr` unconditionally,
-even though `TransactionCategory.nameEn` is populated for all 13 seeded categories
-(`migration_runner.dart:65-83`) and both widgets already receive `locale`. Failure
-path: switch the app to EN; the transaction list correctly shows "Food"
-(`resolveCategoryDisplay`, `transaction_list_screen.dart:124-128`) while the pie legend
-and bar axis right above it still say "Alimentação" — a direct violation of the
-EN-toggle requirement in CLAUDE.md and an internal inconsistency on one screen.
-
-**Fix:** Reuse the existing helper instead of duplicating the lookup:
+**Fix:** Correct both class docs and the slice READMEs to state the real
+lifetime, and re-word the `restoreDebt` comment to the accurate reason:
 
 ```dart
-String _categoryName(int categoryId) => resolveCategoryDisplay(
-      categories.where((c) => c.id == categoryId).firstOrNull,
-      preferEnglish: locale.languageCode == 'en',
-      fallback: '#$categoryId',
-    );
+/// Registered as a factory, but `app.dart` provides a single instance
+/// ABOVE MaterialApp, so one cubit serves the whole session and every
+/// pushed route inherits it. The isClosed guard below is defensive: it
+/// costs nothing and keeps the method safe if the provider is ever
+/// scoped to a route.
 ```
 
-### WR-07: Budget sheet re-implements the amount parser instead of calling the shared one
+### WR-D8: a failed debt undo is indistinguishable from a successful one — the user gets no signal at all
 
-**File:** `lib/presentation/finance/widgets/budget/budget_limit_sheet.dart:51-58`
-*(dependency)*
+**File:** `lib/application/finance/debt/debt_cubit.dart:77-85`
 
-**Issue:** `_submit` inlines
-`replaceAll(',', '.')` → `replaceAll(RegExp(r'[^\d.]'), '')` → `double.tryParse` →
-`* 100).round()` — a byte-for-byte copy of `parseAmountCentsOrNull`
-(`lib/core/utils/amount_parser.dart`), which exists precisely to be the single home for
-that expression. This is a *new* fifth copy of the known thousands-separator /
-leading-minus bug, in a file the dedup pass missed, so any fix to `amount_parser.dart`
-will silently not reach budget limits. Failure path today: typing `1.250,00` as a
-monthly limit yields `1.250.00` → `double.tryParse` null → `Navigator.pop(null)` → the
-sheet closes and **no limit is saved, with no error shown at all** (`budget_overview_screen.dart:53`
-only acts when `limitCents != null`).
+**Issue:** `restoreDebt` bails out silently on any `Err` from `getDebt`, with
+the comment "Debt not found — silently ignore (already permanently deleted)".
+But `DebtRepositoryImpl.getDebt` (lines 42-53) returns
+`Err(DatabaseFailure(...))` for *both* "not found" and a thrown Isar error —
+the two are indistinguishable at this call site, and neither is
+"already permanently deleted", because nothing in this app hard-deletes a debt.
+So the realistic trigger is a transient read failure, and the user experience is:
+tap Desfazer, the SnackBar disappears, the debt does not come back, no error, no
+retry. The undo path added for CR-01 is precisely where a silent failure is
+least acceptable, since by then the row is already off screen.
 
-**Fix:** Call the shared parser and surface the failure:
+**Fix:** Surface it, or at minimum stop asserting the wrong cause:
 
 ```dart
-void _submit() => Navigator.of(context).pop(
-      parseAmountCentsOrNull(_controller.text),
-    );
+case Err<Debt>(:final failure):
+  // Not-found and read-failure are indistinguishable here, so treat
+  // both as a failed undo rather than assuming the row is gone.
+  if (!isClosed) emit(DebtError(failure));
+  return;
 ```
-plus a visible validation message in `_openLimitSheet` when the result is `null`.
+Better still, give `DebtRepository` a typed `NotFoundFailure` so the two can be
+told apart, and show a "could not undo" SnackBar rather than replacing the whole
+list with `Center(child: Text(failure.message))` (the WR-03 error-surface
+problem, still open).
 
-### WR-08: Money pre-fill uses ad-hoc double arithmetic instead of `formatCentsForInput`
+## Carried Over — still open from the archived report
 
-**File:** `lib/presentation/finance/screens/debt_form_screen.dart:38-42`
-(also `lib/presentation/finance/goals/screens/goal_form_screen.dart:37-39` and
-`lib/presentation/finance/widgets/budget/budget_limit_sheet.dart:38-41` *(dependency)*)
+These are **not** new findings. They are recorded here so the delta report does
+not lose the open record from
+`.planning/phases/03-finance-core/03-REVIEW-pre-gap-closure.md`, which remains
+the authoritative description of each. Status re-verified against the current
+tree.
 
-**Issue:** `(debt.amountCents / 100).toStringAsFixed(2).replaceAll('.', ',')` is raw
-double arithmetic on money in three files, while
-`formatCentsForInput` (`amount_parser.dart`) — already imported into the transaction
-and recurring forms — does exactly this. Beyond the duplication, the behaviour differs:
-`formatCentsForInput` returns `''` for `cents <= 0`, the inline version returns
-`'0,00'`, so an edit form for a zero/invalid amount pre-fills a value that then parses
-back to `null` and is rejected. Every money value in this phase is integer cents by
-design; each hand-rolled `/ 100` is a place a rounding change can silently
-misrepresent a balance.
+| ID | One-line description | Status |
+|---|---|---|
+| CR-04 | 500-row cap on transaction reads | **Partially closed** — dashboard fixed by 03-09; `findByMonth` / `findByLinkedGoal` still capped (now tracked as BL-01) |
+| WR-01 | `start()` not idempotent — a leaked watch subscription per tab revisit | Open — `transaction_cubit.dart:33`, `budget_cubit.dart:37`, `debt_cubit.dart:24`, `goal_list_cubit.dart:24` still overwrite `_watchSubscription`; only `HomeDashboardCubit` guards |
+| WR-02 | `GoalCubit` emits after every await with no `isClosed` guard | Open |
+| WR-03 | Forms report success regardless of whether the write succeeded | Open — and the two undo paths added this wave (`debt_list_screen.dart:50`, `task_detail_screen.dart:54`) fire-and-forget the delete the same way |
+| WR-04 | Budget empty-state CTA is an inert button | Open |
+| WR-05 | Dashboard hides real data behind a zero-balance heuristic | Open |
+| WR-06 | Charts always render PT-BR category names, ignoring the locale | Open — WR-D3 is the same class of defect in a different widget |
+| WR-07 | Budget sheet re-implemented the amount parser | **Partially closed** — shared parser now called (`budget_limit_sheet.dart:60`); the rejection is surfaced but not visibly (WR-D1) and not tested (WR-D2) |
+| WR-08 | Money pre-fill uses ad-hoc double arithmetic instead of `formatCentsForInput` | Open — still inline at `budget_limit_sheet.dart:39-45`, in the file 03-12 edited |
+| WR-09 | Goal form resolves a throw-away `GoalCubit` per save, swallows the failure | Open |
+| WR-10 | Hardcoded PT-BR `'Pago'` / `'Pendente'` in the debt card | Open — `debt_card.dart:101` |
+| WR-11 | `MigrationRunner` records a version bump for a migration case that does not exist | Open |
+| IN-01 | `mergeBudgetData`'s backfill loop is unreachable | Open |
+| IN-02 | `restoreTransaction` has no cubit unit test | Open — still covered only indirectly by `transaction_list_undo_test.dart` |
+| IN-03 | `app_pt.arb` and `app_pt_BR.arb` are identical with two different roles | Open — the three new keys were added to both by hand this wave, which is the maintenance cost the finding predicted; still nothing enforces it |
 
-**Fix:** `final amountStr = debt == null ? '' : formatCentsForInput(debt.amountCents);`
-in all three call sites.
-
-### WR-09: Goal form resolves a throw-away `GoalCubit` per save, swallows the failure, and leaves the detail screen stale
-
-**File:** `lib/presentation/finance/goals/screens/goal_form_screen.dart:86-98`
-*(dependency)*, against `lib/application/finance/goal/goal_cubit.dart:59-76`
-
-**Issue:** Three problems in twelve lines. (1) `getIt<GoalCubit>()` is a
-**factory** registration (`injection.config.dart:171`), so each save builds a brand-new
-cubit that is never `close()`d — a leak per save. (2) The create branch wraps the call
-in `try { ... } catch (_) { /* fallback: already covered by BlocProvider in parent */ }`
-— an empty catch whose comment is wrong (no parent provides a `GoalCubit` on this
-route), so a create failure is swallowed and the form still pops as success. (3) In
-edit mode the mutation goes through the detached cubit, while `GoalDetailScreen`'s own
-`GoalCubit` has no `watchChanges` subscription and nobody re-calls `loadGoal` — so
-returning from the edit form shows the **old** title/target until the screen is
-rebuilt from scratch.
-
-**Fix:** Provide the cubit for the route (`BlocProvider.value` from the detail screen,
-or a `BlocProvider` around `GoalFormScreen`), drop the empty catch, check the result
-before popping, and have the detail screen `loadGoal(goalId)` again after the form
-route returns.
-
-### WR-10: Hardcoded PT-BR strings in the debt card bypass AppLocalizations
-
-**File:** `lib/presentation/finance/widgets/debt/debt_card.dart:99-101` *(dependency)*
-
-**Issue:** `Text(debt.isPaid ? 'Pago' : 'Pendente')` — literal strings in a widget that
-already holds `final l10n = AppLocalizations.of(context)` and uses it two lines above
-for `toPay`/`toReceive`. Failure path: with the app in EN, the Dívidas list shows
-"To pay" next to "Pendente" on the same card. CLAUDE.md makes localisation of all UI
-text a hard requirement, and both ARB files already carry the full key set.
-
-**Fix:** Add `debtPaid`/`debtPending` to `app_en.arb`, `app_pt.arb` and
-`app_pt_BR.arb`, regenerate, and use
-`Text(debt.isPaid ? l10n.debtPaid : l10n.debtPending)`.
-
-### WR-11: MigrationRunner records a version bump for a migration case that does not exist
-
-**File:** `lib/data/database/migration_runner.dart:31-52`
-
-**Issue:** `_runMigration` is a `switch` with cases 1-3 and no `default`; an
-unhandled `toVersion` falls through and returns normally, after which `run` writes that
-version to prefs (line 33). Failure path: a future change bumps
-`AppConfig.schemaVersion` to 4 but forgets the migration block — the runner records
-version 4, the data transformation never happens, and because `run` short-circuits on
-`current >= target` it can **never** happen on any later launch either. The failure is
-silent and permanent, on the one code path that is supposed to protect user data across
-upgrades. `migration_runner_test.dart` does not cover an unknown version.
-
-**Fix:** Fail loudly on an unmapped version:
-
-```dart
-static Future<void> _runMigration(Isar isar, int toVersion) async {
-  switch (toVersion) {
-    case 1:
-    case 2:
-      return;
-    case 3:
-      await _seedDefaultCategories(isar);
-      return;
-    default:
-      throw StateError('No migration defined for schema version $toVersion');
-  }
-}
-```
-plus a test asserting the throw and that `setInt` is not called for that version.
-
-## Info
-
-### IN-01: `mergeBudgetData`'s backfill loop is unreachable
-
-**File:** `lib/application/finance/budget/budget_aggregator.dart:38-44`
-
-**Issue:** `allCategoryIds` (line 29) is the union of `spentMap.keys` and
-`limitMap.keys`, and the loop at 31-36 writes an entry for every id in that union. Every
-`budget.categoryId` is already in `limitMap`, so the `combined[...] ??=` at line 40 can
-never assign. Dead code whose comment ("Also include categories with limits but no
-spend") describes work the previous loop already did — a future reader will assume the
-first loop does not cover that case.
-
-**Fix:** Delete lines 38-44.
-
-### IN-02: `restoreTransaction` — the one undo path that touches the DB — has no unit test
-
-**File:** `test/application/finance/transaction_cubit_test.dart:69-175` against
-`lib/application/finance/transaction/transaction_cubit.dart:86-104`
-
-**Issue:** The suite covers `start`, `createTransaction` and `softDelete`, but not
-`restoreTransaction`. Its correctness rests entirely on the `clearField` sentinel in
-`Transaction.copyWith` — if that sentinel were ever refactored into a conventional
-`deletedAt ?? this.deletedAt` copyWith, `copyWith(deletedAt: null)` would become a
-no-op, undo would silently do nothing, and no test would fail.
-
-**Fix:** Add a `blocTest` stubbing `getTransaction` with a soft-deleted transaction and
-asserting the `Transaction` captured by `updateTransaction` has `deletedAt == null`,
-plus one asserting the not-found branch emits nothing.
-
-### IN-03: `app_pt.arb` and `app_pt_BR.arb` are identical, with two different roles
-
-**File:** `lib/config/l10n/app_pt.arb`, `lib/config/l10n/app_pt_BR.arb`
-
-**Issue:** Both files carry the same 100+ message keys with byte-identical values
-(verified: zero value differences), differing only in `@@locale`. `l10n.yaml` names
-`app_pt_BR.arb` as the template. Nothing enforces that the two stay in sync, so a
-string added to only one produces a locale where the message silently falls back or
-diverges — a maintenance trap that scales with every new key.
-
-**Fix:** Keep `app_pt_BR.arb` as the sole PT template and delete `app_pt.arb` (Flutter
-resolves `pt` to the `pt_BR` messages via the delegate's language-code fallback), or add
-a CI check asserting the two key/value sets match.
+No prior finding was made materially worse by this wave.
 
 ---
 
-_Reviewed: 2026-08-14T16:59:51Z_
+_Reviewed: 2026-08-15T06:47:41Z_
 _Reviewer: Claude (gsd-code-reviewer)_
-_Depth: standard_
+_Depth: standard (delta scope)_
