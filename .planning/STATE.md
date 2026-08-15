@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 03 wave 3 — code review found 4 Critical bugs, all independently confirmed. 03-09 (CR-04, wrong balance), 03-10 (CR-01, unrecoverable debt delete) and 03-11 (CR-02, paused payment hidden permanently) DONE. Only 03-12 (CR-03 + WR-07) is left, then phase verification. All 3 UAT gaps closed host-side. Phase 06 COMPLETE; Phases 04 and 05 not started.
-last_updated: "2026-08-15T00:00:00.000Z"
+stopped_at: Session resumed. State loaded clean — no HANDOFF.json, no `.continue-here`,
+last_updated: "2026-08-15T06:13:32.514Z"
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 46
+  total_plans: 40
   completed_plans: 39
-  percent: 85
+  percent: 98
 ---
 
 # Project State
@@ -20,13 +20,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Open AGENDA at any moment and immediately see what needs doing and where the money stands — no internet connection ever required.
-**Current focus:** Phase 03 — finance-core (its 3 open UAT issues), then Phase 04.
+**Current focus:** Phase 03 — finance-core
 
 ## Current Position
 
-Phase: 06 (architecture-compliance) — **COMPLETE AND CLOSED**
-Plan: 18 of 18
-Status: All 18 plans merged, goal-backward verification PASSED (5/5 must-haves), and
+Phase: 03 (finance-core) — EXECUTING
+Plan: 1 of 12
+Status: Executing Phase 03
 on-device UAT PASSED on a physical Infinix X6831 (Android 13). See 06-VERIFICATION.md.
 
 **Renumbered 2026-08-12: this phase was `3.1` and is now `6`.** The decimal-insertion
@@ -45,11 +45,14 @@ still say `3.1`/`03.1`** — history was not rewritten, so `refactor(3.1-16): �
   pass that deliberately bypassed the guard; exactly one file exceeds 150 lines and it is the
   single allowlist entry. The guard's own exclusion set was audited file-by-file — nothing
   hand-written is being wrongly skipped.
+
 - All 36 READMEs are accurate, not just present: none omits a `.dart` file that exists in its
   directory, none names a file that does not exist, and every line count in every README file
   table matches the real file.
+
 - Guard enforcement exercised by injecting one violation of each of the three rules — exit 1
   each time, tree restored clean.
+
 - **All six regenerated Isar `*_model.g.dart` files are byte-identical to their pre-move
   versions** — collection name AND id hash unchanged. This materially lowers the 06-17
   migration risk that earlier notes flagged; the schema genuinely did not move.
@@ -59,9 +62,11 @@ still say `3.1`/`03.1`** — history was not rewritten, so `refactor(3.1-16): �
 1. The sole line-cap exemption, `lib/core/constants/currencies.dart`, protects a file with
    **zero importers** anywhere in `lib/` or `test/` — dead code staged for multi-currency work.
    The entry now carries a note. Delete file + exemption together if multi-currency is dropped.
+
 2. The house rule covers `lib/` only. `tool/check_architecture.dart` is itself 182 lines and 16
    `test/` files exceed 150 — matching SC-1's literal wording, but the enforcer is exempt from
    the rule it enforces.
+
 3. **On-device UAT: DONE and PASSED** (2026-08-12, physical Infinix X6831, Android 13). The
    pre-phase build's real 1 MB Isar database was backed up, upgraded in place with
    `adb install -r`, and cold-started: every task, transaction, goal and debt survived, balance
@@ -74,9 +79,11 @@ confirmed by diffing against the pre-refactor source. Worth their own fix task:
 - Two identical **X** close buttons in the GTD sheet header on step 1
   (`gtd/widgets/gtd_sheet_header.dart:47,73` — `canGoBack` false makes the left button a
   second close). Same logic existed at `task_form_screen.dart:892/919` pre-extraction.
+
 - The **"Tamanho"** segmented control wraps unreadably: "Médio" renders as `M/éd/io`,
   "Pequeno" as `Pequen/o`, "Nenhum" as `Nenhu/m`; only "Grande" fits
   (`form/widgets/flags_size_notes_fields.dart:69`). Identical markup pre-extraction.
+
 - Hardcoded unlocalised strings: `'Pergunta X de Y'` (PT-only) and
   `'8 questions to clarify & prioritize'` (EN-only, rendered inside the PT-BR UI). Both from
   commit `7275715` in Phase 02; neither goes through `AppLocalizations`.
@@ -234,7 +241,13 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-08-15
+Last session: 2026-08-15 (resumed)
+Stopped at: Session resumed. State loaded clean — no HANDOFF.json, no `.continue-here`,
+working tree clean on `main` at `6ef5711`. Sole incomplete plan is `03-12-PLAN.md`
+(wave 3, CR-03 + WR-07), the last plan in phase 03; after it, `gsd-verifier` over the
+phase. Test baseline entering 03-12 is **295**, analyzer budget **65 issues**.
+
+Previous session: 2026-08-15
 Stopped at: Completed 03-11-PLAN.md (wave 3, CR-02) directly on `main` — no worktree.
 Task 1 arrived pre-committed in the pause WIP commit `ebf71ff`; the resume read its
 diff before writing anything, rather than redoing a rename that had already propagated
@@ -246,17 +259,20 @@ through five files. Then `c5594ec` (the paused card treatment + `recurringActive
 - `dart run tool/check_architecture.dart`: PASS, exit 0
 - `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — budget held,
   and `lines_longer_than_80_chars` is still **0** project-wide
+
 - `flutter test --no-pub`: **295/295 passing**, exit 0 (289 before, +6 from this plan)
 - Both mutations run. Restoring `.isActiveEqualTo(true)` to the DAO fails the query-shape
   test on `Expected: false / Actual: <true>`. Pinning the card at `opacity: 1` with a
   fixed `recurringActive` label fails the screen test on
   `Found 0 widgets with text "Paused"`. Both reverted.
+
 - **Trap worth remembering:** undoing mutation B with `git checkout -- <file>` reset the
   card to its last commit and so *also* deleted a test key added after that commit.
   Reverting a mutation with `git checkout` restores the last commit, not the working
   state. Grep the file after any such revert.
 
 **Next:** 03-12 (CR-03 + WR-07) — the last wave-3 plan — then `gsd-verifier` over phase
+
 03. Test baseline for 03-12 is now **295**.
 
 Earlier this session: Completed 03-10-PLAN.md (wave 3, CR-01) directly on `main` — no worktree.
@@ -268,11 +284,13 @@ in all three ARB files) and `659b0b8` (the regression test).
 - `dart run tool/check_architecture.dart`: PASS, exit 0
 - `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — budget held,
   and `lines_longer_than_80_chars` is still 0 project-wide
+
 - `flutter test --no-pub`: **289/289 passing**, exit 0 (287 before, +2 from this plan)
 - Mutation check performed: replacing `onPressed: () => cubit.restoreDebt(debt.id)` with an
   empty closure fails both new tests, test 1 on `No matching calls ... [VERIFIED]
   MockDebtCubit.softDelete(4)` — the delete lands, no restore follows, exactly CR-01.
   Reverted; `git diff --stat` on the file came back empty.
+
 - Note for the remaining wave-3 plans: copying `transaction_list_screen._handleDelete`
   verbatim costs **2 analyzer infos** (`discarded_futures` + `cascade_invocations`) and
   breaches the 65 budget. Use `unawaited(...)` and a `messenger` cascade, as 03-10 did.
@@ -288,6 +306,7 @@ Earlier this session: Completed 03-07-PLAN.md (wave 2) directly on `main` — no
 - `dart run tool/check_architecture.dart`: PASS, exit 0
 - `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — baseline unchanged,
   none from the new test file
+
 - `flutter test --no-pub`: **281/281 passing**, exit 0 (279 before, +2 from this plan)
 - `transaction_list_screen.dart` is **148 lines**, 2 under the cap, and its README row matches
 - Mutation check performed: deleting the `hideCurrentSnackBar()` line makes the first new test
