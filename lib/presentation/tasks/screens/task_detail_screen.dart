@@ -37,10 +37,25 @@ class TaskDetailScreen extends StatelessWidget {
         ],
       ),
     );
-    if (confirmed == true && context.mounted) {
-      unawaited(context.read<TaskListCubit>().softDelete(item.id));
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
+    if (confirmed != true || !context.mounted) return;
+
+    // The pop below leaves this route's element defunct, but the SnackBar
+    // it triggers can stay on screen for up to
+    // AppConstants.undoSnackbarDuration (5s). An ancestor lookup
+    // (context.read, .of(context)) performed later, inside the
+    // SnackBarAction closure, would run against that defunct element and
+    // throw — so everything the Undo action needs is resolved into a
+    // local BEFORE the pop, and never looked up through context again.
+    final cubit = context.read<TaskListCubit>();
+    final messenger = ScaffoldMessenger.of(context);
+    final taskDeletedText = l10n.taskDeleted;
+    final undoLabel = l10n.undo;
+
+    unawaited(cubit.softDelete(item.id));
+    Navigator.of(context).pop();
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
         SnackBar(
           duration: AppConstants.undoSnackbarDuration,
           // persist defaults to `action != null` since Flutter 3.38, which
@@ -48,15 +63,13 @@ class TaskDetailScreen extends StatelessWidget {
           // on its own, so opt back out explicitly.
           persist: false,
           behavior: SnackBarBehavior.floating,
-          content: Text(l10n.taskDeleted),
+          content: Text(taskDeletedText),
           action: SnackBarAction(
-            label: l10n.undo,
-            onPressed: () =>
-                unawaited(context.read<TaskListCubit>().restoreItem(item.id)),
+            label: undoLabel,
+            onPressed: () => unawaited(cubit.restoreItem(item.id)),
           ),
         ),
       );
-    }
   }
 
   void _navigateToEdit(BuildContext context) {
