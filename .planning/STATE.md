@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Session resumed. State loaded clean — no HANDOFF.json, no `.continue-here`,
+stopped_at: Phase 03 fully executed (12/12 plans) but NOT complete — verification returned gaps_found. Both gaps are one root cause, BL-01 - transaction_dao.dart findByMonth and findByLinkedGoal still carry .limit(500) with no sortBy and feed budget spend and goal progress totals, so those figures can silently read low. Plan 03-09 fixed only findAll. Next - /gsd-plan-phase 03 --gaps. Phase 06 COMPLETE; Phases 04 and 05 not started.
 last_updated: "2026-08-15T06:13:32.514Z"
 progress:
   total_phases: 6
@@ -242,10 +242,65 @@ None.
 ## Session Continuity
 
 Last session: 2026-08-15 (resumed)
-Stopped at: Session resumed. State loaded clean — no HANDOFF.json, no `.continue-here`,
-working tree clean on `main` at `6ef5711`. Sole incomplete plan is `03-12-PLAN.md`
-(wave 3, CR-03 + WR-07), the last plan in phase 03; after it, `gsd-verifier` over the
-phase. Test baseline entering 03-12 is **295**, analyzer budget **65 issues**.
+Stopped at: **Phase 03 executed to the end but NOT marked complete — verification returned
+`gaps_found`, 2 gaps.** All 12 plans now have SUMMARYs. Do not mark the phase complete until
+the two gaps below are closed and the verifier reruns as `passed`.
+
+`03-12` (CR-03 + WR-07) executed in worktree `worktree-agent-ac2398efff50f4a6a`, merged to
+`main` as `73707c8`. Commits `fe2b0c1` (capture cubit/messenger/l10n before `Navigator.pop()`),
+`3f6be3a` (undo-after-real-pop regression test), `bfd56d2` (budget sheet uses the shared
+`parseAmountCentsOrNull`), `4f8af66` (SUMMARY).
+
+**Gate measured on main after the merge (each command run unpiped, not inferred):**
+
+- `dart run tool/check_architecture.dart`: PASS, exit 0
+- `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — budget held,
+  `lines_longer_than_80_chars` still **0** project-wide
+- `flutter test --no-pub`: **297/297 passing**, exit 0 (295 before, +2 from this plan)
+
+**THE ONE THING TO KNOW — BL-01, a live Critical the green suite does not catch.**
+Plan 03-09 was supposed to close CR-04 (the unsorted 500-row cap) but fixed only `findAll`.
+`lib/data/finance/transaction/transaction_dao.dart` still has **two** capped, unsorted reads
+that feed *totals* rather than lists:
+
+- `findByMonth` (lines ~51-63) → `BudgetCubit._reload` per-category spend + the over-limit warning
+- `findByLinkedGoal` (lines ~68-75) → `GoalCubit._refreshGoal` `taggedCents` → `SavingsGoal.progressPercent`
+
+Isar returns rows in id order, so `.limit(500)` without `sortBy` keeps the **oldest** 500 and
+silently discards the newest — the money figure reads low with no error. Confirmed three times
+independently (delta review, orchestrator source read, verifier). The fix is to uncap both, as
+`findAllForAggregates` already is. Also correct the class doc at the top of that file: it claims
+`findAllForAggregates` is "the single, deliberate exception" to the cap, which is false and is
+what let 03-09 stop early.
+
+**Test-coverage trap:** `test/data/finance/transaction_dao_ordering_test.dart` has **zero**
+references to `findByMonth` or `findByLinkedGoal` (grep-confirmed), and its assertions read
+DAO *source text* rather than exercising behavior — so it passes unchanged with BL-01 live and
+would keep passing if the bug were reintroduced. Any fix needs a behavioral test, not another
+source-text one.
+
+**Verification result (`03-VERIFICATION.md`, status `gaps_found`, 2 gaps):** both gaps are BL-01
+wearing two hats — roadmap SC-2 (budget progress indicator) and SC-3 (savings-goal percentage
+progress) are each `partial` because the number behind them can be understated. Next step is
+`/gsd-plan-phase 03 --gaps`.
+
+**Also open, non-blocking:**
+
+- WR-D1 — the budget sheet's new rejection SnackBar is shown from inside a modal bottom-sheet
+  route, so it renders *behind* the sheet. WR-07's original symptom ("nothing happens") survives
+  the fix from the user's point of view.
+- WR-D4 — recurring payments still have no delete affordance anywhere; `softDelete` is dead code
+  through cubit, repo and DAO. CR-02 asked for this to be wired or removed; it was neither.
+- 6 more delta warnings (WR-D2, D3, D5, D6, D7, D8) plus the 15 findings carried over from the
+  pre-gap-closure review. All in `03-REVIEW.md`; the superseded full review is preserved at
+  `03-REVIEW-pre-gap-closure.md`.
+- **No on-device UAT against current HEAD.** Three UAT fixes and four Critical fixes are backed
+  only by widget tests. This project's own history shows host-side green previously failed to
+  predict device behaviour for this exact codebase — the verifier flagged it as a human item.
+
+Review scope note: the code-review gate was run as a **delta** over the 22 files touched by
+03-09…03-12, not a re-review of all 73 phase files, because the full pass on 2026-08-14 is what
+produced the findings those plans closed.
 
 Previous session: 2026-08-15
 Stopped at: Completed 03-11-PLAN.md (wave 3, CR-02) directly on `main` — no worktree.
