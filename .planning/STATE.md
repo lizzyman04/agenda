@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 03 fully executed (12/12 plans) but NOT complete — verification returned gaps_found. Both gaps are one root cause, BL-01 - transaction_dao.dart findByMonth and findByLinkedGoal still carry .limit(500) with no sortBy and feed budget spend and goal progress totals, so those figures can silently read low. Plan 03-09 fixed only findAll. Next - /gsd-plan-phase 03 --gaps. Phase 06 COMPLETE; Phases 04 and 05 not started.
-last_updated: "2026-08-15T06:13:32.514Z"
+stopped_at: Phase 03 PLANNED and ready to execute — 14 plans, 12 executed with SUMMARYs, 2 gap plans (03-13, 03-14) planned and checker-verified but NOT executed. They close BL-01 - transaction_dao.dart findByMonth and findByLinkedGoal still carry .limit(500) with no sortBy and feed budget spend and goal progress totals, so those figures can silently read low. Plan 03-09 fixed only findAll. 03-13 builds a real-Isar test harness (wave 1); 03-14 uncaps both methods plus behavioral regression tests (wave 2). Next - /gsd-execute-phase 03 --gaps-only. Phase 03 stays NOT complete until the verifier reruns as passed. Phase 06 COMPLETE; Phases 04 and 05 not started.
+last_updated: "2026-08-24T02:46:41.607Z"
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 40
-  completed_plans: 39
-  percent: 98
+  total_plans: 42
+  completed_plans: 40
+  percent: 95
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 
 Phase: 03 (finance-core) — EXECUTING
 Plan: 1 of 12
-Status: Executing Phase 03
+Status: Ready to execute
 on-device UAT PASSED on a physical Infinix X6831 (Android 13). See 06-VERIFICATION.md.
 
 **Renumbered 2026-08-12: this phase was `3.1` and is now `6`.** The decimal-insertion
@@ -241,10 +241,46 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-08-15 (resumed)
-Stopped at: **Phase 03 executed to the end but NOT marked complete — verification returned
-`gaps_found`, 2 gaps.** All 12 plans now have SUMMARYs. Do not mark the phase complete until
-the two gaps below are closed and the verifier reruns as `passed`.
+Last session: 2026-08-24 (resumed)
+Stopped at: **Phase 03 is PLANNED and ready to execute — the gap plans are now checker-verified.**
+Phase 03 executed to the end but is NOT marked complete: verification returned `gaps_found`,
+2 gaps. All 12 executed plans have SUMMARYs; `03-13` and `03-14` are planned but unexecuted.
+Do not mark the phase complete until the two gaps below are closed and the verifier reruns
+as `passed`.
+
+**2026-08-24 — plan-checker pass on `03-13` / `03-14`: 1 blocker, closed; 1 warning, carried.**
+
+The checker ran live probes rather than trusting prose, and they settle the question the
+previous two revisions were circling:
+
+- `dart run tool/_probe.dart` → `Platform.script` = `<repo>/tool/_probe.dart` (parent `tool/`)
+- `flutter test test/support/_probe_test.dart` → `Platform.script` = `<repo>/main.dart` (parent = repo root)
+- two `flutter test` files run concurrently at default concurrency → both resolve to the
+  identical `<repo>/main.dart`
+
+So commit `9ae0000`'s fix (make the CI pre-warm a `flutter test` invocation, not `dart run`)
+genuinely holds — the pre-warm and the later parallel workers download isar-core to the same
+path. It also confirmed `isar_community` 3.3.2's `_downloadIsarCore` is exactly the unguarded
+check-then-act the mitigation assumes, and that `_warm_isar_core_test.dart` being re-run by
+the main unqualified `flutter test` step is harmless (GitHub Actions steps are sequential, so
+the binary is already on disk and `exists()` short-circuits for every worker).
+
+**The blocker (fixed in `2ee1160`):** `03-13` Task 1 had an acceptance criterion requiring
+`grep -n "dart run" .github/workflows/ci.yml` to return nothing. Unsatisfiable — it matches
+two pre-existing unrelated steps (`dart run build_runner build`, `dart run
+tool/check_architecture.dart`) that the plan never touches, and it matches the literal
+substring inside the plan's own mandated step name (`… not dart run — see …`). A correct
+implementation would still have failed it. Narrowed to the pre-warm step's own `run:` line
+plus a targeted negative grep, and validated against a simulated `ci.yml` in both directions:
+a correct `flutter test` implementation passes, a regression to `dart run` fails.
+
+**The warning (accepted, carried into execution):** `03-13` Task 2 and `03-14` Task 2 gate on
+full-suite runs (~90s), over the 30s Nyquist fast-feedback guidance. Consistent with 03-09
+through 03-12, so not a new regression.
+
+**Still undecided, unplanned:** `test/data/tasks/item_dao_test.dart` is an empty stub
+(`group('ItemDao', () {});`). The planner recommended filling it once the 03-13 harness
+exists. Nobody has ruled on it.
 
 `03-12` (CR-03 + WR-07) executed in worktree `worktree-agent-ac2398efff50f4a6a`, merged to
 `main` as `73707c8`. Commits `fe2b0c1` (capture cubit/messenger/l10n before `Navigator.pop()`),
@@ -256,6 +292,7 @@ the two gaps below are closed and the verifier reruns as `passed`.
 - `dart run tool/check_architecture.dart`: PASS, exit 0
 - `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — budget held,
   `lines_longer_than_80_chars` still **0** project-wide
+
 - `flutter test --no-pub`: **297/297 passing**, exit 0 (295 before, +2 from this plan)
 
 **THE ONE THING TO KNOW — BL-01, a live Critical the green suite does not catch.**
@@ -289,11 +326,14 @@ progress) are each `partial` because the number behind them can be understated. 
 - WR-D1 — the budget sheet's new rejection SnackBar is shown from inside a modal bottom-sheet
   route, so it renders *behind* the sheet. WR-07's original symptom ("nothing happens") survives
   the fix from the user's point of view.
+
 - WR-D4 — recurring payments still have no delete affordance anywhere; `softDelete` is dead code
   through cubit, repo and DAO. CR-02 asked for this to be wired or removed; it was neither.
+
 - 6 more delta warnings (WR-D2, D3, D5, D6, D7, D8) plus the 15 findings carried over from the
   pre-gap-closure review. All in `03-REVIEW.md`; the superseded full review is preserved at
   `03-REVIEW-pre-gap-closure.md`.
+
 - **No on-device UAT against current HEAD.** Three UAT fixes and four Critical fixes are backed
   only by widget tests. This project's own history shows host-side green previously failed to
   predict device behaviour for this exact codebase — the verifier flagged it as a human item.
