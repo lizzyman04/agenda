@@ -242,6 +242,7 @@ None.
 | 260601-u6q | Fix finance form `_dependents.isEmpty` crash (hoist cubits above MaterialApp) | 2026-06-01 | d8dc04c | [260601-u6q-fix-finance-provider-scope](./quick/260601-u6q-fix-finance-provider-scope/) |
 | 260614-w5e | Fix phase 02 code review findings CR-01 WR-03 WR-04 (+ recheck WR-01, finance-repo test stubs) — CLOSED 2026-06-15, suite green 206/206, no PR (solo local) | 2026-06-15 | 756b67d | [260614-w5e-fix-phase-02-code-review-findings-cr-01-](./quick/260614-w5e-fix-phase-02-code-review-findings-cr-01-/) |
 | 260811-97x | Fix phase 03 UAT test-5 blocker: goal contribution sheet crash + the fixed-length-list persistence bug it masked; goals slice restructured to the 150-line/nested-folder rules — device-verified, suite green 211/211 | 2026-08-11 | a2f8e7d, f5347ba | [260811-97x-fix-goal-contribution-sheet-crash](./quick/260811-97x-fix-goal-contribution-sheet-crash/) |
+| 260824-82b | Uncap `SavingsGoalDao.findAll` and `DebtDao.findAll` — the last two live instances of the BL-01 unsorted-cap class, both feeding `computeNetWorth`. RED-first real-Isar regression tests on the 03-13 harness; both mutations re-run independently by the orchestrator. Suite green 304/304 | 2026-08-24 | 730635b, ca5661c | [260824-82b-uncap-savingsgoaldao-findall-and-debtdao](./quick/260824-82b-uncap-savingsgoaldao-findall-and-debtdao/) |
 
 ## Session Continuity
 
@@ -265,7 +266,7 @@ Isar in a test.
 
 **Gates measured directly on `main` (each command run unpiped, not inferred):**
 
-- `flutter test --no-pub`: **302/302 passing**, exit 0 (297 before this run, +3 from 03-13, +2 from 03-14)
+- `flutter test --no-pub`: **304/304 passing**, exit 0 (297 before this run; +3 from 03-13, +2 from 03-14, +2 from quick 260824-82b)
 - `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — budget held, `lines_longer_than_80_chars` still **0**
 - `dart run tool/check_architecture.dart`: **PASS**, exit 0
 
@@ -277,15 +278,19 @@ resolves it to `<repo>/main.dart`, so a `dart run` pre-warm downloads to a diffe
 than the workers look in and is a silent no-op. An earlier revision of the plan made exactly
 that mistake. `libisar.so`/`isar.dll`/`libisar.dylib` are gitignored.
 
-**THE ONE THING TO KNOW NEXT — the BL-01 defect class has two more live instances.**
-`savings_goal_dao.findAll()` and `debt_dao.findAll()` both carry `.limit(500)` with no
-`sortBy` and feed *totals*, not display lists: `computeGoalsSavedTotal` and
-`computeDebtTotal`, both summed into `computeNetWorth` in `dashboard_aggregator.dart`. Past
-500 rows the net-worth figure silently reads wrong, exactly as budget spend did. Net worth's
-balance input is fine (uncapped `findAllForAggregates`). Both the code review (IN-03) and the
-verifier judged this non-blocking because 500+ active goals or debts is not realistically
-reachable, unlike 500+ transactions — but it is the same bug, and the fix is now cheap since
-the harness exists. Logged in `deferred-items.md`.
+**BL-01 defect class is now fully closed (quick task `260824-82b`, 2026-08-24).** The two
+remaining instances — `savings_goal_dao.findAll()` and `debt_dao.findAll()`, both feeding
+`computeNetWorth` via `computeGoalsSavedTotal` / `computeDebtTotal` — have been uncapped, with
+real-Isar regression tests (`test/data/finance/net_worth_aggregate_completeness_test.dart`) and
+both mutations re-run independently. Uncapped rather than split, unlike `TransactionDao`: the
+500 cap never binds for goals or debts, so a second aggregate method through DAO + repository
+interface + impl would have carried a bound nothing reaches.
+
+Every known instance of the class is closed: `findAll` (sorted-then-capped, CR-04/03-09),
+`findByMonth` + `findByLinkedGoal` (BL-01/03-14), `savings_goal_dao.findAll` +
+`debt_dao.findAll` (260824-82b). Remaining `.limit(500)` calls in `transaction_category_dao`,
+`recurring_payment_dao`, `budget_dao` and `item_dao` were each checked and feed display lists
+or bounded collections, not money totals.
 
 **Delta code review of this run (`03-REVIEW.md`): 0 Critical, 2 Warning, 3 Info.** Both
 warnings are on the new harness, neither exercised by any current caller: `open()` leaves the
