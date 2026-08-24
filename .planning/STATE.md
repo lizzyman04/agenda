@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 03 EXECUTING the 2 gap plans. 12 of 14 have SUMMARYs. Wave 1 is 03-13 (build IsarTestHarness, a real-isar_community test helper, plus a CI pre-warm step so the isar-core download happens once before flutter test fans out). Wave 2 is 03-14 (uncap TransactionDao.findByMonth and findByLinkedGoal, correct the class doc, add real-Isar behavioral regression tests) - it depends on 03-13. Both close BL-01 - those two reads carry .limit(500) with no sortBy and feed budget spend and goal progress totals, so those figures can silently read low. Phase 03 stays NOT complete until the verifier reruns as passed. Phase 06 COMPLETE; Phases 04 and 05 not started.
-last_updated: "2026-08-24T02:59:50.854Z"
+stopped_at: Phase 03 fully EXECUTED (14/14 plans, all SUMMARYs) and verification re-ran as human_needed - 5/5 roadmap truths hold at code level, both BL-01 gaps closed, no regressions. NOT marked complete - one human item outstanding: a full 10-step device UAT pass on current HEAD (see 03-HUMAN-UAT.md). Tests 2/3/9 were fixed since the last device session but only ever verified host-side, and this codebase has previously had host-side green fail to predict device behaviour. Gates measured on main: flutter test 302/302, flutter analyze exit 0 at 65 issues, architecture guard PASS. Phase 06 COMPLETE; Phases 04 and 05 not started.
+last_updated: "2026-08-24T03:52:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 42
-  completed_plans: 40
-  percent: 95
+  completed_plans: 42
+  percent: 100
 ---
 
 # Project State
@@ -24,10 +24,14 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 
 ## Current Position
 
-Phase: 03 (finance-core) — EXECUTING
-Plan: 1 of 14
-Status: Executing Phase 03
-on-device UAT PASSED on a physical Infinix X6831 (Android 13). See 06-VERIFICATION.md.
+Phase: 03 (finance-core) — EXECUTED, awaiting device UAT
+Plan: 14 of 14 (all SUMMARYs written)
+Status: Verification returned `human_needed` — NOT complete until a device UAT pass on
+current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
+
+Note: the Phase 06 section further down records that phase's own on-device UAT, which PASSED
+on a physical Infinix X6831 (Android 13) on 2026-08-12. That is Phase 06 evidence and does
+NOT cover Phase 03's outstanding item — no device has run Phase 03's flows since 2026-08-14.
 
 **Renumbered 2026-08-12: this phase was `3.1` and is now `6`.** The decimal-insertion
 number was dropped at the user's request; it is a normal integer phase that happens to have
@@ -242,11 +246,57 @@ None.
 ## Session Continuity
 
 Last session: 2026-08-24 (resumed)
-Stopped at: **Phase 03 is PLANNED and ready to execute — the gap plans are now checker-verified.**
-Phase 03 executed to the end but is NOT marked complete: verification returned `gaps_found`,
-2 gaps. All 12 executed plans have SUMMARYs; `03-13` and `03-14` are planned but unexecuted.
-Do not mark the phase complete until the two gaps below are closed and the verifier reruns
-as `passed`.
+Stopped at: **Phase 03 is fully EXECUTED (14/14 plans) and verification re-ran as
+`human_needed`. It is NOT marked complete — one human item is outstanding.**
+
+Plans `03-13` and `03-14` executed and merged. Verification: 5/5 roadmap truths hold at
+code level, both prior gaps closed, zero regressions, zero gaps remaining. The only thing
+between here and `passed` is a device UAT pass — see `03-HUMAN-UAT.md`.
+
+**BL-01 is genuinely closed, confirmed three independent ways.** `findByMonth` and
+`findByLinkedGoal` in `lib/data/finance/transaction/transaction_dao.dart` no longer carry
+`.limit(500)`; `findAll` remains the sole capped list query and is sorted-desc *before*
+capping. The orchestrator and the verifier each independently re-ran the mutation:
+reintroducing the cap on either method alone fails exactly that method's test group with
+`Expected: <600> / Actual: <500>`. The tests are behavioral against a real Isar instance,
+not source-text assertions — which is the whole reason `03-13` had to build
+`test/support/isar_test_harness.dart` first, the project's first-ever way to open a real
+Isar in a test.
+
+**Gates measured directly on `main` (each command run unpiped, not inferred):**
+
+- `flutter test --no-pub`: **302/302 passing**, exit 0 (297 before this run, +3 from 03-13, +2 from 03-14)
+- `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — budget held, `lines_longer_than_80_chars` still **0**
+- `dart run tool/check_architecture.dart`: **PASS**, exit 0
+
+**CI now pre-warms the Isar Core binary.** `.github/workflows/ci.yml:44-45` runs
+`flutter test --no-pub -j 1 test/support/_warm_isar_core_test.dart` before the main `Test`
+step at line 48. This is load-bearing and must stay a `flutter test` invocation: live probes
+confirmed `dart run` resolves `Platform.script` to `<repo>/tool/` while `flutter test`
+resolves it to `<repo>/main.dart`, so a `dart run` pre-warm downloads to a different path
+than the workers look in and is a silent no-op. An earlier revision of the plan made exactly
+that mistake. `libisar.so`/`isar.dll`/`libisar.dylib` are gitignored.
+
+**THE ONE THING TO KNOW NEXT — the BL-01 defect class has two more live instances.**
+`savings_goal_dao.findAll()` and `debt_dao.findAll()` both carry `.limit(500)` with no
+`sortBy` and feed *totals*, not display lists: `computeGoalsSavedTotal` and
+`computeDebtTotal`, both summed into `computeNetWorth` in `dashboard_aggregator.dart`. Past
+500 rows the net-worth figure silently reads wrong, exactly as budget spend did. Net worth's
+balance input is fine (uncapped `findAllForAggregates`). Both the code review (IN-03) and the
+verifier judged this non-blocking because 500+ active goals or debts is not realistically
+reachable, unlike 500+ transactions — but it is the same bug, and the fix is now cheap since
+the harness exists. Logged in `deferred-items.md`.
+
+**Delta code review of this run (`03-REVIEW.md`): 0 Critical, 2 Warning, 3 Info.** Both
+warnings are on the new harness, neither exercised by any current caller: `open()` leaves the
+temp dir unrecoverable if `Isar.open()` throws (it is never stored in `_tempDir`), and there
+is no guard against calling `open()` twice, which silently orphans the first instance. Worth
+fixing before other tests adopt the harness. Prior review archived as
+`03-REVIEW-pre-BL01-closure.md`; prior verification as `03-VERIFICATION-pre-BL01-closure.md`.
+
+**Still undecided, unplanned:** `test/data/tasks/item_dao_test.dart` is an empty stub
+(`group('ItemDao', () {});`). The planner recommended filling it once the harness existed.
+The harness now exists. Nobody has ruled on it.
 
 **2026-08-24 — plan-checker pass on `03-13` / `03-14`: 1 blocker, closed; 1 warning, carried.**
 
