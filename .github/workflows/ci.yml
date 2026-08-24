@@ -41,6 +41,9 @@ jobs:
       - name: Architecture guard
         run: dart run tool/check_architecture.dart
 
+      - name: Warm Isar Core cache (pre-fan-out; MUST stay a flutter test invocation, not dart run — see test/support/isar_test_harness.dart)
+        run: flutter test --no-pub -j 1 test/support/_warm_isar_core_test.dart
+
       - name: Test
         run: flutter test --no-pub --coverage
 
