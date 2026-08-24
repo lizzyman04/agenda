@@ -50,11 +50,16 @@ void main() {
 
     test('close() removes the temp directory', () async {
       final harness = IsarTestHarness();
+      addTearDown(harness.close);
       await harness.open([TransactionModelSchema]);
 
       final dir = harness.tempDir!;
       expect(dir.existsSync(), isTrue);
 
+      // close() is documented idempotent and safe to call without a prior
+      // open(), so this explicit mid-test close() plus the addTearDown
+      // above (which runs even if the assertion below fails) are both
+      // safe — see IN-02 in 03-REVIEW.md.
       await harness.close();
 
       expect(dir.existsSync(), isFalse);

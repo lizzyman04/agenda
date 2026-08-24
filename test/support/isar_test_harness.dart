@@ -111,6 +111,11 @@ import 'package:isar_community/isar.dart';
 /// CI pre-warm step instead.
 bool _coreInitialized = false;
 
+/// Monotonic per-process counter backing each harness instance's Isar
+/// name. Used instead of a wall-clock timestamp (see IN-01 in
+/// `03-REVIEW.md`) so uniqueness never depends on clock resolution.
+int _instanceCounter = 0;
+
 /// Opens a real `isar_community` [Isar] instance against an isolated,
 /// per-call temp directory, for use in `flutter test`.
 ///
@@ -131,16 +136,27 @@ class IsarTestHarness {
   Directory? get tempDir => _tempDir;
 
   /// Opens a fresh Isar instance for [schemas] against a new temp
-  /// directory. Safe to call once per harness instance.
+  /// directory.
+  ///
+  /// Throws [StateError] if this harness already has an instance open —
+  /// call [close] first, or use a fresh [IsarTestHarness]. The temp
+  /// directory is recorded before `Isar.open()` is awaited, so a failed
+  /// open still leaves [close] able to remove it.
   Future<Isar> open(List<CollectionSchema<dynamic>> schemas) async {
+    if (_isar != null) {
+      throw StateError(
+        'IsarTestHarness.open() called twice on the same instance: '
+        'call close() before reopening, or use a fresh IsarTestHarness.',
+      );
+    }
     if (!_coreInitialized) {
       await Isar.initializeIsarCore(download: true);
       _coreInitialized = true;
     }
     final dir = Directory.systemTemp.createTempSync('agenda_isar_test_');
-    final name = 'test_${DateTime.now().microsecondsSinceEpoch}';
-    final isar = await Isar.open(schemas, directory: dir.path, name: name);
     _tempDir = dir;
+    final name = 'test_${_instanceCounter++}';
+    final isar = await Isar.open(schemas, directory: dir.path, name: name);
     _isar = isar;
     return isar;
   }
