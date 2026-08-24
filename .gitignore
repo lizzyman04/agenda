@@ -51,3 +51,11 @@ landing/Gemfile.lock
 
 # Ephemeral GSD executor worktrees
 .claude/worktrees/
+
+# Isar Core native binary, downloaded on demand by
+# Isar.initializeIsarCore(download: true) — see test/support/isar_test_harness.dart.
+# `flutter test` resolves Platform.script to a synthetic repo-root entrypoint, so
+# the binary is cached directly at the repo root, not under a build/ directory.
+/libisar.so
+/isar.dll
+/libisar.dylib
