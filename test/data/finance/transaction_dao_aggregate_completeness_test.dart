@@ -65,7 +65,7 @@ TransactionModel _goalModel(
   required int linkedGoalId,
   DateTime? deletedAt,
 }) {
-  final date = DateTime(2026, 1, 1);
+  final date = DateTime(2026);
   return TransactionModel()
     ..id = id
     ..type = TransactionType.expense
@@ -108,7 +108,7 @@ void main() {
           for (var i = 0; i < 600; i++)
             _monthModel(
               i + 1,
-              DateTime(2026, 1, 1).add(Duration(hours: i)),
+              DateTime(2026).add(Duration(hours: i)),
             ),
         ];
 
@@ -120,7 +120,7 @@ void main() {
         );
 
         // Excluded by range: one day into the next month.
-        final outOfMonthRow = _monthModel(602, DateTime(2026, 2, 1));
+        final outOfMonthRow = _monthModel(602, DateTime(2026, 2));
 
         // Excluded by soft delete: in-month expense, but deletedAt is set.
         final deletedRow = _monthModel(
@@ -155,7 +155,7 @@ void main() {
         expect(
           result.every(
             (m) =>
-                !m.date.isBefore(DateTime(2026, 1)) &&
+                !m.date.isBefore(DateTime(2026)) &&
                 m.date.isBefore(DateTime(2026, 2)),
           ),
           isTrue,

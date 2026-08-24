@@ -4,10 +4,14 @@ import 'package:isar_community/isar.dart';
 
 /// Raw Isar query access for [TransactionModel].
 ///
-/// Every query applies .deletedAtIsNull(). List queries additionally apply
-/// .limit(500) — with the single, deliberate exception of
-/// [findAllForAggregates], which must stay uncapped so dashboard totals are
-/// exact (see its doc comment and CR-04).
+/// Every query applies .deletedAtIsNull(). [findAll] is the only capped list
+/// query — it is sorted newest-first (.sortByDateDesc()) BEFORE the 500-row
+/// cap is applied, so the cap discards the oldest rows, not the newest
+/// (CR-04). [findAllForAggregates], [findByMonth], and [findByLinkedGoal]
+/// are all deliberately UNCAPPED: they feed money totals (dashboard
+/// balance, budget spend, goal progress), not display lists, and a capped
+/// total is silently WRONG rather than obviously incomplete (CR-04, BL-01 —
+/// see each method's own doc comment).
 /// Never use findSync, putSync, deleteSync — async only.
 class TransactionDao {
   const TransactionDao(this._isarService);
@@ -44,9 +48,15 @@ class TransactionDao {
       .limit(500)
       .findAll();
 
-  /// Returns expense transactions for a given month and year.
+  /// Returns EVERY expense transaction for a given month and year —
+  /// deliberately uncapped.
   ///
-  /// Used for budget progress computation and chart rendering.
+  /// Feeds `BudgetCubit._reload`'s per-category spend and over-limit
+  /// warning, an order-independent sum, so no sort is applied; but it must
+  /// see every row, so no limit is applied either. A capped read here
+  /// produces a silently WRONG budget total rather than an obviously
+  /// missing one (BL-01, the same failure class as CR-04). Never add
+  /// .limit() back to this query.
   /// Exclusive upper bound: [DateTime(year, month + 1, 1)].
   Future<List<TransactionModel>> findByMonth(int month, int year) async {
     final from = DateTime(year, month);
@@ -58,20 +68,25 @@ class TransactionDao {
         .typeEqualTo(TransactionType.expense)
         .and()
         .dateBetween(from, to, includeUpper: false)
-        .limit(500)
         .findAll();
   }
 
-  /// Returns all active transactions tagged with [goalId].
+  /// Returns EVERY active transaction tagged with [goalId] — deliberately
+  /// uncapped.
   ///
-  /// Used to compute goal progress from tagged transactions (D-11).
+  /// Feeds `GoalCubit._refreshGoal`'s `taggedCents`, half of
+  /// `SavingsGoal.progressPercent` — an order-independent sum, so no sort
+  /// is applied; but it must see every row, so no limit is applied either.
+  /// A capped read here produces a silently WRONG goal-progress figure
+  /// rather than an obviously missing one (BL-01, the same failure class
+  /// as CR-04). Never add .limit() back to this query. Used to compute
+  /// goal progress from tagged transactions (D-11).
   Future<List<TransactionModel>> findByLinkedGoal(int goalId) async =>
       _collection
           .filter()
           .linkedGoalIdEqualTo(goalId)
           .and()
           .deletedAtIsNull()
-          .limit(500)
           .findAll();
 
   // --- Writes ---
