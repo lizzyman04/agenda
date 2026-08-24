@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 03 fully EXECUTED (14/14 plans, all SUMMARYs) and verification re-ran as human_needed - 5/5 roadmap truths hold at code level, both BL-01 gaps closed, no regressions. NOT marked complete - one human item outstanding: a full 10-step device UAT pass on current HEAD (see 03-HUMAN-UAT.md). Tests 2/3/9 were fixed since the last device session but only ever verified host-side, and this codebase has previously had host-side green fail to predict device behaviour. Gates measured on main: flutter test 302/302, flutter analyze exit 0 at 65 issues, architecture guard PASS. Phase 06 COMPLETE; Phases 04 and 05 not started.
+stopped_at: Phase 03 fully EXECUTED (14/14 plans, all SUMMARYs) and verification re-ran as human_needed - 5/5 roadmap truths hold at code level, both BL-01 gaps closed, no regressions. NOT marked complete - one human item outstanding: a full 10-step device UAT pass on current HEAD (see 03-HUMAN-UAT.md). Tests 2/3/9 were fixed since the last device session but only ever verified host-side, and this codebase has previously had host-side green fail to predict device behaviour. Two follow-up quick tasks landed after verification: 260824-82b closed the last BL-01 defect-class instances (goal/debt DAO caps) and 260824-8k6 closed all four IsarTestHarness review findings. Gates measured on main: flutter test 306/306, flutter analyze exit 0 at 65 issues, architecture guard PASS. Phase 06 COMPLETE; Phases 04 and 05 not started.
 last_updated: "2026-08-24T03:52:00.000Z"
 progress:
   total_phases: 6
@@ -243,6 +243,7 @@ None.
 | 260614-w5e | Fix phase 02 code review findings CR-01 WR-03 WR-04 (+ recheck WR-01, finance-repo test stubs) — CLOSED 2026-06-15, suite green 206/206, no PR (solo local) | 2026-06-15 | 756b67d | [260614-w5e-fix-phase-02-code-review-findings-cr-01-](./quick/260614-w5e-fix-phase-02-code-review-findings-cr-01-/) |
 | 260811-97x | Fix phase 03 UAT test-5 blocker: goal contribution sheet crash + the fixed-length-list persistence bug it masked; goals slice restructured to the 150-line/nested-folder rules — device-verified, suite green 211/211 | 2026-08-11 | a2f8e7d, f5347ba | [260811-97x-fix-goal-contribution-sheet-crash](./quick/260811-97x-fix-goal-contribution-sheet-crash/) |
 | 260824-82b | Uncap `SavingsGoalDao.findAll` and `DebtDao.findAll` — the last two live instances of the BL-01 unsorted-cap class, both feeding `computeNetWorth`. RED-first real-Isar regression tests on the 03-13 harness; both mutations re-run independently by the orchestrator. Suite green 304/304 | 2026-08-24 | 730635b, ca5661c | [260824-82b-uncap-savingsgoaldao-findall-and-debtdao](./quick/260824-82b-uncap-savingsgoaldao-findall-and-debtdao/) |
+| 260824-8k6 | Close all four `IsarTestHarness` review findings: temp-dir leak when `Isar.open()` throws (WR-01), no guard against a double `open()` (WR-02), wall-clock instance name (IN-01), self-test leaking on assertion failure (IN-02). RED-first; both warning fixes mutation-verified independently by the orchestrator. Suite green 306/306 | 2026-08-24 | 0f55e3a, 4d5a385 | [260824-8k6-fix-isartestharness-warnings-wr-01-wr-02](./quick/260824-8k6-fix-isartestharness-warnings-wr-01-wr-02/) |
 
 ## Session Continuity
 
@@ -266,7 +267,7 @@ Isar in a test.
 
 **Gates measured directly on `main` (each command run unpiped, not inferred):**
 
-- `flutter test --no-pub`: **304/304 passing**, exit 0 (297 before this run; +3 from 03-13, +2 from 03-14, +2 from quick 260824-82b)
+- `flutter test --no-pub`: **306/306 passing**, exit 0 (297 before this run; +3 from 03-13, +2 from 03-14, +2 from quick 260824-82b, +2 from quick 260824-8k6)
 - `flutter analyze --no-fatal-infos --fatal-warnings`: exit 0, **65 issues** — budget held, `lines_longer_than_80_chars` still **0**
 - `dart run tool/check_architecture.dart`: **PASS**, exit 0
 
@@ -292,12 +293,15 @@ Every known instance of the class is closed: `findAll` (sorted-then-capped, CR-0
 `recurring_payment_dao`, `budget_dao` and `item_dao` were each checked and feed display lists
 or bounded collections, not money totals.
 
-**Delta code review of this run (`03-REVIEW.md`): 0 Critical, 2 Warning, 3 Info.** Both
-warnings are on the new harness, neither exercised by any current caller: `open()` leaves the
-temp dir unrecoverable if `Isar.open()` throws (it is never stored in `_tempDir`), and there
-is no guard against calling `open()` twice, which silently orphans the first instance. Worth
-fixing before other tests adopt the harness. Prior review archived as
-`03-REVIEW-pre-BL01-closure.md`; prior verification as `03-VERIFICATION-pre-BL01-closure.md`.
+**Delta code review of this run (`03-REVIEW.md`): 0 Critical, 2 Warning, 3 Info — all
+harness findings now CLOSED** by quick task `260824-8k6` (2026-08-24). `_tempDir` is assigned
+before `Isar.open()` is awaited, so a failed open no longer orphans a temp directory (WR-01);
+a second `open()` on the same harness throws `StateError` before it creates anything (WR-02);
+the instance name comes from a monotonic counter rather than wall-clock microseconds (IN-01);
+and the harness's own second self-test uses `addTearDown` so it cannot leak on an assertion
+failure (IN-02). IN-03 was the goal/debt DAO caps, closed by `260824-82b`. Prior review
+archived as `03-REVIEW-pre-BL01-closure.md`; prior verification as
+`03-VERIFICATION-pre-BL01-closure.md`.
 
 **Still undecided, unplanned:** `test/data/tasks/item_dao_test.dart` is an empty stub
 (`group('ItemDao', () {});`). The planner recommended filling it once the harness existed.
