@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 03 PLANNED and ready to execute — 14 plans, 12 executed with SUMMARYs, 2 gap plans (03-13, 03-14) planned and checker-verified but NOT executed. They close BL-01 - transaction_dao.dart findByMonth and findByLinkedGoal still carry .limit(500) with no sortBy and feed budget spend and goal progress totals, so those figures can silently read low. Plan 03-09 fixed only findAll. 03-13 builds a real-Isar test harness (wave 1); 03-14 uncaps both methods plus behavioral regression tests (wave 2). Next - /gsd-execute-phase 03 --gaps-only. Phase 03 stays NOT complete until the verifier reruns as passed. Phase 06 COMPLETE; Phases 04 and 05 not started.
-last_updated: "2026-08-24T02:46:41.607Z"
+stopped_at: Phase 03 EXECUTING the 2 gap plans. 12 of 14 have SUMMARYs. Wave 1 is 03-13 (build IsarTestHarness, a real-isar_community test helper, plus a CI pre-warm step so the isar-core download happens once before flutter test fans out). Wave 2 is 03-14 (uncap TransactionDao.findByMonth and findByLinkedGoal, correct the class doc, add real-Isar behavioral regression tests) - it depends on 03-13. Both close BL-01 - those two reads carry .limit(500) with no sortBy and feed budget spend and goal progress totals, so those figures can silently read low. Phase 03 stays NOT complete until the verifier reruns as passed. Phase 06 COMPLETE; Phases 04 and 05 not started.
+last_updated: "2026-08-24T02:59:50.854Z"
 progress:
   total_phases: 6
   completed_phases: 3
@@ -25,8 +25,8 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 03 (finance-core) — EXECUTING
-Plan: 1 of 12
-Status: Ready to execute
+Plan: 1 of 14
+Status: Executing Phase 03
 on-device UAT PASSED on a physical Infinix X6831 (Android 13). See 06-VERIFICATION.md.
 
 **Renumbered 2026-08-12: this phase was `3.1` and is now `6`.** The decimal-insertion
