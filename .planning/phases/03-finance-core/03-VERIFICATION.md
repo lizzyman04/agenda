@@ -1,46 +1,41 @@
 ---
 phase: 03-finance-core
-verified: 2026-08-15T06:54:25Z
-status: gaps_found
-score: 4/5 must-haves verified
+verified: 2026-08-24T03:42:30Z
+status: human_needed
+score: 5/5 must-haves verified (code-level); 1 human verification item outstanding
 overrides_applied: 0
-gaps:
-  - truth: "User can set a monthly budget limit per expense category; a progress indicator shows current spend vs. limit in real time as transactions are added"
-    status: partial
-    reason: "BudgetCubit._reload folds TransactionRepository.getByMonth into per-category spend and the over-limit warning. getByMonth is implemented by TransactionDao.findByMonth (lib/data/finance/transaction/transaction_dao.dart:51-63), which applies .limit(500) with NO .sortBy — confirmed by direct source read. Isar returns unsorted rows in id (insertion) order, so past 500 expense transactions in a single category-month the cap silently retains the OLDEST 500 and drops the most recent ones, understating spend and potentially hiding an over-limit state. This is the same failure class already rated Critical once in this phase (CR-04) and explicitly left half-fixed by plan 03-09/03-REVIEW.md's BL-01 finding, which the code confirms is still live at HEAD."
-    artifacts:
-      - path: "lib/data/finance/transaction/transaction_dao.dart"
-        issue: "findByMonth (lines 51-63) is a .limit(500) list read with no sortBy, feeding an aggregate (BudgetCubit per-category spend) rather than a display list. The file's own class doc (lines 5-11) claims findAllForAggregates is 'the single, deliberate exception' to the cap — false; findByMonth is capped and feeds an aggregate too."
-      - path: "lib/application/finance/budget/budget_cubit.dart"
-        issue: "_reload (lines ~78-88) folds the capped, unsorted getByMonth result directly into per-category spend totals and the over-limit warning with no compensating logic."
-    missing:
-      - "Uncap findByMonth (make it an unbounded aggregate read like findAllForAggregates) since budget spend is a total, not a page — per 03-REVIEW.md BL-01's proposed fix."
-      - "Correct the transaction_dao.dart class doc, which currently misdescribes findAllForAggregates as the sole uncapped exception."
-      - "Add a behavioral (not source-text) regression test — the existing transaction_dao_ordering_test.dart tests findAll/findAllForAggregates only; it does not reference findByMonth or findByLinkedGoal at all (confirmed by grep — zero hits), so this defect class has zero test coverage."
-  - truth: "User can create a savings goal with a target amount and optional deadline, contribute to it, and see the percentage progress update with each contribution"
-    status: partial
-    reason: "GoalCubit._refreshGoal folds TransactionRepository.getByLinkedGoal into taggedTransactionsCents, which SavingsGoal.amountSavedCents/progressPercent (lib/domain/finance/goal/savings_goal.dart:64-80) use directly to compute displayed progress. getByLinkedGoal is implemented by TransactionDao.findByLinkedGoal (transaction_dao.dart:68-75), which also applies .limit(500) with no sortBy — same defect class as findByMonth above, confirmed by direct source read. Manual contributions (goal.contributions) are unaffected, but the tagged-transaction half of progress can silently understate once a single long-lived goal accumulates 500+ tagged transactions, which is plausible for a goal used across multiple years of daily logging (the intended use pattern for this app per CLAUDE.md's 'open AGENDA at any moment... morning, midday, or night' framing)."
-    artifacts:
-      - path: "lib/data/finance/transaction/transaction_dao.dart"
-        issue: "findByLinkedGoal (lines 68-75) is a .limit(500) list read with no sortBy, feeding GoalCubit's taggedTransactionsCents aggregate."
-      - path: "lib/application/finance/goal/goal_cubit.dart"
-        issue: "_refreshGoal (lines ~94-103) folds the capped, unsorted getByLinkedGoal result directly into taggedCents with no compensating logic."
-    missing:
-      - "Uncap findByLinkedGoal since goal progress is a total, not a page — per 03-REVIEW.md BL-01's proposed fix."
-      - "Add a behavioral regression test covering the >500-tagged-transaction case; none exists today."
-deferred: []
+re_verification:
+  previous_status: gaps_found
+  previous_score: 3/5
+  gaps_closed:
+    - "User can set a monthly budget limit per expense category; a progress indicator shows current spend vs. limit in real time as transactions are added — TransactionDao.findByMonth is now uncapped (BL-01 closed)."
+    - "User can create a savings goal, contribute to it, and see percentage progress update — TransactionDao.findByLinkedGoal is now uncapped (BL-01 closed)."
+  gaps_remaining: []
+  regressions: []
 human_verification:
-  - test: "Full 10-step UAT device pass on current HEAD (transaction add/edit/delete, swipe-undo x2 in sequence, budget limit set, goal contribution, debt toggle, recurring payment add, dashboard+charts+month nav, task-finance link chip)"
-    expected: "All 10 flows behave as documented in 03-UAT.md, including the three flows (tests 2, 3, 9) whose fixes (plans 03-06/03-07/03-08) have only ever been verified by widget test, never re-run on the Infinix X6831 or any device"
-    why_human: "03-UAT.md's own device session (2026-08-11) already demonstrated that host-side/widget-test pass does not guarantee device-observed correctness — test 2 was recorded as 'pass' in an earlier (host or lightly-tested) pass and then failed on the first real device retest, revealing the category-id stub bug. The current HEAD (through plan 03-12 and the 03-REVIEW.md delta review) has never been executed on physical hardware; all fix verification since 2026-08-11 is host-side (flutter test / mutation testing) only."
+  - test: "Full 10-step UAT device pass on current HEAD (commit db67ab9), specifically re-exercising tests 2 (category name resolution), 3 (double-swipe undo), and 9 (task-detail finance chip name) — all fixed since the last device session (2026-08-11/14) but only ever verified host-side. No new device evidence exists for the current HEAD, which now also includes the 03-13/03-14 BL-01 closure (DAO-level only, no UI change)."
+    expected: "All 10 flows behave as documented in 03-UAT.md; tests 2/3/9 hold on real hardware exactly as in widget tests."
+    why_human: "03-UAT.md's own device session (2026-08-11) already demonstrated that host-side/widget-test pass does not guarantee device-observed correctness — test 2 was recorded as 'pass' in an earlier lightly-tested pass and then failed on the first real device retest, revealing the category-id stub bug. No device has touched the code since 2026-08-11/14. STATE.md itself records this as the explicit next step after phase-03 verification: 'Phase 03's 3 unresolved UAT issues, then Phase 04.'"
 ---
 
 # Phase 3: Finance Core Verification Report
 
 **Phase Goal:** Users can log income and expenses, track budgets per category, manage savings goals, monitor debts, and view their financial picture on a dashboard with spending charts — all stored locally
-**Verified:** 2026-08-15T06:54:25Z
-**Status:** gaps_found
-**Re-verification:** No — initial verification
+**Verified:** 2026-08-24T03:42:30Z
+**Status:** human_needed
+**Re-verification:** Yes — after BL-01 gap closure (plans 03-13, 03-14)
+
+## Summary of This Run
+
+The prior verification (`03-VERIFICATION-pre-BL01-closure.md`, 2026-08-15) found `gaps_found`
+with 2 of 5 roadmap truths FAILED: `TransactionDao.findByMonth` and `findByLinkedGoal`
+carried `.limit(500)` with no `sortBy`, silently understating budget spend and savings-goal
+progress past 500 rows. Plans 03-13 (real-Isar test harness) and 03-14 (the fix + behavioral
+regression tests) have executed and merged. This run independently re-verifies the fix by
+direct source read, independent mutation testing, and independent re-run of the full gate
+(tests/analyze/architecture guard), and additionally traces a defect class the orchestrator
+surfaced (unsorted capped reads feeding net worth via savings-goal and debt totals) that
+03-13/03-14 did not touch.
 
 ## Goal Achievement
 
@@ -48,114 +43,175 @@ human_verification:
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | User can log an income/expense transaction (amount, category, date, note); edit; delete; dashboard balance updates immediately | ✓ VERIFIED | `Transaction` domain entity + `TransactionCubit` (add/update/softDelete/restoreTransaction) present and wired to `transaction_form_screen.dart` / `transaction_list_screen.dart`. `HomeDashboardCubit.start()` subscribes to `TransactionRepository.watchChanges()` and recomputes balance from `findAllForAggregates()` (uncapped — CR-04 dashboard fix confirmed in source). UAT tests 1, 2, 3, 10 confirmed working on-device (2026-08-11), with tests 2 and 3's defects since closed by plans 03-06/03-07 (host-verified with mutation-checked regression tests, not yet device-retested — see Human Verification). |
-| 2 | User can set a monthly budget limit per expense category; a progress indicator shows current spend vs. limit in real time as transactions are added | ✗ FAILED | `BudgetCubit` and `budget_overview_screen.dart`/`BudgetProgressBar` exist and are wired, and the budget-*limit-setting* UAT flow (test 4) passed on-device. But the *spend total* the progress bar renders is computed from `TransactionDao.findByMonth`, which is capped at 500 with no sort (confirmed by direct source read of `transaction_dao.dart:51-63`) — see Gaps. |
-| 3 | User can create a savings goal with target amount/optional deadline, contribute to it, and see percentage progress update with each contribution | ✗ FAILED | Goal domain entity, `GoalCubit`, `goal_form_screen.dart`, `goal_detail_screen.dart`, contribution sheet all exist and are wired; UAT test 5 (crash + persistence bug) confirmed fixed and device-reverified (2026-08-11, quick task 260811-97x). But `progressPercent`'s tagged-transaction half is computed from `TransactionDao.findByLinkedGoal`, which is also capped at 500 with no sort (confirmed by direct source read of `transaction_dao.dart:68-75`) — see Gaps. |
-| 4 | User can log a debt (to pay/receive) with amount and due date, and a recurring payment (subscription/bill) with amount and billing cycle | ✓ VERIFIED | `Debt`/`RecurringPayment` domain entities present with `direction`/`dueDate` and `amountCents`/`cycle` fields respectively. `DebtCubit`, `RecurringPaymentCubit`, `debt_form_screen.dart`, `recurring_payment_form_screen.dart` wired. UAT tests 6 and 7 both passed on-device (2026-08-11). Debt swipe-delete recoverability (CR-01) closed and verified in 03-REVIEW.md by tracing every layer link, not just shape. |
-| 5 | All screens (transaction list, budget overview, goals list, debt list) show meaningful empty states; dashboard shows balance + net worth; spending chart renders monthly category breakdown as pie and bar | ✓ VERIFIED | `FinanceEmptyState` used in `transaction_list_screen.dart`, `budget_overview_screen.dart`, `debt_list_screen.dart`, `recurring_payment_screen.dart`, and `goal_list_screen.dart` (5/5 finance list screens). `DashboardSummaryCard` renders `balanceCents` (displaySmall) and `netWorthCents`. `dashboard_tab.dart` wires `SpendingPieChart`/`SpendingBarChart` to `state.categorySpend`, with `EmptyChartMessage` when a month has transactions but zero expense categories, and `FinanceEmptyState` when there are no transactions at all. UAT test 8 (dashboard, charts, empty states) passed on-device 2026-08-11. |
+| 1 | User can log an income/expense transaction (amount, category, date, note); edit; delete; dashboard balance updates immediately | ✓ VERIFIED | Unchanged from prior verification (mechanism, wiring, `findAllForAggregates` uncapped). Re-confirmed: `HomeDashboardCubit._reload` still sources balance from `getAllTransactionsForAggregates` (uncapped). |
+| 2 | User can set a monthly budget limit per expense category; a progress indicator shows current spend vs. limit in real time as transactions are added | ✓ VERIFIED (was FAILED) | `lib/data/finance/transaction/transaction_dao.dart` `findByMonth` (read directly at HEAD) no longer carries `.limit(500)` — confirmed by direct source read. `budget_cubit.dart:79` still calls `getByMonth` → `findByMonth` unchanged wiring. Independently re-ran the mutation: reintroducing `.limit(500)` on `findByMonth` alone made `test/data/finance/transaction_dao_aggregate_completeness_test.dart` fail with `Expected: <600> / Actual: <500>` on exactly that group, `findByLinkedGoal`'s group still passing (`+1 -1`) — matches the SUMMARY's claimed evidence exactly, reproduced independently rather than trusted. |
+| 3 | User can create a savings goal with target amount/optional deadline, contribute to it, and see percentage progress update with each contribution | ✓ VERIFIED (was FAILED) | `findByLinkedGoal` (read directly at HEAD) no longer carries `.limit(500)` — confirmed by direct source read. `goal_cubit.dart:94` still calls `getByLinkedGoal` → `findByLinkedGoal` unchanged wiring. Both uncapped methods now read `.filter()...findAll()` with no `.limit()`, mirroring `findAllForAggregates`'s pattern exactly, as claimed. |
+| 4 | User can log a debt (to pay/receive) with amount and due date, and a recurring payment (subscription/bill) with amount and billing cycle | ✓ VERIFIED | Unchanged from prior verification — not touched by 03-13/03-14. |
+| 5 | All screens show meaningful empty states; dashboard shows balance + net worth; spending chart renders monthly category breakdown as pie and bar | ✓ VERIFIED, WITH A NOTED LATENT DEFECT (see below) | `dashboard_tab.dart`, `SpendingPieChart`/`SpendingBarChart`, `FinanceEmptyState` all unchanged and previously verified. **New finding this run:** net worth (`computeNetWorth`) sums `computeGoalsSavedTotal` (fed by `SavingsGoalDao.findAll()`, `.limit(500)`, no `sortBy`) and `computeDebtTotal` (fed by `DebtDao.findAll()`, `.limit(500)`, no `sortBy`) — the same unsorted-cap defect class as BL-01, confirmed live by direct source read and call-chain trace (`home_dashboard_cubit.dart:78-91`). Judged non-blocking for this truth — see "Net Worth Latent Defect" below for full reasoning. |
 
-**Score:** 3/5 truths fully verified, 2/5 FAILED (partial implementation — mechanism exists and is UI-wired, but the underlying aggregate is silently incorrect past a data-volume threshold)
+**Score:** 5/5 truths hold at the code level. Truth 1 additionally has an outstanding human-verification requirement (see below) that is not itself a truth failure but blocks a clean `passed` status.
+
+### Net Worth Latent Defect — Explicit Call
+
+The orchestrator's finding is real and independently confirmed:
+
+- `lib/data/finance/goal/savings_goal_dao.dart` `findAll()` (line ~23-27): `.filter().deletedAtIsNull().limit(500).findAll()` — capped, unsorted.
+- `lib/data/finance/debt/debt_dao.dart` `findAll()` (line ~21-25): identical pattern — capped, unsorted.
+- Chain traced directly: `HomeDashboardCubit._reload()` → `_goalRepository.getActiveGoals()` → `GoalRepositoryImpl.getActiveGoals()` → `_dao.findAll()` (capped) → `computeGoalsSavedTotal` (a `.fold` sum) → `computeNetWorth`. Same pattern for `_debtRepository.getDebts()` → `DebtRepositoryImpl.getDebts()` → `_dao.findAll()` (capped) → `computeDebtTotal` → `computeNetWorth`. The balance input to net worth is unaffected (`getAllTransactionsForAggregates`, uncapped).
+
+**My call: this is a real defect but does NOT block phase-goal achievement, classified as a
+non-blocking WARNING rather than a gap.** Reasoning, stated explicitly rather than inherited
+from the code review's IN-03 classification:
+
+- The BL-01 defects just closed (transactions in `findByMonth`/`findByLinkedGoal`) are
+  reachable within a plausible, even ordinary, usage horizon: 500 expense transactions in a
+  single category within a single calendar month is achievable by a moderately active user in
+  weeks-to-months; 500 transactions tagged to one long-lived savings goal is plausible over a
+  1-3 year horizon of the app's own stated daily-use design target.
+- Reaching 500 **active, non-deleted savings goals** or 500 **active, non-deleted debts** is a
+  categorically different order of magnitude. A savings goal or a debt is a comparatively
+  coarse-grained object — creating even 10 in a year would be an unusually goal/debt-heavy
+  household; reaching 500 would require roughly 50-100+ years of sustained heavy use at that
+  rate, or an implausible one-time bulk-import scenario this app does not support (no CSV
+  import of goals/debts exists in this phase). This is not a realistic trigger within any
+  horizon a personal finance app's actual users will hit.
+- The failure mode is real (silent under-statement of net worth, same directional harm as
+  BL-01) and worth closing eventually for defensive consistency and to avoid the same
+  defect class recurring a third time, but the roadmap truth ("view their financial picture
+  on a dashboard") is observably true for every realistic data volume this app will ever see
+  in practice.
+- This is a judgment call, not a certainty — a determined power user or a future
+  bulk-import feature could change the calculus. I am recording it as a WARNING requiring
+  human/product awareness, not silently dropping it, and not blocking the phase on it.
+
+**Recommendation:** track as a fast follow-up (mirrors 03-14's fix pattern exactly — remove
+`.limit(500)` from both `findAll()` methods) rather than a phase gap-closure plan, given how
+small and mechanical the fix is and how low the current exposure is.
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `lib/domain/finance/transaction/transaction.dart` + repo | Transaction entity, income/expense, edit/delete | ✓ VERIFIED | Present, exercised by 297 passing tests |
-| `lib/data/finance/transaction/transaction_dao.dart` | `findAllForAggregates` uncapped; `findAll` sorted+capped; `findByMonth`/`findByLinkedGoal` correct | ⚠️ PARTIAL | `findAllForAggregates` and `findAll` are correct (CR-04 dashboard fix holds). `findByMonth` and `findByLinkedGoal` are still `.limit(500)` with no sort — confirmed live at HEAD by direct read |
-| `lib/application/finance/budget/budget_cubit.dart` | Per-category spend vs. limit | ⚠️ HOLLOW (partial) | Wired to UI correctly; the spend figure it computes is sourced from the capped/unsorted `findByMonth` |
-| `lib/application/finance/goal/goal_cubit.dart` | Goal contribution + percentage progress | ⚠️ HOLLOW (partial) | Wired to UI correctly; the tagged-transaction half of progress is sourced from the capped/unsorted `findByLinkedGoal` |
-| `lib/application/finance/debt/debt_cubit.dart` | Debt CRUD + restore | ✓ VERIFIED | `restoreDebt` present, traced end-to-end in 03-REVIEW.md, undo SnackBar wired |
-| `lib/application/finance/recurring/recurring_payment_cubit.dart` | Recurring payment CRUD | ✓ VERIFIED (create/update/pause); ⚠️ delete unreachable (WR-D4, non-blocking for stated SC) | `softDelete` exists on the DAO/repo/cubit chain but has zero callers in `lib/presentation/` (confirmed by grep) — a user cannot delete a recurring payment, only pause it. Not a literal roadmap SC failure (SC4 only requires *logging* a recurring payment), flagged as a warning |
-| `lib/application/finance/dashboard/home_dashboard_cubit.dart` | Balance, net worth, category spend | ✓ VERIFIED | Uses `findAllForAggregates` (uncapped), `computeNetWorth`, idempotent `start()` |
-| `lib/presentation/finance/widgets/dashboard/dashboard_tab.dart` | Pie + bar charts, month nav, empty states | ✓ VERIFIED | `SpendingPieChart`/`SpendingBarChart` wired to `state.categorySpend`; `EmptyChartMessage` and `FinanceEmptyState` both present |
-| `lib/presentation/finance/widgets/finance_empty_state.dart` | Reused empty-state widget | ✓ VERIFIED | Used across transaction, budget, debt, recurring, goal list screens (5/5) |
+| `lib/data/finance/transaction/transaction_dao.dart` | `findAllForAggregates`, `findByMonth`, `findByLinkedGoal` all uncapped; `findAll` sorted+capped | ✓ VERIFIED | Direct read at HEAD: only one `.limit(` in the file (`findAll`, line 48, after `.sortByDateDesc()`). Class doc corrected to name all three uncapped methods, no longer claims a "single exception." |
+| `test/support/isar_test_harness.dart` | Reusable real-Isar test harness | ✓ VERIFIED | Exists, self-tested (`isar_test_harness_test.dart`), used by both the pre-warm test and the new BL-01 regression test. |
+| `test/data/finance/transaction_dao_aggregate_completeness_test.dart` | Behavioral (not source-text) regression test for BL-01 | ✓ VERIFIED | Confirmed genuinely behavioral: seeds real Isar rows via the harness, calls the actual DAO methods, asserts on returned counts. Independently re-ran the "reintroduce `.limit(500)`" mutation myself (not trusted from SUMMARY) — it fails exactly as claimed. |
+| `.github/workflows/ci.yml` | Pre-warm step resolving the isar-core download path identically to the later parallel workers | ✓ VERIFIED | `flutter test --no-pub -j 1 test/support/_warm_isar_core_test.dart` step present, positioned before the main `Test` step (per 03-REVIEW.md's independent confirmation and my own read of the plan/summary; not re-derived from scratch since CI execution itself cannot be verified offline). |
+| `lib/data/finance/goal/savings_goal_dao.dart`, `lib/data/finance/debt/debt_dao.dart` | N/A — not in scope for this phase's plans | ⚠️ LATENT DEFECT (non-blocking) | Both `findAll()` still `.limit(500)` unsorted, feeding net worth via `.fold` sums. See "Net Worth Latent Defect" above. |
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
 |------|-----|-----|--------|---------|
-| `budget_cubit.dart._reload` | `TransactionRepository.getByMonth` → `TransactionDao.findByMonth` | direct call chain | ✗ NOT SAFE | Link exists and executes, but the data it delivers is capped and unsorted — the link is "wired" in the mechanical sense but delivers wrong data past 500 rows |
-| `goal_cubit.dart._refreshGoal` | `TransactionRepository.getByLinkedGoal` → `TransactionDao.findByLinkedGoal` | direct call chain | ✗ NOT SAFE | Same defect class as above |
-| `home_dashboard_cubit.dart` | `TransactionDao.findAllForAggregates` | direct call chain | ✓ WIRED | Uncapped; balance/net worth correct at any transaction count (CR-04 fix holds) |
-| `debt_list_screen.dart` | `DebtCubit.restoreDebt` | undo SnackBar action, cubit+messenger captured before unmount | ✓ WIRED | Traced end-to-end in 03-REVIEW.md including `clearField` sentinel and mapper round-trip |
-| `transaction_list_screen.dart` | `TransactionCubit.restoreTransaction` | `hideCurrentSnackBar()` before `showSnackBar()` | ✓ WIRED | Mutation-tested regression coverage per 03-REVIEW.md CR-01/plan 03-07 |
-| `task_detail_screen.dart` (undo) | `TaskListCubit.restoreItem` | cubit captured before `Navigator.pop()` | ✓ WIRED | CR-03 closed, traced in 03-REVIEW.md |
-| `recurring_payment_screen.dart` | soft-delete path | `Dismissible` / delete affordance | ✗ NOT_WIRED | Zero presentation-layer callers of `softDelete` for recurring payments (WR-D4) — non-blocking for the literal roadmap SC, flagged as warning |
+| `budget_cubit.dart:79 _reload` | `TransactionDao.findByMonth` (now uncapped) | `getByMonth` → `TransactionRepositoryImpl.getByMonth` → `_dao.findByMonth` | ✓ WIRED, SAFE | Link unchanged, underlying data now correct at any transaction volume. |
+| `goal_cubit.dart:94 _refreshGoal` | `TransactionDao.findByLinkedGoal` (now uncapped) | `getByLinkedGoal` → `TransactionRepositoryImpl.getByLinkedGoal` → `_dao.findByLinkedGoal` | ✓ WIRED, SAFE | Link unchanged, underlying data now correct at any tagged-transaction volume. |
+| `home_dashboard_cubit.dart:78` | `SavingsGoalDao.findAll()` (still capped, unsorted) | `getActiveGoals` → `GoalRepositoryImpl.getActiveGoals` → `_dao.findAll` | ⚠️ WIRED, LATENT RISK | See "Net Worth Latent Defect." Non-blocking per reasoning above. |
+| `home_dashboard_cubit.dart:86` | `DebtDao.findAll()` (still capped, unsorted) | `getDebts` → `DebtRepositoryImpl.getDebts` → `_dao.findAll` | ⚠️ WIRED, LATENT RISK | Same as above. |
+| `home_dashboard_cubit.dart` balance path | `TransactionDao.findAllForAggregates` | direct call chain | ✓ WIRED, SAFE | Uncapped, unchanged (CR-04 fix holds). |
 
 ### Data-Flow Trace (Level 4)
 
 | Artifact | Data Variable | Source | Produces Real Data | Status |
 |----------|---------------|--------|---------------------|--------|
-| `budget_overview_screen.dart` (via `BudgetProgressBar`) | `categorySpend` | `BudgetCubit._reload` ← `getByMonth` ← `findByMonth` (capped, unsorted) | Real but potentially INCOMPLETE past 500 expense txns/category/month | ⚠️ STATIC-ISH (silently truncated, not obviously wrong) |
-| `goal_detail_screen.dart` (via `GoalProgressCard`) | `taggedTransactionsCents` | `GoalCubit._refreshGoal` ← `getByLinkedGoal` ← `findByLinkedGoal` (capped, unsorted) | Real but potentially INCOMPLETE past 500 tagged txns/goal | ⚠️ STATIC-ISH (silently truncated) |
-| `dashboard_tab.dart` | `categorySpend`, `balanceCents`, `netWorthCents` | `HomeDashboardCubit` ← `findAllForAggregates` (uncapped) | Yes | ✓ FLOWING |
+| `budget_overview_screen.dart` (via `BudgetProgressBar`) | `categorySpend` | `BudgetCubit._reload` ← `getByMonth` ← `findByMonth` (now uncapped) | Yes, complete at any volume | ✓ FLOWING (was STATIC-ISH) |
+| `goal_detail_screen.dart` (via `GoalProgressCard`) | `taggedTransactionsCents` | `GoalCubit._refreshGoal` ← `getByLinkedGoal` ← `findByLinkedGoal` (now uncapped) | Yes, complete at any volume | ✓ FLOWING (was STATIC-ISH) |
+| `dashboard_tab.dart` | `netWorthCents` | `HomeDashboardCubit` ← `computeNetWorth` ← `computeGoalsSavedTotal`/`computeDebtTotal` ← capped `findAll()` on goal/debt DAOs | Real, but capped past 500 goals/500 debts (not realistically reachable) | ⚠️ FLOWING WITH NOTED LATENT DEFECT (non-blocking, see above) |
+| `dashboard_tab.dart` | `categorySpend`, `balanceCents` | `HomeDashboardCubit` ← `findAllForAggregates` (uncapped) | Yes | ✓ FLOWING |
 | `transaction_list_screen.dart` | `transactions`, `categories` | `TransactionCubit` ← `findAll` (sorted-desc, capped, correct for a display list) | Yes | ✓ FLOWING |
 
 ### Behavioral Spot-Checks
 
-Not run as live app execution (no device attached, per phase constraints); relied on the project's own test suite plus direct source-code tracing in lieu of executing the app, consistent with `flutter test` being the project's runnable-check mechanism.
-
 | Behavior | Command | Result | Status |
 |----------|---------|--------|--------|
-| Architecture guard passes | `dart run tool/check_architecture.dart` | "Architecture guard: PASS", exit 0 | ✓ PASS |
-| Static analysis budget holds | `flutter analyze --no-fatal-infos --fatal-warnings` (measured by orchestrator) | exit 0, 65 issues, 0 line-length violations | ✓ PASS (trusted from orchestrator's re-measurement; not independently re-run by verifier) |
-| Full test suite green | `flutter test --no-pub` (re-run independently by verifier) | 297/297 passed, "All tests passed!" | ✓ PASS |
-| `findByMonth`/`findByLinkedGoal` behaviorally tested against the 500-cap defect | `grep -n "findByMonth\|findByLinkedGoal" test/data/finance/transaction_dao_ordering_test.dart` | zero matches | ✗ FAIL — no test exists for this code path at all, source-text or behavioral |
+| Architecture guard passes | `dart run tool/check_architecture.dart` | "Architecture guard: PASS", exit 0 | ✓ PASS (independently re-run) |
+| Static analysis budget holds | `flutter analyze --no-fatal-infos --fatal-warnings` | exit 0, 65 issues, 0 line-length violations | ✓ PASS (independently re-run) |
+| Full test suite green | `flutter test --no-pub` | 302/302 passed, "All tests passed!" | ✓ PASS (independently re-run) |
+| Mutation: reintroduce `.limit(500)` on `findByMonth` only | edited DAO, ran `flutter test --no-pub test/data/finance/transaction_dao_aggregate_completeness_test.dart`, reverted | `findByMonth` group: `Expected: <600> / Actual: <500>`; `findByLinkedGoal` group still passes (`+1 -1` overall) | ✓ PASS (independently reproduced, file restored, `git status` clean afterward) |
+| No debt markers (`TBD`/`FIXME`/`XXX`) in files touched by 03-13/03-14 | `grep -n "TBD\\|FIXME\\|XXX"` across all 6 touched files | zero matches | ✓ PASS |
 
 ### Probe Execution
 
-No `scripts/*/tests/probe-*.sh` files exist in this repository and neither PLAN.md nor SUMMARY.md files for this phase reference probes. Step 7c: SKIPPED (no probes declared or discovered).
+No `scripts/*/tests/probe-*.sh` files exist in this repository and neither PLAN.md nor
+SUMMARY.md files for plans 03-13/03-14 reference probes. Step 7c: SKIPPED (no probes
+declared or discovered).
 
 ### Requirements Coverage
 
 | Requirement | Source Plan(s) | Description | Status | Evidence |
 |---|---|---|---|---|
-| FIN-01 | 01,02,03,04,06,09,12 | Log income transactions | ✓ SATISFIED | `Transaction.type == income`, form + list wired, UAT test 2 confirmed working post-fix |
-| FIN-02 | 01,02,03,04,06,12 | Log expense transactions | ✓ SATISFIED | Same mechanism as FIN-01 |
-| FIN-03 | 01,02,03,04,07 | Edit and delete transactions | ✓ SATISFIED | `TransactionCubit.update/softDelete/restoreTransaction`; UAT test 3 confirmed working post-fix (host-verified) |
-| FIN-04 | 01,03,04 | Monthly budget limit per category | ⚠️ PARTIALLY SATISFIED | Setting/UI mechanism works (UAT test 4 pass); underlying spend total can be silently wrong past 500 txns/category/month (BL-01) |
-| FIN-05 | 01,03,04,08 | Define savings goals | ✓ SATISFIED | `SavingsGoal` entity, `goal_form_screen.dart`, target + optional deadline present |
-| FIN-06 | 01,03,04,11 | Track savings goal progress | ⚠️ PARTIALLY SATISFIED | Manual-contribution half correct (UAT test 5 fixed+device-reverified); tagged-transaction half can be silently wrong past 500 tagged txns/goal (BL-01) |
-| FIN-07 | 01,03,04,09,10 | Log debts with direction/amount/due date | ✓ SATISFIED | `Debt` entity + `debt_form_screen.dart`; UAT test 6 pass; CR-01 delete-recoverability closed |
-| FIN-08 | 01,03,03,04,09 | Log recurring payments | ✓ SATISFIED | `RecurringPayment` entity + `recurring_payment_form_screen.dart`; UAT test 7 pass. (Delete affordance missing — WR-D4 — but not required by the FIN-08 wording, which is about logging, not removing) |
-| FIN-09 | 03,05 | Dashboard balance + net worth | ✓ SATISFIED | `DashboardSummaryCard`, `HomeDashboardCubit` uncapped aggregate (CR-04 dashboard half fixed) |
-| FIN-10 | 03,05 | Spending charts (pie + bar) | ✓ SATISFIED | `SpendingPieChart`/`SpendingBarChart` wired to `categorySpend`, UAT test 8 pass |
-| UX-04 | 05 | Empty states with action prompts | ✓ SATISFIED | `FinanceEmptyState` present on all 5 finance list screens |
+| FIN-01 | 01,02,03,04,06,09,12 | Log income transactions | ✓ SATISFIED | Unchanged from prior verification. |
+| FIN-02 | 01,02,03,04,06,12 | Log expense transactions | ✓ SATISFIED | Unchanged. |
+| FIN-03 | 01,02,03,04,07 | Edit and delete transactions | ✓ SATISFIED | Unchanged. |
+| FIN-04 | 01,03,04,13,14 | Monthly budget limit per category | ✓ SATISFIED (was PARTIAL) | BL-01 closed — `findByMonth` uncapped, verified above. |
+| FIN-05 | 01,03,04 | Define savings goals | ✓ SATISFIED | Unchanged. |
+| FIN-06 | 01,03,04,11,13,14 | Track savings goal progress | ✓ SATISFIED (was PARTIAL) | BL-01 closed — `findByLinkedGoal` uncapped, verified above. |
+| FIN-07 | 01,03,04,09,10 | Log debts with direction/amount/due date | ✓ SATISFIED | Unchanged. |
+| FIN-08 | 01,03,03,04,09 | Log recurring payments | ✓ SATISFIED | Unchanged. (Delete affordance still missing — WR-D4, carried, non-blocking, not required by FIN-08 wording.) |
+| FIN-09 | 03,05 | Dashboard balance + net worth | ✓ SATISFIED, WITH NOTED CAVEAT | Balance path uncapped/correct. Net worth's goal/debt inputs carry the latent (non-blocking, per above) unsorted-cap defect. |
+| FIN-10 | 03,05 | Spending charts (pie + bar) | ✓ SATISFIED | Unchanged. |
+| UX-04 | 05 | Empty states with action prompts | ✓ SATISFIED | Unchanged. |
 
-No orphaned requirements — all 11 phase requirement IDs (FIN-01 through FIN-10, UX-04) appear in at least one plan's `requirements:` frontmatter and are cross-referenced above.
+All 11 phase requirement IDs (FIN-01 through FIN-10, UX-04) plus the gap-closure plans'
+declared `[FIN-04, FIN-06]` are accounted for above. No orphaned requirements.
+
+**Note on `.planning/REQUIREMENTS.md` itself:** the FIN-01..10/UX-04 checklist items and
+the phase-status table both still show `[ ]` unchecked / "Pending" for Phase 3, despite this
+and the prior verification finding them satisfied. This is a documentation-currency gap
+(the requirements tracker was not updated after either verification pass), not a
+functional gap — flagged as an Info item for the orchestrator to close when marking the
+phase complete, not a phase-goal blocker.
 
 ### Anti-Patterns Found
 
 | File | Line | Pattern | Severity | Impact |
 |------|------|---------|----------|--------|
-| `lib/data/finance/transaction/transaction_dao.dart` | 5-11 | Misleading class doc — claims `findAllForAggregates` is "the single, deliberate exception" to the 500-row cap | ⚠️ Warning | A future reader trusting this comment will believe the aggregate-truncation problem (CR-04) is fully solved; it is not (BL-01) |
-| `lib/application/finance/recurring/recurring_payment_cubit.dart` etc. | — | Unreachable dead code: `softDelete` chain exists at 4 layers with zero presentation callers (WR-D4, carried from 03-REVIEW.md) | ⚠️ Warning | Not a roadmap-SC blocker (SC4 only requires logging), but a real usability gap for a finance app — no way to remove a cancelled subscription |
-| `test/data/finance/transaction_dao_ordering_test.dart` | whole file | Tests assert on source *text* (`readAsStringSync` + substring match) rather than query *behavior* — confirmed by direct inspection; zero references to `findByMonth`/`findByLinkedGoal` | ⚠️ Warning (carried as WR-D6 from 03-REVIEW.md) | The 297-test green suite would not catch a regression or a fix to BL-01 — passing tests are not evidence either way for this specific defect class |
-| No `TBD`/`FIXME`/`XXX` markers found | — | — | — | Debt-marker gate: clean. Scanned all `.dart` files referenced across the 12 phase SUMMARY.md files (95 unique paths); zero matches |
+| `lib/data/finance/goal/savings_goal_dao.dart`, `lib/data/finance/debt/debt_dao.dart` | `findAll()` | Unsorted `.limit(500)` feeding a `.fold` sum (net worth) | ⚠️ Warning (non-blocking, see reasoning above) | Same defect class as BL-01, but exposure at 500+ goals/debts is not realistically reachable |
+| `lib/application/finance/recurring/recurring_payment_cubit.dart` etc. | — | Unreachable dead code: `softDelete` chain exists at 4 layers with zero presentation callers (WR-D4, carried from 03-REVIEW.md) | ⚠️ Warning (carried, unchanged) | Not a roadmap-SC blocker; no way to remove a cancelled subscription, only pause it |
+| `test/support/isar_test_harness.dart:140-145` | — | `open()` leaks its temp directory if `Isar.open()` throws (WR-01, 03-REVIEW.md) | ⚠️ Warning (carried, unchanged) | Test-infra only, not exercised by any current call site; future-risk for CI flakiness, not a phase-goal blocker |
+| `test/support/isar_test_harness.dart:135-146` | — | `open()` has no guard against being called twice (WR-02, 03-REVIEW.md) | ⚠️ Warning (carried, unchanged) | Same as above — test-infra hardening, not a phase-goal blocker |
+| No `TBD`/`FIXME`/`XXX` markers found in files touched by 03-13/03-14 | — | — | — | Debt-marker gate: clean (independently re-scanned this run) |
 
 ### Human Verification Required
 
-### 1. On-device UAT re-run at current HEAD
+### 1. On-device UAT re-run at current HEAD (commit `db67ab9`)
 
-**Test:** Execute the full 10-step UAT flow from `03-UAT.md` on a physical Android device (or iOS) against the current commit (`b9ce9d3`), specifically re-exercising tests 2 (category name resolution), 3 (double-swipe undo), and 9 (task-detail finance chip name) — all fixed since the last device session (2026-08-11) but only ever verified host-side.
-**Expected:** All 10 flows behave as documented; in particular the fixes for tests 2/3/9 hold on real hardware exactly as they do in widget tests.
-**Why human:** This project's own UAT history shows host-side "pass" does not reliably predict device behavior — the test-2 category stub was recorded as working in an earlier lightly-tested pass and only failed once actually run on the Infinix X6831. No device has touched the code since 2026-08-11; three device-sensitive fixes (SnackBar timing/queueing, category resolution, chip resolution) and four more recent Critical-finding fixes (03-09 through 03-12) have zero device evidence behind them.
+**Test:** Execute the full 10-step UAT flow from `03-UAT.md` on a physical Android device
+(or iOS), specifically re-exercising tests 2 (category name resolution), 3 (double-swipe
+undo), and 9 (task-detail finance chip name) — all fixed since the last device session
+(2026-08-11/14) but only ever verified host-side. The current HEAD additionally includes
+the 03-13/03-14 BL-01 DAO fix, which touches no UI and is unlikely to change device
+behavior, but has itself never run on hardware either.
+**Expected:** All 10 flows behave as documented in `03-UAT.md`, including the three flows
+whose fixes have only ever been verified by widget test.
+**Why human:** This project's own UAT history (03-UAT.md, 2026-08-11 device session)
+demonstrates concretely that host-side/widget-test pass does not reliably predict
+device-observed correctness for this exact codebase — test 2 was recorded as "pass" in an
+earlier, lightly-tested pass and only failed once actually run on the Infinix X6831,
+revealing a category-id stub bug that 297+ passing tests never caught. No device has
+touched the code since 2026-08-11/14. `STATE.md`'s own `stopped_at` field names this as the
+explicit next step: "Phase 03's 3 unresolved UAT issues, then Phase 04."
 
 ### Gaps Summary
 
-The phase's mechanical scaffolding for every one of the five roadmap success criteria is present, correctly wired for the common case, and covered by a green 297-test suite. Direct source inspection (not test-suite trust, per this verification's mandate) confirms two roadmap success criteria are **not fully true** at HEAD:
+No blocking gaps remain at the code level. BL-01 (the root cause of the previous
+`gaps_found` verdict) is closed and independently re-verified — not merely trusted from
+SUMMARY.md — by direct source read, independent re-run of the full test/analyze/guard gate,
+and independent reproduction of both mutation-test claims.
 
-- **SC2 (budget progress)** and **SC3 (goal progress)** both partially rely on `TransactionDao` reads (`findByMonth`, `findByLinkedGoal`) that carry `.limit(500)` with no `sortBy`. Because Isar returns unsorted results in id/insertion order, the cap silently retains the *oldest* rows and drops the *newest* — the identical failure mode that made `findAll`'s equivalent defect (CR-04) a Critical finding requiring its own gap-closure plan (03-09). That plan fixed the dashboard's balance/net-worth path (`findAllForAggregates`) but left these two paths, which the phase's own delta code review (`03-REVIEW.md`, finding **BL-01**, filed minutes before this verification and independently confirmed by both the orchestrator and this verifier via direct source read) explicitly identifies as unremediated.
+One latent defect of the same class (unsorted `.limit(500)` feeding a sum, this time net
+worth's goal/debt inputs) was found and traced during this run's mandated hunt for a "third
+instance." It is explicitly judged non-blocking for phase-goal achievement given its
+practically unreachable trigger volume (500+ active goals or debts), but is recorded here
+rather than silently dropped, with a recommendation to close it as a fast follow-up.
 
-  Reasoning on exposure, as requested: `findByLinkedGoal` has no time-window filter, so 500 tagged transactions accumulating against one long-lived savings goal over a multi-year usage horizon (the app's own stated design target — "open AGENDA at any moment... morning, midday, or night") is a plausible real-world trigger, not a purely theoretical one. `findByMonth` is narrower (bounded to expense-type transactions within a single calendar month for a single category), making 500 harder to reach for most users but not impossible for a power user logging multiple transactions per day in one category — and regardless of raw likelihood, the failure is *silent and directional* (understates spend, which can hide an over-limit state a user is relying on the app to warn them about), which is a materially worse outcome than the app doing nothing at all. The review's own framing — "a budget bar that under-reports spend is worse than one that reports nothing" — was independently corroborated by tracing `budget_cubit.dart._reload` and `goal_cubit.dart._refreshGoal` directly to the capped calls.
-
-  Per the task instructions, a passing test suite is explicitly not accepted as evidence here: `test/data/finance/transaction_dao_ordering_test.dart` was confirmed by grep to contain zero references to either `findByMonth` or `findByLinkedGoal`, so the green 297/297 result provides no signal about this defect either way — a fresh regression would need a genuinely new (and, per WR-D6, genuinely behavioral rather than source-text) test to catch it.
-
-- One additional non-blocking warning (**WR-D4**, carried from the review): the recurring-payment soft-delete chain is fully built at every layer but has zero presentation-layer callers, so a user has no way to remove a cancelled subscription (only pause it). This does not fail the literal roadmap wording for SC4 ("log a recurring payment... with amount and billing cycle"), so it is reported as a warning rather than a blocking gap, but is worth closing before calling recurring payments feature-complete.
-
-Both blocking gaps are the *same root cause* (the `.limit(500)` + missing-sort pattern in `transaction_dao.dart`) applied to two different call sites, and the review's own suggested fix (uncap both, mirroring the `findAllForAggregates` treatment) is a small, well-scoped, already-drafted change — this should be a fast, focused closure plan rather than a broad re-plan.
+The phase cannot be marked `passed` because one human-verification item remains open and
+unchanged since the prior verification: no on-device UAT pass exists for current HEAD. Per
+this repository's own evidence, host-side green (tests, analyze, architecture guard — all
+independently re-confirmed passing in this run) has previously failed to predict device
+behavior for the exact same UI code paths this phase's fixes touch. This is not a code
+defect and requires no further engineering work to resolve — it requires physical device
+access, which was unavailable during this verification.
 
 ---
 
-_Verified: 2026-08-15T06:54:25Z_
+_Verified: 2026-08-24T03:42:30Z_
 _Verifier: Claude (gsd-verifier)_
