@@ -59,5 +59,54 @@ void main() {
 
       expect(dir.existsSync(), isFalse);
     });
+
+    test(
+      'tempDir survives a failed open() and close() still removes it '
+      '(WR-01)',
+      () async {
+        final harness = IsarTestHarness();
+        addTearDown(harness.close);
+
+        // A schema list Isar genuinely rejects: the same collection listed
+        // twice throws IsarError('Duplicate collection ...') from inside
+        // Isar.open() itself — an honest, reliable way to force the throw
+        // this test needs, not a mock of the harness.
+        await expectLater(
+          () => harness.open(
+            [TransactionModelSchema, TransactionModelSchema],
+          ),
+          throwsA(anything),
+        );
+
+        final dir = harness.tempDir;
+        expect(
+          dir,
+          isNotNull,
+          reason: 'tempDir must survive a failed Isar.open() so close() '
+              'has something to clean up',
+        );
+        expect(dir!.existsSync(), isTrue);
+
+        await harness.close();
+
+        expect(dir.existsSync(), isFalse);
+      },
+    );
+
+    test('open() throws StateError when called a second time (WR-02)',
+        () async {
+      final harness = IsarTestHarness();
+      addTearDown(harness.close);
+
+      final isar = await harness.open([TransactionModelSchema]);
+
+      await expectLater(
+        () => harness.open([TransactionModelSchema]),
+        throwsA(isA<StateError>()),
+      );
+
+      expect(harness.isar, same(isar));
+      expect(harness.isar!.isOpen, isTrue);
+    });
   });
 }
