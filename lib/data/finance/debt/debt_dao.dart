@@ -17,12 +17,16 @@ class DebtDao {
 
   Future<DebtModel?> findById(int id) async => _collection.get(id);
 
-  /// Returns all active (non-deleted) debts. Limit 500.
-  Future<List<DebtModel>> findAll() async => _collection
-      .filter()
-      .deletedAtIsNull()
-      .limit(500)
-      .findAll();
+  /// Returns EVERY active (non-deleted) debt — deliberately uncapped.
+  ///
+  /// Dual-use: feeds list screens/pickers AND
+  /// `HomeDashboardCubit._reload`'s `computeDebtTotal`, an
+  /// order-independent sum that folds into `computeNetWorth`. A capped read
+  /// here produces a silently WRONG net-worth total rather than an
+  /// obviously missing one (BL-01, the same failure class as CR-04). Never
+  /// add .limit() back to this query.
+  Future<List<DebtModel>> findAll() async =>
+      _collection.filter().deletedAtIsNull().findAll();
 
   // --- Writes ---
 

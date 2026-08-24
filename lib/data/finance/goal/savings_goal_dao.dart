@@ -18,12 +18,17 @@ class SavingsGoalDao {
 
   Future<SavingsGoalModel?> findById(int id) async => _collection.get(id);
 
-  /// Returns all active (non-deleted) savings goals. Limit 500.
-  Future<List<SavingsGoalModel>> findAll() async => _collection
-      .filter()
-      .deletedAtIsNull()
-      .limit(500)
-      .findAll();
+  /// Returns EVERY active (non-deleted) savings goal — deliberately
+  /// uncapped.
+  ///
+  /// Dual-use: feeds list screens/pickers AND
+  /// `HomeDashboardCubit._reload`'s `computeGoalsSavedTotal`, an
+  /// order-independent sum that folds into `computeNetWorth`. A capped read
+  /// here produces a silently WRONG net-worth total rather than an
+  /// obviously missing one (BL-01, the same failure class as CR-04). Never
+  /// add .limit() back to this query.
+  Future<List<SavingsGoalModel>> findAll() async =>
+      _collection.filter().deletedAtIsNull().findAll();
 
   // --- Writes ---
 
