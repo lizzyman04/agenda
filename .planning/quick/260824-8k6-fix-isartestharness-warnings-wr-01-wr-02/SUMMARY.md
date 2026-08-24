@@ -156,3 +156,12 @@ None - no external service configuration required.
 ---
 *Quick task: 260824-8k6*
 *Completed: 2026-08-24*
+
+## Self-Check: PASSED
+
+- FOUND: test/support/isar_test_harness.dart
+- FOUND: test/support/isar_test_harness_test.dart
+- FOUND: .planning/quick/260824-8k6-fix-isartestharness-warnings-wr-01-wr-02/SUMMARY.md
+- FOUND commit: 0f55e3a (Task 1 - test)
+- FOUND commit: 4d5a385 (Task 2 - fix)
+- FOUND commit: 8b65417 (docs - SUMMARY)
