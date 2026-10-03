@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "Por que Privacidade em Primeiro Lugar Importa para Apps de Produtividade"
-date: 2025-04-20 10:00:00 -0300
+date: 2026-04-20 10:00:00 -0300
 lang: pt
 ref: privacy-first
-permalink: /blog/2025/04/20/privacidade-em-primeiro-lugar/
+permalink: /blog/2026/04/20/privacidade-em-primeiro-lugar/
 tags: [privacidade, filosofia, arquitetura, offline]
 excerpt: "Em um mundo onde apps de produtividade são vetores de coleta de dados, o AGENDA escolhe um caminho diferente: seus dados nunca saem do dispositivo."
 ---
@@ -40,7 +40,7 @@ Nenhuma chamada para Amplitude, Mixpanel, Firebase Analytics ou qualquer serviç
 
 ### 2. Sem crash reporting externo
 
-Sem Sentry, sem Crashlytics. Se o app crashar, o log fica no dispositivo. Você pode nos enviar se quiser, mas não mandamos automaticamente.
+Sem Sentry, sem Crashlytics. Se o app crashar, nada é enviado para lugar nenhum.
 
 ### 3. Banco de dados 100% local
 
@@ -58,11 +58,11 @@ O código está em [github.com/lizzyman04/agenda](https://github.com/lizzyman04/
 
 Privacidade local tem um custo real: **sem backup automático na nuvem**.
 
-Se você perder o dispositivo sem ter feito backup manual (via exportação CSV/JSON), seus dados não são recuperáveis. Não temos cópia.
+Se você perder o dispositivo, seus dados se perdem, porque não existe cópia em nenhum outro lugar. Nós também não temos uma.
 
-Isso não é descuido — é uma consequência direta do modelo. Preferiríamos ter um backup automático seguro no futuro, mas não faremos isso de forma que comprometa a promessa de privacidade.
+A exportação/importação JSON e CSV está planejada (Fase 4) e ainda não está no app. Um backup automático pode vir um dia, mas nunca de um jeito que quebre a promessa de privacidade.
 
-Por enquanto: **use a exportação regularmente**. Suas tarefas e finanças merecem um backup local.
+Isso não é descuido — é uma consequência direta do modelo.
 
 ## Por que isso importa além da conveniência
 

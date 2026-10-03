@@ -37,13 +37,8 @@ permalink: /dev/
           <tr><td><code>flutter_bloc</code></td><td>9.1.1</td><td>State management (BLoC/Cubit)</td></tr>
           <tr><td><code>isar_community</code></td><td>3.3.2</td><td>Local database — community fork, actively maintained</td></tr>
           <tr><td><code>get_it</code> + <code>injectable</code></td><td>9.2.1 / 2.7.1</td><td>Dependency injection</td></tr>
-          <tr><td><code>go_router</code></td><td>17.2.0</td><td>Declarative navigation + deep links</td></tr>
-          <tr><td><code>flutter_local_notifications</code></td><td>21.0.0</td><td>Scheduled local notifications</td></tr>
-          <tr><td><code>fl_chart</code></td><td>1.2.0</td><td>Finance charts (line, bar, pie)</td></tr>
-          <tr><td><code>flutter_screen_lock</code></td><td>9.2.2</td><td>PIN lock screen UI</td></tr>
-          <tr><td><code>local_auth</code></td><td>3.0.1</td><td>Biometric auth (Face ID, fingerprint)</td></tr>
-          <tr><td><code>flutter_secure_storage</code></td><td>10.0.0</td><td>Secure PIN hash (Keychain / Encrypted SharedPrefs)</td></tr>
-          <tr><td><code>csv</code></td><td>8.0.0</td><td>RFC-compliant CSV export/import</td></tr>
+          <tr><td><code>go_router</code></td><td>17.2.0</td><td>Declared in pubspec, not wired yet (navigation is Navigator plus a tab shell)</td></tr>
+          <tr><td><code>fl_chart</code></td><td>1.2.0</td><td>Finance charts (pie and bar)</td></tr>
           <tr><td><code>intl</code></td><td>0.20.2</td><td>Internationalization (PT-BR + EN)</td></tr>
           <tr><td><code>shared_preferences</code></td><td>2.5.5</td><td>Non-sensitive settings persistence</td></tr>
           <tr><td><code>equatable</code></td><td>2.0.8</td><td>Value equality for BLoC states and events</td></tr>
@@ -69,7 +64,7 @@ permalink: /dev/
 ├── <span class="t-dir">data/</span>            <span class="t-comment"># Isar models, mappers, repo implementations</span>
 │   ├── <span class="t-dir">tasks/</span>
 │   └── <span class="t-dir">finance/</span>
-├── <span class="t-dir">infrastructure/</span>  <span class="t-comment"># Notification, backup, app lock services</span>
+├── <span class="t-dir">infrastructure/</span>  <span class="t-comment"># Repository implementations (platform services arrive in Phases 4-5)</span>
 ├── <span class="t-dir">application/</span>     <span class="t-comment"># BLoC/Cubit state management</span>
 │   ├── <span class="t-dir">tasks/</span>
 │   └── <span class="t-dir">finance/</span>
@@ -90,14 +85,14 @@ permalink: /dev/
     <h3>{{ t["start-prereq"] }}</h3>
     <div class="code-block"><span class="c-comment"># {% if site.active_lang == 'pt' %}Necessário{% else %}Required{% endif %}</span>
 Flutter SDK >= 3.38.1
-Dart >= 3.5.0
+Dart >= 3.7.0
 Android Studio {% if site.active_lang == 'pt' %}ou{% else %}or{% endif %} Xcode</div>
 
     <h3 style="margin-top:2rem">{{ t["start-setup"] }}</h3>
     <div class="code-block"><span class="c-cmd">git clone</span> https://github.com/lizzyman04/agenda.git
 <span class="c-cmd">cd</span> agenda
 <span class="c-cmd">flutter pub get</span>
-<span class="c-cmd">flutter pub run build_runner build --delete-conflicting-outputs</span>
+<span class="c-cmd">dart run build_runner build --delete-conflicting-outputs</span>
 <span class="c-cmd">flutter gen-l10n</span>
 <span class="c-cmd">flutter run</span></div>
 
@@ -133,7 +128,7 @@ Android Studio {% if site.active_lang == 'pt' %}ou{% else %}or{% endif %} Xcode<
       <div class="rm-item">
         <div class="rm-num">3</div>
         <div class="rm-content">
-          <h4>{{ t["roadmap-p3-title"] }} <span class="badge badge-planned">{{ t["badge-planned"] }}</span></h4>
+          <h4>{{ t["roadmap-p3-title"] }} <span class="badge badge-done">{{ t["badge-active"] }}</span></h4>
           <p>{{ t["roadmap-p3-desc"] }}</p>
         </div>
       </div>
@@ -149,6 +144,13 @@ Android Studio {% if site.active_lang == 'pt' %}ou{% else %}or{% endif %} Xcode<
         <div class="rm-content">
           <h4>{{ t["roadmap-p5-title"] }} <span class="badge badge-planned">{{ t["badge-planned"] }}</span></h4>
           <p>{{ t["roadmap-p5-desc"] }}</p>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-num">6</div>
+        <div class="rm-content">
+          <h4>{{ t["roadmap-p6-title"] }} <span class="badge badge-done">{{ t["badge-active"] }}</span></h4>
+          <p>{{ t["roadmap-p6-desc"] }}</p>
         </div>
       </div>
     </div>
@@ -185,7 +187,7 @@ Android Studio {% if site.active_lang == 'pt' %}ou{% else %}or{% endif %} Xcode<
     <p class="section-sub">{{ t["license-desc"] }}</p>
     <div class="code-block">MIT License
 
-Copyright (c) 2025 lizzyman04
+Copyright (c) 2024 lizzyman04
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
