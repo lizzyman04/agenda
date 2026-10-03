@@ -1,7 +1,7 @@
 ---
 phase: 03-finance-core
 verified: 2026-08-15T06:54:25Z
-status: gaps_found
+status: superseded  # was gaps_found; gaps closed per 03-VERIFICATION.md (BL-01, plans 03-13/03-14)
 score: 4/5 must-haves verified
 overrides_applied: 0
 gaps:

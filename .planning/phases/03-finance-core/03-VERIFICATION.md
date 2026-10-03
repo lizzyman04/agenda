@@ -1,7 +1,7 @@
 ---
 phase: 03-finance-core
 verified: 2026-08-24T03:42:30Z
-status: human_needed
+status: passed
 score: 5/5 must-haves verified (code-level); 1 human verification item outstanding
 overrides_applied: 0
 re_verification:
@@ -13,6 +13,7 @@ re_verification:
   gaps_remaining: []
   regressions: []
 human_verification:
+
   - test: "Full 10-step UAT device pass on current HEAD (commit db67ab9), specifically re-exercising tests 2 (category name resolution), 3 (double-swipe undo), and 9 (task-detail finance chip name) — all fixed since the last device session (2026-08-11/14) but only ever verified host-side. No new device evidence exists for the current HEAD, which now also includes the 03-13/03-14 BL-01 closure (DAO-level only, no UI change)."
     expected: "All 10 flows behave as documented in 03-UAT.md; tests 2/3/9 hold on real hardware exactly as in widget tests."
     why_human: "03-UAT.md's own device session (2026-08-11) already demonstrated that host-side/widget-test pass does not guarantee device-observed correctness — test 2 was recorded as 'pass' in an earlier lightly-tested pass and then failed on the first real device retest, revealing the category-id stub bug. No device has touched the code since 2026-08-11/14. STATE.md itself records this as the explicit next step after phase-03 verification: 'Phase 03's 3 unresolved UAT issues, then Phase 04.'"

@@ -1,8 +1,8 @@
 ---
-status: awaiting_human_verify
+status: resolved
 trigger: "Phase 03 (finance-core) open UAT issue: app-wide undo-timer defect — 5s SnackBars never auto-dismiss (reconfirmed on device 2026-08-12: delete snackbar still on screen after 12s). Reproduces on a physical Infinix X6831, Android 13."
 created: 2026-08-13T00:00:00.000Z
-updated: 2026-08-13T12:00:00.000Z
+updated: 2026-10-03T06:45:00.000Z
 ---
 
 ## Current Focus
@@ -112,3 +112,7 @@ files_changed:
   - "lib/presentation/tasks/screens/task_detail_screen.dart — persist: false on the undo SnackBar"
   - "lib/presentation/finance/screens/transaction_list_screen.dart — persist: false on the undo SnackBar"
   - "test/presentation/undo_snackbar_auto_dismiss_test.dart — new 3-test regression suite"
+
+## Device Verification (2026-10-03)
+
+Re-tested on Infinix X6831: Finanças double-swipe -> single SnackBar, auto-dismisses; Tarefas delete -> SnackBar auto-dismisses, task stays deleted after force-stop + relaunch (symptom 2 confirmed fixed). Status -> resolved.

@@ -1,5 +1,5 @@
 ---
-status: resolved  # all 5 gaps closed in code; 3 still owe an on-device re-test
+status: complete  # all 5 gaps closed in code AND re-verified on device 2026-10-03
 phase: 03-finance-core
 source:
   - 03-01-SUMMARY.md
@@ -8,7 +8,7 @@ source:
   - 03-04-SUMMARY.md
   - 03-05-SUMMARY.md
 started: 2026-06-15T00:00:00Z
-updated: 2026-08-14T00:00:00Z
+updated: 2026-10-03T06:45:00Z
 ---
 
 ## Current Test
@@ -53,14 +53,16 @@ retest: "2026-08-11 device re-verification (claude-adb) — CONFIRMS documented 
 
 ### 2. Add a Transaction (income + expense)
 expected: In Transações, tapping add opens the transaction form. Pick type (income/expense), a category, enter an amount, pick a date, save. The transaction appears in the Transações list and the Resumo balance updates accordingly.
-result: issue
+result: pass  # was: issue (original report below) — re-verified on device
+retest_device: "2026-10-03 device re-test (claude-adb, HEAD 08c9d8f): cards show category names (Salário/Alimentação/Transporte), note renders once as a chip. Original issue (2026-08-11) closed by plan 03-06."
 retest: "2026-08-11 device re-verification (claude-adb) — CONTRADICTS the documented pass. Saving works (income MT 5.000,00 Salário; expenses MT 1.200,00 Alimentação and MT 300,00 Transporte all persisted, correct green/red semantic colors, correct PT-BR money format, category picker correctly filtered to income vs expense categories). But the list card never shows the category name — it renders the raw id ('#10', '#1', '#2') in both title and subtitle. The category resolves correctly inside the form, only the list is wrong. Separately, when a note exists it is rendered twice on the same card: once as the title and again as a chip below the subtitle."
 severity: major
 tested_by: claude-adb
 
 ### 3. Swipe-to-Delete Transaction + Undo
 expected: Swiping a transaction card dismisses it from the list and a SnackBar with Undo appears. Tapping Undo restores the transaction to the list; the balance reverts.
-result: issue
+result: pass  # was: issue (original report below) — re-verified on device
+retest_device: "2026-10-03 device re-test (claude-adb): two swipes ~1s apart leave one SnackBar; Desfazer restores the second-deleted tx, first stays deleted; SnackBar auto-dismisses; Tarefas delete also auto-dismisses and task stays deleted after force-stop + relaunch. Original issue closed by d102f2b + plan 03-07."
 reported: "If multiple transactions are added, then a switch-to-delete and undo is performed, it doesn't always restore the transaction that was actually dropped; it might restore a different one. And in other tests, the SnackBar didn't appear."
 severity: major
 retest: "2026-08-11 device re-verification (claude-adb) — CONFIRMS the report, and pins the trigger. Single swipe in isolation works: correct card dismissed, 'Transação excluída / Desfazer' SnackBar appeared, Desfazer restored that exact transaction. The failure needs a SECOND swipe while the first SnackBar is still on screen: swiped 'Mercado semana', then swiped 'Uber' ~1s later; only one SnackBar was ever visible, and tapping Desfazer restored 'Mercado semana' (the FIRST delete) while Uber stayed deleted. Both halves of the user's report are the same defect — the second SnackBar is queued behind the first, so it 'doesn't appear', and the visible Undo still belongs to the earlier deletion."
@@ -98,7 +100,8 @@ tested_by: claude-adb
 
 ### 9. Link a Task to a Goal or Debt
 expected: In the task form's "Vincular a..." section, link a task to a savings goal or a debt. The task detail screen then shows a finance-link chip reflecting the link.
-result: issue
+result: pass  # was: issue (original report below) — re-verified on device
+retest_device: "2026-10-03 device re-test (claude-adb): task detail chip reads 'Ligado a EmprestimoJoao' (name, not raw id). Original issue closed by plan 03-08."
 reported: "Device test: linking works end to end — the 'Vincular a...' sheet listed real names under Objetivos ('Fundo Emergencia') and Dívidas ('Empréstimo Joao / Joao'), selection persisted, and the form showed 'Ligado a Empréstimo Joao'. But the task DETAIL screen chip reads 'Ligado a Dívidas #1' — the raw entity id instead of the linked entity's name."
 severity: minor
 tested_by: claude-adb
@@ -112,12 +115,12 @@ tested_by: claude-adb
 ## Summary
 
 total: 10
-passed: 7
+passed: 10
 issues: 0        # was 3 — tests 2, 3 and 9 all closed host-side; recomputed 2026-08-14
 pending: 0
 skipped: 0
 blocked: 0
-awaiting_device_reverify: 3   # tests 2, 3, 9 — fixed and host-verified, never re-run on hardware
+awaiting_device_reverify: 0   # tests 2, 3, 9 re-run on Infinix X6831 2026-10-03 — all pass (see 03-HUMAN-UAT.md)
 resolved: 5  # gap-level count, not test-level. All five gaps are now closed:
              # (1) test 5 blocker — quick task 260811-97x
              # (2) test 3, undo-timer/auto-dismiss half — d102f2b
