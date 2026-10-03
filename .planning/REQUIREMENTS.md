@@ -22,16 +22,16 @@
 
 ### Finance Management
 
-- [ ] **FIN-01**: User can log income transactions with amount, category, date, and optional note
-- [ ] **FIN-02**: User can log expense transactions with amount, category, date, and optional note
-- [ ] **FIN-03**: User can edit and delete transactions
-- [ ] **FIN-04**: User can set a monthly budget limit per expense category
-- [ ] **FIN-05**: User can define savings goals with target amount and optional deadline
-- [ ] **FIN-06**: User can track savings goal progress (amount saved vs. target)
-- [ ] **FIN-07**: User can log debts with direction (to pay vs. to receive), amount, and due date
-- [ ] **FIN-08**: User can log recurring payments (subscriptions and bills) with amount and cycle
-- [ ] **FIN-09**: User can view a dashboard with current balance and net worth overview
-- [ ] **FIN-10**: User can view spending summary charts — monthly breakdown by category (pie and bar)
+- [x] **FIN-01**: User can log income transactions with amount, category, date, and optional note
+- [x] **FIN-02**: User can log expense transactions with amount, category, date, and optional note
+- [x] **FIN-03**: User can edit and delete transactions
+- [x] **FIN-04**: User can set a monthly budget limit per expense category
+- [x] **FIN-05**: User can define savings goals with target amount and optional deadline
+- [x] **FIN-06**: User can track savings goal progress (amount saved vs. target)
+- [x] **FIN-07**: User can log debts with direction (to pay vs. to receive), amount, and due date
+- [x] **FIN-08**: User can log recurring payments (subscriptions and bills) with amount and cycle
+- [x] **FIN-09**: User can view a dashboard with current balance and net worth overview
+- [x] **FIN-10**: User can view spending summary charts — monthly breakdown by category (pie and bar)
 
 ### Notifications
 
@@ -61,21 +61,25 @@
 - [ ] **UX-01**: App supports English and Portuguese (user-toggled in Settings)
 - [x] **UX-02**: App is fully functional offline — no feature requires internet access
 - [ ] **UX-03**: App displays a privacy statement on first launch ("Your data never leaves this device")
-- [ ] **UX-04**: All screens display meaningful empty states with action prompts when no data exists
+- [x] **UX-04**: All screens display meaningful empty states with action prompts when no data exists
 
 ## v2 Requirements
 
 ### Notifications
+
 - **NOTF-V2-01**: User can snooze a task reminder (15 min / 1 hr / tomorrow)
 
 ### Finance
+
 - **FIN-V2-01**: User can toggle budget rollover per category (unused balance carries to next month)
 - **FIN-V2-02**: App supports multiple currencies with per-account currency selection
 
 ### Tasks
+
 - **TASK-V2-01**: User can input tasks using natural language ("Buy groceries tomorrow at 5pm")
 
 ### Sync
+
 - **SYNC-V2-01**: User can opt in to cloud sync across devices (with end-to-end encryption)
 
 ## Out of Scope
@@ -110,17 +114,17 @@
 | TASK-10 | Phase 2: Task Core | Complete |
 | TASK-11 | Phase 2: Task Core | Complete |
 | TASK-12 | Phase 2: Task Core | Complete |
-| FIN-01 | Phase 3: Finance Core | Pending |
-| FIN-02 | Phase 3: Finance Core | Pending |
-| FIN-03 | Phase 3: Finance Core | Pending |
-| FIN-04 | Phase 3: Finance Core | Pending |
-| FIN-05 | Phase 3: Finance Core | Pending |
-| FIN-06 | Phase 3: Finance Core | Pending |
-| FIN-07 | Phase 3: Finance Core | Pending |
-| FIN-08 | Phase 3: Finance Core | Pending |
-| FIN-09 | Phase 3: Finance Core | Pending |
-| FIN-10 | Phase 3: Finance Core | Pending |
-| UX-04 | Phase 3: Finance Core | Pending |
+| FIN-01 | Phase 3: Finance Core | Complete |
+| FIN-02 | Phase 3: Finance Core | Complete |
+| FIN-03 | Phase 3: Finance Core | Complete |
+| FIN-04 | Phase 3: Finance Core | Complete |
+| FIN-05 | Phase 3: Finance Core | Complete |
+| FIN-06 | Phase 3: Finance Core | Complete |
+| FIN-07 | Phase 3: Finance Core | Complete |
+| FIN-08 | Phase 3: Finance Core | Complete |
+| FIN-09 | Phase 3: Finance Core | Complete |
+| FIN-10 | Phase 3: Finance Core | Complete |
+| UX-04 | Phase 3: Finance Core | Complete |
 | NOTF-01 | Phase 4: Notifications + Backup | Pending |
 | NOTF-02 | Phase 4: Notifications + Backup | Pending |
 | NOTF-03 | Phase 4: Notifications + Backup | Pending |
@@ -141,6 +145,7 @@
 | UX-03 | Phase 5: App Lock + Settings + Polish | Pending |
 
 **Coverage:**
+
 - v1 requirements: 44 total
 - Mapped to phases: 44
 - Unmapped: 0
