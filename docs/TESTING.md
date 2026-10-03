@@ -3,7 +3,7 @@
 
 # Testing
 
-AGENDA uses `flutter_test` as the base framework, `bloc_test` for Cubit/BLoC unit tests, and `mocktail` for mock creation — no code generation required for mocks.
+AGENDA uses `flutter_test` as the base framework, `bloc_test` for Cubit/BLoC unit tests, and `mocktail` for mock creation — no code generation required for mocks. A small set of tests runs against a real Isar database (see [Testing against a real Isar](#testing-against-a-real-isar)).
 
 ---
 
@@ -64,48 +64,35 @@ open coverage/html/index.html
 
 ## Test Structure
 
-Tests mirror the `lib/` directory structure under `test/`. Each layer has its own subdirectory:
+Tests mirror the `lib/` directory structure under `test/`. Each layer has its own subdirectory; the tree below shows directories with representative files, not an exhaustive list:
 
 ```
 test/
 ├── application/
-│   └── tasks/
-│       ├── day_planner_cubit_test.dart   # DayPlannerCubit (1-3-5 Rule slots)
-│       ├── project_cubit_test.dart       # ProjectCubit (subtask management)
-│       └── task_list_cubit_test.dart     # TaskListCubit (search, filter, CRUD)
-├── config/
-│   └── di/
-│       └── di_test.dart                  # GetIt DI graph smoke tests
+│   ├── tasks/        # Task cubits: day_planner_cubit_test.dart, task_list_cubit_test.dart, ...
+│   └── finance/      # Finance cubits and aggregators: budget_cubit_test.dart, home_dashboard_cubit_test.dart, ...
+├── config/di/        # GetIt DI graph smoke tests (di_test.dart)
 ├── core/
-│   ├── config/
-│   │   └── app_config_test.dart          # AppConfig constants
-│   └── failures/
-│       └── failure_test.dart             # Failure hierarchy + Result pattern
+│   ├── config/       # AppConfig constants
+│   ├── failures/     # Failure hierarchy + Result pattern
+│   └── utils/        # amount_parser_test.dart, amount_formatter_test.dart
 ├── data/
-│   ├── database/
-│   │   └── migration_runner_test.dart    # MigrationRunner schema version logic
-│   └── tasks/
-│       ├── item_dao_test.dart            # ItemDao (stub — not yet populated)
-│       └── item_mapper_test.dart         # ItemMapper round-trip + enum mapping
+│   ├── database/     # migration_runner_test.dart (schema v3, category seeding)
+│   ├── tasks/        # item_mapper_test.dart (item_dao_test.dart is an empty stub)
+│   └── finance/      # mappers, plus DAO tests that run against a real Isar
 ├── domain/
-│   └── tasks/
-│       ├── eisenhower_quadrant_test.dart # EisenhowerQuadrant enum values
-│       ├── item_test.dart                # Item domain model defaults + Eisenhower getter
-│       └── recurrence_engine_test.dart   # RecurrenceEngine.parse() interface contract
+│   ├── tasks/        # Item, EisenhowerQuadrant, RecurrenceEngine contract
+│   └── finance/      # Transaction and SavingsGoal entities
 ├── infrastructure/
-│   └── tasks/
-│       ├── item_repository_impl_test.dart    # ItemRepositoryImpl DAO delegation
-│       └── recurrence_engine_impl_test.dart  # RecurrenceEngineImpl.parse() + nextOccurrence()
-├── l10n/
-│   └── l10n_test.dart                    # ARB key parity + LocaleCubit locale persistence
+│   ├── tasks/        # ItemRepositoryImpl, RecurrenceEngineImpl
+│   └── finance/      # goal_repository_add_contribution_test.dart
+├── l10n/             # ARB key parity + LocaleCubit
 ├── presentation/
-│   └── tasks/
-│       ├── day_planner_test.dart         # DayPlannerScreen widget tests
-│       ├── eisenhower_board_test.dart    # EisenhowerScreen quadrant rendering
-│       ├── gtd_test.dart                 # GtdChip + GtdFilterScreen widget tests
-│       ├── task_form_test.dart           # TaskFormScreen validation + submit
-│       └── task_list_screen_test.dart    # TaskListScreen empty state, SnackBar, delete
-└── widget_test.dart                      # Root smoke test
+│   ├── tasks/        # Task screens, Eisenhower, Day Planner, GTD
+│   └── finance/      # Transaction list, budget sheet, goal sheet, charts, undo SnackBars
+├── support/          # isar_test_harness.dart, its self-test, and the Isar Core warm-up test
+├── tool/             # check_architecture_test.dart (architecture guard)
+└── widget_test.dart  # Root smoke test
 ```
 
 ---
@@ -121,7 +108,7 @@ test/
 | **Failure + Result** | `failure_test.dart` | All five `Failure` subtypes carry messages; `Success`/`Err` pattern matching with Dart 3 sealed classes |
 | **AppConfig constants** | `app_config_test.dart` | `appName`, `packageName`, `schemaVersion`, notification base IDs are distinct |
 | **Data mapper** | `item_mapper_test.dart` | Full `toDomain`/`toModel` field round-trip; `timeInfo` and `moneyInfo` embedded objects; all five `Priority` and four `SizeCategory` enum mappings |
-| **Migration runner** | `migration_runner_test.dart` | Fresh install runs v1→v2 migrations; already-at-target is a no-op; future version is a no-op |
+| **Migration runner** | `migration_runner_test.dart` | Runs up to schema version 3; already-at-target is a no-op; case 3 seeds exactly 13 default categories (9 expense, 4 income) |
 | **Repository impl** | `item_repository_impl_test.dart` | `createItem` delegates to DAO and returns `Success<Item>`; parent type validation returns `Err(ValidationFailure)`; `softDelete`, `restoreItem`, `searchByTitle` delegate to DAO |
 | **TaskListCubit** | `task_list_cubit_test.dart` | Initial state; `start()` emits `TaskListLoaded`; `search()` delegates to repo; `applyFilter()` passes correct params; `softDelete()` emits `TaskListWithPendingUndo`; `restoreItem()` returns to `TaskListLoaded`; `completeItem()` sets `isCompleted = true`; repo error emits `TaskListError` |
 | **DayPlannerCubit** | `day_planner_cubit_test.dart` | Initial state; `assignBig/Medium/Small()` fill slots; slot limit warning fires on overflow; `remove()` targets correct slot; `clearAll()` resets to initial |
@@ -133,6 +120,33 @@ test/
 | **EisenhowerScreen** | `eisenhower_board_test.dart` | All four quadrant labels render; urgent+important task appears in "Do Now" section |
 | **DayPlannerScreen** | `day_planner_test.dart` | Three slot section headers render; warning banner visible/absent based on `slotLimitWarning` |
 | **GtdChip + GtdFilterScreen** | `gtd_test.dart` | Chip label renders; selected chip shows checkmark; tapping chip fires `onSelected(true)`; screen renders distinct context chips; Apply passes selected context to `cubit.applyFilter`; empty-contexts state shows placeholder text |
+| **Amount parser and formatter** | `amount_parser_test.dart`, `amount_formatter_test.dart` | Comma and dot decimals parse to integer cents; empty, zero and garbage input return null; cents format back for input |
+| **Finance mappers** | `transaction_mapper_test.dart`, `savings_goal_mapper_test.dart` | `amountCents` is preserved exactly; enum and contribution round-trips |
+| **Aggregate completeness (real Isar)** | `transaction_dao_aggregate_completeness_test.dart`, `net_worth_aggregate_completeness_test.dart` | Balance and net worth include rows past the 500-row display cap |
+| **DAO ordering (real Isar)** | `transaction_dao_ordering_test.dart` | Queries sort before applying the cap |
+| **Finance cubits** | `transaction_cubit_test.dart`, `budget_cubit_test.dart`, `goal_cubit_test.dart`, `debt_cubit_test.dart`, `home_dashboard_cubit_test.dart` | State emissions and repository calls for each finance cubit; dashboard aggregations (balance, net worth, category spend) |
+| **Undo SnackBar behaviour** | `transaction_list_undo_test.dart`, `debt_list_undo_test.dart`, `undo_snackbar_auto_dismiss_test.dart` | Delete shows an undo SnackBar; a second delete inside the window replaces the first |
+| **Budget limit and goal contribution sheets** | `budget_limit_sheet_test.dart`, `goal_contribution_sheet_test.dart` | Saving does not throw and calls the cubit; dismissing with an empty amount saves nothing |
+| **Recurring payment visibility** | `recurring_payment_visibility_test.dart` | A paused payment stays visible and reads as paused; the toggle resumes it |
+| **Pie chart** | `spending_pie_chart_test.dart` | Empty state, single-category section, legend, color palette wrap |
+| **Architecture guard** | `test/tool/check_architecture_test.dart` | The 150-line cap, the 10-files-per-directory cap and the README check against synthetic fixture trees |
+
+---
+
+## Testing against a real Isar
+
+Most tests mock the repository or DAO layer, which means a mocked query never runs. Defects that live inside a DAO's query shape (for example a result cap applied without a sort) need a real database, so the repository includes a harness: `test/support/isar_test_harness.dart` (`IsarTestHarness`).
+
+What the harness does:
+
+- opens a real `isar_community` instance in an isolated temp directory
+- initializes Isar Core with download enabled (`Isar.initializeIsarCore(download: true)`), once per test process
+- is covered by a self-test (`test/support/isar_test_harness_test.dart`) that proves open, write, read and teardown, and that a second `open()` throws
+- `close()` removes the temp directory
+
+Why CI pre-warms the binary: the Isar Core download is a check-then-act with no lock, so parallel `flutter test` workers can corrupt it. CI therefore runs `flutter test --no-pub -j 1 test/support/_warm_isar_core_test.dart` as its own step before the full suite. It must stay a `flutter test` invocation, not `dart run`, so the download path resolves identically (see [CONFIGURATION.md](CONFIGURATION.md)). On a machine with no cached Isar Core binary and no network, the first run of a harness-based test fails at download.
+
+`test/data/tasks/item_dao_test.dart` is still an empty stub; the task DAO has no real-Isar test yet.
 
 ---
 
@@ -322,7 +336,7 @@ tearDown(() async {
 
 **Helper factories:**
 
-Each test file defines a local `makeItem()` factory to create domain objects with sensible defaults. Copy and adapt the pattern from any existing Cubit test:
+Each test file defines a local factory (for example `makeItem()`) to create domain objects with sensible defaults. Copy and adapt the pattern from any existing Cubit test:
 
 ```dart
 Item makeItem({required int id, String title = 'Task'}) {
@@ -365,9 +379,6 @@ No minimum coverage threshold is configured. Run `flutter test --no-pub --covera
 
 ## CI Integration
 
-No CI pipeline is configured for this repository. Tests are run locally with `flutter test --no-pub`. When a CI workflow is added, the recommended test step is:
+The workflow is `.github/workflows/ci.yml`. It runs on every push and pull request to `main`, in this order: checkout, Flutter `3.41.4`, `flutter pub get`, code generation, `flutter gen-l10n`, analyze, the architecture guard, the Isar Core warm-up, the full test suite with coverage (`flutter test --no-pub --coverage`), and the offline-guarantee check. See [CONFIGURATION.md](CONFIGURATION.md) for the exact commands.
 
-```yaml
-- name: Run tests
-  run: flutter test --no-pub --reporter expanded
-```
+`dart format` is not enforced in CI, because the tree is not uniformly format-clean.

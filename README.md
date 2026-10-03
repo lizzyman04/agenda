@@ -9,7 +9,7 @@
 [![Dart](https://img.shields.io/badge/Dart-3.11.1-0175C2?logo=dart&logoColor=white)](https://dart.dev)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-3DDC84?logo=android&logoColor=white)](https://flutter.dev/multi-platform/mobile)
 [![Privacy](https://img.shields.io/badge/privacy-100%25%20offline-7C4DFF)](#privacy-first)
-[![Tests](https://img.shields.io/badge/tests-211%20passing-success)](#testing)
+[![Tests](https://img.shields.io/badge/tests-306%20passing-success)](#testing)
 [![Style](https://img.shields.io/badge/style-very__good__analysis-B22ADC)](https://pub.dev/packages/very_good_analysis)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -26,6 +26,10 @@
 > Open AGENDA at any moment — morning, midday, or night — and immediately see
 > **what needs doing** and **where your money stands**, without ever needing an
 > internet connection.
+
+**Status: pre-release.** Phases 1-3 and 6 are complete. Notifications,
+backup/export and app lock are planned (see the [Roadmap](#roadmap)) and are not
+in the app yet. AGENDA is not on the app stores yet.
 
 ## Table of Contents
 
@@ -62,7 +66,7 @@ device.**
 |-----------|---------------------------|
 | No analytics | Not even anonymous usage or crash reporting |
 | No cloud sync | No account, no sign-up, no server — ever |
-| No network permission | The app is incapable of making a network request |
+| No networking code | No networking packages (enforced by a CI check on `pubspec.yaml`), and the Android release manifest requests no internet permission (Flutter adds it to debug and profile builds only, for tooling) |
 | Local-only storage | A single embedded Isar database on your device |
 | Airplane-mode complete | 100% of features work with radios off |
 
@@ -86,7 +90,7 @@ system.
 - Projects with subtasks and completion roll-up
 - Standalone tasks with due date and time
 - Create, edit, delete with 5-second undo (soft delete)
-- Recurring tasks — daily, weekly, monthly, custom
+- Recurring tasks — daily, weekly, monthly, yearly
 - Keyword search
 - Filter by project, quadrant, GTD context, or due-date range
 - Day Planner enforcing 1-3-5 slot constraints
@@ -123,9 +127,9 @@ up in your actual workload.
 | State | BLoC / Cubit (`flutter_bloc`) |
 | Database | Isar Community 3.3.2 (embedded, on-device) |
 | Dependency Injection | GetIt + Injectable |
-| Routing | go_router |
+| Routing | `go_router` is declared but not wired yet (navigation is `Navigator` plus a tab shell) |
 | Charts | fl_chart |
-| Localization | `flutter_localizations` + `intl` (PT-BR default, EN toggle) |
+| Localization | `flutter_localizations` + `intl` (PT-BR is the default, EN translations in place; the in-app language switch arrives with the Settings screen in Phase 5) |
 | Testing | `flutter_test` + `bloc_test` + `mocktail` |
 | Linting | `very_good_analysis` (strict) |
 
@@ -165,6 +169,7 @@ flutter run
 flutter test --no-pub              # full suite
 flutter test --no-pub --coverage   # with coverage
 flutter analyze --no-fatal-infos   # static analysis
+dart run tool/check_architecture.dart   # architecture guard (150-line cap, files per directory, README per directory)
 ```
 
 ## Project Structure
@@ -179,7 +184,7 @@ lib/
 ├── infrastructure/  Repository implementations, platform services
 ├── application/     BLoC / Cubit state management
 ├── presentation/    Screens and widgets, grouped by feature slice
-└── config/          DI graph, l10n config, router
+└── config/          DI graph, l10n config
 ```
 
 Further reading in [`docs/`](docs/):
@@ -194,7 +199,9 @@ Further reading in [`docs/`](docs/):
 
 ## Architecture Rules
 
-Enforced house rules for this codebase:
+Enforced house rules for this codebase. Rules 1 to 3 are enforced in CI by the
+architecture guard (rule 3 covers the directories under `lib/presentation/` and
+`lib/application/`):
 
 1. **No source file exceeds 150 lines.** Long files get split by
    responsibility, not chopped arbitrarily.
@@ -220,9 +227,10 @@ for a worked example of a compliant slice.
 |:-----:|-----------|--------|
 | 01 | Foundation — scaffold, database, DI, l10n, CI | ✅ Complete |
 | 02 | Task Management | ✅ Complete |
-| 03 | Financial Tracking | 🔨 In verification |
+| 03 | Financial Tracking | ✅ Complete — passed a 10-flow check on a physical Android device on 2026-10-03 |
 | 04 | Notifications and Backup | ⏳ Planned |
 | 05 | App Lock — PIN + biometrics | ⏳ Planned |
+| 06 | Architecture Compliance — 150-line cap, nesting, README per folder, CI guard | ✅ Complete — done ahead of 04 and 05 |
 
 ## Contributing
 

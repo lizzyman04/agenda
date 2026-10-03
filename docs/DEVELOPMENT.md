@@ -11,10 +11,23 @@
 | Generate localizations | `flutter gen-l10n` |
 | Run app | `flutter run` |
 | Lint | `flutter analyze --no-fatal-infos` |
-| Format | `dart format .` |
+| Format | `dart format <files you touched>` |
 | Tests | `flutter test --no-pub` |
+| Architecture guard | `dart run tool/check_architecture.dart` |
 
 Run code generation after any change to `@Collection`, `@embedded`, `@injectable`, `@singleton`, or `@module` annotated code.
+
+---
+
+## House rules (enforced in CI)
+
+`dart run tool/check_architecture.dart` checks the hand-written `lib/` tree, and CI runs it right after the Analyze step:
+
+- **150-line cap** — no hand-written file exceeds 150 lines. Generated files are exempt, and one documented exemption exists in `tool/architecture_exemptions.dart`.
+- **At most 10 hand-written files per directory** — nest by domain instead of growing a flat folder.
+- **A `README.md` in every directory** under `lib/presentation/` and `lib/application/`, stating its responsibility and contents.
+
+Worked example of a compliant slice: [`lib/presentation/finance/goals/README.md`](../lib/presentation/finance/goals/README.md). More detail in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ---
 
@@ -33,113 +46,90 @@ dart run build_runner build --delete-conflicting-outputs
 dart run build_runner watch --delete-conflicting-outputs
 ```
 
-Generated files are excluded from analysis (`analysis_options.yaml`) — never edit them manually.
+Generated code is committed to the repository (`lib/generated/l10n`, every `.g.dart`, `lib/config/di/injection.config.dart`) and excluded from analysis only (`analysis_options.yaml`) — never edit it manually. Commit the regenerated output together with the change that caused it.
 
 ---
 
 ## Adding a new feature (layered architecture)
 
-The architecture has five layers: **domain → data → infrastructure → application → presentation**. Always implement top-down.
+The architecture has five layers: **domain → data → infrastructure → application → presentation**. Always implement top-down. Mirror an existing slice and follow the house rules above. The paths below are the real transactions slice.
 
-### 1. Domain layer (`lib/domain/<feature>/`)
+### 1. Domain layer (`lib/domain/finance/transaction/`)
 
 Define the entity and repository interface:
 
 ```dart
-// lib/domain/finance/transaction.dart
+// lib/domain/finance/transaction/transaction.dart
 class Transaction {
-  const Transaction({required this.id, required this.amount, ...});
+  const Transaction({required this.id, required this.amountCents, ...});
   final int id;
-  final double amount;
+  final int amountCents; // money is stored as integer cents
   // ...
 }
 
-// lib/domain/finance/transaction_repository.dart
-abstract interface class TransactionRepository {
-  AsyncResult<List<Transaction>> getAll();
-  AsyncResult<void> save(Transaction transaction);
+// lib/domain/finance/transaction/transaction_repository.dart
+abstract class TransactionRepository {
+  AsyncResult<Transaction> createTransaction(Transaction transaction);
+  AsyncResult<List<Transaction>> getTransactions();
+  // ...
 }
 ```
 
-### 2. Data layer (`lib/data/<feature>/`)
+### 2. Data layer (`lib/data/finance/transaction/`)
 
-Define the Isar model with `@Collection`, run `build_runner`:
+Define the Isar model with `@Collection`, then run `build_runner`. Add a DAO (`transaction_dao.dart`) for read/write operations using `IsarService`, and a mapper (`transaction_mapper.dart`) between model and domain entity:
 
 ```dart
-// lib/data/finance/transaction_model.dart
+// lib/data/finance/transaction/transaction_model.dart
 import 'package:isar_community/isar.dart';
 part 'transaction_model.g.dart';
 
 @Collection()
 class TransactionModel {
   Id id = Isar.autoIncrement;
-  late double amount;
-  @Index()
-  DateTime? date;
+  late int amountCents;
   // ...
 }
 ```
 
-Add a DAO for read/write operations using `IsarService`.
+A new collection also needs a schema version bump and a `MigrationRunner` case (see [CONFIGURATION.md](CONFIGURATION.md)).
 
-### 3. Infrastructure layer (`lib/infrastructure/<feature>/`)
+### 3. Infrastructure layer (`lib/infrastructure/finance/`)
 
-Implement the repository interface with the `@LazySingleton(as: ...)` annotation:
+Implement the repository interface with the `@LazySingleton(as: ...)` annotation. Finance implementations sit flat in `lib/infrastructure/finance/`:
 
 ```dart
 // lib/infrastructure/finance/transaction_repository_impl.dart
 @LazySingleton(as: TransactionRepository)
 class TransactionRepositoryImpl implements TransactionRepository {
-  TransactionRepositoryImpl(this._dao, this._mapper);
+  const TransactionRepositoryImpl(this._dao, this._mapper);
   final TransactionDao _dao;
   final TransactionMapper _mapper;
-
-  @override
-  AsyncResult<List<Transaction>> getAll() async {
-    try {
-      final models = await _dao.getAll();
-      return Success(models.map(_mapper.toDomain).toList());
-    } catch (e) {
-      return Err(DatabaseFailure(e.toString()));
-    }
-  }
+  // every method wraps the DAO call in try/catch and returns Result<T>
 }
 ```
 
-### 4. Application layer (`lib/application/<feature>/`)
+Register the DAO and mapper in the matching DI module (`lib/config/di/finance_module.dart`).
 
-Create a Cubit with `@injectable`:
+### 4. Application layer (`lib/application/finance/transaction/`)
+
+Create a Cubit with `@injectable` (`TransactionCubit` and its state classes):
 
 ```dart
-// lib/application/finance/transaction_list/transaction_list_cubit.dart
+// lib/application/finance/transaction/transaction_cubit.dart
 @injectable
-class TransactionListCubit extends Cubit<TransactionListState> {
-  TransactionListCubit(this._repository) : super(TransactionListInitial());
-  final TransactionRepository _repository;
-
-  Future<void> load() async {
-    emit(TransactionListLoading());
-    final result = await _repository.getAll();
-    switch (result) {
-      case Success(:final value): emit(TransactionListLoaded(value));
-      case Err(:final failure): emit(TransactionListError(failure.message));
-    }
-  }
+class TransactionCubit extends Cubit<TransactionState> {
+  TransactionCubit(this._repository, this._categoryRepository)
+      : super(const TransactionInitial());
+  // ...
 }
 ```
 
-Register factory dependencies (Cubits) in a DI module if they don't auto-register.
+Add a `README.md` to every new directory under `lib/application/`.
 
-### 5. Presentation layer (`lib/presentation/<feature>/`)
+### 5. Presentation layer (`lib/presentation/finance/`)
 
-Provide the Cubit via `BlocProvider`, inject from `getIt`:
-
-```dart
-BlocProvider(
-  create: (_) => getIt<TransactionListCubit>()..load(),
-  child: const TransactionListScreen(),
-)
-```
+Screens live in `screens/`, reusable widgets in `widgets/`. Finance cubits are provided above `MaterialApp` in `lib/app.dart`; a screen that owns a cubit creates it with `BlocProvider(create: (_) => getIt<SomeCubit>())`. Add a `README.md` to every new directory under `lib/presentation/`.
 
 ---
 
@@ -153,7 +143,7 @@ All DI registrations are in `lib/config/di/`. The `@InjectableInit()` annotation
 | `@lazySingleton` | App lifetime, lazy | Services initialized on first use |
 | `@injectable` | New instance per resolution | Cubits (one per screen) |
 | `@LazySingleton(as: Interface)` | Lazy singleton bound to interface | Repository implementations |
-| `@preResolve` | Resolved before `getIt.init()` returns | Async startup services (e.g. `IsarService`) |
+| `@preResolve` | Resolved before `getIt.init()` returns | Async startup services (e.g. `SharedPreferences`) |
 | `@module` | Class containing factory methods | Manual registrations with constructor args |
 
 Module files:
@@ -163,7 +153,7 @@ Module files:
 | `CoreModule` | `lib/config/di/core_module.dart` | `IsarService`, `SharedPreferences` |
 | `TasksModule` | `lib/config/di/tasks_module.dart` | `ItemDao`, `ItemMapper` |
 | `FinanceModule` | `lib/config/di/finance_module.dart` | Finance DAOs and mappers |
-| `InfrastructureModule` | `lib/config/di/infrastructure_module.dart` | Infrastructure-level singletons |
+| `InfrastructureModule` | `lib/config/di/infrastructure_module.dart` | Empty placeholder until Phases 4-5 |
 
 ---
 
@@ -227,9 +217,9 @@ To add a new string:
    "taskCreated": "Task created successfully"
    ```
 3. Run `flutter gen-l10n` to regenerate `lib/generated/l10n/`.
-4. Access in widgets via `AppLocalizations.of(context)!.taskCreated`.
+4. Access in widgets via `AppLocalizations.of(context).taskCreated`.
 
-Config is in `l10n.yaml` at the project root. Generated files are excluded from analysis.
+Config is in `l10n.yaml` at the project root. The generated output is committed and excluded from analysis only.
 
 ---
 
@@ -242,23 +232,23 @@ Config is in `l10n.yaml` at the project root. Generated files are excluded from 
 
 Promoted errors: `missing_required_param`, `missing_return`.
 
-Excluded from analysis: `lib/generated/**`, `lib/config/di/injection.config.dart`, `**/*.g.dart`.
+Excluded from analysis (not from git): `lib/generated/**`, `lib/config/di/injection.config.dart`, `**/*.g.dart`.
 
 ```bash
 flutter analyze --no-fatal-infos   # lint check
-dart format .                       # auto-format
-dart format --output=none --set-exit-if-changed .  # CI format check
+dart format <files you touched>     # auto-format
 ```
+
+Formatting is not enforced in CI, because the tree is not uniformly format-clean — format only the files you touch.
 
 ---
 
 ## Phase-gated dependencies
 
-Several packages are declared in `pubspec.yaml` but commented out, to be enabled in future phases:
+Several packages are declared in `pubspec.yaml` but commented out, to be enabled in future phases (the finance charting package is already active):
 
 | Package | Phase | Purpose |
 |---------|-------|---------|
-| `fl_chart` | 03 | Finance dashboard charts |
 | `csv` | 04 | CSV export/import |
 | `file_picker` | 04 | File selection for import |
 | `flutter_local_notifications` | 04 | Task reminders |

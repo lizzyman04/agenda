@@ -34,7 +34,7 @@ Defined in `lib/core/config/app_config.dart` as compile-time constants:
 | `AppConfig.packageName` | `'com.omeu.space.agenda'` | Reverse-DNS bundle/application ID |
 | `AppConfig.version` | `'1.0.0'` | Human-readable version string |
 | `AppConfig.buildNumber` | `1` | Platform store build number |
-| `AppConfig.schemaVersion` | `2` | Current Isar schema version (bump on every schema change) |
+| `AppConfig.schemaVersion` | `3` | Current Isar schema version (bump on every schema change) |
 
 The Android application ID (`applicationId`) in `android/app/build.gradle.kts` is set to `com.omeu.space.agenda`, matching `AppConfig.packageName`.
 
@@ -77,10 +77,11 @@ Declared in `pubspec.yaml` under `dependencies`:
 |---------|---------|---------|
 | `bloc` | `9.2.0` | Core BLoC/Cubit state management |
 | `equatable` | `2.0.8` | Value equality for BLoC states and events |
+| `fl_chart` | `1.2.0` | Finance charts (pie and bar), active since Phase 3 |
 | `flutter_bloc` | `9.1.1` | Flutter widgets for BLoC/Cubit |
 | `flutter_localizations` | SDK bundle | Material/Cupertino translated widget strings |
 | `get_it` | `9.2.1` | Service locator / dependency injection container |
-| `go_router` | `17.2.0` | Declarative routing and deep linking |
+| `go_router` | `17.2.0` | Declared but not wired yet (navigation is `Navigator` plus a tab shell) |
 | `injectable` | `2.7.1+4` | Annotation-driven DI registration on top of GetIt |
 | `intl` | `0.20.2` | Date/number formatting and localization support |
 | `isar_community` | `3.3.2` | On-device NoSQL database (community fork of abandoned `isar`) |
@@ -105,11 +106,10 @@ Declared in `pubspec.yaml` under `dev_dependencies`:
 
 ### Phase-Gated Dependencies (currently commented out)
 
-These packages are declared in `pubspec.yaml` but commented out until the corresponding phase begins:
+These packages are declared in `pubspec.yaml` but commented out until the corresponding phase begins (`pubspec.yaml` is the source of truth):
 
 | Package | Version | Phase |
 |---------|---------|-------|
-| `fl_chart` | `1.2.0` | Phase 3 — Finance charts |
 | `csv` | `8.0.0` | Phase 4 — Backup/export |
 | `file_picker` | `11.0.2` | Phase 4 — Backup/import |
 | `flutter_local_notifications` | `21.0.0` | Phase 4 — Notifications |
@@ -136,13 +136,13 @@ Run generation:
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-Generated files excluded from analysis (see `analysis_options.yaml`):
+Generated code is **committed to the repository**: `lib/generated/l10n`, every `.g.dart` file, and `lib/config/di/injection.config.dart`. `analysis_options.yaml` excludes these paths from analysis only:
 
 - `lib/generated/**`
 - `lib/config/di/injection.config.dart`
 - `**/*.g.dart`
 
-CI runs code generation before `flutter analyze` and `flutter test` to ensure generated files are up to date.
+Regenerate after changing ARB files, Isar models or injectable annotations. CI also runs code generation before `flutter analyze` and `flutter test` to ensure the generated files are up to date.
 
 ---
 
@@ -200,7 +200,7 @@ A second identical file exists at `lib/config/l10n/l10n.yaml` with `synthetic-pa
 | Locale tag | Language | Status |
 |------------|----------|--------|
 | `pt_BR` | Portuguese (Brazil) | Default |
-| `en` | English | Toggle |
+| `en` | English | Translations in place; the in-app language switch arrives with Settings in Phase 5 |
 
 **ARB source files:**
 
@@ -212,11 +212,11 @@ A second identical file exists at `lib/config/l10n/l10n.yaml` with `synthetic-pa
 
 ### Generated Output
 
-`flutter gen-l10n` writes to `lib/generated/l10n/` (excluded from version control). CI runs `flutter gen-l10n` as a build step.
+`flutter gen-l10n` writes to `lib/generated/l10n/`. The output is committed, and excluded from analysis only. Re-run `flutter gen-l10n` after editing any ARB file; CI also runs it as a build step.
 
 ### Locale Selection at Runtime
 
-`LocaleCubit` (`lib/application/shared/locale/locale_cubit.dart`) reads the stored locale from `SharedPreferences` on startup. When no preference is stored, PT-BR is used as the default. The locale choice is persisted as an IETF language tag string (`'pt'` or `'en'`) under the `StorageKeys.locale` key.
+`LocaleCubit` (`lib/application/shared/locale/locale_cubit.dart`) reads the stored locale from `SharedPreferences` on startup. When no preference is stored, PT-BR is used as the default. The locale choice is persisted as an IETF language tag string (`'pt'` or `'en'`) under the `StorageKeys.locale` key. `LocaleCubit.setLocale` has no caller yet; the in-app language switch belongs to the Settings screen in Phase 5.
 
 ```dart
 // Supported locales (must match l10n.yaml preferred-supported-locales)
@@ -242,11 +242,11 @@ DI is split into module files under `lib/config/di/`:
 | Module file | Registrations |
 |-------------|--------------|
 | `core_module.dart` | `IsarService` (singleton), `SharedPreferences` (async pre-resolved singleton) |
-| `tasks_module.dart` | Task-layer repositories and cubits |
-| `finance_module.dart` | Finance-layer repositories and cubits |
-| `infrastructure_module.dart` | Cross-cutting infrastructure services |
+| `tasks_module.dart` | `ItemDao` and `ItemMapper` (lazy singletons) |
+| `finance_module.dart` | The six finance DAOs and six mappers (lazy singletons) |
+| `infrastructure_module.dart` | Empty placeholder until the platform services of Phases 4-5 |
 
-The generated registration glue lives in `lib/config/di/injection.config.dart` (do not edit manually).
+Repository implementations and cubits are not listed in the modules: they register themselves through `@LazySingleton(as: ...)` and `@injectable` class annotations. The generated registration glue lives in `lib/config/di/injection.config.dart` (do not edit manually).
 
 ---
 
@@ -258,7 +258,7 @@ Isar opens the database in the platform's application documents directory (`getA
 
 ### Schema Versioning and Migrations
 
-Schema version is the single source of truth in `AppConfig.schemaVersion` (currently `2`). The version is also persisted to `SharedPreferences` under `StorageKeys.schemaVersion` so `MigrationRunner` can read it before Isar opens.
+Schema version is the single source of truth in `AppConfig.schemaVersion` (currently `3`). The version is also persisted to `SharedPreferences` under `StorageKeys.schemaVersion` so `MigrationRunner` can read it before Isar opens.
 
 **Migration runner:** `lib/data/database/migration_runner.dart`
 
@@ -266,6 +266,7 @@ Schema version is the single source of truth in `AppConfig.schemaVersion` (curre
 |----------------|--------|
 | 1 | Initial schema — no data migration needed |
 | 2 | Add `ItemModel` collection (tasks, projects, subtasks) |
+| 3 | Finance collections added; 13 default transaction categories seeded (9 expense, 4 income) |
 
 To add a migration: bump `AppConfig.schemaVersion` and add a new `case` block in `MigrationRunner._runMigration`.
 
@@ -286,6 +287,8 @@ All `SharedPreferences` key strings are centralised in `lib/core/constants/stora
 | `StorageKeys.quietHoursStart` | `'quiet_hours_start'` | `int` | Quiet hours start hour 0–23 |
 | `StorageKeys.quietHoursEnd` | `'quiet_hours_end'` | `int` | Quiet hours end hour 0–23 |
 
+Only `schemaVersion` (read and written by `MigrationRunner`) and `locale` (read and written by `LocaleCubit`) are used today. The remaining keys are reserved for Phases 4 and 5.
+
 ---
 
 ## Application Constants
@@ -303,6 +306,8 @@ Project-wide magic numbers are defined in `lib/core/constants/app_constants.dart
 | `AppConstants.rule135BigTasks` | `1` | 1-3-5 Rule: large task slots per day (TASK-08) |
 | `AppConstants.rule135MediumTasks` | `3` | 1-3-5 Rule: medium task slots per day |
 | `AppConstants.rule135SmallTasks` | `5` | 1-3-5 Rule: small task slots per day |
+
+The budget alert thresholds and quiet-hours constants are not referenced anywhere outside `app_constants.dart` yet; they are reserved for Phase 4. Budgets currently show a live progress bar only.
 
 ---
 
@@ -334,8 +339,12 @@ Triggers on push and pull request to `main`. Steps in order:
 4. `dart run build_runner build --delete-conflicting-outputs`
 5. `flutter gen-l10n`
 6. `flutter analyze --no-fatal-infos --fatal-warnings`
-7. `flutter test --no-pub --coverage`
-8. Offline guarantee check — fails the build if any forbidden network package (`http`, `dio`, `firebase_*`, `sentry_flutter`, `connectivity_plus`) appears in `pubspec.yaml`
+7. Architecture guard — `dart run tool/check_architecture.dart` (see [DEVELOPMENT.md](DEVELOPMENT.md))
+8. Isar Core warm-up — `flutter test --no-pub -j 1 test/support/_warm_isar_core_test.dart`. This must stay a `flutter test` invocation, not `dart run`, because of how the Isar Core binary download path is resolved. It pre-fetches the binary once, before the full suite fans out.
+9. `flutter test --no-pub --coverage` (the full suite, with coverage)
+10. Offline guarantee check (last) — fails the build if any forbidden network package (`http`, `dio`, `firebase_*`, `sentry_flutter`, `connectivity_plus`) appears in `pubspec.yaml`
+
+`dart format` is not enforced in CI, because the tree is not uniformly format-clean.
 
 ---
 

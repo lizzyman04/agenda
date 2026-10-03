@@ -96,8 +96,8 @@ AGENDA uses two code generation pipelines that must both complete before `flutte
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-This generates:
-- `lib/data/tasks/item_model.g.dart` — Isar `CollectionSchema` for `ItemModel`
+This generates, and the repository commits the output:
+- the seven Isar model `.g.dart` files — `ItemModel` (`lib/data/tasks/item_model.g.dart`) plus the six finance collections under `lib/data/finance/`
 - `lib/config/di/injection.config.dart` — GetIt service locator graph
 
 **Step 3b — Localization files**
@@ -106,7 +106,7 @@ This generates:
 flutter gen-l10n
 ```
 
-This reads `l10n.yaml` and the ARB files in `lib/config/l10n/` (PT-BR default, EN) and generates `lib/generated/l10n/app_localizations.dart`. The app will not compile without this file.
+This reads `l10n.yaml` and the ARB files in `lib/config/l10n/` (PT-BR default, EN) and generates `lib/generated/l10n/app_localizations.dart`. The generated output is committed, so the app compiles without this step, but re-run `flutter gen-l10n` after every ARB edit.
 
 > Both generation commands are also run automatically in CI (see `.github/workflows/ci.yml`).
 
@@ -114,6 +114,7 @@ This reads `l10n.yaml` and the ARB files in `lib/config/l10n/` (PT-BR default, E
 
 ```bash
 flutter analyze --no-fatal-infos --fatal-warnings
+dart run tool/check_architecture.dart
 flutter test --no-pub
 ```
 
@@ -152,7 +153,9 @@ On first launch, AGENDA:
 1. Opens the Isar database in the app documents directory (handled by `IsarService.open`)
 2. Runs `MigrationRunner` to apply any pending schema migrations
 3. Initialises the GetIt dependency graph (all cubits, repositories, and preferences)
-4. Presents the task list in PT-BR (default locale); tap the language toggle to switch to English
+4. Presents the app with five bottom tabs (Tasks, Eisenhower, Day Planner, GTD, Finance), in PT-BR
+
+PT-BR is the default language and English translations exist, but there is no in-app language switch yet; it arrives with the Settings screen in Phase 5. On the first run the schema v3 migration also seeds 13 default transaction categories (9 expense, 4 income).
 
 No internet connection is required at any point. The app is fully functional offline from the first launch.
 
@@ -177,13 +180,11 @@ dart run build_runner build --delete-conflicting-outputs
 
 ### App fails to compile with "app_localizations.dart not found"
 
-`flutter gen-l10n` was not run. Execute it before building:
+The generated localizations are out of date or were deleted. `lib/generated/l10n` is committed to the repository (it is only excluded from analysis in `analysis_options.yaml`), so this normally means it was removed locally or the ARB files changed. Regenerate it:
 
 ```bash
 flutter gen-l10n
 ```
-
-The `lib/generated/` directory is excluded from version control (listed in `analysis_options.yaml`) and must be regenerated locally.
 
 ### `flutter doctor` reports Android licenses not accepted
 
@@ -218,4 +219,6 @@ If using Android Studio, set the JDK in **Settings > Build, Execution, Deploymen
 | Document | What it covers |
 |----------|---------------|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Layer structure, data flow, key abstractions, and directory layout |
-| [CONFIGURATION.md](CONFIGURATION.md) | SDK constraints, build settings, localization config, and lint rules |
+| [CONFIGURATION.md](CONFIGURATION.md) | SDK constraints, build settings, localization config, lint rules, and CI steps |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Daily commands, adding a feature, house rules, code generation |
+| [TESTING.md](TESTING.md) | Test layout, the real-Isar harness, mocking patterns, and CI |
