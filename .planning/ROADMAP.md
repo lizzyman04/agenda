@@ -121,16 +121,30 @@ Plans:
   4. User can export all data as a JSON file and as a CSV file; exported files contain every task, transaction, budget, goal, debt, and recurring payment record
   5. User can import a backup file; the app shows a confirmation screen with record counts and date range, creates an automatic safety backup first, and completes the import atomically — a failed import leaves the database unchanged
 
-**Plans**: TBD
+**Plans**: 17 plans in 8 waves (planned 2026-10-12 — expanded from the original 5-plan sketch; see rationale below)
 **UI hint**: yes
 
 Plans:
 
-- [ ] 04-01: Notification infrastructure — flutter_local_notifications init, timezone setup, notification ID strategy, Android manifest permissions
-- [ ] 04-02: Task notifications — due reminders, morning briefing, recurring task reminders, boot receiver + Isar payload persistence
-- [ ] 04-03: Finance notifications — budget alerts, debt reminders, goal alerts, recurring payment reminders, motivational quotes
-- [ ] 04-04: Notification settings — per-type toggles (NOTF-09), quiet hours config (NOTF-10), iOS 64-notification budget manager
-- [ ] 04-05: Backup — JSON export, CSV export (locale-aware decimals), import with pre-import safety backup and atomic transaction
+- [ ] 04-01-PLAN.md — Package-legitimacy gate: blocking human checkpoint confirming csv 8.0.0 before any pub get *(wave 1)*
+- [ ] 04-02-PLAN.md — Localization contract: ~100 Phase 4 strings (notification text, channels, settings, backup/import) in all three ARB files *(wave 1)*
+- [ ] 04-03-PLAN.md — Notification domain core: kinds, ids, quiet hours, slot budget, payload codec, schedule diff, prefs model, ReminderPlanner composition *(wave 1)*
+- [ ] 04-04-PLAN.md — JSON export engine: uncapped single-transaction reader, seven explicit versioned codecs, envelope, exportJson, DI *(wave 1)*
+- [ ] 04-09-PLAN.md — Reminder data layer: sorted-then-limited reminder read, uncapped briefing-window read, Budget/RecurringPayment watchChanges *(wave 1)*
+- [ ] 04-05-PLAN.md — Platform and dependencies: pubspec pins, Gradle desugaring, manifest permissions/receivers, allowBackup=false + rules, iOS delegate, compile smoke test *(wave 2)*
+- [ ] 04-06-PLAN.md — Task kind planners: due reminders (30 min lead), recurring-task reminders, morning briefing *(wave 2)*
+- [ ] 04-07-PLAN.md — Finance and quote planners: debt and recurring-payment reminders with in-memory due-date stepping, goal off-track weekly check, quotes *(wave 2)*
+- [ ] 04-08-PLAN.md — CSV engine: locale dialects, injection guard, strict amount parser, six per-entity mappers (encode + decode), exportCsv *(wave 3)*
+- [ ] 04-10-PLAN.md — Notification infrastructure: prefs and alert-state stores, plugin gateway, versioned channels, permission service, timezone bootstrap, startup hook *(wave 3)*
+- [ ] 04-11-PLAN.md — Import engine: parser with gating and caps, validator, preview, safety backup rotation, atomic single-transaction replace *(wave 4)*
+- [ ] 04-12-PLAN.md — Sync coordinator: snapshot loader, content builder, reconcile runner, debounced single-flight coordinator, lifecycle observer *(wave 4)*
+- [ ] 04-13-PLAN.md — Tap-through navigation and app shell extraction: tap target resolver, listener, finance sub-tab hook, locale reconcile *(wave 4)*
+- [ ] 04-14-PLAN.md — Budget 80%/100% alerts and on-open goal alerts: threshold rule, immediate dispatcher, evaluators, silent seeding *(wave 5)*
+- [ ] 04-15-PLAN.md — Notification settings page: per-type toggles, briefing/quote/quiet-hours controls, permission and exact-alarm banners, overflow menu entry *(wave 6)*
+- [ ] 04-16-PLAN.md — Backup screen (export): file-picker gateway, BackupCubit, JSON and CSV export flows, menu entry *(wave 7)*
+- [ ] 04-17-PLAN.md — Import screen and hooks: pick, confirmation screen, commit, post-import alert reseed and reconcile, device UAT checks *(wave 8)*
+
+**Planner deviation from the 5-plan estimate**: 17 plans. The 14 requirements span two largely independent subsystems that meet only at import. Plans were reshaped per research: quiet hours and the slot budget land in the first domain plan (not the settings plan); all pubspec, Gradle, manifest and AppDelegate edits are one plan so nothing conflicts; ARB strings are front-loaded so no later plan edits them; reminders and export reads use dedicated uncapped/sorted queries with real-Isar regression tests (BL-01 class). Wave order is driven by `injection.config.dart` and README ownership: plans that regenerate DI never share a wave. The natural split boundary if the phase is ever divided is notifications (03, 05-07, 09, 10, 12-15) versus backup (04, 08, 11, 16, 17).
 
 ---
 
@@ -219,6 +233,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 14/14 | Complete    | 2026-10-03 |
-| 4. Notifications + Backup | 0/5 | Not started | - |
+| 4. Notifications + Backup | 0/17 | Planned | - |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
 | 6. Architecture Compliance | 18/18 | ✅ Complete | 2026-08-12 |
