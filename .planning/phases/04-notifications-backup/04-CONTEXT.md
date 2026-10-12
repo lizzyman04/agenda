@@ -33,6 +33,10 @@ Deliver every notification type (task reminders, morning briefing, recurring-tas
 - **D-11:** Import is **replace-all, atomic**: automatic safety backup first, then wipe + load in a single Isar transaction. A failed import leaves the database unchanged. A confirmation screen shows record counts and date range before commit.
 - **D-12:** Exports are written to a **user-chosen location via file_picker** (no share_plus, to avoid routing data to other apps). The pre-import safety backup goes to the **app-private documents directory** (keep last 3); its path is shown if import fails.
 
+- **D-13:** `android:allowBackup` is set to **false** with exclusion rules, so Android Auto Backup never uploads the Isar DB or safety backups to Google Drive. State it in the privacy text; reinstall requires restoring from an exported JSON.
+- **D-14:** CSV import replaces **only the entity collections for which a file was supplied** (multi-file pick), within the same safety-backup + single-transaction flow. A single-file import never touches other collections.
+- **D-15 (research recommendations accepted as defaults):** goal off-track tolerance is 10 percentage points; JSON export includes soft-deleted rows, CSV exports active rows only; `RecurringPayment.nextDueDate` is advanced in memory for scheduling only (no DB write); import confirmation date range is min..max record `createdAt` plus `exportedAt`; temporary settings entry point is a task-list AppBar action.
+
 ### Claude's Discretion
 - Notification ID strategy and channel layout per type.
 - Android exact-alarm permission flow/fallback and notification permission prompt timing.
