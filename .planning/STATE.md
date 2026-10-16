@@ -1,17 +1,17 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 4
+current_phase: 04
 current_phase_name: Notifications + Backup
 status: executing
-stopped_at: Phase 4 context gathered
-last_updated: "2026-10-12T07:20:51.891Z"
-state_head: f68cb3d31898833b725dd7425a9d487d1a7c41f9
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-10-16T05:44:47.122Z"
+state_head: 7bf03d544bd5d1df0ff0addc4bcb6e7734dbac44
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 59
-  completed_plans: 42
+  completed_plans: 44
 milestone_name: milestone
 ---
 
@@ -22,12 +22,12 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Open AGENDA at any moment and immediately see what needs doing and where the money stands — no internet connection ever required.
-**Current focus:** Phase 03 — finance-core
+**Current focus:** Phase 04 — Notifications + Backup
 
 ## Current Position
 
-Phase: 4 (Notifications + Backup) — READY TO EXECUTE
-Plan: Not started
+Phase: 04 (Notifications + Backup) — EXECUTING
+Plan: 2 of 17
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -192,6 +192,11 @@ Progress: [██████████] 100%
 | Phase 03 P07 | 20min | 2 tasks | 3 files |
 | Phase 03 P10 | 25min | 3 tasks | 11 files |
 | Phase 03 P11 | 40min | 3 tasks | 18 files |
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 04 P02 | 25min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -221,6 +226,7 @@ Recent decisions affecting current work:
 - [Phase 03]: `isActive` on a recurring payment is a PAUSE flag, not a delete flag — only `deletedAt` removes a row from a list read. The list query returns paused rows because the list screen holds the only control that can un-pause one; anything needing unpaused rows only must filter at its own call site and say so. The repository method was renamed `getActivePayments` → `getPayments` so no call site can keep trusting a name that promises active-only.
 - [Phase 03]: A dimmed "disabled-looking" row must leave its recovery control undimmed — the recurring card wraps only its `ListTile` in `Opacity`, never the `SwitchListTile` that resumes the payment.
 - [Phase ?]: Phase 6: dart format is NOT enforced in CI and no raw column-width guard was added — measured, 103/258 files differ from dart format output and 88 raw lines exceed 80 cols while the lint reports 0; width policing defers to lines_longer_than_80_chars
+- [Phase 04]: Phase 4 l10n: ICU plural 'one' branches interpolate {count} instead of a literal 1 (pt treats 0 as singular); no notification string takes an amount placeholder — Correct 0/1/N rendering in pt_BR; lock-screen privacy (T-04-02-01)
 
 ### Pending Todos
 
@@ -251,8 +257,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-10-12T04:07:45.111Z
-Stopped at: Phase 4 context gathered
+Last session: 2026-10-16T05:44:46.894Z
+Stopped at: Completed 04-02-PLAN.md
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
 Plans `03-13` and `03-14` executed and merged. Verification: 5/5 roadmap truths hold at
@@ -489,4 +495,4 @@ defects, then the on-device re-test of UAT test 3 — both halves (auto-dismiss 
 and queueing from `03-07`) are verified host-side only and still need the Infinix X6831
 reattached. After that, Phase 04.
 
-Resume file: .planning/phases/04-notifications-backup/04-CONTEXT.md
+Resume file: None

@@ -121,14 +121,14 @@ Plans:
   4. User can export all data as a JSON file and as a CSV file; exported files contain every task, transaction, budget, goal, debt, and recurring payment record
   5. User can import a backup file; the app shows a confirmation screen with record counts and date range, creates an automatic safety backup first, and completes the import atomically — a failed import leaves the database unchanged
 
-**Plans**: 17 plans in 8 waves (planned 2026-10-12 — expanded from the original 5-plan sketch; see rationale below)
+**Plans**: 2/17 plans executed in 8 waves (planned 2026-10-12 — expanded from the original 5-plan sketch; see rationale below)
 **UI hint**: yes
 
 Plans:
 **Wave 1**
 
-- [ ] 04-01-PLAN.md — Package-legitimacy gate: blocking human checkpoint confirming csv 8.0.0 before any pub get *(wave 1)*
-- [ ] 04-02-PLAN.md — Localization contract: ~100 Phase 4 strings (notification text, channels, settings, backup/import) in all three ARB files *(wave 1)*
+- [x] 04-01-PLAN.md — Package-legitimacy gate: blocking human checkpoint confirming csv 8.0.0 before any pub get *(wave 1)*
+- [x] 04-02-PLAN.md — Localization contract: ~100 Phase 4 strings (notification text, channels, settings, backup/import) in all three ARB files *(wave 1)*
 - [ ] 04-03-PLAN.md — Notification domain core: kinds, ids, quiet hours, slot budget, payload codec, schedule diff, prefs model, ReminderPlanner composition *(wave 1)*
 - [ ] 04-04-PLAN.md — JSON export engine: uncapped single-transaction reader, seven explicit versioned codecs, envelope, exportJson, DI *(wave 1)*
 - [ ] 04-09-PLAN.md — Reminder data layer: sorted-then-limited reminder read, uncapped briefing-window read, Budget/RecurringPayment watchChanges *(wave 1)*
@@ -255,6 +255,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 14/14 | Complete    | 2026-10-03 |
-| 4. Notifications + Backup | 0/17 | Planned | - |
+| 4. Notifications + Backup | 2/17 | In Progress|  |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
 | 6. Architecture Compliance | 18/18 | ✅ Complete | 2026-08-12 |
