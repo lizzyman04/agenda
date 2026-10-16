@@ -19,6 +19,10 @@ import 'package:agenda/application/finance/recurring/recurring_payment_cubit.dar
     as _i275;
 import 'package:agenda/application/finance/transaction/transaction_cubit.dart'
     as _i1065;
+import 'package:agenda/application/notifications/budget_alert_evaluator.dart'
+    as _i892;
+import 'package:agenda/application/notifications/goal_alert_evaluator.dart'
+    as _i708;
 import 'package:agenda/application/shared/locale/locale_cubit.dart' as _i101;
 import 'package:agenda/application/tasks/day_planner/day_planner_cubit.dart'
     as _i1073;
@@ -99,6 +103,8 @@ import 'package:agenda/infrastructure/notifications/prefs/alert_state_store_impl
     as _i829;
 import 'package:agenda/infrastructure/notifications/prefs/notification_prefs_repository_impl.dart'
     as _i958;
+import 'package:agenda/infrastructure/notifications/sync/immediate_alert_dispatcher.dart'
+    as _i745;
 import 'package:agenda/infrastructure/notifications/sync/notification_sync_coordinator.dart'
     as _i380;
 import 'package:agenda/infrastructure/notifications/sync/permission_gate.dart'
@@ -323,6 +329,16 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i200.TransactionCategoryRepository>(),
       ),
     );
+    gh.lazySingleton<_i745.ImmediateAlertDispatcher>(
+      () => _i745.ImmediateAlertDispatcher(
+        gh<_i114.LocalNotificationGateway>(),
+        gh<_i944.NotificationPrefsRepository>(),
+        gh<_i300.NotificationPermissionService>(),
+        gh<_i478.PermissionGate>(),
+        gh<_i441.NotificationContentBuilder>(),
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
     gh.lazySingleton<_i173.NotificationReconciler>(
       () => _i380.NotificationSyncCoordinator(
         gh<_i154.ReconcileRunner>(),
@@ -332,6 +348,26 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i585.TransactionRepository>(),
         gh<_i385.RecurringPaymentRepository>(),
         gh<_i944.NotificationPrefsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i708.GoalAlertEvaluator>(
+      () => _i708.GoalAlertEvaluator(
+        gh<_i858.GoalRepository>(),
+        gh<_i585.TransactionRepository>(),
+        gh<_i183.AlertStateStore>(),
+        gh<_i745.ImmediateAlertDispatcher>(),
+        gh<_i944.NotificationPrefsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i892.BudgetAlertEvaluator>(
+      () => _i892.BudgetAlertEvaluator(
+        gh<_i585.TransactionRepository>(),
+        gh<_i877.BudgetRepository>(),
+        gh<_i200.TransactionCategoryRepository>(),
+        gh<_i183.AlertStateStore>(),
+        gh<_i745.ImmediateAlertDispatcher>(),
+        gh<_i944.NotificationPrefsRepository>(),
+        gh<_i460.SharedPreferences>(),
       ),
     );
     return this;
