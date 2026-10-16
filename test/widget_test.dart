@@ -16,13 +16,17 @@ import 'package:agenda/domain/finance/recurring/recurring_payment_repository.dar
 import 'package:agenda/domain/finance/transaction/transaction.dart';
 import 'package:agenda/domain/finance/transaction/transaction_repository.dart';
 import 'package:agenda/domain/finance/transaction/transaction_type.dart';
+import 'package:agenda/domain/notifications/local_notification_gateway.dart';
 import 'package:agenda/domain/tasks/eisenhower_quadrant.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_repository.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
+import 'package:agenda/presentation/shell/shell_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'infrastructure/notifications/fake_notification_gateway.dart';
 
 /// Stub repository that never touches Isar.
 ///
@@ -34,16 +38,14 @@ class _StubItemRepository implements ItemRepository {
       Success(item.copyWith(id: 1));
 
   @override
-  AsyncResult<Item> getItem(int id) async =>
-      const Err(DatabaseFailure('stub'));
+  AsyncResult<Item> getItem(int id) async => const Err(DatabaseFailure('stub'));
 
   @override
   AsyncResult<List<Item>> getItemsByType(ItemType type) async =>
       const Success([]);
 
   @override
-  AsyncResult<List<Item>> getSubtasks(int projectId) async =>
-      const Success([]);
+  AsyncResult<List<Item>> getSubtasks(int projectId) async => const Success([]);
 
   @override
   AsyncResult<Item> updateItem(Item item) async => Success(item);
@@ -69,22 +71,19 @@ class _StubItemRepository implements ItemRepository {
     DateTime? dueDateTo,
     int? parentId,
     bool showCompleted = false,
-  }) async =>
-      const Success([]);
+  }) async => const Success([]);
 
   @override
   AsyncResult<List<Item>> getRemindableItems({
     required DateTime from,
     required int limit,
-  }) async =>
-      const Success(<Item>[]);
+  }) async => const Success(<Item>[]);
 
   @override
   AsyncResult<List<Item>> getItemsDueInWindow({
     required DateTime from,
     required DateTime toExclusive,
-  }) async =>
-      const Success(<Item>[]);
+  }) async => const Success(<Item>[]);
 
   @override
   AsyncResult<(int, int)> getSubtaskCounts(int projectId) async =>
@@ -94,8 +93,7 @@ class _StubItemRepository implements ItemRepository {
   Stream<void> watchChanges() => const Stream.empty();
 
   @override
-  AsyncResult<List<String>> getDistinctGtdContexts() async =>
-      const Success([]);
+  AsyncResult<List<String>> getDistinctGtdContexts() async => const Success([]);
 }
 
 /// Stub finance repositories that never touch Isar.
@@ -148,8 +146,7 @@ class _StubBudgetRepository implements BudgetRepository {
     int categoryId,
     int month,
     int year,
-  ) async =>
-      const Success(null);
+  ) async => const Success(null);
 
   @override
   AsyncResult<List<Budget>> getForMonth(int month, int year) async =>
@@ -161,8 +158,7 @@ class _StubBudgetRepository implements BudgetRepository {
     int month,
     int year,
     int limitCents,
-  ) async =>
-      const Err(DatabaseFailure('stub'));
+  ) async => const Err(DatabaseFailure('stub'));
 
   @override
   AsyncResult<void> delete(int categoryId, int month, int year) async =>
@@ -190,8 +186,7 @@ class _StubGoalRepository implements GoalRepository {
   AsyncResult<SavingsGoal> addContribution(
     int goalId,
     SavingsGoalContribution contribution,
-  ) async =>
-      const Err(DatabaseFailure('stub'));
+  ) async => const Err(DatabaseFailure('stub'));
 
   @override
   AsyncResult<SavingsGoal> softDelete(int id) async =>
@@ -206,8 +201,7 @@ class _StubDebtRepository implements DebtRepository {
   AsyncResult<Debt> createDebt(Debt debt) async => Success(debt);
 
   @override
-  AsyncResult<Debt> getDebt(int id) async =>
-      const Err(DatabaseFailure('stub'));
+  AsyncResult<Debt> getDebt(int id) async => const Err(DatabaseFailure('stub'));
 
   @override
   AsyncResult<List<Debt>> getDebts() async => const Success([]);
@@ -231,22 +225,19 @@ class _StubRecurringPaymentRepository implements RecurringPaymentRepository {
   @override
   AsyncResult<RecurringPayment> createPayment(
     RecurringPayment payment,
-  ) async =>
-      Success(payment);
+  ) async => Success(payment);
 
   @override
   AsyncResult<RecurringPayment> getPayment(int id) async =>
       const Err(DatabaseFailure('stub'));
 
   @override
-  AsyncResult<List<RecurringPayment>> getPayments() async =>
-      const Success([]);
+  AsyncResult<List<RecurringPayment>> getPayments() async => const Success([]);
 
   @override
   AsyncResult<RecurringPayment> updatePayment(
     RecurringPayment payment,
-  ) async =>
-      Success(payment);
+  ) async => Success(payment);
 
   @override
   AsyncResult<RecurringPayment> softDelete(int id) async =>
@@ -264,8 +255,7 @@ class _StubTransactionCategoryRepository
   @override
   AsyncResult<List<TransactionCategory>> getByType(
     TransactionType type,
-  ) async =>
-      const Success([]);
+  ) async => const Success([]);
 
   @override
   AsyncResult<TransactionCategory> create(TransactionCategory category) async =>
@@ -281,6 +271,7 @@ class _StubTransactionCategoryRepository
 
 void main() {
   setUp(() async {
+    appTabIndex.value = 0;
     SharedPreferences.setMockInitialValues({});
     await configureDependencies();
     // The home shell mounts every tab eagerly (IndexedStack), including the
@@ -307,6 +298,12 @@ void main() {
       ..unregister<TransactionCategoryRepository>()
       ..registerLazySingleton<TransactionCategoryRepository>(
         _StubTransactionCategoryRepository.new,
+      )
+      // The shell mounts the notification tap listener, which resolves the
+      // gateway; the real one needs the platform plugin.
+      ..unregister<LocalNotificationGateway>()
+      ..registerLazySingleton<LocalNotificationGateway>(
+        FakeNotificationGateway.new,
       );
   });
 
@@ -319,5 +316,20 @@ void main() {
     // The Phase 2 home shell replaced the old single-screen layout.
     // Verify the bottom NavigationBar is present.
     expect(find.byType(NavigationBar), findsOneWidget);
+  });
+
+  testWidgets('A Finance sub-tab request moves the tab bar and resets', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const AgendaApp());
+    appTabIndex.value = 4;
+    financeSubTabRequest.value = 4;
+    await tester.pumpAndSettle();
+
+    final controller = DefaultTabController.of(
+      tester.element(find.byType(TabBar)),
+    );
+    expect(controller.index, 4);
+    expect(financeSubTabRequest.value, isNull);
   });
 }

@@ -13,7 +13,7 @@ files in `../`.
 
 | File | Lines | Role |
 |------|------:|------|
-| `finance_dashboard_screen.dart` | 56 | `TabBar`/`TabBarView` shell for the whole finance section: Resumo (`../widgets/dashboard/dashboard_tab.dart`), transactions, budgets, debts, recurring payments, and goals |
+| `finance_dashboard_screen.dart` | 98 | `TabBar`/`TabBarView` shell for the whole finance section: Resumo (`../widgets/dashboard/dashboard_tab.dart`), transactions, budgets, debts, recurring payments, and goals. A private listener applies `financeSubTabRequest` (set by a notification tap) to the `DefaultTabController` once, then resets it |
 | `transaction_list_screen.dart` | 148 | The transaction list — resolves each `categoryId` to a localized name via `resolveCategoryDisplay`; swipe-to-delete (via `TransactionCard`'s `Dismissible`) with an `AppConstants.undoSnackbarDuration` undo snackbar that hides the previous one before showing itself, tap to edit |
 | `transaction_form_screen.dart` | 149 | Create/edit a transaction; owns the controllers and `TransactionFormModel`, delegates loading, submission and pickers |
 | `budget_overview_screen.dart` | 126 | Per-category budget vs. spend, with the limit sheet |
@@ -48,5 +48,5 @@ files in `../`.
 `application/finance/` (`TransactionCubit`, `BudgetCubit`, `DebtCubit`,
 `RecurringPaymentCubit`, `HomeDashboardCubit` and their states) ·
 `domain/finance/` · `../` (form logic and the transaction form model) ·
-`../widgets/` · `core/utils/` · `generated/l10n/` ·
+`../widgets/` · `core/utils/` · `generated/l10n/` · `presentation/shell/shell_navigation.dart` ·
 `config/di/injection.dart`.

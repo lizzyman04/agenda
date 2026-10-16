@@ -11,6 +11,7 @@ shell (a notification tap) change the selected tab.
 
 | File | Lines | Role |
 |------|------:|------|
+| `app_shell.dart` | 73 | `AppShell` — `NotificationTapListener` around a `Scaffold` whose `IndexedStack` of the five tabs and `NavigationBar` are driven by `appTabIndex` (extracted from `app.dart`) |
 | `shell_navigation.dart` | 13 | `appTabIndex` (selected tab, 0 Tasks .. 4 Finance) and `financeSubTabRequest` (one-shot Finance sub-tab request, reset by its consumer) |
 
 ## Conventions in this slice
@@ -21,4 +22,6 @@ shell (a notification tap) change the selected tab.
 
 ## Upstream dependencies
 
+`presentation/tasks/screens/` · `presentation/finance/screens/` ·
+`presentation/notifications/routing/` · `generated/l10n/` ·
 `flutter/foundation.dart`.
