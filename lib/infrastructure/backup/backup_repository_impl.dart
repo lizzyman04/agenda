@@ -7,17 +7,21 @@ import 'package:agenda/data/backup/dao/backup_dao.dart';
 import 'package:agenda/data/backup/json/backup_envelope.dart';
 import 'package:agenda/data/backup/json/budget_json_codec.dart';
 import 'package:agenda/data/backup/json/category_json_codec.dart';
+import 'package:agenda/data/backup/json/debt_json_codec.dart';
 import 'package:agenda/data/backup/json/goal_json_codec.dart';
 import 'package:agenda/data/backup/json/item_json_codec.dart';
+import 'package:agenda/data/backup/json/payment_json_codec.dart';
 import 'package:agenda/data/backup/json/transaction_json_codec.dart';
 import 'package:agenda/domain/backup/backup_file.dart';
 import 'package:agenda/domain/backup/backup_repository.dart';
+import 'package:injectable/injectable.dart';
 
 /// Concrete implementation of [BackupRepository].
 ///
 /// Privacy: export content (row values, field values, encoded bytes) is
 /// never logged. A failure carries only the exception TYPE, because the
 /// message of an encoding error can quote the offending value (T-04-04-02).
+@LazySingleton(as: BackupRepository)
 class BackupRepositoryImpl implements BackupRepository {
   const BackupRepositoryImpl(this._dao);
 
@@ -38,8 +42,9 @@ class BackupRepositoryImpl implements BackupRepository {
               rows.categories.map(categoryToJson).toList(),
           BackupJsonKeys.budgets: rows.budgets.map(budgetToJson).toList(),
           BackupJsonKeys.goals: rows.goals.map(goalToJson).toList(),
-          BackupJsonKeys.debts: const [],
-          BackupJsonKeys.recurringPayments: const [],
+          BackupJsonKeys.debts: rows.debts.map(debtToJson).toList(),
+          BackupJsonKeys.recurringPayments:
+              rows.recurringPayments.map(paymentToJson).toList(),
         },
       );
       final bytes = Uint8List.fromList(utf8.encode(jsonEncode(envelope)));

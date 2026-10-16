@@ -25,9 +25,11 @@ import 'package:agenda/application/tasks/day_planner/day_planner_cubit.dart'
 import 'package:agenda/application/tasks/project/project_cubit.dart' as _i646;
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart'
     as _i726;
+import 'package:agenda/config/di/backup_module.dart' as _i180;
 import 'package:agenda/config/di/core_module.dart' as _i84;
 import 'package:agenda/config/di/finance_module.dart' as _i650;
 import 'package:agenda/config/di/tasks_module.dart' as _i619;
+import 'package:agenda/data/backup/dao/backup_dao.dart' as _i728;
 import 'package:agenda/data/database/isar_service.dart' as _i43;
 import 'package:agenda/data/finance/budget/budget_dao.dart' as _i1035;
 import 'package:agenda/data/finance/budget/budget_mapper.dart' as _i233;
@@ -48,6 +50,7 @@ import 'package:agenda/data/finance/transaction/transaction_mapper.dart'
     as _i536;
 import 'package:agenda/data/tasks/item_dao.dart' as _i409;
 import 'package:agenda/data/tasks/item_mapper.dart' as _i546;
+import 'package:agenda/domain/backup/backup_repository.dart' as _i357;
 import 'package:agenda/domain/finance/budget/budget_repository.dart' as _i877;
 import 'package:agenda/domain/finance/category/transaction_category_repository.dart'
     as _i200;
@@ -59,6 +62,8 @@ import 'package:agenda/domain/finance/transaction/transaction_repository.dart'
     as _i585;
 import 'package:agenda/domain/tasks/item_repository.dart' as _i565;
 import 'package:agenda/domain/tasks/recurrence_engine.dart' as _i44;
+import 'package:agenda/infrastructure/backup/backup_repository_impl.dart'
+    as _i466;
 import 'package:agenda/infrastructure/finance/budget_repository_impl.dart'
     as _i576;
 import 'package:agenda/infrastructure/finance/debt_repository_impl.dart'
@@ -88,6 +93,7 @@ extension GetItInjectableX on _i174.GetIt {
     final coreModule = _$CoreModule();
     final financeModule = _$FinanceModule();
     final tasksModule = _$TasksModule();
+    final backupModule = _$BackupModule();
     gh.factory<_i1073.DayPlannerCubit>(() => _i1073.DayPlannerCubit());
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => coreModule.sharedPreferences,
@@ -107,6 +113,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => financeModule.recurringPaymentMapper,
     );
     gh.lazySingleton<_i546.ItemMapper>(() => tasksModule.itemMapper);
+    gh.lazySingleton<_i728.BackupDao>(
+      () => backupModule.backupDao(gh<_i43.IsarService>()),
+    );
     gh.lazySingleton<_i357.TransactionDao>(
       () => financeModule.transactionDao(gh<_i43.IsarService>()),
     );
@@ -136,6 +145,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i44.RecurrenceEngine>(
       () => const _i317.RecurrenceEngineImpl(),
+    );
+    gh.lazySingleton<_i357.BackupRepository>(
+      () => _i466.BackupRepositoryImpl(gh<_i728.BackupDao>()),
     );
     gh.factory<_i665.GoalListCubit>(
       () => _i665.GoalListCubit(gh<_i858.GoalRepository>()),
@@ -229,3 +241,5 @@ class _$CoreModule extends _i84.CoreModule {}
 class _$FinanceModule extends _i650.FinanceModule {}
 
 class _$TasksModule extends _i619.TasksModule {}
+
+class _$BackupModule extends _i180.BackupModule {}
