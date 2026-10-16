@@ -1,13 +1,13 @@
 # presentation/notifications
 
 Presentation slice for **notifications**: what happens in the UI when the
-user taps one, and (from plan 04-15) the screens and widgets that configure
-them.
+user taps one, and the screens and widgets that configure them.
 
 ## Responsibility
 
-Turn notification events into navigation and, later, host the notification
-settings UI. Scheduling, planning and permission logic never live here: they
+Turn notification events into navigation and host the notification settings
+UI (a standalone page, reachable from the task list until Phase 5 mounts it in
+Settings). Scheduling, planning and permission logic never live here: they
 sit in `domain/notifications/` and `infrastructure/notifications/`.
 
 ## Layout
@@ -15,8 +15,8 @@ sit in `domain/notifications/` and `infrastructure/notifications/`.
 ```
 notifications/
 ├── routing/   tap handling: payload -> target -> screen
-├── screens/   arrives with plan 04-15
-└── widgets/   arrives with plan 04-15
+├── screens/   NotificationSettingsScreen (standalone page, owns its cubit)
+└── widgets/   switches, time pickers, banners and the page's sections
 ```
 
 ## Conventions in this slice
@@ -29,5 +29,6 @@ notifications/
 
 ## Upstream dependencies
 
+`application/notifications/` (`NotificationSettingsCubit`) ·
 `domain/notifications/` · `domain/tasks/` · `domain/finance/goal/` ·
 `presentation/shell/` · `config/di/injection.dart`.
