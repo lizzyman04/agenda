@@ -10,8 +10,8 @@ enum RecurringCycle { daily, weekly, biweekly, monthly, quarterly, yearly }
 
 /// Isar @Collection for recurring payments (subscriptions, bills, etc.).
 ///
-/// nextDueDate is tracked and advanced by the Phase 4 notification system.
-/// Phase 3 only stores and retrieves; no auto-advance logic here.
+/// nextDueDate is stored and retrieved only. The Phase 4 reminder planner
+/// computes the effective due date in memory and never writes it back (D-15).
 @Collection()
 class RecurringPaymentModel {
   Id id = Isar.autoIncrement;
@@ -25,7 +25,7 @@ class RecurringPaymentModel {
   @Enumerated(EnumType.name)
   late RecurringCycle cycle;
 
-  /// Date of the next expected payment (Phase 4 advances this).
+  /// Date of the next expected payment (never advanced by notification code).
   @Index()
   late DateTime nextDueDate;
 

@@ -12,6 +12,8 @@ import 'dart:async';
 import 'package:agenda/data/database/isar_service.dart';
 import 'package:agenda/data/finance/budget/budget_dao.dart';
 import 'package:agenda/data/finance/budget/budget_model.dart';
+import 'package:agenda/data/finance/recurring/recurring_payment_dao.dart';
+import 'package:agenda/data/finance/recurring/recurring_payment_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_community/isar.dart';
 import 'package:mocktail/mocktail.dart';
@@ -60,6 +62,18 @@ BudgetModel _budget({required int categoryId, required int limitCents}) {
     ..updatedAt = now;
 }
 
+RecurringPaymentModel _payment(String title) {
+  final now = DateTime(2026, 3);
+  return RecurringPaymentModel()
+    ..title = title
+    ..amountCents = 500
+    ..categoryId = 1
+    ..cycle = RecurringCycle.monthly
+    ..nextDueDate = now
+    ..createdAt = now
+    ..updatedAt = now;
+}
+
 void main() {
   late IsarTestHarness harness;
   late Isar isar;
@@ -67,7 +81,7 @@ void main() {
 
   setUp(() async {
     harness = IsarTestHarness();
-    isar = await harness.open([BudgetModelSchema]);
+    isar = await harness.open([BudgetModelSchema, RecurringPaymentModelSchema]);
     mockIsarService = MockIsarService();
     when(() => mockIsarService.db).thenReturn(isar);
   });
@@ -85,6 +99,22 @@ void main() {
       await events.untilCount(1);
 
       await dao.save(_budget(categoryId: 2, limitCents: 2000));
+      await events.untilCount(2);
+
+      expect(events.count, greaterThanOrEqualTo(2));
+      await events.cancel();
+    });
+  });
+
+  group('RecurringPaymentDao.watchLazy', () {
+    test('emits after each save', () async {
+      final dao = RecurringPaymentDao(mockIsarService);
+      final events = _EventCounter(dao.watchLazy());
+
+      await dao.save(_payment('rent'));
+      await events.untilCount(1);
+
+      await dao.save(_payment('gym'));
       await events.untilCount(2);
 
       expect(events.count, greaterThanOrEqualTo(2));

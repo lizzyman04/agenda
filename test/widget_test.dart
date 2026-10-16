@@ -251,6 +251,9 @@ class _StubRecurringPaymentRepository implements RecurringPaymentRepository {
   @override
   AsyncResult<RecurringPayment> softDelete(int id) async =>
       const Err(DatabaseFailure('stub'));
+
+  @override
+  Stream<void> watchChanges() => const Stream.empty();
 }
 
 class _StubTransactionCategoryRepository

@@ -7,7 +7,9 @@ import 'package:isar_community/isar.dart';
 /// isActive is a PAUSE flag, not a delete flag: a paused payment is still a
 /// live record the user is tracking. Only deletedAt removes a row from the
 /// reads below. Phase 4's notification system reads nextDueDate from this
-/// collection and is the one place that should filter on isActive.
+/// collection and is the one place that should filter on isActive. It only
+/// reads: the reminder planner computes the effective due date in memory and
+/// never writes the stored nextDueDate back (D-15).
 class RecurringPaymentDao {
   const RecurringPaymentDao(this._isarService);
 
@@ -55,4 +57,9 @@ class RecurringPaymentDao {
       await _collection.put(model);
     });
   }
+
+  // --- Watch ---
+
+  Stream<void> watchLazy() =>
+      _isarService.db.collection<RecurringPaymentModel>().watchLazy();
 }

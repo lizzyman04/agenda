@@ -8,8 +8,10 @@ import 'package:injectable/injectable.dart';
 
 /// Concrete implementation of [RecurringPaymentRepository].
 ///
-/// Phase 3 stores recurring payments only — no auto-advance of nextDueDate.
-/// Phase 4 notification system owns the advance logic.
+/// Stores recurring payments only — nothing here advances nextDueDate. The
+/// Phase 4 reminder planner (plan 04-07) computes the effective due date in
+/// memory, so the stored value is deliberately never written by notification
+/// code (D-15).
 ///
 /// Validation:
 /// - title must not be empty
@@ -107,4 +109,7 @@ class RecurringPaymentRepositoryImpl implements RecurringPaymentRepository {
       return Err(DatabaseFailure('softDelete payment failed: $e'));
     }
   }
+
+  @override
+  Stream<void> watchChanges() => _dao.watchLazy();
 }

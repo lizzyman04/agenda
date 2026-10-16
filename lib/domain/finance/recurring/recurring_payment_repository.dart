@@ -6,8 +6,8 @@ import 'package:agenda/domain/finance/recurring/recurring_payment.dart';
 /// All methods return [AsyncResult] — never throw.
 /// Implementations live in lib/infrastructure/finance/.
 ///
-/// Note: This repository is not reactive — recurring payments are loaded
-/// on demand. No [watchChanges] stream is provided.
+/// Reactive through [watchChanges]: payment writes are observable so the
+/// reminder planner can re-plan when a payment is added, edited or paused.
 abstract class RecurringPaymentRepository {
   /// Creates a new recurring payment and returns it with the assigned Isar id.
   AsyncResult<RecurringPayment> createPayment(RecurringPayment payment);
@@ -32,4 +32,10 @@ abstract class RecurringPaymentRepository {
   /// Soft-deletes by setting deletedAt = DateTime.now().
   /// Returns the updated payment (with deletedAt set).
   AsyncResult<RecurringPayment> softDelete(int id);
+
+  /// Stream that fires whenever the RecurringPaymentModel collection changes
+  /// (any payment created, edited, paused, resumed or deleted).
+  ///
+  /// The event carries no payload: re-read with [getPayments].
+  Stream<void> watchChanges();
 }
