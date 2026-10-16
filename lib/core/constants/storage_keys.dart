@@ -21,9 +21,34 @@ abstract final class StorageKeys {
   /// Quiet hours enabled flag (NOTF-10).
   static const String quietHoursEnabled = 'quiet_hours_enabled';
 
-  /// Quiet hours start hour 0-23 (NOTF-10).
+  /// Quiet hours start, minutes since midnight 0-1439 (NOTF-10, D-08).
   static const String quietHoursStart = 'quiet_hours_start';
 
-  /// Quiet hours end hour 0-23 (NOTF-10).
+  /// Quiet hours end, minutes since midnight 0-1439 (NOTF-10, D-08).
   static const String quietHoursEnd = 'quiet_hours_end';
+
+  /// Prefix of the per-kind enabled flags (NOTF-09).
+  ///
+  /// The full key is this prefix plus the kind's two-letter code, for
+  /// example `notif_enabled_tk`.
+  static const String notifEnabledPrefix = 'notif_enabled_';
+
+  /// Morning briefing time, minutes since midnight 0-1439 (D-03).
+  static const String notifBriefingMinutes = 'notif_briefing_minutes';
+
+  /// Quote frequency name, 'daily' or 'weekly' (D-07).
+  static const String notifQuoteFrequency = 'notif_quote_frequency';
+
+  /// Quote time, minutes since midnight 0-1439 (D-07).
+  static const String notifQuoteMinutes = 'notif_quote_minutes';
+
+  /// Positive random seed that keeps the quote order stable (D-07).
+  static const String notifQuoteSeed = 'notif_quote_seed';
+
+  /// Whether the notification permission prompt was already shown.
+  static const String notifPermissionAsked = 'notif_permission_asked';
+
+  /// De-duplicated list of fired alert keys, such as goal-week markers
+  /// (string list).
+  static const String notifAlertState = 'notif_alert_state';
 }
