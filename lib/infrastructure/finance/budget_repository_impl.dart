@@ -99,4 +99,7 @@ class BudgetRepositoryImpl implements BudgetRepository {
       return Err(DatabaseFailure('delete budget failed: $e'));
     }
   }
+
+  @override
+  Stream<void> watchChanges() => _dao.watchLazy();
 }

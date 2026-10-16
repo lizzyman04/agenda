@@ -59,4 +59,9 @@ class BudgetDao {
     if (existing == null) return;
     await _isarService.db.writeTxn(() => _collection.delete(existing.id));
   }
+
+  // --- Watch ---
+
+  Stream<void> watchLazy() =>
+      _isarService.db.collection<BudgetModel>().watchLazy();
 }

@@ -6,8 +6,8 @@ import 'package:agenda/domain/finance/budget/budget.dart';
 /// All methods return [AsyncResult] — never throw.
 /// Implementations live in lib/infrastructure/finance/.
 ///
-/// Note: This repository is not reactive — budgets are loaded on demand.
-/// No [watchChanges] stream is provided.
+/// Reactive through [watchChanges]: budget writes are observable so the
+/// budget alert evaluator can re-run when a limit changes.
 abstract class BudgetRepository {
   /// Returns the budget for [categoryId] in the given [month] and [year].
   ///
@@ -32,4 +32,12 @@ abstract class BudgetRepository {
   /// Removes the budget limit for [categoryId] in [month]/[year].
   /// After deletion, [getForCategory] returns null for that slot.
   AsyncResult<void> delete(int categoryId, int month, int year);
+
+  /// Stream that fires whenever the BudgetModel collection changes (any
+  /// limit created, updated or deleted).
+  ///
+  /// Used by the budget alert evaluator (plan 04-14) to re-evaluate when a
+  /// budget limit changes. The event carries no payload: re-read what you
+  /// need.
+  Stream<void> watchChanges();
 }

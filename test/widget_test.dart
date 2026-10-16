@@ -167,6 +167,9 @@ class _StubBudgetRepository implements BudgetRepository {
   @override
   AsyncResult<void> delete(int categoryId, int month, int year) async =>
       const Success(null);
+
+  @override
+  Stream<void> watchChanges() => const Stream.empty();
 }
 
 class _StubGoalRepository implements GoalRepository {
