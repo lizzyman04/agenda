@@ -121,7 +121,7 @@ Plans:
   4. User can export all data as a JSON file and as a CSV file; exported files contain every task, transaction, budget, goal, debt, and recurring payment record
   5. User can import a backup file; the app shows a confirmation screen with record counts and date range, creates an automatic safety backup first, and completes the import atomically — a failed import leaves the database unchanged
 
-**Plans**: 16/17 plans executed in 8 waves (planned 2026-10-12 — expanded from the original 5-plan sketch; see rationale below)
+**Plans**: 17/17 plans executed in 8 waves (planned 2026-10-12 — expanded from the original 5-plan sketch; see rationale below)
 **UI hint**: yes
 
 Plans:
@@ -164,7 +164,7 @@ Plans:
 
 **Wave 8** *(blocked on Wave 7 completion)*
 
-- [ ] 04-17-PLAN.md — Import screen and hooks: pick, confirmation screen, commit, post-import alert reseed and reconcile, device UAT checks *(wave 8)*
+- [x] 04-17-PLAN.md — Import screen and hooks: pick, confirmation screen, commit, post-import alert reseed and reconcile, device UAT checks *(wave 8)*
 
 **Planner deviation from the 5-plan estimate**: 17 plans. The 14 requirements span two largely independent subsystems that meet only at import. Plans were reshaped per research: quiet hours and the slot budget land in the first domain plan (not the settings plan); all pubspec, Gradle, manifest and AppDelegate edits are one plan so nothing conflicts; ARB strings are front-loaded so no later plan edits them; reminders and export reads use dedicated uncapped/sorted queries with real-Isar regression tests (BL-01 class). Wave order is driven by `injection.config.dart` and README ownership: plans that regenerate DI never share a wave. The natural split boundary if the phase is ever divided is notifications (03, 05-07, 09, 10, 12-15) versus backup (04, 08, 11, 16, 17).
 
@@ -255,6 +255,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 14/14 | Complete    | 2026-10-03 |
-| 4. Notifications + Backup | 16/17 | In Progress|  |
+| 4. Notifications + Backup | 17/17 | In Progress|  |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
 | 6. Architecture Compliance | 18/18 | ✅ Complete | 2026-08-12 |

@@ -52,7 +52,7 @@
 - [x] **DATA-01**: All data is stored locally on the device using Isar; no data is transmitted externally
 - [x] **DATA-02**: User can export all data as a JSON backup file
 - [x] **DATA-03**: User can export all data as a CSV backup file
-- [ ] **DATA-04**: User can import data from a JSON or CSV backup file (with pre-import safety backup and atomic transaction)
+- [x] **DATA-04**: User can import data from a JSON or CSV backup file (with pre-import safety backup and atomic transaction)
 - [ ] **DATA-05**: User can set an optional PIN to lock access to the app on cold start
 - [ ] **DATA-06**: User can unlock the app using biometrics (Face ID or fingerprint) when PIN is enabled
 
@@ -138,7 +138,7 @@
 | NOTF-11 | Phase 4: Notifications + Backup | Complete |
 | DATA-02 | Phase 4: Notifications + Backup | Complete |
 | DATA-03 | Phase 4: Notifications + Backup | Complete |
-| DATA-04 | Phase 4: Notifications + Backup | Pending |
+| DATA-04 | Phase 4: Notifications + Backup | Complete |
 | DATA-05 | Phase 5: App Lock + Settings + Polish | Pending |
 | DATA-06 | Phase 5: App Lock + Settings + Polish | Pending |
 | UX-01 | Phase 5: App Lock + Settings + Polish | Pending |
