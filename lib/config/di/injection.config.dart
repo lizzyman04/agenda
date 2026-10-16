@@ -28,6 +28,7 @@ import 'package:agenda/application/tasks/task_list/task_list_cubit.dart'
 import 'package:agenda/config/di/backup_module.dart' as _i180;
 import 'package:agenda/config/di/core_module.dart' as _i84;
 import 'package:agenda/config/di/finance_module.dart' as _i650;
+import 'package:agenda/config/di/infrastructure_module.dart' as _i728;
 import 'package:agenda/config/di/tasks_module.dart' as _i619;
 import 'package:agenda/data/backup/dao/backup_dao.dart' as _i728;
 import 'package:agenda/data/database/isar_service.dart' as _i43;
@@ -60,6 +61,13 @@ import 'package:agenda/domain/finance/recurring/recurring_payment_repository.dar
     as _i385;
 import 'package:agenda/domain/finance/transaction/transaction_repository.dart'
     as _i585;
+import 'package:agenda/domain/notifications/alert_state_store.dart' as _i183;
+import 'package:agenda/domain/notifications/local_notification_gateway.dart'
+    as _i114;
+import 'package:agenda/domain/notifications/notification_permission_service.dart'
+    as _i300;
+import 'package:agenda/domain/notifications/notification_prefs_repository.dart'
+    as _i944;
 import 'package:agenda/domain/tasks/item_repository.dart' as _i565;
 import 'package:agenda/domain/tasks/recurrence_engine.dart' as _i44;
 import 'package:agenda/infrastructure/backup/backup_repository_impl.dart'
@@ -76,9 +84,19 @@ import 'package:agenda/infrastructure/finance/transaction_category_repository_im
     as _i986;
 import 'package:agenda/infrastructure/finance/transaction_repository_impl.dart'
     as _i47;
+import 'package:agenda/infrastructure/notifications/gateway/flutter_local_notifications_gateway.dart'
+    as _i322;
+import 'package:agenda/infrastructure/notifications/gateway/notification_permission_service_impl.dart'
+    as _i789;
+import 'package:agenda/infrastructure/notifications/prefs/alert_state_store_impl.dart'
+    as _i829;
+import 'package:agenda/infrastructure/notifications/prefs/notification_prefs_repository_impl.dart'
+    as _i958;
 import 'package:agenda/infrastructure/tasks/item_repository_impl.dart' as _i215;
 import 'package:agenda/infrastructure/tasks/recurrence_engine_impl.dart'
     as _i317;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    as _i163;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
@@ -92,6 +110,7 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final coreModule = _$CoreModule();
     final financeModule = _$FinanceModule();
+    final infrastructureModule = _$InfrastructureModule();
     final tasksModule = _$TasksModule();
     final backupModule = _$BackupModule();
     gh.factory<_i1073.DayPlannerCubit>(() => _i1073.DayPlannerCubit());
@@ -111,6 +130,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i539.DebtMapper>(() => financeModule.debtMapper);
     gh.lazySingleton<_i568.RecurringPaymentMapper>(
       () => financeModule.recurringPaymentMapper,
+    );
+    gh.lazySingleton<_i163.FlutterLocalNotificationsPlugin>(
+      () => infrastructureModule.notificationsPlugin,
     );
     gh.lazySingleton<_i546.ItemMapper>(() => tasksModule.itemMapper);
     gh.lazySingleton<_i728.BackupDao>(
@@ -143,6 +165,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i249.GoalMapper>(),
       ),
     );
+    gh.lazySingleton<_i183.AlertStateStore>(
+      () => _i829.AlertStateStoreImpl(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i944.NotificationPrefsRepository>(
+      () =>
+          _i958.NotificationPrefsRepositoryImpl(gh<_i460.SharedPreferences>()),
+    );
     gh.lazySingleton<_i44.RecurrenceEngine>(
       () => const _i317.RecurrenceEngineImpl(),
     );
@@ -162,6 +191,12 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i763.DebtRepositoryImpl(gh<_i731.DebtDao>(), gh<_i539.DebtMapper>()),
     );
+    gh.lazySingleton<_i114.LocalNotificationGateway>(
+      () => _i322.FlutterLocalNotificationsGateway(
+        gh<_i163.FlutterLocalNotificationsPlugin>(),
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
     gh.factory<_i710.DebtCubit>(
       () => _i710.DebtCubit(gh<_i169.DebtRepository>()),
     );
@@ -172,6 +207,11 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i47.TransactionRepositoryImpl(
         gh<_i357.TransactionDao>(),
         gh<_i536.TransactionMapper>(),
+      ),
+    );
+    gh.lazySingleton<_i300.NotificationPermissionService>(
+      () => _i789.NotificationPermissionServiceImpl(
+        gh<_i163.FlutterLocalNotificationsPlugin>(),
       ),
     );
     gh.lazySingleton<_i200.TransactionCategoryRepository>(
@@ -239,6 +279,8 @@ extension GetItInjectableX on _i174.GetIt {
 class _$CoreModule extends _i84.CoreModule {}
 
 class _$FinanceModule extends _i650.FinanceModule {}
+
+class _$InfrastructureModule extends _i728.InfrastructureModule {}
 
 class _$TasksModule extends _i619.TasksModule {}
 

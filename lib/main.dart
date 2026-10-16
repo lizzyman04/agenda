@@ -1,5 +1,6 @@
 import 'package:agenda/app.dart';
 import 'package:agenda/config/di/injection.dart';
+import 'package:agenda/config/startup/notification_startup.dart';
 import 'package:agenda/data/database/isar_service.dart';
 import 'package:agenda/data/finance/budget/budget_model.dart';
 import 'package:agenda/data/finance/category/transaction_category_model.dart';
@@ -19,7 +20,9 @@ import 'package:flutter/material.dart';
 ///    async singletons (SharedPreferences). Must complete before
 ///    runApp so all call sites resolve.
 /// 3. IsarService.open — opens the Isar database with all Phase 2+3 schemas.
-/// 4. runApp — starts the widget tree.
+/// 4. startNotifications — sets the local timezone and prepares the
+///    notification channels. Never prompts and never throws.
+/// 5. runApp — starts the widget tree.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
@@ -32,5 +35,6 @@ Future<void> main() async {
     DebtModelSchema,
     RecurringPaymentModelSchema,
   ]);
+  await startNotifications();
   runApp(const AgendaApp());
 }
