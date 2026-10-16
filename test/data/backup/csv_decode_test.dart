@@ -16,8 +16,8 @@ import 'package:isar_community/isar.dart';
 CsvRowReader _row(Map<String, String> cells, {int number = 2}) =>
     CsvRowReader(cells.keys.toList(), cells.values.toList(), number);
 
-Matcher _formatError(String contains) => throwsA(
-  isA<FormatException>().having((e) => e.message, 'message', contains),
+Matcher _formatError(String text) => throwsA(
+  isA<FormatException>().having((e) => e.message, 'message', contains(text)),
 );
 
 void main() {
@@ -34,9 +34,9 @@ void main() {
         '1,250.50': 125050,
         ' 7,05 ': 705,
       };
-      ok.forEach(
-        (raw, cents) => expect(parseAmountCell(raw), cents, reason: raw),
-      );
+      for (final e in ok.entries) {
+        expect(parseAmountCell(e.key), e.value, reason: e.key);
+      }
     });
 
     test('rejects everything else, never flipping a sign', () {
@@ -116,14 +116,11 @@ void main() {
       expect(() => decodeCsvTable(''), throwsFormatException);
       expect(() => decodeCsvTable('﻿\r\n'), throwsFormatException);
       expect(() => decodeCsvTable('1;2\r\n3;4'), throwsFormatException);
-      final big = StringBuffer('a\r\n');
-      for (var i = 0; i <= 100000; i++) {
-        big.write('x\r\n');
+      final big = StringBuffer('a;b\r\n');
+      for (var i = 0; i <= maxCsvDataRows; i++) {
+        big.write('x;y\r\n');
       }
-      expect(
-        () => decodeCsvTable('a;b\r\n${big.toString()}'),
-        throwsFormatException,
-      );
+      expect(() => decodeCsvTable('$big'), _formatError('too many rows'));
     });
   });
 
