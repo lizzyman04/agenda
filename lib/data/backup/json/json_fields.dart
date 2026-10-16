@@ -95,8 +95,7 @@ final class JsonObjectReader {
     return parsed.isUtc ? parsed.toLocal() : parsed;
   }
 
-  DateTime? optDate(String key) =>
-      _map[key] == null ? null : requireDate(key);
+  DateTime? optDate(String key) => _map[key] == null ? null : requireDate(key);
 
   /// Matches [values] by `name`; an unknown name is rejected.
   T requireEnum<T extends Enum>(String key, List<T> values) {

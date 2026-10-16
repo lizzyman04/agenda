@@ -22,14 +22,13 @@ abstract final class BackupJsonKeys {
 Map<String, Object?> buildBackupEnvelope({
   required DateTime exportedAt,
   required Map<String, List<Map<String, Object?>>> collections,
-}) =>
-    {
-      'app': backupAppId,
-      'formatVersion': backupFormatVersion,
-      'schemaVersion': AppConfig.schemaVersion,
-      'exportedAt': encodeJsonDate(exportedAt),
-      'collections': collections,
-    };
+}) => {
+  'app': backupAppId,
+  'formatVersion': backupFormatVersion,
+  'schemaVersion': AppConfig.schemaVersion,
+  'exportedAt': encodeJsonDate(exportedAt),
+  'collections': collections,
+};
 
 /// Result of [parseBackupEnvelope]: validated header plus per-collection
 /// row readers.

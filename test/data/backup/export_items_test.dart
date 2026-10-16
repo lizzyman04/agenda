@@ -11,6 +11,12 @@ import 'package:agenda/data/backup/dao/backup_dao.dart';
 import 'package:agenda/data/backup/json/backup_envelope.dart';
 import 'package:agenda/data/backup/json/item_json_codec.dart';
 import 'package:agenda/data/database/isar_service.dart';
+import 'package:agenda/data/finance/budget/budget_model.dart';
+import 'package:agenda/data/finance/category/transaction_category_model.dart';
+import 'package:agenda/data/finance/debt/debt_model.dart';
+import 'package:agenda/data/finance/goal/savings_goal_model.dart';
+import 'package:agenda/data/finance/recurring/recurring_payment_model.dart';
+import 'package:agenda/data/finance/transaction/transaction_model.dart';
 import 'package:agenda/data/tasks/item_model.dart';
 import 'package:agenda/domain/backup/backup_file.dart';
 import 'package:agenda/infrastructure/backup/backup_repository_impl.dart';
@@ -24,27 +30,28 @@ class MockIsarService extends Mock implements IsarService {}
 
 ItemModel _item(int i) {
   final base = DateTime(2026).add(Duration(minutes: i));
-  final item = ItemModel()
-    ..id = i
-    ..type = ItemType.values[i % ItemType.values.length]
-    ..parentId = i.isEven ? null : i - 1
-    ..title = 'Item $i'
-    ..description = i % 3 == 0 ? 'Desc $i' : null
-    ..priority = Priority.values[i % Priority.values.length]
-    ..isUrgent = i.isEven
-    ..isImportant = i % 3 == 0
-    ..sizeCategory = SizeCategory.values[i % SizeCategory.values.length]
-    ..isNextAction = i % 5 == 0
-    ..gtdContext = i % 4 == 0 ? '@home' : null
-    ..waitingFor = i % 7 == 0 ? 'Ana' : null
-    ..isCompleted = i % 6 == 0
-    ..completedAt = i % 6 == 0 ? base : null
-    ..deletedAt = i <= 100 ? base : null
-    ..dueDate = i.isEven ? base.add(const Duration(days: 1)) : null
-    ..linkedGoalId = i % 11 == 0 ? i : null
-    ..linkedDebtId = i % 13 == 0 ? i : null
-    ..createdAt = base
-    ..updatedAt = base.add(const Duration(seconds: 5));
+  final item =
+      ItemModel()
+        ..id = i
+        ..type = ItemType.values[i % ItemType.values.length]
+        ..parentId = i.isEven ? null : i - 1
+        ..title = 'Item $i'
+        ..description = i % 3 == 0 ? 'Desc $i' : null
+        ..priority = Priority.values[i % Priority.values.length]
+        ..isUrgent = i.isEven
+        ..isImportant = i % 3 == 0
+        ..sizeCategory = SizeCategory.values[i % SizeCategory.values.length]
+        ..isNextAction = i % 5 == 0
+        ..gtdContext = i % 4 == 0 ? '@home' : null
+        ..waitingFor = i % 7 == 0 ? 'Ana' : null
+        ..isCompleted = i % 6 == 0
+        ..completedAt = i % 6 == 0 ? base : null
+        ..deletedAt = i <= 100 ? base : null
+        ..dueDate = i.isEven ? base.add(const Duration(days: 1)) : null
+        ..linkedGoalId = i % 11 == 0 ? i : null
+        ..linkedDebtId = i % 13 == 0 ? i : null
+        ..createdAt = base
+        ..updatedAt = base.add(const Duration(seconds: 5));
   if (i.isEven) {
     item.timeInfo = TimeInfo(dueTimeMinutes: 540, recurrenceRule: 'FREQ=DAILY');
   }
@@ -64,7 +71,17 @@ void main() {
 
   setUp(() async {
     harness = IsarTestHarness();
-    isar = await harness.open([ItemModelSchema]);
+    // exportJson reads all seven collections in one transaction, so every
+    // schema must be open even though only items are seeded here.
+    isar = await harness.open([
+      ItemModelSchema,
+      TransactionModelSchema,
+      TransactionCategoryModelSchema,
+      BudgetModelSchema,
+      SavingsGoalModelSchema,
+      DebtModelSchema,
+      RecurringPaymentModelSchema,
+    ]);
     final service = MockIsarService();
     when(() => service.db).thenReturn(isar);
     repository = BackupRepositoryImpl(BackupDao(service));
@@ -74,55 +91,57 @@ void main() {
     await harness.close();
   });
 
-  test('exports all 600 items, soft-deleted included, field for field',
-      () async {
-    final seeded = [for (var i = 1; i <= 600; i++) _item(i)];
-    await isar.writeTxn(() => isar.collection<ItemModel>().putAll(seeded));
+  test(
+    'exports all 600 items, soft-deleted included, field for field',
+    () async {
+      final seeded = [for (var i = 1; i <= 600; i++) _item(i)];
+      await isar.writeTxn(() => isar.collection<ItemModel>().putAll(seeded));
 
-    final result = await repository.exportJson(now: DateTime(2026, 10, 12));
+      final result = await repository.exportJson(now: DateTime(2026, 10, 12));
 
-    final file = (result as Success<BackupFile>).value;
-    expect(file.name, 'agenda-backup-2026-10-12.json');
-    final parsed = parseBackupEnvelope(jsonDecode(utf8.decode(file.bytes)));
-    expect(parsed.formatVersion, backupFormatVersion);
-    expect(parsed.formatVersion, 1);
-    expect(parsed.schemaVersion, AppConfig.schemaVersion);
+      final file = (result as Success<BackupFile>).value;
+      expect(file.name, 'agenda-backup-2026-10-12.json');
+      final parsed = parseBackupEnvelope(jsonDecode(utf8.decode(file.bytes)));
+      expect(parsed.formatVersion, backupFormatVersion);
+      expect(parsed.formatVersion, 1);
+      expect(parsed.schemaVersion, AppConfig.schemaVersion);
 
-    final rows = parsed.rows(BackupJsonKeys.items);
-    expect(rows.length, 600, reason: 'soft-deleted rows must be exported');
+      final rows = parsed.rows(BackupJsonKeys.items);
+      expect(rows.length, 600, reason: 'soft-deleted rows must be exported');
 
-    final decoded = rows.map(itemFromJson).toList()
-      ..sort((a, b) => a.id.compareTo(b.id));
-    for (var i = 0; i < 600; i++) {
-      final a = seeded[i];
-      final b = decoded[i];
-      expect(b.id, a.id);
-      expect(b.type, a.type);
-      expect(b.parentId, a.parentId);
-      expect(b.title, a.title);
-      expect(b.description, a.description);
-      expect(b.priority, a.priority);
-      expect(b.isUrgent, a.isUrgent);
-      expect(b.isImportant, a.isImportant);
-      expect(b.sizeCategory, a.sizeCategory);
-      expect(b.isNextAction, a.isNextAction);
-      expect(b.gtdContext, a.gtdContext);
-      expect(b.waitingFor, a.waitingFor);
-      expect(b.isCompleted, a.isCompleted);
-      expect(_same(b.completedAt, a.completedAt), isTrue);
-      expect(_same(b.deletedAt, a.deletedAt), isTrue);
-      expect(_same(b.dueDate, a.dueDate), isTrue);
-      expect(b.timeInfo?.dueTimeMinutes, a.timeInfo?.dueTimeMinutes);
-      expect(b.timeInfo?.recurrenceRule, a.timeInfo?.recurrenceRule);
-      expect(b.timeInfo == null, a.timeInfo == null);
-      expect(b.moneyInfo?.amount, a.moneyInfo?.amount);
-      expect(b.moneyInfo?.currencyCode, a.moneyInfo?.currencyCode);
-      expect(b.moneyInfo == null, a.moneyInfo == null);
-      expect(b.linkedGoalId, a.linkedGoalId);
-      expect(b.linkedDebtId, a.linkedDebtId);
-      expect(_same(b.createdAt, a.createdAt), isTrue);
-      expect(_same(b.updatedAt, a.updatedAt), isTrue);
-    }
-    expect(decoded.where((m) => m.deletedAt != null).length, 100);
-  });
+      final decoded =
+          rows.map(itemFromJson).toList()..sort((a, b) => a.id.compareTo(b.id));
+      for (var i = 0; i < 600; i++) {
+        final a = seeded[i];
+        final b = decoded[i];
+        expect(b.id, a.id);
+        expect(b.type, a.type);
+        expect(b.parentId, a.parentId);
+        expect(b.title, a.title);
+        expect(b.description, a.description);
+        expect(b.priority, a.priority);
+        expect(b.isUrgent, a.isUrgent);
+        expect(b.isImportant, a.isImportant);
+        expect(b.sizeCategory, a.sizeCategory);
+        expect(b.isNextAction, a.isNextAction);
+        expect(b.gtdContext, a.gtdContext);
+        expect(b.waitingFor, a.waitingFor);
+        expect(b.isCompleted, a.isCompleted);
+        expect(_same(b.completedAt, a.completedAt), isTrue);
+        expect(_same(b.deletedAt, a.deletedAt), isTrue);
+        expect(_same(b.dueDate, a.dueDate), isTrue);
+        expect(b.timeInfo?.dueTimeMinutes, a.timeInfo?.dueTimeMinutes);
+        expect(b.timeInfo?.recurrenceRule, a.timeInfo?.recurrenceRule);
+        expect(b.timeInfo == null, a.timeInfo == null);
+        expect(b.moneyInfo?.amount, a.moneyInfo?.amount);
+        expect(b.moneyInfo?.currencyCode, a.moneyInfo?.currencyCode);
+        expect(b.moneyInfo == null, a.moneyInfo == null);
+        expect(b.linkedGoalId, a.linkedGoalId);
+        expect(b.linkedDebtId, a.linkedDebtId);
+        expect(_same(b.createdAt, a.createdAt), isTrue);
+        expect(_same(b.updatedAt, a.updatedAt), isTrue);
+      }
+      expect(decoded.where((m) => m.deletedAt != null).length, 100);
+    },
+  );
 }

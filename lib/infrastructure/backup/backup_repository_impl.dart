@@ -5,7 +5,11 @@ import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/data/backup/dao/backup_dao.dart';
 import 'package:agenda/data/backup/json/backup_envelope.dart';
+import 'package:agenda/data/backup/json/budget_json_codec.dart';
+import 'package:agenda/data/backup/json/category_json_codec.dart';
+import 'package:agenda/data/backup/json/goal_json_codec.dart';
 import 'package:agenda/data/backup/json/item_json_codec.dart';
+import 'package:agenda/data/backup/json/transaction_json_codec.dart';
 import 'package:agenda/domain/backup/backup_file.dart';
 import 'package:agenda/domain/backup/backup_repository.dart';
 
@@ -23,15 +27,17 @@ class BackupRepositoryImpl implements BackupRepository {
   AsyncResult<BackupFile> exportJson({DateTime? now}) async {
     try {
       final at = now ?? DateTime.now();
-      final items = await _dao.readItems();
+      final rows = await _dao.readAll();
       final envelope = buildBackupEnvelope(
         exportedAt: at,
         collections: {
-          BackupJsonKeys.items: items.map(itemToJson).toList(),
-          BackupJsonKeys.transactions: const [],
-          BackupJsonKeys.categories: const [],
-          BackupJsonKeys.budgets: const [],
-          BackupJsonKeys.goals: const [],
+          BackupJsonKeys.items: rows.items.map(itemToJson).toList(),
+          BackupJsonKeys.transactions:
+              rows.transactions.map(transactionToJson).toList(),
+          BackupJsonKeys.categories:
+              rows.categories.map(categoryToJson).toList(),
+          BackupJsonKeys.budgets: rows.budgets.map(budgetToJson).toList(),
+          BackupJsonKeys.goals: rows.goals.map(goalToJson).toList(),
           BackupJsonKeys.debts: const [],
           BackupJsonKeys.recurringPayments: const [],
         },
