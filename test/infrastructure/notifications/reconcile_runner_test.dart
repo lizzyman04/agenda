@@ -1,10 +1,14 @@
+import 'package:agenda/core/constants/storage_keys.dart';
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/domain/notifications/local_notification_gateway.dart';
 import 'package:agenda/domain/notifications/model/notification_kind.dart';
 import 'package:agenda/domain/notifications/model/notification_prefs.dart';
+import 'package:agenda/domain/notifications/model/planned_notification.dart';
 import 'package:agenda/domain/notifications/model/planner_input.dart';
 import 'package:agenda/domain/notifications/model/schedule_request.dart';
 import 'package:agenda/domain/notifications/notification_reconciler.dart';
+import 'package:agenda/domain/notifications/planner/kind_planner.dart';
 import 'package:agenda/domain/notifications/planner/reminder_planner.dart';
 import 'package:agenda/domain/notifications/planner/task_reminder_planner.dart';
 import 'package:agenda/domain/notifications/rules/notification_id.dart';
@@ -12,11 +16,14 @@ import 'package:agenda/domain/notifications/rules/payload_codec.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/infrastructure/notifications/content/notification_content_builder.dart';
+import 'package:agenda/infrastructure/notifications/prefs/alert_state_store_impl.dart';
+import 'package:agenda/infrastructure/notifications/sync/permission_gate.dart';
 import 'package:agenda/infrastructure/notifications/sync/reconcile_report.dart';
 import 'package:agenda/infrastructure/notifications/sync/reconcile_runner.dart';
 import 'package:agenda/infrastructure/notifications/sync/snapshot_loader.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_notification_gateway.dart';
 
@@ -37,6 +44,24 @@ class _PendingFailsGateway extends _CountingGateway {
   @override
   AsyncResult<List<PendingNotification>> pending() async =>
       const Err(NotificationFailure('pending down'));
+}
+
+/// Always plans one goal off-track alert, as the real planner would.
+class _GoalStub implements KindPlanner {
+  @override
+  List<PlannedNotification> plan(PlannerInput input) => [
+    PlannedNotification(
+      kind: NotificationKind.goalOffTrack,
+      id: notificationId(
+        base: NotificationKind.goalOffTrack.idBase,
+        entityId: 3,
+        type: NotificationKind.goalOffTrack.idType,
+      ),
+      fireAt: DateTime(2026, 10, 19, 9),
+      entityId: 3,
+      subject: 'Trip',
+    ),
+  ];
 }
 
 final DateTime _now = DateTime(2026, 10, 12, 8);
@@ -63,6 +88,8 @@ void main() {
   late FakeNotificationPermissionService permissions;
   late PlannerInput input;
   late ReconcileRunner runner;
+  late SharedPreferences store;
+  late AlertStateStoreImpl alerts;
 
   PlannerInput inputOf(List<Item> items, {NotificationPrefs? prefs}) =>
       PlannerInput(
@@ -71,7 +98,23 @@ void main() {
         items: items,
       );
 
-  setUp(() {
+  ReconcileRunner runnerWith(
+    LocalNotificationGateway gw, [
+    List<KindPlanner> planners = const [TaskReminderPlanner()],
+  ]) => ReconcileRunner(
+    loader,
+    ReminderPlanner(planners),
+    const NotificationContentBuilder(),
+    gw,
+    permissions,
+    PermissionGate(permissions, store),
+    alerts,
+  );
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    store = await SharedPreferences.getInstance();
+    alerts = AlertStateStoreImpl(store);
     loader = _MockLoader();
     gateway = _CountingGateway();
     permissions = FakeNotificationPermissionService();
@@ -82,13 +125,7 @@ void main() {
         slotBudget: any(named: 'slotBudget'),
       ),
     ).thenAnswer((_) async => Success(input));
-    runner = ReconcileRunner(
-      loader,
-      const ReminderPlanner([TaskReminderPlanner()]),
-      const NotificationContentBuilder(),
-      gateway,
-      permissions,
-    );
+    runner = runnerWith(gateway);
   });
 
   Future<ReconcileReport> reconcile([
@@ -189,18 +226,164 @@ void main() {
 
   test('a failed pending read aborts without touching the schedule', () async {
     final failing = _PendingFailsGateway();
-    final other = ReconcileRunner(
-      loader,
-      const ReminderPlanner([TaskReminderPlanner()]),
-      const NotificationContentBuilder(),
-      failing,
-      permissions,
-    );
+    final other = runnerWith(failing);
 
     final report = await other.run(now: _now, reason: ReconcileReason.appStart);
 
     expect(report.aborted, isTrue);
     expect(failing.scheduleCalls, 0);
     expect(failing.cancelledIds, isEmpty);
+  });
+
+  group('evaluator-owned alerts', () {
+    final budgetId = notificationId(base: 20, entityId: 3, type: 3);
+
+    Future<void> seedBudgetAlert() async {
+      await gateway.schedule(
+        ScheduleRequest(
+          id: budgetId,
+          kind: NotificationKind.budgetAlert,
+          fireAt: DateTime(2026, 10, 12, 9),
+          title: 'Food: 80% of the budget used',
+          body: 'You have used 80% of this month\'s limit.',
+          payload: encodePayload(
+            kind: NotificationKind.budgetAlert,
+            entityId: 3,
+            fireAt: DateTime(2026, 10, 12, 9),
+            exact: true,
+          ),
+          exact: true,
+        ),
+      );
+    }
+
+    test('a pending budget alert survives the diff', () async {
+      await seedBudgetAlert();
+
+      await reconcile();
+
+      expect(gateway.cancelledIds, isEmpty);
+      expect(gateway.scheduled, contains(budgetId));
+    });
+
+    test('it is cancelled once its kind is switched off', () async {
+      await seedBudgetAlert();
+      input = inputOf(
+        [_task(7)],
+        prefs: NotificationPrefs.defaults().withEnabled(
+          NotificationKind.budgetAlert,
+          value: false,
+        ),
+      );
+
+      await reconcile(ReconcileReason.prefsChange);
+
+      expect(gateway.cancelledIds, [budgetId]);
+    });
+
+    test('an undecodable payload on a foreign id is left alone', () async {
+      await gateway.schedule(
+        ScheduleRequest(
+          id: 5,
+          kind: NotificationKind.budgetAlert,
+          fireAt: DateTime(2026, 10, 12, 9),
+          title: 't',
+          body: 'b',
+          payload: 'garbage',
+          exact: true,
+        ),
+      );
+      input = inputOf(
+        const [],
+        prefs: NotificationPrefs.defaults().withEnabled(
+          NotificationKind.budgetAlert,
+          value: false,
+        ),
+      );
+
+      await reconcile(ReconcileReason.prefsChange);
+
+      expect(gateway.cancelledIds, isEmpty);
+      expect(gateway.scheduled, contains(5));
+    });
+  });
+
+  group('permission gate', () {
+    test('a data change that schedules something asks exactly once', () async {
+      await reconcile(ReconcileReason.dataChange);
+      input = inputOf([_task(7), _task(8, day: 15)]);
+      await reconcile(ReconcileReason.dataChange);
+
+      expect(permissions.notificationRequests, 1);
+      expect(store.getBool(StorageKeys.notifPermissionAsked), isTrue);
+    });
+
+    test('a preference change that schedules something asks', () async {
+      await reconcile(ReconcileReason.prefsChange);
+
+      expect(permissions.notificationRequests, 1);
+    });
+
+    test('start, resume and import never ask', () async {
+      for (final reason in [
+        ReconcileReason.appStart,
+        ReconcileReason.appResume,
+        ReconcileReason.afterImport,
+      ]) {
+        input = inputOf([_task(7, day: 14 + reason.index)]);
+        await reconcile(reason);
+      }
+
+      expect(permissions.notificationRequests, 0);
+      expect(store.getBool(StorageKeys.notifPermissionAsked), isNull);
+    });
+
+    test('a data change with nothing to schedule does not ask', () async {
+      input = inputOf(const []);
+
+      await reconcile(ReconcileReason.dataChange);
+
+      expect(permissions.notificationRequests, 0);
+    });
+  });
+
+  group('exact mode', () {
+    test(
+      'inexact payloads are upgraded once exact alarms are granted',
+      () async {
+        permissions.exact = false;
+        await reconcile();
+        final id = _taskNotificationId(7);
+        expect(gateway.scheduled[id]!.exact, isFalse);
+        expect(gateway.scheduled[id]!.payload, endsWith('|i'));
+
+        permissions.exact = true;
+        final report = await reconcile(ReconcileReason.appResume);
+
+        expect(report.scheduled, 1);
+        expect(gateway.scheduled[id]!.exact, isTrue);
+        expect(gateway.scheduled[id]!.payload, endsWith('|e'));
+      },
+    );
+  });
+
+  test('a scheduled goal alert records its week marker', () async {
+    final goalRunner = runnerWith(gateway, [_GoalStub()]);
+
+    await goalRunner.run(now: _now, reason: ReconcileReason.appStart);
+
+    expect(await alerts.keys(), {'gs:3:2026-10-19'});
+  });
+
+  test('one failing id is counted and does not stop the others', () async {
+    input = inputOf([_task(7), _task(8, day: 15)]);
+    gateway.failScheduleIds.add(_taskNotificationId(7));
+
+    final report = await reconcile();
+
+    expect(report.failures, 1);
+    expect(report.scheduled, 1);
+    expect(gateway.scheduled, contains(_taskNotificationId(8)));
+    expect(gateway.scheduled, isNot(contains(_taskNotificationId(7))));
   });
 }
