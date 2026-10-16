@@ -9,6 +9,7 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:agenda/application/backup/backup_cubit.dart' as _i768;
 import 'package:agenda/application/finance/budget/budget_cubit.dart' as _i759;
 import 'package:agenda/application/finance/dashboard/home_dashboard_cubit.dart'
     as _i428;
@@ -58,6 +59,7 @@ import 'package:agenda/data/finance/transaction/transaction_mapper.dart'
     as _i536;
 import 'package:agenda/data/tasks/item_dao.dart' as _i409;
 import 'package:agenda/data/tasks/item_mapper.dart' as _i546;
+import 'package:agenda/domain/backup/backup_file_gateway.dart' as _i1027;
 import 'package:agenda/domain/backup/backup_repository.dart' as _i357;
 import 'package:agenda/domain/finance/budget/budget_repository.dart' as _i877;
 import 'package:agenda/domain/finance/category/transaction_category_repository.dart'
@@ -83,6 +85,8 @@ import 'package:agenda/domain/tasks/item_repository.dart' as _i565;
 import 'package:agenda/domain/tasks/recurrence_engine.dart' as _i44;
 import 'package:agenda/infrastructure/backup/backup_repository_impl.dart'
     as _i466;
+import 'package:agenda/infrastructure/backup/file_picker_backup_file_gateway.dart'
+    as _i440;
 import 'package:agenda/infrastructure/finance/budget_repository_impl.dart'
     as _i576;
 import 'package:agenda/infrastructure/finance/debt_repository_impl.dart'
@@ -198,6 +202,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i183.AlertStateStore>(
       () => _i829.AlertStateStoreImpl(gh<_i460.SharedPreferences>()),
     );
+    gh.lazySingleton<_i1027.BackupFileGateway>(
+      () => _i440.FilePickerBackupFileGateway(),
+    );
     gh.lazySingleton<_i944.NotificationPrefsRepository>(
       () =>
           _i958.NotificationPrefsRepositoryImpl(gh<_i460.SharedPreferences>()),
@@ -254,6 +261,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i316.GoalCubit(
         gh<_i858.GoalRepository>(),
         gh<_i585.TransactionRepository>(),
+      ),
+    );
+    gh.factory<_i768.BackupCubit>(
+      () => _i768.BackupCubit(
+        gh<_i357.BackupRepository>(),
+        gh<_i1027.BackupFileGateway>(),
       ),
     );
     gh.lazySingleton<_i565.ItemRepository>(
