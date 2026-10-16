@@ -4,14 +4,14 @@ milestone: v1.0
 current_phase: 04
 current_phase_name: Notifications + Backup
 status: executing
-stopped_at: Completed 04-12-PLAN.md
-last_updated: "2026-10-16T07:46:02.027Z"
-state_head: 9a519c0e0af416b87839ee810e9ace9be3ff6671
+stopped_at: Completed 04-13-PLAN.md
+last_updated: "2026-10-16T07:53:14.492Z"
+state_head: 59f09738b93db040bb419a0c1d1444d76c936a19
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 59
-  completed_plans: 54
+  completed_plans: 55
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 04 (Notifications + Backup) — EXECUTING
-Plan: 12 of 17
+Plan: 13 of 17
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -207,6 +207,7 @@ Progress: [██████████] 100%
 | Phase 04 P10 | 9 min | 3 tasks | 20 files |
 | Phase 04 P11 | 17 min | 3 tasks | 20 files |
 | Phase 04 P12 | 10 min | 3 tasks | 15 files |
+| Phase 04 P13 | 8 min | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -249,6 +250,7 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-11: A4 proven - auto-increment passes imported ids; import state in ImportSession; commit consumes prepared snapshot; CSV categories resolved at prepare (dry run) and inside commit txn
 - [Phase 04]: 04-12: ReconcileRunner reads prefs from PlannerInput, not the prefs repository; apply step split into reconcile_apply.dart for the 150-line cap
 - [Phase 04]: 04-12: aborted reconcile does not emit truncatedCount; non-owned pending alerts cancelled only when id and payload decode and kind is disabled
+- [Phase 04]: 04-13: Finance sub-tab requests are reset to null on every non-Finance tab navigation and applied once post-frame, so a stale request never fires later
 
 ### Pending Todos
 
@@ -279,8 +281,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-10-16T07:46:01.769Z
-Stopped at: Completed 04-12-PLAN.md
+Last session: 2026-10-16T07:53:14.237Z
+Stopped at: Completed 04-13-PLAN.md
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
 Plans `03-13` and `03-14` executed and merged. Verification: 5/5 roadmap truths hold at
