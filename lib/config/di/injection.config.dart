@@ -263,12 +263,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i585.TransactionRepository>(),
       ),
     );
-    gh.factory<_i768.BackupCubit>(
-      () => _i768.BackupCubit(
-        gh<_i357.BackupRepository>(),
-        gh<_i1027.BackupFileGateway>(),
-      ),
-    );
     gh.lazySingleton<_i565.ItemRepository>(
       () => _i215.ItemRepositoryImpl(
         gh<_i409.ItemDao>(),
@@ -390,6 +384,15 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i745.ImmediateAlertDispatcher>(),
         gh<_i944.NotificationPrefsRepository>(),
         gh<_i460.SharedPreferences>(),
+      ),
+    );
+    gh.factory<_i768.BackupCubit>(
+      () => _i768.BackupCubit(
+        gh<_i357.BackupRepository>(),
+        gh<_i1027.BackupFileGateway>(),
+        gh<_i892.BudgetAlertEvaluator>(),
+        gh<_i708.GoalAlertEvaluator>(),
+        gh<_i173.NotificationReconciler>(),
       ),
     );
     return this;

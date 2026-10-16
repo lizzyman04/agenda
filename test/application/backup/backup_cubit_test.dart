@@ -2,11 +2,14 @@ import 'dart:typed_data';
 
 import 'package:agenda/application/backup/backup_cubit.dart';
 import 'package:agenda/application/backup/backup_state.dart';
+import 'package:agenda/application/notifications/budget_alert_evaluator.dart';
+import 'package:agenda/application/notifications/goal_alert_evaluator.dart';
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/backup/backup_file.dart';
 import 'package:agenda/domain/backup/backup_file_gateway.dart';
 import 'package:agenda/domain/backup/backup_repository.dart';
+import 'package:agenda/domain/notifications/notification_reconciler.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
@@ -14,6 +17,13 @@ import 'package:test/test.dart';
 class MockBackupRepository extends Mock implements BackupRepository {}
 
 class MockBackupFileGateway extends Mock implements BackupFileGateway {}
+
+class MockBudgetAlertEvaluator extends Mock implements BudgetAlertEvaluator {}
+
+class MockGoalAlertEvaluator extends Mock implements GoalAlertEvaluator {}
+
+class MockNotificationReconciler extends Mock
+    implements NotificationReconciler {}
 
 BackupFile _file(String name) =>
     BackupFile(name: name, bytes: Uint8List.fromList([1, 2, 3]));
@@ -31,7 +41,13 @@ void main() {
     gateway = MockBackupFileGateway();
   });
 
-  BackupCubit build() => BackupCubit(repository, gateway);
+  BackupCubit build() => BackupCubit(
+    repository,
+    gateway,
+    MockBudgetAlertEvaluator(),
+    MockGoalAlertEvaluator(),
+    MockNotificationReconciler(),
+  );
 
   group('BackupCubit.exportJson', () {
     blocTest<BackupCubit, BackupState>(
