@@ -4,14 +4,14 @@ milestone: v1.0
 current_phase: 04
 current_phase_name: Notifications + Backup
 status: executing
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-10-16T05:53:00.564Z"
-state_head: 314b9e2d1d273ed954506bba22b69b37ac3b9025
+stopped_at: Completed 04-04-PLAN.md
+last_updated: "2026-10-16T06:02:30.799Z"
+state_head: 04ad37c31cf0d0da0d182f47cbcaf3f72b2806a4
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 59
-  completed_plans: 45
+  completed_plans: 46
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 04 (Notifications + Backup) — EXECUTING
-Plan: 3 of 17
+Plan: 4 of 17
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -198,6 +198,7 @@ Progress: [██████████] 100%
 |------|----------|-------|-------|
 | Phase 04 P02 | 25min | 2 tasks | 7 files |
 | Phase 04 P03 | 7min | 3 tasks | 20 files |
+| Phase 04 P04 | 9min | 3 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -229,6 +230,7 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 6: dart format is NOT enforced in CI and no raw column-width guard was added — measured, 103/258 files differ from dart format output and 88 raw lines exceed 80 cols while the lint reports 0; width policing defers to lines_longer_than_80_chars
 - [Phase 04]: Phase 4 l10n: ICU plural 'one' branches interpolate {count} instead of a literal 1 (pt treats 0 as singular); no notification string takes an amount placeholder — Correct 0/1/N rendering in pt_BR; lock-screen privacy (T-04-02-01)
 - [Phase 04]: Phase 4 domain: NotificationPrefs.props uses isEnabled(kind) per kind so an absent map entry equals an explicit default; slot budget fills briefings then quotes inside the budget, which drops far quotes first without an eviction pass
+- [Phase 04]: Phase 4 backup: ParsedEnvelope exposes re-rooted JsonObjectReader rows and export failures carry only the exception runtimeType — Import (04-11) decodes rows without re-wrapping, and an encoding error's message can quote a user value (T-04-04-02)
 
 ### Pending Todos
 
@@ -259,8 +261,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-10-16T05:53:00.328Z
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-10-16T06:02:30.531Z
+Stopped at: Completed 04-04-PLAN.md
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
 Plans `03-13` and `03-14` executed and merged. Verification: 5/5 roadmap truths hold at
