@@ -1,6 +1,6 @@
 # presentation/notifications/screens
 
-Route-level widgets for notification settings.
+Route-level widgets for notification settings: the page and its wiring.
 
 ## Responsibility
 
@@ -12,7 +12,8 @@ here.
 
 | File | Lines | Role |
 |------|------:|------|
-| `notification_settings_screen.dart` | 99 | `NotificationSettingsScreen` — standalone page (D-09) that creates `NotificationSettingsCubit` from `getIt`, calls `start()`, refreshes permissions on app resume, and lists one switch per notification kind |
+| `notification_settings_screen.dart` | 74 | `NotificationSettingsScreen` — standalone page (D-09) that creates `NotificationSettingsCubit` from `getIt`, calls `start()`, closes it on dispose, refreshes permissions on app resume, and passes the privacy note to the body as its footer |
+| `notification_settings_body.dart` | 109 | `NotificationSettingsBody` — the loaded page: denied-permission and exact-alarm banners (exact only on Android), one switch per kind, briefing time, quotes, quiet hours and the "N reminders waiting" text; each control calls one cubit method |
 
 ## Conventions in this slice
 
