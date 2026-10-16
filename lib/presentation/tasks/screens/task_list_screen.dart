@@ -10,6 +10,7 @@ import 'package:agenda/presentation/tasks/screens/gtd_filter_screen.dart';
 import 'package:agenda/presentation/tasks/screens/project_screen.dart';
 import 'package:agenda/presentation/tasks/screens/task_detail_screen.dart';
 import 'package:agenda/presentation/tasks/form/screens/task_form_screen.dart';
+import 'package:agenda/presentation/tasks/widgets/task_list_settings_menu.dart';
 import 'package:agenda/presentation/tasks/widgets/task_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -89,6 +90,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             tooltip: l10n.gtdFilterTitle,
             onPressed: _navigateToGtdFilter,
           ),
+          const TaskListSettingsMenu(),
         ],
         bottom: TaskSearchBar(
           hintText: l10n.searchTasks,

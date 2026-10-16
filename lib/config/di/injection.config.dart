@@ -23,6 +23,8 @@ import 'package:agenda/application/notifications/budget_alert_evaluator.dart'
     as _i892;
 import 'package:agenda/application/notifications/goal_alert_evaluator.dart'
     as _i708;
+import 'package:agenda/application/notifications/notification_settings_cubit.dart'
+    as _i290;
 import 'package:agenda/application/shared/locale/locale_cubit.dart' as _i101;
 import 'package:agenda/application/tasks/day_planner/day_planner_cubit.dart'
     as _i1073;
@@ -357,6 +359,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i183.AlertStateStore>(),
         gh<_i745.ImmediateAlertDispatcher>(),
         gh<_i944.NotificationPrefsRepository>(),
+      ),
+    );
+    gh.factory<_i290.NotificationSettingsCubit>(
+      () => _i290.NotificationSettingsCubit(
+        gh<_i944.NotificationPrefsRepository>(),
+        gh<_i300.NotificationPermissionService>(),
+        gh<_i173.NotificationReconciler>(),
       ),
     );
     gh.lazySingleton<_i892.BudgetAlertEvaluator>(
