@@ -4,14 +4,14 @@ milestone: v1.0
 current_phase: 04
 current_phase_name: Notifications + Backup
 status: executing
-stopped_at: Completed 04-14-PLAN.md
-last_updated: "2026-10-16T08:05:46.145Z"
-state_head: 5764be7f576ba10b1b5fe2bda9564ba244b95557
+stopped_at: Completed 04-15-PLAN.md
+last_updated: "2026-10-16T08:19:21.839Z"
+state_head: 56f37287b91fe978c4cb8becf1fa1266e5e26813
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 59
-  completed_plans: 56
+  completed_plans: 57
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 04 (Notifications + Backup) — EXECUTING
-Plan: 14 of 17
+Plan: 15 of 17
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -209,6 +209,7 @@ Progress: [██████████] 100%
 | Phase 04 P12 | 10 min | 3 tasks | 15 files |
 | Phase 04 P13 | 8 min | 2 tasks | 14 files |
 | Phase 04 P14 | 11 min | 3 tasks | 15 files |
+| Phase 04 P15 | 11 min | 3 tasks | 22 files |
 
 ## Accumulated Context
 
@@ -254,6 +255,8 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-13: Finance sub-tab requests are reset to null on every non-Finance tab navigation and applied once post-frame, so a stale request never fires later
 - [Phase 04]: 04-14: Budget/goal seeding is skipped while the notification kind is disabled, so no marker is written for a disabled kind — Keeps T-04-14-03 literal: enabling the kind later still yields the alert; the next start seeds silently
 - [Phase 04]: 04-14: Application evaluators call the infrastructure ImmediateAlertDispatcher (documented layer-rule exception) — The dispatcher is the single place applying kind toggle, permission gate and quiet hours
+- [Phase 04]: 04-15: settings screen owns its cubit (getIt in initState, closed on dispose) so the resume observer refreshes permissions on the same instance — BlocProvider(create:) cannot be reached from the lifecycle observer
+- [Phase 04]: 04-15: enabling a kind with OS permission missing prompts first, then saves the preference regardless; the denied banner explains the gap — A silently reverted switch hides why nothing fires
 
 ### Pending Todos
 
@@ -284,8 +287,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-10-16T08:05:45.855Z
-Stopped at: Completed 04-14-PLAN.md
+Last session: 2026-10-16T08:19:21.514Z
+Stopped at: Completed 04-15-PLAN.md
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
 Plans `03-13` and `03-14` executed and merged. Verification: 5/5 roadmap truths hold at

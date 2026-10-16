@@ -42,9 +42,9 @@
 - [x] **NOTF-05**: App sends overdue debt reminders when a debt is approaching its due date
 - [x] **NOTF-06**: App sends goal progress alerts when a savings goal is off track
 - [x] **NOTF-07**: App sends recurring payment reminders before a bill is due
-- [ ] **NOTF-08**: App sends motivational quote notifications (default OFF; user-configurable frequency and time)
-- [ ] **NOTF-09**: User can toggle each notification type independently in Settings
-- [ ] **NOTF-10**: Notifications respect quiet hours (default 10pm–7am; user-configurable)
+- [x] **NOTF-08**: App sends motivational quote notifications (default OFF; user-configurable frequency and time)
+- [x] **NOTF-09**: User can toggle each notification type independently in Settings
+- [x] **NOTF-10**: Notifications respect quiet hours (default 10pm–7am; user-configurable)
 - [x] **NOTF-11**: All scheduled notifications are rescheduled automatically after device reboot
 
 ### Data & Privacy
@@ -132,9 +132,9 @@
 | NOTF-05 | Phase 4: Notifications + Backup | Complete |
 | NOTF-06 | Phase 4: Notifications + Backup | Complete |
 | NOTF-07 | Phase 4: Notifications + Backup | Complete |
-| NOTF-08 | Phase 4: Notifications + Backup | Pending |
-| NOTF-09 | Phase 4: Notifications + Backup | Pending |
-| NOTF-10 | Phase 4: Notifications + Backup | Pending |
+| NOTF-08 | Phase 4: Notifications + Backup | Complete |
+| NOTF-09 | Phase 4: Notifications + Backup | Complete |
+| NOTF-10 | Phase 4: Notifications + Backup | Complete |
 | NOTF-11 | Phase 4: Notifications + Backup | Complete |
 | DATA-02 | Phase 4: Notifications + Backup | Pending |
 | DATA-03 | Phase 4: Notifications + Backup | Pending |
