@@ -87,6 +87,33 @@ mixin _ItemRepositoryImplQueries {
     }
   }
 
+  AsyncResult<List<Item>> getRemindableItems({
+    required DateTime from,
+    required int limit,
+  }) async {
+    try {
+      final models = await _dao.findRemindable(from: from, limit: limit);
+      return Success<List<Item>>(models.map(_mapper.toDomain).toList());
+    } on Object catch (e) {
+      return Err<List<Item>>(DatabaseFailure('getRemindableItems failed: $e'));
+    }
+  }
+
+  AsyncResult<List<Item>> getItemsDueInWindow({
+    required DateTime from,
+    required DateTime toExclusive,
+  }) async {
+    try {
+      final models = await _dao.findDueInWindow(
+        from: from,
+        toExclusive: toExclusive,
+      );
+      return Success<List<Item>>(models.map(_mapper.toDomain).toList());
+    } on Object catch (e) {
+      return Err<List<Item>>(DatabaseFailure('getItemsDueInWindow failed: $e'));
+    }
+  }
+
   Stream<void> watchChanges() => _dao.watchLazy();
 
   AsyncResult<List<String>> getDistinctGtdContexts() async {

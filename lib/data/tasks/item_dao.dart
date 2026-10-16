@@ -1,6 +1,7 @@
 import 'package:agenda/data/database/isar_service.dart';
 import 'package:agenda/data/tasks/item_model.dart';
 import 'package:agenda/data/tasks/item_query_builder.dart';
+import 'package:agenda/data/tasks/item_reminder_queries.dart';
 import 'package:isar_community/isar.dart';
 
 /// Raw Isar query access for [ItemModel].
@@ -82,6 +83,19 @@ class ItemDao {
       .and()
       .isCompletedEqualTo(true)
       .count();
+
+  /// Reminder reads (see item_reminder_queries.dart); never display lists.
+  Future<List<ItemModel>> findRemindable({
+    required DateTime from,
+    required int limit,
+  }) =>
+      findRemindableItems(_collection, from: from, limit: limit);
+
+  Future<List<ItemModel>> findDueInWindow({
+    required DateTime from,
+    required DateTime toExclusive,
+  }) =>
+      findItemsDueInWindow(_collection, from: from, toExclusive: toExclusive);
 
   // --- Writes ---
 

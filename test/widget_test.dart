@@ -73,6 +73,20 @@ class _StubItemRepository implements ItemRepository {
       const Success([]);
 
   @override
+  AsyncResult<List<Item>> getRemindableItems({
+    required DateTime from,
+    required int limit,
+  }) async =>
+      const Success(<Item>[]);
+
+  @override
+  AsyncResult<List<Item>> getItemsDueInWindow({
+    required DateTime from,
+    required DateTime toExclusive,
+  }) async =>
+      const Success(<Item>[]);
+
+  @override
   AsyncResult<(int, int)> getSubtaskCounts(int projectId) async =>
       const Success((0, 0));
 

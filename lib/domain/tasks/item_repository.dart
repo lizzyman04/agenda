@@ -54,6 +54,26 @@ abstract class ItemRepository {
   /// Subtask rollup: returns (completedCount, totalCount) for [projectId].
   AsyncResult<(int, int)> getSubtaskCounts(int projectId);
 
+  /// Returns the [limit] soonest remindable items (open, not a project, due
+  /// on or after [from]), soonest first.
+  ///
+  /// Sorted before limited and not subject to the 500 display cap. For
+  /// notification planning only; never use it for a display list.
+  AsyncResult<List<Item>> getRemindableItems({
+    required DateTime from,
+    required int limit,
+  });
+
+  /// Returns EVERY remindable item due in `[from, toExclusive)`, soonest
+  /// first, with no cap.
+  ///
+  /// Not subject to the 500 display cap. For notification planning and
+  /// briefing counts only; never use it for a display list.
+  AsyncResult<List<Item>> getItemsDueInWindow({
+    required DateTime from,
+    required DateTime toExclusive,
+  });
+
   /// Stream that fires when the ItemModel collection changes.
   /// Cubits subscribe via start() and call _reload() on each event.
   Stream<void> watchChanges();
