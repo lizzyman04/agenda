@@ -1472,6 +1472,216 @@ abstract class AppLocalizations {
   /// In pt_BR, this message translates to:
   /// **'Investimentos'**
   String get categoryInvestimentos;
+
+  /// Nome do canal de notificação Android: lembretes de tarefas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Lembretes de tarefas'**
+  String get notifChannelTasksName;
+
+  /// Descrição do canal de notificação Android: lembretes de tarefas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Lembretes pouco antes de uma tarefa vencer'**
+  String get notifChannelTasksDesc;
+
+  /// Nome do canal de notificação Android: tarefas recorrentes
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Lembretes de tarefas recorrentes'**
+  String get notifChannelRecurringName;
+
+  /// Descrição do canal de notificação Android: tarefas recorrentes
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Lembretes de tarefas que se repetem'**
+  String get notifChannelRecurringDesc;
+
+  /// Nome do canal de notificação Android: resumo da manhã
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Resumo da manhã'**
+  String get notifChannelBriefingName;
+
+  /// Descrição do canal de notificação Android: resumo da manhã
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Um resumo das tarefas de hoje'**
+  String get notifChannelBriefingDesc;
+
+  /// Nome do canal de notificação Android: alertas de orçamento
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Alertas de orçamento'**
+  String get notifChannelBudgetName;
+
+  /// Descrição do canal de notificação Android: alertas de orçamento
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Alertas quando os gastos chegam a 80% e 100% de um orçamento'**
+  String get notifChannelBudgetDesc;
+
+  /// Nome do canal de notificação Android: lembretes de dívidas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Lembretes de dívidas'**
+  String get notifChannelDebtsName;
+
+  /// Descrição do canal de notificação Android: lembretes de dívidas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Um lembrete um dia antes do vencimento de uma dívida'**
+  String get notifChannelDebtsDesc;
+
+  /// Nome do canal de notificação Android: alertas de metas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Alertas de metas'**
+  String get notifChannelGoalsName;
+
+  /// Descrição do canal de notificação Android: alertas de metas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Alertas quando uma meta de economia fica atrasada'**
+  String get notifChannelGoalsDesc;
+
+  /// Nome do canal de notificação Android: contas e assinaturas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Contas e assinaturas'**
+  String get notifChannelPaymentsName;
+
+  /// Descrição do canal de notificação Android: contas e assinaturas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Um lembrete um dia antes de um pagamento recorrente'**
+  String get notifChannelPaymentsDesc;
+
+  /// Nome do canal de notificação Android: frases motivacionais
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Frases motivacionais'**
+  String get notifChannelQuotesName;
+
+  /// Descrição do canal de notificação Android: frases motivacionais
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Uma frase motivacional de vez em quando'**
+  String get notifChannelQuotesDesc;
+
+  /// Título da notificação: tarefa prestes a vencer
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Tarefa prestes a vencer'**
+  String get notifTaskReminderTitle;
+
+  /// Corpo da notificação: título da tarefa e horário de vencimento
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{title} vence às {time}'**
+  String notifTaskReminderBody(String title, String time);
+
+  /// Corpo da notificação: tarefa sem horário vence hoje
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{title} vence hoje'**
+  String notifTaskDueTodayBody(String title);
+
+  /// Título da notificação: tarefa recorrente prestes a vencer
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Tarefa recorrente prestes a vencer'**
+  String get notifRecurringTaskTitle;
+
+  /// Título do resumo da manhã com o número de tarefas de hoje
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{count, plural, one{{count} tarefa para hoje} other{{count} tarefas para hoje}}'**
+  String notifBriefingTitle(int count);
+
+  /// Corpo do resumo da manhã: os primeiros títulos de tarefas, já unidos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{titles}'**
+  String notifBriefingBody(String titles);
+
+  /// Corpo do resumo da manhã quando há mais tarefas do que as listadas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{titles} e mais {remaining}'**
+  String notifBriefingBodyMore(String titles, int remaining);
+
+  /// Título do alerta de orçamento em 80% do limite (sem valores)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{category}: 80% do orçamento usado'**
+  String notifBudget80Title(String category);
+
+  /// Corpo do alerta de orçamento em 80% (sem valores)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Você usou 80% do limite deste mês.'**
+  String get notifBudget80Body;
+
+  /// Título do alerta de orçamento em 100% do limite (sem valores)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{category}: limite do orçamento atingido'**
+  String notifBudget100Title(String category);
+
+  /// Corpo do alerta de orçamento em 100% (sem valores)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Você atingiu o limite deste mês.'**
+  String get notifBudget100Body;
+
+  /// Título da notificação: dívida a pagar vence amanhã
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Pagamento vence amanhã'**
+  String get notifDebtDueTitle;
+
+  /// Título da notificação: dívida a receber vence amanhã
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Valor a receber amanhã'**
+  String get notifDebtReceiveTitle;
+
+  /// Corpo da notificação de dívida: apenas o título
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{title}'**
+  String notifDebtBody(String title);
+
+  /// Título da notificação: meta de economia atrasada
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Meta ficando para trás'**
+  String get notifGoalOffTrackTitle;
+
+  /// Corpo da notificação: título da meta e um incentivo (sem valores)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{title} está atrasada. Uma pequena contribuição ajuda.'**
+  String notifGoalOffTrackBody(String title);
+
+  /// Título da notificação: pagamento recorrente vence amanhã
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Conta vence amanhã'**
+  String get notifPaymentDueTitle;
+
+  /// Corpo da notificação de pagamento recorrente: apenas o título
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{title}'**
+  String notifPaymentBody(String title);
+
+  /// Título da notificação de frase motivacional
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Motivação do dia'**
+  String get notifQuoteTitle;
 }
 
 class _AppLocalizationsDelegate

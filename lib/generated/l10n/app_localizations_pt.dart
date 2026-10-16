@@ -709,6 +709,143 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get categoryInvestimentos => 'Investimentos';
+
+  @override
+  String get notifChannelTasksName => 'Lembretes de tarefas';
+
+  @override
+  String get notifChannelTasksDesc =>
+      'Lembretes pouco antes de uma tarefa vencer';
+
+  @override
+  String get notifChannelRecurringName => 'Lembretes de tarefas recorrentes';
+
+  @override
+  String get notifChannelRecurringDesc => 'Lembretes de tarefas que se repetem';
+
+  @override
+  String get notifChannelBriefingName => 'Resumo da manhã';
+
+  @override
+  String get notifChannelBriefingDesc => 'Um resumo das tarefas de hoje';
+
+  @override
+  String get notifChannelBudgetName => 'Alertas de orçamento';
+
+  @override
+  String get notifChannelBudgetDesc =>
+      'Alertas quando os gastos chegam a 80% e 100% de um orçamento';
+
+  @override
+  String get notifChannelDebtsName => 'Lembretes de dívidas';
+
+  @override
+  String get notifChannelDebtsDesc =>
+      'Um lembrete um dia antes do vencimento de uma dívida';
+
+  @override
+  String get notifChannelGoalsName => 'Alertas de metas';
+
+  @override
+  String get notifChannelGoalsDesc =>
+      'Alertas quando uma meta de economia fica atrasada';
+
+  @override
+  String get notifChannelPaymentsName => 'Contas e assinaturas';
+
+  @override
+  String get notifChannelPaymentsDesc =>
+      'Um lembrete um dia antes de um pagamento recorrente';
+
+  @override
+  String get notifChannelQuotesName => 'Frases motivacionais';
+
+  @override
+  String get notifChannelQuotesDesc =>
+      'Uma frase motivacional de vez em quando';
+
+  @override
+  String get notifTaskReminderTitle => 'Tarefa prestes a vencer';
+
+  @override
+  String notifTaskReminderBody(String title, String time) {
+    return '$title vence às $time';
+  }
+
+  @override
+  String notifTaskDueTodayBody(String title) {
+    return '$title vence hoje';
+  }
+
+  @override
+  String get notifRecurringTaskTitle => 'Tarefa recorrente prestes a vencer';
+
+  @override
+  String notifBriefingTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tarefas para hoje',
+      one: '$count tarefa para hoje',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifBriefingBody(String titles) {
+    return '$titles';
+  }
+
+  @override
+  String notifBriefingBodyMore(String titles, int remaining) {
+    return '$titles e mais $remaining';
+  }
+
+  @override
+  String notifBudget80Title(String category) {
+    return '$category: 80% do orçamento usado';
+  }
+
+  @override
+  String get notifBudget80Body => 'Você usou 80% do limite deste mês.';
+
+  @override
+  String notifBudget100Title(String category) {
+    return '$category: limite do orçamento atingido';
+  }
+
+  @override
+  String get notifBudget100Body => 'Você atingiu o limite deste mês.';
+
+  @override
+  String get notifDebtDueTitle => 'Pagamento vence amanhã';
+
+  @override
+  String get notifDebtReceiveTitle => 'Valor a receber amanhã';
+
+  @override
+  String notifDebtBody(String title) {
+    return '$title';
+  }
+
+  @override
+  String get notifGoalOffTrackTitle => 'Meta ficando para trás';
+
+  @override
+  String notifGoalOffTrackBody(String title) {
+    return '$title está atrasada. Uma pequena contribuição ajuda.';
+  }
+
+  @override
+  String get notifPaymentDueTitle => 'Conta vence amanhã';
+
+  @override
+  String notifPaymentBody(String title) {
+    return '$title';
+  }
+
+  @override
+  String get notifQuoteTitle => 'Motivação do dia';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -1416,4 +1553,141 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get categoryInvestimentos => 'Investimentos';
+
+  @override
+  String get notifChannelTasksName => 'Lembretes de tarefas';
+
+  @override
+  String get notifChannelTasksDesc =>
+      'Lembretes pouco antes de uma tarefa vencer';
+
+  @override
+  String get notifChannelRecurringName => 'Lembretes de tarefas recorrentes';
+
+  @override
+  String get notifChannelRecurringDesc => 'Lembretes de tarefas que se repetem';
+
+  @override
+  String get notifChannelBriefingName => 'Resumo da manhã';
+
+  @override
+  String get notifChannelBriefingDesc => 'Um resumo das tarefas de hoje';
+
+  @override
+  String get notifChannelBudgetName => 'Alertas de orçamento';
+
+  @override
+  String get notifChannelBudgetDesc =>
+      'Alertas quando os gastos chegam a 80% e 100% de um orçamento';
+
+  @override
+  String get notifChannelDebtsName => 'Lembretes de dívidas';
+
+  @override
+  String get notifChannelDebtsDesc =>
+      'Um lembrete um dia antes do vencimento de uma dívida';
+
+  @override
+  String get notifChannelGoalsName => 'Alertas de metas';
+
+  @override
+  String get notifChannelGoalsDesc =>
+      'Alertas quando uma meta de economia fica atrasada';
+
+  @override
+  String get notifChannelPaymentsName => 'Contas e assinaturas';
+
+  @override
+  String get notifChannelPaymentsDesc =>
+      'Um lembrete um dia antes de um pagamento recorrente';
+
+  @override
+  String get notifChannelQuotesName => 'Frases motivacionais';
+
+  @override
+  String get notifChannelQuotesDesc =>
+      'Uma frase motivacional de vez em quando';
+
+  @override
+  String get notifTaskReminderTitle => 'Tarefa prestes a vencer';
+
+  @override
+  String notifTaskReminderBody(String title, String time) {
+    return '$title vence às $time';
+  }
+
+  @override
+  String notifTaskDueTodayBody(String title) {
+    return '$title vence hoje';
+  }
+
+  @override
+  String get notifRecurringTaskTitle => 'Tarefa recorrente prestes a vencer';
+
+  @override
+  String notifBriefingTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tarefas para hoje',
+      one: '$count tarefa para hoje',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifBriefingBody(String titles) {
+    return '$titles';
+  }
+
+  @override
+  String notifBriefingBodyMore(String titles, int remaining) {
+    return '$titles e mais $remaining';
+  }
+
+  @override
+  String notifBudget80Title(String category) {
+    return '$category: 80% do orçamento usado';
+  }
+
+  @override
+  String get notifBudget80Body => 'Você usou 80% do limite deste mês.';
+
+  @override
+  String notifBudget100Title(String category) {
+    return '$category: limite do orçamento atingido';
+  }
+
+  @override
+  String get notifBudget100Body => 'Você atingiu o limite deste mês.';
+
+  @override
+  String get notifDebtDueTitle => 'Pagamento vence amanhã';
+
+  @override
+  String get notifDebtReceiveTitle => 'Valor a receber amanhã';
+
+  @override
+  String notifDebtBody(String title) {
+    return '$title';
+  }
+
+  @override
+  String get notifGoalOffTrackTitle => 'Meta ficando para trás';
+
+  @override
+  String notifGoalOffTrackBody(String title) {
+    return '$title está atrasada. Uma pequena contribuição ajuda.';
+  }
+
+  @override
+  String get notifPaymentDueTitle => 'Conta vence amanhã';
+
+  @override
+  String notifPaymentBody(String title) {
+    return '$title';
+  }
+
+  @override
+  String get notifQuoteTitle => 'Motivação do dia';
 }

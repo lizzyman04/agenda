@@ -705,4 +705,138 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get categoryInvestimentos => 'Investments';
+
+  @override
+  String get notifChannelTasksName => 'Task reminders';
+
+  @override
+  String get notifChannelTasksDesc => 'Reminders shortly before a task is due';
+
+  @override
+  String get notifChannelRecurringName => 'Recurring task reminders';
+
+  @override
+  String get notifChannelRecurringDesc => 'Reminders for tasks that repeat';
+
+  @override
+  String get notifChannelBriefingName => 'Morning briefing';
+
+  @override
+  String get notifChannelBriefingDesc => 'A summary of the tasks due today';
+
+  @override
+  String get notifChannelBudgetName => 'Budget alerts';
+
+  @override
+  String get notifChannelBudgetDesc =>
+      'Alerts when spending reaches 80% and 100% of a budget';
+
+  @override
+  String get notifChannelDebtsName => 'Debt reminders';
+
+  @override
+  String get notifChannelDebtsDesc => 'A reminder the day before a debt is due';
+
+  @override
+  String get notifChannelGoalsName => 'Goal alerts';
+
+  @override
+  String get notifChannelGoalsDesc =>
+      'Alerts when a savings goal falls behind schedule';
+
+  @override
+  String get notifChannelPaymentsName => 'Bills and subscriptions';
+
+  @override
+  String get notifChannelPaymentsDesc =>
+      'A reminder the day before a recurring payment';
+
+  @override
+  String get notifChannelQuotesName => 'Motivational quotes';
+
+  @override
+  String get notifChannelQuotesDesc => 'An occasional motivational quote';
+
+  @override
+  String get notifTaskReminderTitle => 'Task due soon';
+
+  @override
+  String notifTaskReminderBody(String title, String time) {
+    return '$title is due at $time';
+  }
+
+  @override
+  String notifTaskDueTodayBody(String title) {
+    return '$title is due today';
+  }
+
+  @override
+  String get notifRecurringTaskTitle => 'Recurring task due soon';
+
+  @override
+  String notifBriefingTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tasks due today',
+      one: '$count task due today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifBriefingBody(String titles) {
+    return '$titles';
+  }
+
+  @override
+  String notifBriefingBodyMore(String titles, int remaining) {
+    return '$titles and $remaining more';
+  }
+
+  @override
+  String notifBudget80Title(String category) {
+    return '$category: 80% of the budget used';
+  }
+
+  @override
+  String get notifBudget80Body => 'You have used 80% of this month\'s limit.';
+
+  @override
+  String notifBudget100Title(String category) {
+    return '$category: budget limit reached';
+  }
+
+  @override
+  String get notifBudget100Body => 'You have reached this month\'s limit.';
+
+  @override
+  String get notifDebtDueTitle => 'Payment due tomorrow';
+
+  @override
+  String get notifDebtReceiveTitle => 'Money to receive tomorrow';
+
+  @override
+  String notifDebtBody(String title) {
+    return '$title';
+  }
+
+  @override
+  String get notifGoalOffTrackTitle => 'Goal falling behind';
+
+  @override
+  String notifGoalOffTrackBody(String title) {
+    return '$title is behind schedule. A small contribution can help.';
+  }
+
+  @override
+  String get notifPaymentDueTitle => 'Bill due tomorrow';
+
+  @override
+  String notifPaymentBody(String title) {
+    return '$title';
+  }
+
+  @override
+  String get notifQuoteTitle => 'Daily motivation';
 }

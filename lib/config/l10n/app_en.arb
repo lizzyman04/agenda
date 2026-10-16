@@ -578,5 +578,127 @@
   "categoryFreelance": "Freelance",
   "@categoryFreelance": {"description": "Income category: freelance"},
   "categoryInvestimentos": "Investments",
-  "@categoryInvestimentos": {"description": "Income category: investments"}
+  "@categoryInvestimentos": {"description": "Income category: investments"},
+  "notifChannelTasksName": "Task reminders",
+  "@notifChannelTasksName": {"description": "Android notification channel name: task reminders"},
+  "notifChannelTasksDesc": "Reminders shortly before a task is due",
+  "@notifChannelTasksDesc": {"description": "Android notification channel description: task reminders"},
+  "notifChannelRecurringName": "Recurring task reminders",
+  "@notifChannelRecurringName": {"description": "Android notification channel name: recurring tasks"},
+  "notifChannelRecurringDesc": "Reminders for tasks that repeat",
+  "@notifChannelRecurringDesc": {"description": "Android notification channel description: recurring tasks"},
+  "notifChannelBriefingName": "Morning briefing",
+  "@notifChannelBriefingName": {"description": "Android notification channel name: morning briefing"},
+  "notifChannelBriefingDesc": "A summary of the tasks due today",
+  "@notifChannelBriefingDesc": {"description": "Android notification channel description: morning briefing"},
+  "notifChannelBudgetName": "Budget alerts",
+  "@notifChannelBudgetName": {"description": "Android notification channel name: budget alerts"},
+  "notifChannelBudgetDesc": "Alerts when spending reaches 80% and 100% of a budget",
+  "@notifChannelBudgetDesc": {"description": "Android notification channel description: budget alerts"},
+  "notifChannelDebtsName": "Debt reminders",
+  "@notifChannelDebtsName": {"description": "Android notification channel name: debt reminders"},
+  "notifChannelDebtsDesc": "A reminder the day before a debt is due",
+  "@notifChannelDebtsDesc": {"description": "Android notification channel description: debt reminders"},
+  "notifChannelGoalsName": "Goal alerts",
+  "@notifChannelGoalsName": {"description": "Android notification channel name: goal alerts"},
+  "notifChannelGoalsDesc": "Alerts when a savings goal falls behind schedule",
+  "@notifChannelGoalsDesc": {"description": "Android notification channel description: goal alerts"},
+  "notifChannelPaymentsName": "Bills and subscriptions",
+  "@notifChannelPaymentsName": {"description": "Android notification channel name: bills and subscriptions"},
+  "notifChannelPaymentsDesc": "A reminder the day before a recurring payment",
+  "@notifChannelPaymentsDesc": {"description": "Android notification channel description: bills and subscriptions"},
+  "notifChannelQuotesName": "Motivational quotes",
+  "@notifChannelQuotesName": {"description": "Android notification channel name: motivational quotes"},
+  "notifChannelQuotesDesc": "An occasional motivational quote",
+  "@notifChannelQuotesDesc": {"description": "Android notification channel description: motivational quotes"},
+  "notifTaskReminderTitle": "Task due soon",
+  "@notifTaskReminderTitle": {"description": "Notification title: a task is due soon"},
+  "notifTaskReminderBody": "{title} is due at {time}",
+  "@notifTaskReminderBody": {
+    "description": "Notification body: task title and its due time",
+    "placeholders": {
+      "title": {"type": "String"},
+      "time": {"type": "String"}
+    }
+  },
+  "notifTaskDueTodayBody": "{title} is due today",
+  "@notifTaskDueTodayBody": {
+    "description": "Notification body: task without a time is due today",
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifRecurringTaskTitle": "Recurring task due soon",
+  "@notifRecurringTaskTitle": {"description": "Notification title: a recurring task is due soon"},
+  "notifBriefingTitle": "{count, plural, one{{count} task due today} other{{count} tasks due today}}",
+  "@notifBriefingTitle": {
+    "description": "Morning briefing title with the number of tasks due today",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifBriefingBody": "{titles}",
+  "@notifBriefingBody": {
+    "description": "Morning briefing body: the first task titles, already joined",
+    "placeholders": {
+      "titles": {"type": "String"}
+    }
+  },
+  "notifBriefingBodyMore": "{titles} and {remaining} more",
+  "@notifBriefingBodyMore": {
+    "description": "Morning briefing body when more tasks exist than are listed",
+    "placeholders": {
+      "titles": {"type": "String"},
+      "remaining": {"type": "int"}
+    }
+  },
+  "notifBudget80Title": "{category}: 80% of the budget used",
+  "@notifBudget80Title": {
+    "description": "Budget alert title at 80% of the limit (no amounts)",
+    "placeholders": {
+      "category": {"type": "String"}
+    }
+  },
+  "notifBudget80Body": "You have used 80% of this month's limit.",
+  "@notifBudget80Body": {"description": "Budget alert body at 80% (no amounts)"},
+  "notifBudget100Title": "{category}: budget limit reached",
+  "@notifBudget100Title": {
+    "description": "Budget alert title at 100% of the limit (no amounts)",
+    "placeholders": {
+      "category": {"type": "String"}
+    }
+  },
+  "notifBudget100Body": "You have reached this month's limit.",
+  "@notifBudget100Body": {"description": "Budget alert body at 100% (no amounts)"},
+  "notifDebtDueTitle": "Payment due tomorrow",
+  "@notifDebtDueTitle": {"description": "Notification title: a debt to pay is due tomorrow"},
+  "notifDebtReceiveTitle": "Money to receive tomorrow",
+  "@notifDebtReceiveTitle": {"description": "Notification title: a debt to receive is due tomorrow"},
+  "notifDebtBody": "{title}",
+  "@notifDebtBody": {
+    "description": "Debt notification body: the debt title only",
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifGoalOffTrackTitle": "Goal falling behind",
+  "@notifGoalOffTrackTitle": {"description": "Notification title: a savings goal is behind schedule"},
+  "notifGoalOffTrackBody": "{title} is behind schedule. A small contribution can help.",
+  "@notifGoalOffTrackBody": {
+    "description": "Notification body: goal title and a nudge (no amounts)",
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifPaymentDueTitle": "Bill due tomorrow",
+  "@notifPaymentDueTitle": {"description": "Notification title: a recurring payment is due tomorrow"},
+  "notifPaymentBody": "{title}",
+  "@notifPaymentBody": {
+    "description": "Recurring payment notification body: the title only",
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifQuoteTitle": "Daily motivation",
+  "@notifQuoteTitle": {"description": "Notification title for a motivational quote"}
 }

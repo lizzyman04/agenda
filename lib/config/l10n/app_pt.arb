@@ -578,5 +578,127 @@
   "categoryFreelance": "Freelance",
   "@categoryFreelance": {"description": "Categoria de receita: freelance"},
   "categoryInvestimentos": "Investimentos",
-  "@categoryInvestimentos": {"description": "Categoria de receita: investimentos"}
+  "@categoryInvestimentos": {"description": "Categoria de receita: investimentos"},
+  "notifChannelTasksName": "Lembretes de tarefas",
+  "@notifChannelTasksName": {"description": "Nome do canal de notificação Android: lembretes de tarefas"},
+  "notifChannelTasksDesc": "Lembretes pouco antes de uma tarefa vencer",
+  "@notifChannelTasksDesc": {"description": "Descrição do canal de notificação Android: lembretes de tarefas"},
+  "notifChannelRecurringName": "Lembretes de tarefas recorrentes",
+  "@notifChannelRecurringName": {"description": "Nome do canal de notificação Android: tarefas recorrentes"},
+  "notifChannelRecurringDesc": "Lembretes de tarefas que se repetem",
+  "@notifChannelRecurringDesc": {"description": "Descrição do canal de notificação Android: tarefas recorrentes"},
+  "notifChannelBriefingName": "Resumo da manhã",
+  "@notifChannelBriefingName": {"description": "Nome do canal de notificação Android: resumo da manhã"},
+  "notifChannelBriefingDesc": "Um resumo das tarefas de hoje",
+  "@notifChannelBriefingDesc": {"description": "Descrição do canal de notificação Android: resumo da manhã"},
+  "notifChannelBudgetName": "Alertas de orçamento",
+  "@notifChannelBudgetName": {"description": "Nome do canal de notificação Android: alertas de orçamento"},
+  "notifChannelBudgetDesc": "Alertas quando os gastos chegam a 80% e 100% de um orçamento",
+  "@notifChannelBudgetDesc": {"description": "Descrição do canal de notificação Android: alertas de orçamento"},
+  "notifChannelDebtsName": "Lembretes de dívidas",
+  "@notifChannelDebtsName": {"description": "Nome do canal de notificação Android: lembretes de dívidas"},
+  "notifChannelDebtsDesc": "Um lembrete um dia antes do vencimento de uma dívida",
+  "@notifChannelDebtsDesc": {"description": "Descrição do canal de notificação Android: lembretes de dívidas"},
+  "notifChannelGoalsName": "Alertas de metas",
+  "@notifChannelGoalsName": {"description": "Nome do canal de notificação Android: alertas de metas"},
+  "notifChannelGoalsDesc": "Alertas quando uma meta de economia fica atrasada",
+  "@notifChannelGoalsDesc": {"description": "Descrição do canal de notificação Android: alertas de metas"},
+  "notifChannelPaymentsName": "Contas e assinaturas",
+  "@notifChannelPaymentsName": {"description": "Nome do canal de notificação Android: contas e assinaturas"},
+  "notifChannelPaymentsDesc": "Um lembrete um dia antes de um pagamento recorrente",
+  "@notifChannelPaymentsDesc": {"description": "Descrição do canal de notificação Android: contas e assinaturas"},
+  "notifChannelQuotesName": "Frases motivacionais",
+  "@notifChannelQuotesName": {"description": "Nome do canal de notificação Android: frases motivacionais"},
+  "notifChannelQuotesDesc": "Uma frase motivacional de vez em quando",
+  "@notifChannelQuotesDesc": {"description": "Descrição do canal de notificação Android: frases motivacionais"},
+  "notifTaskReminderTitle": "Tarefa prestes a vencer",
+  "@notifTaskReminderTitle": {"description": "Título da notificação: tarefa prestes a vencer"},
+  "notifTaskReminderBody": "{title} vence às {time}",
+  "@notifTaskReminderBody": {
+    "description": "Corpo da notificação: título da tarefa e horário de vencimento",
+    "placeholders": {
+      "title": {"type": "String"},
+      "time": {"type": "String"}
+    }
+  },
+  "notifTaskDueTodayBody": "{title} vence hoje",
+  "@notifTaskDueTodayBody": {
+    "description": "Corpo da notificação: tarefa sem horário vence hoje",
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifRecurringTaskTitle": "Tarefa recorrente prestes a vencer",
+  "@notifRecurringTaskTitle": {"description": "Título da notificação: tarefa recorrente prestes a vencer"},
+  "notifBriefingTitle": "{count, plural, one{{count} tarefa para hoje} other{{count} tarefas para hoje}}",
+  "@notifBriefingTitle": {
+    "description": "Título do resumo da manhã com o número de tarefas de hoje",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifBriefingBody": "{titles}",
+  "@notifBriefingBody": {
+    "description": "Corpo do resumo da manhã: os primeiros títulos de tarefas, já unidos",
+    "placeholders": {
+      "titles": {"type": "String"}
+    }
+  },
+  "notifBriefingBodyMore": "{titles} e mais {remaining}",
+  "@notifBriefingBodyMore": {
+    "description": "Corpo do resumo da manhã quando há mais tarefas do que as listadas",
+    "placeholders": {
+      "titles": {"type": "String"},
+      "remaining": {"type": "int"}
+    }
+  },
+  "notifBudget80Title": "{category}: 80% do orçamento usado",
+  "@notifBudget80Title": {
+    "description": "Título do alerta de orçamento em 80% do limite (sem valores)",
+    "placeholders": {
+      "category": {"type": "String"}
+    }
+  },
+  "notifBudget80Body": "Você usou 80% do limite deste mês.",
+  "@notifBudget80Body": {"description": "Corpo do alerta de orçamento em 80% (sem valores)"},
+  "notifBudget100Title": "{category}: limite do orçamento atingido",
+  "@notifBudget100Title": {
+    "description": "Título do alerta de orçamento em 100% do limite (sem valores)",
+    "placeholders": {
+      "category": {"type": "String"}
+    }
+  },
+  "notifBudget100Body": "Você atingiu o limite deste mês.",
+  "@notifBudget100Body": {"description": "Corpo do alerta de orçamento em 100% (sem valores)"},
+  "notifDebtDueTitle": "Pagamento vence amanhã",
+  "@notifDebtDueTitle": {"description": "Título da notificação: dívida a pagar vence amanhã"},
+  "notifDebtReceiveTitle": "Valor a receber amanhã",
+  "@notifDebtReceiveTitle": {"description": "Título da notificação: dívida a receber vence amanhã"},
+  "notifDebtBody": "{title}",
+  "@notifDebtBody": {
+    "description": "Corpo da notificação de dívida: apenas o título",
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifGoalOffTrackTitle": "Meta ficando para trás",
+  "@notifGoalOffTrackTitle": {"description": "Título da notificação: meta de economia atrasada"},
+  "notifGoalOffTrackBody": "{title} está atrasada. Uma pequena contribuição ajuda.",
+  "@notifGoalOffTrackBody": {
+    "description": "Corpo da notificação: título da meta e um incentivo (sem valores)",
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifPaymentDueTitle": "Conta vence amanhã",
+  "@notifPaymentDueTitle": {"description": "Título da notificação: pagamento recorrente vence amanhã"},
+  "notifPaymentBody": "{title}",
+  "@notifPaymentBody": {
+    "description": "Corpo da notificação de pagamento recorrente: apenas o título",
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "notifQuoteTitle": "Motivação do dia",
+  "@notifQuoteTitle": {"description": "Título da notificação de frase motivacional"}
 }
