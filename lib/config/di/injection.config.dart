@@ -69,6 +69,8 @@ import 'package:agenda/domain/notifications/notification_permission_service.dart
     as _i300;
 import 'package:agenda/domain/notifications/notification_prefs_repository.dart'
     as _i944;
+import 'package:agenda/domain/notifications/notification_reconciler.dart'
+    as _i173;
 import 'package:agenda/domain/notifications/planner/reminder_planner.dart'
     as _i363;
 import 'package:agenda/domain/tasks/item_repository.dart' as _i565;
@@ -97,6 +99,8 @@ import 'package:agenda/infrastructure/notifications/prefs/alert_state_store_impl
     as _i829;
 import 'package:agenda/infrastructure/notifications/prefs/notification_prefs_repository_impl.dart'
     as _i958;
+import 'package:agenda/infrastructure/notifications/sync/notification_sync_coordinator.dart'
+    as _i380;
 import 'package:agenda/infrastructure/notifications/sync/permission_gate.dart'
     as _i478;
 import 'package:agenda/infrastructure/notifications/sync/reconcile_runner.dart'
@@ -317,6 +321,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i585.TransactionRepository>(),
         gh<_i877.BudgetRepository>(),
         gh<_i200.TransactionCategoryRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i173.NotificationReconciler>(
+      () => _i380.NotificationSyncCoordinator(
+        gh<_i154.ReconcileRunner>(),
+        gh<_i565.ItemRepository>(),
+        gh<_i169.DebtRepository>(),
+        gh<_i858.GoalRepository>(),
+        gh<_i585.TransactionRepository>(),
+        gh<_i385.RecurringPaymentRepository>(),
+        gh<_i944.NotificationPrefsRepository>(),
       ),
     );
     return this;
