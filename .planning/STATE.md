@@ -4,14 +4,14 @@ milestone: v1.0
 current_phase: 04
 current_phase_name: Notifications + Backup
 status: executing
-stopped_at: Completed 04-05-PLAN.md
-last_updated: "2026-10-16T06:37:08.200Z"
-state_head: 20afd154c060ffdba461f6591402c2fc348dd9ec
+stopped_at: Completed 04-06-PLAN.md
+last_updated: "2026-10-16T06:42:40.956Z"
+state_head: a3b9d590b1f0d8e56de9c6248bdf0f646dd1cfd8
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 59
-  completed_plans: 48
+  completed_plans: 49
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 04 (Notifications + Backup) — EXECUTING
-Plan: 6 of 17
+Plan: 7 of 17
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -201,6 +201,7 @@ Progress: [██████████] 100%
 | Phase 04 P04 | 9min | 3 tasks | 19 files |
 | Phase 04 P09 | 18min | 3 tasks | 14 files |
 | Phase 04 P05 | 15min | 2 tasks | 8 files |
+| Phase 04 P06 | 4min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -235,6 +236,7 @@ Recent decisions affecting current work:
 - [Phase 04]: Phase 4 backup: ParsedEnvelope exposes re-rooted JsonObjectReader rows and export failures carry only the exception runtimeType — Import (04-11) decodes rows without re-wrapping, and an encoding error's message can quote a user value (T-04-04-02)
 - [Phase 04]: Phase 4 reminders: item reminder reads are dedicated methods (sorted before limited, window read uncapped) and watchChanges on budget/recurring repositories; display queries keep the 500 cap — Avoids the BL-01 class of silently truncated reads for notification planning
 - [Phase 04]: Phase 4 platform: SCHEDULE_EXACT_ALARM declared (not USE_EXACT_ALARM), plugin receivers exported=false, allowBackup=false with all-domain exclusion rules; plugin 21.x takes initialize(settings:) by name and flutter_timezone 5.x returns TimezoneInfo — Locked by manifest_contract_test and dependency_smoke_test; API names table in 04-05-SUMMARY
+- [Phase 04]: Phase 4 task planners: 00:10-00:29 due times remind the previous evening and quiet hours defer them past the due time (D-01 plus D-08, recorded not special-cased); briefing ordering is timed by time, then date-only, ties by title then id
 
 ### Pending Todos
 
@@ -265,8 +267,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-10-16T06:37:07.956Z
-Stopped at: Completed 04-05-PLAN.md
+Last session: 2026-10-16T06:42:40.712Z
+Stopped at: Completed 04-06-PLAN.md
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
 Plans `03-13` and `03-14` executed and merged. Verification: 5/5 roadmap truths hold at
