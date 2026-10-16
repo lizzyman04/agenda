@@ -4,14 +4,14 @@ milestone: v1.0
 current_phase: 04
 current_phase_name: Notifications + Backup
 status: executing
-stopped_at: Completed 04-07-PLAN.md
-last_updated: "2026-10-16T06:51:38.970Z"
-state_head: 6859c9d49202930116fbc9ecd2e2ef20587979da
+stopped_at: Completed 04-08-PLAN.md
+last_updated: "2026-10-16T07:04:07.134Z"
+state_head: 58e3595e40c5b414a986471967f75ae63fbb406a
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 59
-  completed_plans: 50
+  completed_plans: 51
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 04 (Notifications + Backup) — EXECUTING
-Plan: 8 of 17
+Plan: 9 of 17
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -203,6 +203,7 @@ Progress: [██████████] 100%
 | Phase 04 P05 | 15min | 2 tasks | 8 files |
 | Phase 04 P06 | 4min | 2 tasks | 5 files |
 | Phase 04 P07 | 8min | 3 tasks | 15 files |
+| Phase 04 P08 | 11 min | 3 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -239,6 +240,8 @@ Recent decisions affecting current work:
 - [Phase 04]: Phase 4 platform: SCHEDULE_EXACT_ALARM declared (not USE_EXACT_ALARM), plugin receivers exported=false, allowBackup=false with all-domain exclusion rules; plugin 21.x takes initialize(settings:) by name and flutter_timezone 5.x returns TimezoneInfo — Locked by manifest_contract_test and dependency_smoke_test; API names table in 04-05-SUMMARY
 - [Phase 04]: Phase 4 task planners: 00:10-00:29 due times remind the previous evening and quiet hours defer them past the due time (D-01 plus D-08, recorded not special-cased); briefing ordering is timed by time, then date-only, ties by title then id
 - [Phase 04]: Phase 4 finance planners: payment due dates step from the original anchor with month-end clamp and are advanced in memory only; off-track uses a strict 10-point tolerance; quote order uses a private LCG permutation — Avoids Jan 31 to 28th drift, never implies a payment was made, and keeps quote order stable across Dart SDK upgrades
+- [Phase 04]: CSV import: blank category_id decodes to 0 and the category_name travels in ParsedCsvRow; plan 04-11 resolves categories by name — Hand-edited spreadsheets often drop ids but keep names
+- [Phase 04]: CSV *_cents integer column is authoritative; display amount parsed strictly, no signs accepted — Avoids the legacy parser sign flip (T-04-08-04)
 
 ### Pending Todos
 
@@ -269,8 +272,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-10-16T06:51:38.723Z
-Stopped at: Completed 04-07-PLAN.md
+Last session: 2026-10-16T07:04:01.225Z
+Stopped at: Completed 04-08-PLAN.md
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
 Plans `03-13` and `03-14` executed and merged. Verification: 5/5 roadmap truths hold at
