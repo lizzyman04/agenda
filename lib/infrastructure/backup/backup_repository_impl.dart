@@ -3,6 +3,9 @@ import 'dart:typed_data';
 
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/data/backup/csv/csv_format.dart';
+import 'package:agenda/data/backup/csv/csv_table_codec.dart';
+import 'package:agenda/data/backup/csv/mappers/transaction_csv_mapper.dart';
 import 'package:agenda/data/backup/dao/backup_dao.dart';
 import 'package:agenda/data/backup/json/backup_envelope.dart';
 import 'package:agenda/data/backup/json/budget_json_codec.dart';
@@ -54,10 +57,60 @@ class BackupRepositoryImpl implements BackupRepository {
     }
   }
 
-  static String _fileName(DateTime d) {
+  @override
+  AsyncResult<List<BackupFile>> exportCsv({
+    required String languageCode,
+    DateTime? now,
+  }) async {
+    try {
+      final at = now ?? DateTime.now();
+      final rows = await _dao.readAll();
+      final english = languageCode == 'en';
+      final ctx = CsvContext(
+        dialect: CsvDialect.forLanguage(languageCode),
+        categoryNames: {
+          for (final c in rows.categories)
+            c.id: english && c.nameEn != null ? c.nameEn! : c.namePtBr,
+        },
+      );
+      BackupFile file(
+        String stem,
+        List<String> header,
+        List<List<Object?>> r,
+      ) => BackupFile(
+        name: _csvFileName(stem, at),
+        bytes: Uint8List.fromList(
+          utf8.encode(
+            encodeCsvTable(header: header, rows: r, dialect: ctx.dialect),
+          ),
+        ),
+      );
+
+      const transactions = TransactionCsvMapper();
+      final active =
+          rows.transactions.where((m) => m.deletedAt == null).toList()
+            ..sort((a, b) => a.id.compareTo(b.id));
+      return Success([
+        file(TransactionCsvMapper.fileStem, TransactionCsvMapper.header, [
+          for (final m in active) transactions.toRow(m, ctx),
+        ]),
+      ]);
+    } on Object catch (e) {
+      return Err(BackupFailure('exportCsv failed: ${e.runtimeType}'));
+    }
+  }
+
+  static String _csvFileName(String stem, DateTime d) =>
+      'agenda-$stem-${_datePart(d)}.csv';
+
+  static String _datePart(DateTime d) {
     final y = d.year.toString().padLeft(4, '0');
     final m = d.month.toString().padLeft(2, '0');
     final day = d.day.toString().padLeft(2, '0');
-    return 'agenda-backup-$y-$m-$day.json';
+    return '$y-$m-$day';
+  }
+
+  static String _fileName(DateTime d) {
+    return 'agenda-backup-${_datePart(d)}.json';
   }
 }
