@@ -4,6 +4,7 @@ import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/notifications/local_notification_gateway.dart';
 import 'package:agenda/domain/notifications/model/schedule_request.dart';
+import 'package:agenda/domain/notifications/notification_permission_service.dart';
 
 /// In-memory [LocalNotificationGateway] for coordinator, evaluator and
 /// cubit tests.
@@ -78,4 +79,40 @@ class FakeNotificationGateway implements LocalNotificationGateway {
 
   /// Releases the tap controller.
   Future<void> dispose() => _taps.close();
+}
+
+/// In-memory [NotificationPermissionService] with settable answers and call
+/// counters.
+class FakeNotificationPermissionService
+    implements NotificationPermissionService {
+  /// Current permission. A successful request flips this to granted when
+  /// [grantOnRequest] is true.
+  NotificationPermission permission = NotificationPermission.denied;
+
+  /// Whether exact alarms are allowed.
+  bool exact = true;
+
+  /// Whether [requestNotificationPermission] grants the permission.
+  bool grantOnRequest = true;
+
+  int notificationRequests = 0;
+  int exactAlarmRequests = 0;
+
+  @override
+  Future<NotificationPermission> notificationPermission() async => permission;
+
+  @override
+  Future<NotificationPermission> requestNotificationPermission() async {
+    notificationRequests++;
+    if (grantOnRequest) permission = NotificationPermission.granted;
+    return permission;
+  }
+
+  @override
+  Future<bool> canScheduleExact() async => exact;
+
+  @override
+  Future<void> requestExactAlarmPermission() async {
+    exactAlarmRequests++;
+  }
 }
