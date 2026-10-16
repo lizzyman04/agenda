@@ -64,3 +64,23 @@ PlannedNotification plannedBudgetAlert({
   subject: name,
   count: threshold,
 );
+
+/// The markers to store when [categoryId] has reached [threshold], or an
+/// empty set when that threshold (or a higher one) was already handled.
+///
+/// Reaching 100 also marks 80, so a jump straight past the limit never
+/// leaves a stale 80% alert behind.
+Set<String> newBudgetKeys({
+  required Set<String> existing,
+  required int year,
+  required int month,
+  required int categoryId,
+  required int threshold,
+}) {
+  final k80 = budgetAlertKey(year, month, categoryId, _percentLow);
+  final k100 = budgetAlertKey(year, month, categoryId, _percentHigh);
+  if (threshold >= _percentHigh) {
+    return existing.contains(k100) ? const {} : {k100, k80};
+  }
+  return existing.contains(k80) || existing.contains(k100) ? const {} : {k80};
+}

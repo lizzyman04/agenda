@@ -7,6 +7,7 @@ import 'package:agenda/domain/finance/category/transaction_category_repository.d
 import 'package:agenda/domain/finance/transaction/transaction.dart';
 import 'package:agenda/domain/finance/transaction/transaction_repository.dart';
 import 'package:agenda/domain/finance/transaction/transaction_type.dart';
+import 'package:agenda/domain/notifications/planning/budget_threshold.dart';
 
 /// One calendar month of budget data: spend and limit per category id, and
 /// the display name of each expense category.
@@ -48,3 +49,32 @@ Future<BudgetMonth?> loadBudgetMonth({
     },
   );
 }
+
+/// The highest threshold (80 or 100) each category has reached this month.
+/// Categories below 80% or without a positive limit are left out.
+Map<int, int> crossedThresholds(BudgetMonth month) => {
+  for (final MapEntry(key: id, value: line) in month.spend.entries)
+    if (crossedBudgetThreshold(
+          spentCents: line.spentCents,
+          limitCents: line.limitCents,
+        )
+        case final threshold?)
+      id: threshold,
+};
+
+/// Every alert key for a threshold [month] has already crossed in
+/// [year]/[monthNumber]: the 80 key, and the 100 key too when 100 is crossed.
+///
+/// Used to seed the marker store silently, so existing overspend never
+/// raises an alert.
+Set<String> crossedBudgetKeys(BudgetMonth month, int year, int monthNumber) => {
+  for (final MapEntry(key: id, value: threshold)
+      in crossedThresholds(month).entries)
+    ...newBudgetKeys(
+      existing: const {},
+      year: year,
+      month: monthNumber,
+      categoryId: id,
+      threshold: threshold,
+    ),
+};

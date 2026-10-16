@@ -256,6 +256,134 @@ void main() {
     });
   });
 
+  group('seeding and pruning', () {
+    final categories2 = [
+      _category(1, 'Comida', en: 'Food'),
+      _category(2, 'Lazer', en: 'Fun'),
+    ];
+
+    void stubOverspend() => stubMonth(
+      spent: [_spend(8500), _spend(12000, category: 2)],
+      limits: [_budget(10000), _budget(10000, category: 2)],
+      names: categories2,
+    );
+
+    BudgetAlertEvaluator another() => BudgetAlertEvaluator(
+      transactions,
+      budgets,
+      categories,
+      alerts,
+      dispatcher,
+      prefs,
+      store,
+    );
+
+    test('the first start seeds crossed thresholds silently', () async {
+      stubOverspend();
+      await evaluator.start(now: _now);
+      await evaluator.dispose();
+
+      expect(dispatched, isEmpty);
+      expect(
+        await alerts.keys(),
+        containsAll([
+          budgetAlertKey(2026, 10, 1, 80),
+          budgetAlertKey(2026, 10, 2, 80),
+          budgetAlertKey(2026, 10, 2, 100),
+          budgetSeededKey(2026, 10),
+        ]),
+      );
+      expect(
+        await alerts.contains(budgetAlertKey(2026, 10, 1, 100)),
+        isFalse,
+      );
+    });
+
+    test('a second start in the same month seeds nothing', () async {
+      stubOverspend();
+      await evaluator.start(now: _now);
+      await evaluator.dispose();
+      final second = another();
+      await second.start(now: _now);
+      await second.dispose();
+
+      verify(() => transactions.getByMonth(any(), any())).called(1);
+    });
+
+    test('seeded thresholds do not alert later, new ones do', () async {
+      stubOverspend();
+      await evaluator.start(now: _now);
+      await evaluator.evaluate(now: _now);
+      expect(dispatched, isEmpty);
+
+      stubMonth(
+        spent: [_spend(10500), _spend(12000, category: 2)],
+        limits: [_budget(10000), _budget(10000, category: 2)],
+        names: categories2,
+      );
+      await evaluator.evaluate(now: _now);
+      await evaluator.dispose();
+      expect(dispatched.map((p) => p.entityId), [1]);
+      expect(dispatched.single.count, 100);
+    });
+
+    test('start does not seed while the kind is disabled', () async {
+      await prefs.save(
+        prefs.load().withEnabled(NotificationKind.budgetAlert, value: false),
+      );
+      stubOverspend();
+      await evaluator.start(now: _now);
+      await evaluator.dispose();
+      expect(await alerts.keys(), isEmpty);
+    });
+
+    test(
+      'reseedAfterImport rebuilds budget markers, keeps goal ones',
+      () async {
+        await alerts.addAll([
+          budgetAlertKey(2026, 10, 9, 80),
+          budgetSeededKey(2026, 10),
+          'gf:3:2026-10-12',
+        ]);
+        stubOverspend();
+        await evaluator.reseedAfterImport(now: _now);
+
+        final keys = await alerts.keys();
+        expect(keys, isNot(contains(budgetAlertKey(2026, 10, 9, 80))));
+        expect(keys, contains('gf:3:2026-10-12'));
+        expect(keys, contains(budgetAlertKey(2026, 10, 2, 100)));
+        expect(keys, contains(budgetSeededKey(2026, 10)));
+        expect(dispatched, isEmpty);
+      },
+    );
+
+    test('start prunes stale markers and keeps current ones', () async {
+      await alerts.addAll([
+        'b:2026-07:1:80',
+        'b:2026-08:1:80',
+        'seeded:2026-09',
+        'gf:1:2026-08-10',
+        'gf:1:2026-09-14',
+        'gs:2:2026-08-24',
+        'gs:2:2026-01-05',
+        budgetAlertKey(2026, 10, 1, 80),
+      ]);
+      stubMonth(spent: [], limits: []);
+      await evaluator.start(now: _now);
+      await evaluator.dispose();
+
+      final keys = await alerts.keys();
+      expect(keys, isNot(contains('b:2026-07:1:80')));
+      expect(keys, isNot(contains('seeded:2026-09')));
+      expect(keys, isNot(contains('gf:1:2026-08-10')));
+      expect(keys, isNot(contains('gs:2:2026-01-05')));
+      expect(keys, contains('b:2026-08:1:80'));
+      expect(keys, contains('gf:1:2026-09-14'));
+      expect(keys, contains('gs:2:2026-08-24'));
+      expect(keys, contains(budgetAlertKey(2026, 10, 1, 80)));
+    });
+  });
+
   group('start', () {
     test('a change burst evaluates once after the debounce', () async {
       final saved = BudgetAlertEvaluator.debounceDuration;
@@ -268,6 +396,7 @@ void main() {
       stubMonth(spent: [_spend(9000)], limits: [_budget(10000)]);
 
       await evaluator.start();
+      clearInteractions(transactions); // forget the start-up seeding read
       changes
         ..add(null)
         ..add(null)

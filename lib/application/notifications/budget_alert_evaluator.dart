@@ -10,6 +10,7 @@ import 'package:agenda/domain/notifications/alert_state_store.dart';
 import 'package:agenda/domain/notifications/model/notification_kind.dart';
 import 'package:agenda/domain/notifications/notification_prefs_repository.dart';
 import 'package:agenda/domain/notifications/planning/budget_threshold.dart';
+import 'package:agenda/domain/notifications/planning/stale_alert_keys.dart';
 import 'package:agenda/domain/notifications/rules/notification_id.dart';
 import 'package:agenda/infrastructure/notifications/sync/immediate_alert_dispatcher.dart';
 import 'package:flutter/foundation.dart';
@@ -17,15 +18,11 @@ import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Raises the 80% and 100% budget alerts when spending or a limit changes
-/// (D-05).
+/// (D-05), once per category per threshold per calendar month.
 ///
-/// Alerts follow changes: nothing runs on a schedule and nothing is
-/// evaluated at start. Each category fires each threshold at most once per
-/// calendar month; the fired markers live in the [AlertStateStore], and are
-/// written before the alert is dispatched so a crash cannot repeat it. A
-/// jump straight past 100% raises only the 100% alert and marks 80% too.
-/// While the kind is switched off nothing is dispatched and no marker is
-/// written, so enabling it later still yields the alert (T-04-14-03).
+/// Markers are written before dispatching, so a crash cannot repeat an alert.
+/// While the kind is off nothing is dispatched and no marker is written, so
+/// enabling it later still yields the alert (T-04-14-03).
 @lazySingleton
 class BudgetAlertEvaluator {
   BudgetAlertEvaluator(
@@ -59,18 +56,48 @@ class BudgetAlertEvaluator {
 
   bool get _enabled => _prefs.load().isEnabled(NotificationKind.budgetAlert);
 
-  /// Subscribes to transaction and budget changes (debounced, single-flight).
-  Future<void> start() async {
+  /// Prunes stale markers, seeds the month silently, then subscribes to
+  /// transaction and budget changes (debounced, single-flight).
+  Future<void> start({DateTime? now}) async {
     if (_started) return;
     _started = true;
-    for (final source in [
-      _transactions.watchChanges(),
-      _budgets.watchChanges(),
-    ]) {
-      _subscriptions.add(
-        source.listen((_) => _flight.request(), onError: (Object _) {}),
-      );
+    final at = now ?? DateTime.now();
+    try {
+      await _alerts.removeWhere((key) => isStaleAlertKey(key, at));
+      await _seedIfNeeded(at);
+    } on Object {
+      // Seeding is best effort: alerts must still follow later changes.
     }
+    _subscriptions.addAll([
+      for (final source in [
+        _transactions.watchChanges(),
+        _budgets.watchChanges(),
+      ])
+        source.listen((_) => _flight.request(), onError: (Object _) {}),
+    ]);
+  }
+
+  /// Forgets every budget marker and seeds the month again, silently, so
+  /// imported overspend raises no alert storm (T-04-14-02).
+  Future<void> reseedAfterImport({DateTime? now}) async {
+    await _alerts.removeWhere(
+      (key) => key.startsWith('b:') || key.startsWith('seeded:'),
+    );
+    await _seedIfNeeded(now ?? DateTime.now());
+  }
+
+  /// Marks every threshold already crossed this month without dispatching.
+  /// Skipped while the kind is off or once the month is seeded.
+  Future<void> _seedIfNeeded(DateTime at) async {
+    if (!_enabled) return;
+    final seeded = budgetSeededKey(at.year, at.month);
+    if (await _alerts.contains(seeded)) return;
+    final month = await _loadMonth(at);
+    if (month == null) return;
+    await _alerts.addAll({
+      ...crossedBudgetKeys(month, at.year, at.month),
+      seeded,
+    });
   }
 
   /// Evaluates the current month and dispatches any newly crossed threshold.
@@ -80,24 +107,20 @@ class BudgetAlertEvaluator {
     final month = await _loadMonth(at);
     if (month == null) return;
     final keys = await _alerts.keys();
-    for (final MapEntry(key: categoryId, value: line) in month.spend.entries) {
+    for (final MapEntry(key: categoryId, value: threshold)
+        in crossedThresholds(month).entries) {
       final name = month.names[categoryId];
       if (name == null || categoryId < 0) continue;
       if (categoryId > maxNotificationEntityId) continue;
-      final threshold = crossedBudgetThreshold(
-        spentCents: line.spentCents,
-        limitCents: line.limitCents,
+      final fresh = newBudgetKeys(
+        existing: keys,
+        year: at.year,
+        month: at.month,
+        categoryId: categoryId,
+        threshold: threshold,
       );
-      if (threshold == null) continue;
-      final k80 = budgetAlertKey(at.year, at.month, categoryId, 80);
-      final k100 = budgetAlertKey(at.year, at.month, categoryId, 100);
-      if (threshold == 100) {
-        if (keys.contains(k100)) continue;
-        await _alerts.addAll([k100, k80]);
-      } else {
-        if (keys.contains(k80) || keys.contains(k100)) continue;
-        await _alerts.add(k80);
-      }
+      if (fresh.isEmpty) continue;
+      await _alerts.addAll(fresh);
       final alert = plannedBudgetAlert(
         categoryId: categoryId,
         name: name,
@@ -120,9 +143,7 @@ class BudgetAlertEvaluator {
   /// Stops listening. Safe to call more than once.
   Future<void> dispose() async {
     _flight.dispose();
-    for (final subscription in _subscriptions) {
-      await subscription.cancel();
-    }
+    await Future.wait([for (final s in _subscriptions) s.cancel()]);
     _subscriptions.clear();
   }
 }
