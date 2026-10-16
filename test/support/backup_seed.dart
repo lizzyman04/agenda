@@ -2,8 +2,12 @@
 // data set whose ids start at a caller-chosen base, helpers to write it into
 // a real Isar and to turn rows or snapshots into comparable JSON.
 
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:agenda/data/backup/dao/backup_dao.dart';
 import 'package:agenda/data/backup/import/backup_snapshot.dart';
+import 'package:agenda/data/backup/json/backup_envelope.dart';
 import 'package:agenda/data/backup/json/budget_json_codec.dart';
 import 'package:agenda/data/backup/json/category_json_codec.dart';
 import 'package:agenda/data/backup/json/debt_json_codec.dart';
@@ -18,7 +22,9 @@ import 'package:agenda/data/finance/goal/savings_goal_model.dart';
 import 'package:agenda/data/finance/recurring/recurring_payment_model.dart';
 import 'package:agenda/data/finance/transaction/transaction_model.dart';
 import 'package:agenda/data/tasks/item_model.dart';
+import 'package:agenda/domain/backup/backup_file.dart';
 import 'package:agenda/domain/backup/import_preview.dart';
+import 'package:agenda/infrastructure/backup/csv_export_builder.dart';
 import 'package:isar_community/isar.dart';
 
 /// All seven schemas, in the order the app opens them.
@@ -175,16 +181,43 @@ Map<String, List<Map<String, Object?>>> rowsJson(BackupRows r) => {
   'recurringPayments': r.recurringPayments.map(paymentToJson).toList(),
 };
 
+/// The rows of [s] as [BackupRows]; unsupplied collections are empty.
+BackupRows snapshotRows(BackupSnapshot s) => BackupRows(
+  items: s.items ?? [],
+  transactions: s.transactions ?? [],
+  categories: s.categories ?? [],
+  budgets: s.budgets ?? [],
+  goals: s.goals ?? [],
+  debts: s.debts ?? [],
+  recurringPayments: s.recurringPayments ?? [],
+);
+
 /// Same shape as [rowsJson] for a snapshot; unsupplied collections are empty.
 Map<String, List<Map<String, Object?>>> snapshotJson(BackupSnapshot s) =>
-    rowsJson(
-      BackupRows(
-        items: s.items ?? [],
-        transactions: s.transactions ?? [],
-        categories: s.categories ?? [],
-        budgets: s.budgets ?? [],
-        goals: s.goals ?? [],
-        debts: s.debts ?? [],
-        recurringPayments: s.recurringPayments ?? [],
-      ),
-    );
+    rowsJson(snapshotRows(s));
+
+/// The JSON envelope the real exporter would write for [s], as a map.
+Map<String, Object?> envelopeOf(BackupSnapshot s) => buildBackupEnvelope(
+  exportedAt: seedNow,
+  collections: {
+    BackupJsonKeys.items: snapshotJson(s)['items']!,
+    BackupJsonKeys.transactions: snapshotJson(s)['transactions']!,
+    BackupJsonKeys.categories: snapshotJson(s)['categories']!,
+    BackupJsonKeys.budgets: snapshotJson(s)['budgets']!,
+    BackupJsonKeys.goals: snapshotJson(s)['goals']!,
+    BackupJsonKeys.debts: snapshotJson(s)['debts']!,
+    BackupJsonKeys.recurringPayments: snapshotJson(s)['recurringPayments']!,
+  },
+);
+
+/// UTF-8 bytes of [text] as a picked file.
+BackupFile fileOfText(String text, {String name = 'picked.bin'}) =>
+    BackupFile(name: name, bytes: Uint8List.fromList(utf8.encode(text)));
+
+/// A JSON backup file of [s], genuinely encoded by the exporter's builders.
+BackupFile jsonFileOf(BackupSnapshot s) =>
+    fileOfText(jsonEncode(envelopeOf(s)), name: 'backup.json');
+
+/// The six CSV files the real exporter would write for [s].
+List<BackupFile> csvFilesOf(BackupSnapshot s, {String languageCode = 'pt'}) =>
+    buildCsvExport(snapshotRows(s), languageCode: languageCode, at: seedNow);
