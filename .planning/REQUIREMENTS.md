@@ -37,10 +37,10 @@
 
 - [x] **NOTF-01**: App sends task reminders when due date/time is approaching
 - [x] **NOTF-02**: App sends a daily morning briefing with tasks due that day
-- [ ] **NOTF-03**: App sends budget alerts when spending reaches 80% and 100% of a category limit
+- [x] **NOTF-03**: App sends budget alerts when spending reaches 80% and 100% of a category limit
 - [x] **NOTF-04**: App sends reminders for recurring tasks before they are due
 - [x] **NOTF-05**: App sends overdue debt reminders when a debt is approaching its due date
-- [ ] **NOTF-06**: App sends goal progress alerts when a savings goal is off track
+- [x] **NOTF-06**: App sends goal progress alerts when a savings goal is off track
 - [x] **NOTF-07**: App sends recurring payment reminders before a bill is due
 - [ ] **NOTF-08**: App sends motivational quote notifications (default OFF; user-configurable frequency and time)
 - [ ] **NOTF-09**: User can toggle each notification type independently in Settings
@@ -127,10 +127,10 @@
 | UX-04 | Phase 3: Finance Core | Complete |
 | NOTF-01 | Phase 4: Notifications + Backup | Complete |
 | NOTF-02 | Phase 4: Notifications + Backup | Complete |
-| NOTF-03 | Phase 4: Notifications + Backup | Pending |
+| NOTF-03 | Phase 4: Notifications + Backup | Complete |
 | NOTF-04 | Phase 4: Notifications + Backup | Complete |
 | NOTF-05 | Phase 4: Notifications + Backup | Complete |
-| NOTF-06 | Phase 4: Notifications + Backup | Pending |
+| NOTF-06 | Phase 4: Notifications + Backup | Complete |
 | NOTF-07 | Phase 4: Notifications + Backup | Complete |
 | NOTF-08 | Phase 4: Notifications + Backup | Pending |
 | NOTF-09 | Phase 4: Notifications + Backup | Pending |

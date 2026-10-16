@@ -121,7 +121,7 @@ Plans:
   4. User can export all data as a JSON file and as a CSV file; exported files contain every task, transaction, budget, goal, debt, and recurring payment record
   5. User can import a backup file; the app shows a confirmation screen with record counts and date range, creates an automatic safety backup first, and completes the import atomically — a failed import leaves the database unchanged
 
-**Plans**: 13/17 plans executed in 8 waves (planned 2026-10-12 — expanded from the original 5-plan sketch; see rationale below)
+**Plans**: 14/17 plans executed in 8 waves (planned 2026-10-12 — expanded from the original 5-plan sketch; see rationale below)
 **UI hint**: yes
 
 Plans:
@@ -152,7 +152,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 04-14-PLAN.md — Budget 80%/100% alerts and on-open goal alerts: threshold rule, immediate dispatcher, evaluators, silent seeding *(wave 5)*
+- [x] 04-14-PLAN.md — Budget 80%/100% alerts and on-open goal alerts: threshold rule, immediate dispatcher, evaluators, silent seeding *(wave 5)*
 
 **Wave 6** *(blocked on Wave 5 completion)*
 
@@ -255,6 +255,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 1. Foundation | 5/5 | ✅ Complete | 2026-04-19 |
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 14/14 | Complete    | 2026-10-03 |
-| 4. Notifications + Backup | 13/17 | In Progress|  |
+| 4. Notifications + Backup | 14/17 | In Progress|  |
 | 5. App Lock + Settings + Polish | 0/4 | Not started | - |
 | 6. Architecture Compliance | 18/18 | ✅ Complete | 2026-08-12 |
