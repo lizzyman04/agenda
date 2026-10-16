@@ -36,6 +36,28 @@ class BackupCubit extends Cubit<BackupState> {
     );
   }
 
+  /// Exports the six CSV files, one save dialog each, in order.
+  ///
+  /// Cancelling any dialog stops the export and reports how many files were
+  /// already saved; later files are not offered.
+  Future<void> exportCsv({
+    required String languageCode,
+    required String dialogTitle,
+  }) async {
+    if (state is BackupWorking) return;
+    emit(const BackupWorking());
+    final exported = await _repository.exportCsv(languageCode: languageCode);
+    if (exported is Err<List<BackupFile>>) {
+      emit(BackupFailed(exported.failure));
+      return;
+    }
+    await _saveAll(
+      (exported as Success<List<BackupFile>>).value,
+      dialogTitle: dialogTitle,
+      csv: true,
+    );
+  }
+
   /// Returns to idle after the screen has shown the outcome.
   void acknowledge() => emit(const BackupIdle());
 

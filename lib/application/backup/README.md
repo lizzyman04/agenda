@@ -14,7 +14,7 @@ bytes and the gateway lets the user choose where each file lands (D-12).
 
 | File | Lines | Role |
 |------|------:|------|
-| `backup_cubit.dart` | 66 | `BackupCubit` — `exportJson` runs repository `exportJson` then one gateway `saveFile`; `acknowledge` returns to idle. Ignores a second request while an export is working |
+| `backup_cubit.dart` | 88 | `BackupCubit` — `exportJson` runs repository `exportJson` then one gateway `saveFile`; `exportCsv` runs repository `exportCsv` then one `saveFile` per file in order, stopping at the first cancel; `acknowledge` returns to idle. Ignores a second request while an export is working |
 | `backup_state.dart` | 51 | `BackupIdle`, `BackupWorking`, `BackupExportDone(fileCount, csv)`, `BackupExportCancelled(savedCount)`, `BackupFailed(failure)` |
 
 ## Conventions in this slice

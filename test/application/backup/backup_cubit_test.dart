@@ -120,4 +120,96 @@ void main() {
       expect: () => [const BackupIdle()],
     );
   });
+
+  group('BackupCubit.exportCsv', () {
+    final sixFiles = [for (var i = 0; i < 6; i++) _file('f$i.csv')];
+
+    blocTest<BackupCubit, BackupState>(
+      'all six files saved emits Working then Done(6, true)',
+      build: () {
+        when(
+          () => repository.exportCsv(languageCode: any(named: 'languageCode')),
+        ).thenAnswer((_) async => Success(sixFiles));
+        when(
+          () => gateway.saveFile(
+            dialogTitle: any(named: 'dialogTitle'),
+            file: any(named: 'file'),
+          ),
+        ).thenAnswer((_) async => const Success(true));
+        return build();
+      },
+      act: (cubit) => cubit.exportCsv(languageCode: 'pt', dialogTitle: 'Save'),
+      expect:
+          () => [
+            const BackupWorking(),
+            const BackupExportDone(fileCount: 6, csv: true),
+          ],
+      verify: (_) {
+        verify(() => repository.exportCsv(languageCode: 'pt')).called(1);
+        verify(
+          () => gateway.saveFile(
+            dialogTitle: 'Save',
+            file: any(named: 'file'),
+          ),
+        ).called(6);
+      },
+    );
+
+    blocTest<BackupCubit, BackupState>(
+      'cancelling at the third dialog emits Cancelled(2) and stops',
+      build: () {
+        when(
+          () => repository.exportCsv(languageCode: any(named: 'languageCode')),
+        ).thenAnswer((_) async => Success(sixFiles));
+        var calls = 0;
+        when(
+          () => gateway.saveFile(
+            dialogTitle: any(named: 'dialogTitle'),
+            file: any(named: 'file'),
+          ),
+        ).thenAnswer((_) async => Success(++calls < 3));
+        return build();
+      },
+      act: (cubit) => cubit.exportCsv(languageCode: 'en', dialogTitle: 'Save'),
+      expect: () => [const BackupWorking(), const BackupExportCancelled(2)],
+      verify: (_) {
+        verify(
+          () => gateway.saveFile(
+            dialogTitle: any(named: 'dialogTitle'),
+            file: any(named: 'file'),
+          ),
+        ).called(3);
+      },
+    );
+
+    blocTest<BackupCubit, BackupState>(
+      'a repository Err emits Working then Failed',
+      build: () {
+        when(
+          () => repository.exportCsv(languageCode: any(named: 'languageCode')),
+        ).thenAnswer((_) async => const Err(BackupFailure('boom')));
+        return build();
+      },
+      act: (cubit) => cubit.exportCsv(languageCode: 'en', dialogTitle: 'Save'),
+      expect: () => [const BackupWorking(), isA<BackupFailed>()],
+    );
+
+    blocTest<BackupCubit, BackupState>(
+      'a gateway Err mid-export emits Failed',
+      build: () {
+        when(
+          () => repository.exportCsv(languageCode: any(named: 'languageCode')),
+        ).thenAnswer((_) async => Success(sixFiles));
+        when(
+          () => gateway.saveFile(
+            dialogTitle: any(named: 'dialogTitle'),
+            file: any(named: 'file'),
+          ),
+        ).thenAnswer((_) async => const Err(BackupFailure('saveFailed')));
+        return build();
+      },
+      act: (cubit) => cubit.exportCsv(languageCode: 'en', dialogTitle: 'Save'),
+      expect: () => [const BackupWorking(), isA<BackupFailed>()],
+    );
+  });
 }
