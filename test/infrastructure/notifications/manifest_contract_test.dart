@@ -142,6 +142,19 @@ void main() {
     });
   });
 
+  group('iOS AppDelegate', () {
+    test('sets the UNUserNotificationCenter delegate', () {
+      final swift = _read('ios/Runner/AppDelegate.swift');
+      expect(swift, contains('import UserNotifications'));
+      expect(
+        swift,
+        contains('UNUserNotificationCenter.current().delegate = self as '
+            'UNUserNotificationCenterDelegate'),
+      );
+      expect(swift, contains('FlutterImplicitEngineDelegate'));
+    });
+  });
+
   group('pubspec.yaml', () {
     late List<String> activeLines;
     setUpAll(() {
@@ -167,7 +180,7 @@ void main() {
         () {
       final forbidden = RegExp(
         r'^\s+(http|dio|firebase_[a-z_]*|sentry_flutter|connectivity_plus|'
-        r'share_plus|to_csv|json2csv_dart|flutter_native_timezone):',
+        'share_plus|to_csv|json2csv_dart|flutter_native_timezone):',
       );
       final hits = activeLines.where(forbidden.hasMatch).toList();
       expect(hits, isEmpty);
