@@ -85,5 +85,73 @@ void main() {
         }
       });
     });
+
+    group('Phase 4 settings and backup strings [$locale]', () {
+      late AppLocalizations l;
+      setUp(() => l = lookupAppLocalizations(locale));
+
+      test('waiting-reminders message pluralises', () {
+        expect(
+          l.notifSettingsWaiting(1),
+          isNot(equals(l.notifSettingsWaiting(5))),
+        );
+        expect(l.notifSettingsWaiting(5), contains('5'));
+      });
+
+      test('count line carries label and count', () {
+        final line = l.backupCountLine('Tasks', 12);
+        expect(line, contains('Tasks'));
+        expect(line, contains('12'));
+      });
+
+      test('import failure carries the safety backup path', () {
+        expect(
+          l.backupErrorImportFailed('/data/backups/x.json'),
+          contains('/data/backups/x.json'),
+        );
+      });
+
+      test('date range carries both dates', () {
+        final range = l.backupConfirmDateRange('2026-01-01', '2026-10-12');
+        expect(range, contains('2026-01-01'));
+        expect(range, contains('2026-10-12'));
+      });
+
+      test('entity labels are non-empty and pairwise distinct', () {
+        final labels = <String>[
+          l.backupEntityTasks,
+          l.backupEntityTransactions,
+          l.backupEntityCategories,
+          l.backupEntityBudgets,
+          l.backupEntityGoals,
+          l.backupEntityDebts,
+          l.backupEntityPayments,
+        ];
+        for (final label in labels) {
+          expect(label.trim(), isNotEmpty);
+        }
+        expect(labels.toSet().length, labels.length);
+      });
+
+      test('import-done count resolves for 0, 1 and N', () {
+        for (final n in [0, 1, 7]) {
+          final text = l.backupImportDoneCount(n);
+          expect(text.trim(), isNotEmpty);
+          expect(text, contains('$n'));
+        }
+        expect(
+          l.backupImportDoneCount(1),
+          isNot(equals(l.backupImportDoneCount(7))),
+        );
+      });
+
+      test('other plural messages resolve for 0, 1 and N', () {
+        for (final n in [0, 1, 7]) {
+          expect(l.backupExportCsvDone(n), contains('$n'));
+          expect(l.backupConfirmDeletedIncluded(n), contains('$n'));
+          expect(l.backupWarnDanglingLinks(n), contains('$n'));
+        }
+      });
+    });
   }
 }

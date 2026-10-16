@@ -700,5 +700,182 @@
     }
   },
   "notifQuoteTitle": "Daily motivation",
-  "@notifQuoteTitle": {"description": "Notification title for a motivational quote"}
+  "@notifQuoteTitle": {"description": "Notification title for a motivational quote"},
+  "notifSettingsTitle": "Notifications",
+  "@notifSettingsTitle": {"description": "Notification settings page title"},
+  "notifSettingsTypesHeader": "Notification types",
+  "@notifSettingsTypesHeader": {"description": "Section header above the per-type switches"},
+  "notifSettingsBriefingTime": "Briefing time",
+  "@notifSettingsBriefingTime": {"description": "Label of the morning briefing time picker"},
+  "notifSettingsQuotesHeader": "Motivational quotes",
+  "@notifSettingsQuotesHeader": {"description": "Section header for the motivational quotes settings"},
+  "notifSettingsQuotesOffHint": "Turn on motivational quotes to choose how often they arrive.",
+  "@notifSettingsQuotesOffHint": {"description": "Hint shown while motivational quotes are switched off"},
+  "notifSettingsQuoteFrequency": "Frequency",
+  "@notifSettingsQuoteFrequency": {"description": "Label of the quote frequency control"},
+  "notifSettingsQuoteDaily": "Daily",
+  "@notifSettingsQuoteDaily": {"description": "Quote frequency option: every day"},
+  "notifSettingsQuoteWeekly": "Weekly (Mondays)",
+  "@notifSettingsQuoteWeekly": {"description": "Quote frequency option: once a week on Mondays"},
+  "notifSettingsQuoteTime": "Quote time",
+  "@notifSettingsQuoteTime": {"description": "Label of the quote time picker"},
+  "notifSettingsQuietHeader": "Quiet hours",
+  "@notifSettingsQuietHeader": {"description": "Section header for quiet hours"},
+  "notifSettingsQuietEnabled": "Hold notifications during quiet hours",
+  "@notifSettingsQuietEnabled": {"description": "Switch label: enable quiet hours"},
+  "notifSettingsQuietDesc": "Anything scheduled inside this window is delivered when it ends.",
+  "@notifSettingsQuietDesc": {"description": "Explains what quiet hours do"},
+  "notifSettingsQuietStart": "From",
+  "@notifSettingsQuietStart": {"description": "Label of the quiet hours start time"},
+  "notifSettingsQuietEnd": "Until",
+  "@notifSettingsQuietEnd": {"description": "Label of the quiet hours end time"},
+  "notifSettingsPermissionDeniedTitle": "Notifications are turned off",
+  "@notifSettingsPermissionDeniedTitle": {"description": "Banner title when the notification permission is denied"},
+  "notifSettingsPermissionDeniedBody": "Allow notifications for AGENDA in your device settings to receive reminders.",
+  "@notifSettingsPermissionDeniedBody": {"description": "Banner body when the notification permission is denied"},
+  "notifSettingsAllowButton": "Allow notifications",
+  "@notifSettingsAllowButton": {"description": "Button that requests the notification permission"},
+  "notifSettingsExactTitle": "Exact reminder times",
+  "@notifSettingsExactTitle": {"description": "Banner title about the exact alarm permission"},
+  "notifSettingsExactBody": "Android may delay reminders unless exact alarms are allowed.",
+  "@notifSettingsExactBody": {"description": "Banner body about the exact alarm permission"},
+  "notifSettingsExactButton": "Allow exact alarms",
+  "@notifSettingsExactButton": {"description": "Button that opens the exact alarm permission screen"},
+  "notifSettingsWaiting": "{count, plural, one{{count} reminder is waiting for a free slot} other{{count} reminders are waiting for a free slot}}",
+  "@notifSettingsWaiting": {
+    "description": "Count of reminders deferred by the platform scheduling limit",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifSettingsPrivacyNote": "Reminders are scheduled on this device only. Nothing is sent anywhere.",
+  "@notifSettingsPrivacyNote": {"description": "Privacy note on the notification settings page"},
+  "backupMenuLabel": "Backup and restore",
+  "@backupMenuLabel": {"description": "Settings menu entry that opens the backup screen"},
+  "backupScreenTitle": "Backup and restore",
+  "@backupScreenTitle": {"description": "Backup screen title"},
+  "backupExportHeader": "Export",
+  "@backupExportHeader": {"description": "Section header for export actions"},
+  "backupExportJson": "Export full backup (JSON)",
+  "@backupExportJson": {"description": "Action: export a full JSON backup"},
+  "backupExportJsonDesc": "One file with every task, transaction, budget, goal, debt and recurring payment.",
+  "@backupExportJsonDesc": {"description": "Describes the JSON export"},
+  "backupExportCsv": "Export spreadsheets (CSV)",
+  "@backupExportCsv": {"description": "Action: export CSV files"},
+  "backupExportCsvDesc": "One CSV file per type of data, readable in any spreadsheet app.",
+  "@backupExportCsvDesc": {"description": "Describes the CSV export"},
+  "backupExportSaveTitle": "Save backup",
+  "@backupExportSaveTitle": {"description": "Title of the save-file dialog"},
+  "backupExportDone": "Backup saved.",
+  "@backupExportDone": {"description": "Snackbar after a successful JSON export"},
+  "backupExportCsvDone": "{count, plural, one{{count} file saved.} other{{count} files saved.}}",
+  "@backupExportCsvDone": {
+    "description": "Snackbar after a CSV export with the number of files",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupExportCancelled": "Export cancelled.",
+  "@backupExportCancelled": {"description": "Snackbar when the user cancels the save dialog"},
+  "backupImportHeader": "Import",
+  "@backupImportHeader": {"description": "Section header for import actions"},
+  "backupImportAction": "Import a backup file",
+  "@backupImportAction": {"description": "Action: pick a file to import"},
+  "backupImportDesc": "Choose a JSON backup, or one or more CSV files. A safety backup of your current data is created first.",
+  "@backupImportDesc": {"description": "Describes the import flow"},
+  "backupPrivacyNote": "Backups are not encrypted. Keep them somewhere safe. AGENDA never uploads your data.",
+  "@backupPrivacyNote": {"description": "Privacy note: backups are plain files"},
+  "backupReinstallNote": "Android cloud backup is turned off for AGENDA. After reinstalling, restore from an exported JSON file.",
+  "@backupReinstallNote": {"description": "Note about disabled Android auto backup"},
+  "backupWorking": "Working…",
+  "@backupWorking": {"description": "Progress label while exporting or importing"},
+  "backupConfirmTitle": "Confirm import",
+  "@backupConfirmTitle": {"description": "Title of the import confirmation screen"},
+  "backupConfirmWarning": "This replaces the data listed below. A safety backup is created first.",
+  "@backupConfirmWarning": {"description": "Warning that import replaces data"},
+  "backupConfirmPartial": "Only the types of data present in your files are replaced. Everything else is kept.",
+  "@backupConfirmPartial": {"description": "Explains partial (per type) replacement"},
+  "backupConfirmDateRange": "Records from {from} to {to}",
+  "@backupConfirmDateRange": {
+    "description": "Date range covered by the file, already formatted",
+    "placeholders": {
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "backupConfirmExportedAt": "Exported on {date}",
+  "@backupConfirmExportedAt": {
+    "description": "When the backup was exported, already formatted",
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "backupConfirmDeletedIncluded": "{count, plural, one{Includes {count} deleted record.} other{Includes {count} deleted records.}}",
+  "@backupConfirmDeletedIncluded": {
+    "description": "Number of soft-deleted records in the file",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupConfirmWarningsTitle": "Warnings",
+  "@backupConfirmWarningsTitle": {"description": "Header of the warnings list on the confirm screen"},
+  "backupWarnDanglingLinks": "{count, plural, one{{count} record points to data that is not in the file.} other{{count} records point to data that is not in the file.}}",
+  "@backupWarnDanglingLinks": {
+    "description": "Warning about references to records missing from the file",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupConfirmButton": "Replace my data",
+  "@backupConfirmButton": {"description": "Destructive confirm button"},
+  "backupCountLine": "{label}: {count}",
+  "@backupCountLine": {
+    "description": "One line of the import summary: entity label and count",
+    "placeholders": {
+      "label": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "backupEntityTasks": "Tasks",
+  "@backupEntityTasks": {"description": "Backup entity label: tasks"},
+  "backupEntityTransactions": "Transactions",
+  "@backupEntityTransactions": {"description": "Backup entity label: transactions"},
+  "backupEntityCategories": "Categories",
+  "@backupEntityCategories": {"description": "Backup entity label: categories"},
+  "backupEntityBudgets": "Budgets",
+  "@backupEntityBudgets": {"description": "Backup entity label: budgets"},
+  "backupEntityGoals": "Goals",
+  "@backupEntityGoals": {"description": "Backup entity label: goals"},
+  "backupEntityDebts": "Debts",
+  "@backupEntityDebts": {"description": "Backup entity label: debts"},
+  "backupEntityPayments": "Recurring payments",
+  "@backupEntityPayments": {"description": "Backup entity label: recurring payments"},
+  "backupImportDone": "Import complete.",
+  "@backupImportDone": {"description": "Snackbar after a successful import"},
+  "backupImportDoneCount": "{count, plural, one{{count} record imported.} other{{count} records imported.}}",
+  "@backupImportDoneCount": {
+    "description": "Import result with the number of records",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupErrorUnsupported": "This file is not a valid AGENDA backup.",
+  "@backupErrorUnsupported": {"description": "Import error: unrecognised file"},
+  "backupErrorTooLarge": "This file is too large to import.",
+  "@backupErrorTooLarge": {"description": "Import error: file over the size limit"},
+  "backupErrorNewerVersion": "This backup was created by a newer version of AGENDA.",
+  "@backupErrorNewerVersion": {"description": "Import error: backup schema is newer than the app"},
+  "backupErrorMixed": "Choose either one JSON backup or CSV files, not both.",
+  "@backupErrorMixed": {"description": "Import error: JSON and CSV selected together"},
+  "backupErrorDuplicate": "Two of the selected files contain the same type of data.",
+  "@backupErrorDuplicate": {"description": "Import error: duplicate CSV entity type"},
+  "backupErrorGeneric": "Something went wrong. Your data was not changed.",
+  "@backupErrorGeneric": {"description": "Generic failure message"},
+  "backupErrorImportFailed": "Import failed. Your data is unchanged. Safety backup: {path}",
+  "@backupErrorImportFailed": {
+    "description": "Import failure message with the safety backup path",
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  }
 }

@@ -839,4 +839,266 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifQuoteTitle => 'Daily motivation';
+
+  @override
+  String get notifSettingsTitle => 'Notifications';
+
+  @override
+  String get notifSettingsTypesHeader => 'Notification types';
+
+  @override
+  String get notifSettingsBriefingTime => 'Briefing time';
+
+  @override
+  String get notifSettingsQuotesHeader => 'Motivational quotes';
+
+  @override
+  String get notifSettingsQuotesOffHint =>
+      'Turn on motivational quotes to choose how often they arrive.';
+
+  @override
+  String get notifSettingsQuoteFrequency => 'Frequency';
+
+  @override
+  String get notifSettingsQuoteDaily => 'Daily';
+
+  @override
+  String get notifSettingsQuoteWeekly => 'Weekly (Mondays)';
+
+  @override
+  String get notifSettingsQuoteTime => 'Quote time';
+
+  @override
+  String get notifSettingsQuietHeader => 'Quiet hours';
+
+  @override
+  String get notifSettingsQuietEnabled =>
+      'Hold notifications during quiet hours';
+
+  @override
+  String get notifSettingsQuietDesc =>
+      'Anything scheduled inside this window is delivered when it ends.';
+
+  @override
+  String get notifSettingsQuietStart => 'From';
+
+  @override
+  String get notifSettingsQuietEnd => 'Until';
+
+  @override
+  String get notifSettingsPermissionDeniedTitle =>
+      'Notifications are turned off';
+
+  @override
+  String get notifSettingsPermissionDeniedBody =>
+      'Allow notifications for AGENDA in your device settings to receive reminders.';
+
+  @override
+  String get notifSettingsAllowButton => 'Allow notifications';
+
+  @override
+  String get notifSettingsExactTitle => 'Exact reminder times';
+
+  @override
+  String get notifSettingsExactBody =>
+      'Android may delay reminders unless exact alarms are allowed.';
+
+  @override
+  String get notifSettingsExactButton => 'Allow exact alarms';
+
+  @override
+  String notifSettingsWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reminders are waiting for a free slot',
+      one: '$count reminder is waiting for a free slot',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifSettingsPrivacyNote =>
+      'Reminders are scheduled on this device only. Nothing is sent anywhere.';
+
+  @override
+  String get backupMenuLabel => 'Backup and restore';
+
+  @override
+  String get backupScreenTitle => 'Backup and restore';
+
+  @override
+  String get backupExportHeader => 'Export';
+
+  @override
+  String get backupExportJson => 'Export full backup (JSON)';
+
+  @override
+  String get backupExportJsonDesc =>
+      'One file with every task, transaction, budget, goal, debt and recurring payment.';
+
+  @override
+  String get backupExportCsv => 'Export spreadsheets (CSV)';
+
+  @override
+  String get backupExportCsvDesc =>
+      'One CSV file per type of data, readable in any spreadsheet app.';
+
+  @override
+  String get backupExportSaveTitle => 'Save backup';
+
+  @override
+  String get backupExportDone => 'Backup saved.';
+
+  @override
+  String backupExportCsvDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count files saved.',
+      one: '$count file saved.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupExportCancelled => 'Export cancelled.';
+
+  @override
+  String get backupImportHeader => 'Import';
+
+  @override
+  String get backupImportAction => 'Import a backup file';
+
+  @override
+  String get backupImportDesc =>
+      'Choose a JSON backup, or one or more CSV files. A safety backup of your current data is created first.';
+
+  @override
+  String get backupPrivacyNote =>
+      'Backups are not encrypted. Keep them somewhere safe. AGENDA never uploads your data.';
+
+  @override
+  String get backupReinstallNote =>
+      'Android cloud backup is turned off for AGENDA. After reinstalling, restore from an exported JSON file.';
+
+  @override
+  String get backupWorking => 'Working…';
+
+  @override
+  String get backupConfirmTitle => 'Confirm import';
+
+  @override
+  String get backupConfirmWarning =>
+      'This replaces the data listed below. A safety backup is created first.';
+
+  @override
+  String get backupConfirmPartial =>
+      'Only the types of data present in your files are replaced. Everything else is kept.';
+
+  @override
+  String backupConfirmDateRange(String from, String to) {
+    return 'Records from $from to $to';
+  }
+
+  @override
+  String backupConfirmExportedAt(String date) {
+    return 'Exported on $date';
+  }
+
+  @override
+  String backupConfirmDeletedIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Includes $count deleted records.',
+      one: 'Includes $count deleted record.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupConfirmWarningsTitle => 'Warnings';
+
+  @override
+  String backupWarnDanglingLinks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count records point to data that is not in the file.',
+      one: '$count record points to data that is not in the file.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupConfirmButton => 'Replace my data';
+
+  @override
+  String backupCountLine(String label, int count) {
+    return '$label: $count';
+  }
+
+  @override
+  String get backupEntityTasks => 'Tasks';
+
+  @override
+  String get backupEntityTransactions => 'Transactions';
+
+  @override
+  String get backupEntityCategories => 'Categories';
+
+  @override
+  String get backupEntityBudgets => 'Budgets';
+
+  @override
+  String get backupEntityGoals => 'Goals';
+
+  @override
+  String get backupEntityDebts => 'Debts';
+
+  @override
+  String get backupEntityPayments => 'Recurring payments';
+
+  @override
+  String get backupImportDone => 'Import complete.';
+
+  @override
+  String backupImportDoneCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count records imported.',
+      one: '$count record imported.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupErrorUnsupported =>
+      'This file is not a valid AGENDA backup.';
+
+  @override
+  String get backupErrorTooLarge => 'This file is too large to import.';
+
+  @override
+  String get backupErrorNewerVersion =>
+      'This backup was created by a newer version of AGENDA.';
+
+  @override
+  String get backupErrorMixed =>
+      'Choose either one JSON backup or CSV files, not both.';
+
+  @override
+  String get backupErrorDuplicate =>
+      'Two of the selected files contain the same type of data.';
+
+  @override
+  String get backupErrorGeneric =>
+      'Something went wrong. Your data was not changed.';
+
+  @override
+  String backupErrorImportFailed(String path) {
+    return 'Import failed. Your data is unchanged. Safety backup: $path';
+  }
 }

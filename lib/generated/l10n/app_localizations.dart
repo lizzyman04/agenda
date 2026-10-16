@@ -1682,6 +1682,396 @@ abstract class AppLocalizations {
   /// In pt_BR, this message translates to:
   /// **'Motivação do dia'**
   String get notifQuoteTitle;
+
+  /// Título da página de configurações de notificações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Notificações'**
+  String get notifSettingsTitle;
+
+  /// Cabeçalho da seção dos interruptores por tipo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Tipos de notificação'**
+  String get notifSettingsTypesHeader;
+
+  /// Rótulo do seletor de horário do resumo da manhã
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Horário do resumo'**
+  String get notifSettingsBriefingTime;
+
+  /// Cabeçalho da seção de frases motivacionais
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Frases motivacionais'**
+  String get notifSettingsQuotesHeader;
+
+  /// Dica exibida enquanto as frases motivacionais estão desativadas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Ative as frases motivacionais para escolher a frequência.'**
+  String get notifSettingsQuotesOffHint;
+
+  /// Rótulo do controle de frequência das frases
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Frequência'**
+  String get notifSettingsQuoteFrequency;
+
+  /// Opção de frequência das frases: todos os dias
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Diária'**
+  String get notifSettingsQuoteDaily;
+
+  /// Opção de frequência das frases: uma vez por semana, às segundas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Semanal (segundas-feiras)'**
+  String get notifSettingsQuoteWeekly;
+
+  /// Rótulo do seletor de horário da frase
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Horário da frase'**
+  String get notifSettingsQuoteTime;
+
+  /// Cabeçalho da seção de horário de silêncio
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Horário de silêncio'**
+  String get notifSettingsQuietHeader;
+
+  /// Rótulo do interruptor: ativar horário de silêncio
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Reter notificações no horário de silêncio'**
+  String get notifSettingsQuietEnabled;
+
+  /// Explica o que o horário de silêncio faz
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Tudo que cair dentro deste período é entregue quando ele terminar.'**
+  String get notifSettingsQuietDesc;
+
+  /// Rótulo do início do horário de silêncio
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Das'**
+  String get notifSettingsQuietStart;
+
+  /// Rótulo do fim do horário de silêncio
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Até'**
+  String get notifSettingsQuietEnd;
+
+  /// Título do aviso quando a permissão de notificação é negada
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'As notificações estão desativadas'**
+  String get notifSettingsPermissionDeniedTitle;
+
+  /// Corpo do aviso quando a permissão de notificação é negada
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Permita as notificações do AGENDA nas configurações do dispositivo para receber lembretes.'**
+  String get notifSettingsPermissionDeniedBody;
+
+  /// Botão que solicita a permissão de notificação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Permitir notificações'**
+  String get notifSettingsAllowButton;
+
+  /// Título do aviso sobre a permissão de alarmes exatos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Horários exatos dos lembretes'**
+  String get notifSettingsExactTitle;
+
+  /// Corpo do aviso sobre a permissão de alarmes exatos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'O Android pode atrasar os lembretes se os alarmes exatos não forem permitidos.'**
+  String get notifSettingsExactBody;
+
+  /// Botão que abre a tela de permissão de alarmes exatos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Permitir alarmes exatos'**
+  String get notifSettingsExactButton;
+
+  /// Quantidade de lembretes adiados pelo limite de agendamento da plataforma
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{count, plural, one{{count} lembrete aguarda um espaço livre} other{{count} lembretes aguardam um espaço livre}}'**
+  String notifSettingsWaiting(int count);
+
+  /// Nota de privacidade na página de configurações de notificações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Os lembretes são agendados somente neste dispositivo. Nada é enviado para lugar nenhum.'**
+  String get notifSettingsPrivacyNote;
+
+  /// Item do menu de configurações que abre a tela de backup
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Backup e restauração'**
+  String get backupMenuLabel;
+
+  /// Título da tela de backup
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Backup e restauração'**
+  String get backupScreenTitle;
+
+  /// Cabeçalho da seção de exportação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Exportar'**
+  String get backupExportHeader;
+
+  /// Ação: exportar backup completo em JSON
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Exportar backup completo (JSON)'**
+  String get backupExportJson;
+
+  /// Descreve a exportação em JSON
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Um arquivo com todas as tarefas, transações, orçamentos, metas, dívidas e pagamentos recorrentes.'**
+  String get backupExportJsonDesc;
+
+  /// Ação: exportar arquivos CSV
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Exportar planilhas (CSV)'**
+  String get backupExportCsv;
+
+  /// Descreve a exportação em CSV
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Um arquivo CSV por tipo de dado, legível em qualquer aplicativo de planilhas.'**
+  String get backupExportCsvDesc;
+
+  /// Título do diálogo de salvar arquivo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Salvar backup'**
+  String get backupExportSaveTitle;
+
+  /// Mensagem após exportação JSON bem-sucedida
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Backup salvo.'**
+  String get backupExportDone;
+
+  /// Mensagem após exportação CSV com o número de arquivos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{count, plural, one{{count} arquivo salvo.} other{{count} arquivos salvos.}}'**
+  String backupExportCsvDone(int count);
+
+  /// Mensagem quando o usuário cancela o diálogo de salvar
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Exportação cancelada.'**
+  String get backupExportCancelled;
+
+  /// Cabeçalho da seção de importação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Importar'**
+  String get backupImportHeader;
+
+  /// Ação: escolher um arquivo para importar
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Importar arquivo de backup'**
+  String get backupImportAction;
+
+  /// Descreve o fluxo de importação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Escolha um backup JSON ou um ou mais arquivos CSV. Um backup de segurança dos seus dados atuais é criado antes.'**
+  String get backupImportDesc;
+
+  /// Nota de privacidade: backups são arquivos simples
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Os backups não são criptografados. Guarde-os em um local seguro. O AGENDA nunca envia seus dados.'**
+  String get backupPrivacyNote;
+
+  /// Nota sobre o backup automático do Android desativado
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'O backup em nuvem do Android está desativado para o AGENDA. Depois de reinstalar, restaure a partir de um arquivo JSON exportado.'**
+  String get backupReinstallNote;
+
+  /// Rótulo de progresso durante exportação ou importação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Processando…'**
+  String get backupWorking;
+
+  /// Título da tela de confirmação de importação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Confirmar importação'**
+  String get backupConfirmTitle;
+
+  /// Aviso de que a importação substitui dados
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Isto substitui os dados listados abaixo. Um backup de segurança é criado antes.'**
+  String get backupConfirmWarning;
+
+  /// Explica a substituição parcial (por tipo)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Somente os tipos de dados presentes nos arquivos são substituídos. O restante é mantido.'**
+  String get backupConfirmPartial;
+
+  /// Intervalo de datas coberto pelo arquivo, já formatado
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Registros de {from} a {to}'**
+  String backupConfirmDateRange(String from, String to);
+
+  /// Quando o backup foi exportado, já formatado
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Exportado em {date}'**
+  String backupConfirmExportedAt(String date);
+
+  /// Número de registros excluídos (lixeira) no arquivo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{count, plural, one{Inclui {count} registro excluído.} other{Inclui {count} registros excluídos.}}'**
+  String backupConfirmDeletedIncluded(int count);
+
+  /// Cabeçalho da lista de avisos na tela de confirmação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Avisos'**
+  String get backupConfirmWarningsTitle;
+
+  /// Aviso sobre referências a registros ausentes do arquivo
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{count, plural, one{{count} registro aponta para dados que não estão no arquivo.} other{{count} registros apontam para dados que não estão no arquivo.}}'**
+  String backupWarnDanglingLinks(int count);
+
+  /// Botão destrutivo de confirmação
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Substituir meus dados'**
+  String get backupConfirmButton;
+
+  /// Uma linha do resumo da importação: rótulo e quantidade
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{label}: {count}'**
+  String backupCountLine(String label, int count);
+
+  /// Rótulo de entidade do backup: tarefas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Tarefas'**
+  String get backupEntityTasks;
+
+  /// Rótulo de entidade do backup: transações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Transações'**
+  String get backupEntityTransactions;
+
+  /// Rótulo de entidade do backup: categorias
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Categorias'**
+  String get backupEntityCategories;
+
+  /// Rótulo de entidade do backup: orçamentos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Orçamentos'**
+  String get backupEntityBudgets;
+
+  /// Rótulo de entidade do backup: metas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Metas'**
+  String get backupEntityGoals;
+
+  /// Rótulo de entidade do backup: dívidas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Dívidas'**
+  String get backupEntityDebts;
+
+  /// Rótulo de entidade do backup: pagamentos recorrentes
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Pagamentos recorrentes'**
+  String get backupEntityPayments;
+
+  /// Mensagem após importação bem-sucedida
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Importação concluída.'**
+  String get backupImportDone;
+
+  /// Resultado da importação com o número de registros
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{count, plural, one{{count} registro importado.} other{{count} registros importados.}}'**
+  String backupImportDoneCount(int count);
+
+  /// Erro de importação: arquivo não reconhecido
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Este arquivo não é um backup válido do AGENDA.'**
+  String get backupErrorUnsupported;
+
+  /// Erro de importação: arquivo acima do limite de tamanho
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Este arquivo é grande demais para importar.'**
+  String get backupErrorTooLarge;
+
+  /// Erro de importação: backup de versão mais nova que o app
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Este backup foi criado por uma versão mais nova do AGENDA.'**
+  String get backupErrorNewerVersion;
+
+  /// Erro de importação: JSON e CSV selecionados juntos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Escolha um backup JSON ou arquivos CSV, não os dois.'**
+  String get backupErrorMixed;
+
+  /// Erro de importação: tipo de dado CSV duplicado
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Dois dos arquivos selecionados contêm o mesmo tipo de dado.'**
+  String get backupErrorDuplicate;
+
+  /// Mensagem genérica de falha
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Algo deu errado. Seus dados não foram alterados.'**
+  String get backupErrorGeneric;
+
+  /// Mensagem de falha na importação com o caminho do backup de segurança
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'A importação falhou. Seus dados não foram alterados. Backup de segurança: {path}'**
+  String backupErrorImportFailed(String path);
 }
 
 class _AppLocalizationsDelegate

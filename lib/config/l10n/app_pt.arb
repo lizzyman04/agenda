@@ -700,5 +700,182 @@
     }
   },
   "notifQuoteTitle": "Motivação do dia",
-  "@notifQuoteTitle": {"description": "Título da notificação de frase motivacional"}
+  "@notifQuoteTitle": {"description": "Título da notificação de frase motivacional"},
+  "notifSettingsTitle": "Notificações",
+  "@notifSettingsTitle": {"description": "Título da página de configurações de notificações"},
+  "notifSettingsTypesHeader": "Tipos de notificação",
+  "@notifSettingsTypesHeader": {"description": "Cabeçalho da seção dos interruptores por tipo"},
+  "notifSettingsBriefingTime": "Horário do resumo",
+  "@notifSettingsBriefingTime": {"description": "Rótulo do seletor de horário do resumo da manhã"},
+  "notifSettingsQuotesHeader": "Frases motivacionais",
+  "@notifSettingsQuotesHeader": {"description": "Cabeçalho da seção de frases motivacionais"},
+  "notifSettingsQuotesOffHint": "Ative as frases motivacionais para escolher a frequência.",
+  "@notifSettingsQuotesOffHint": {"description": "Dica exibida enquanto as frases motivacionais estão desativadas"},
+  "notifSettingsQuoteFrequency": "Frequência",
+  "@notifSettingsQuoteFrequency": {"description": "Rótulo do controle de frequência das frases"},
+  "notifSettingsQuoteDaily": "Diária",
+  "@notifSettingsQuoteDaily": {"description": "Opção de frequência das frases: todos os dias"},
+  "notifSettingsQuoteWeekly": "Semanal (segundas-feiras)",
+  "@notifSettingsQuoteWeekly": {"description": "Opção de frequência das frases: uma vez por semana, às segundas"},
+  "notifSettingsQuoteTime": "Horário da frase",
+  "@notifSettingsQuoteTime": {"description": "Rótulo do seletor de horário da frase"},
+  "notifSettingsQuietHeader": "Horário de silêncio",
+  "@notifSettingsQuietHeader": {"description": "Cabeçalho da seção de horário de silêncio"},
+  "notifSettingsQuietEnabled": "Reter notificações no horário de silêncio",
+  "@notifSettingsQuietEnabled": {"description": "Rótulo do interruptor: ativar horário de silêncio"},
+  "notifSettingsQuietDesc": "Tudo que cair dentro deste período é entregue quando ele terminar.",
+  "@notifSettingsQuietDesc": {"description": "Explica o que o horário de silêncio faz"},
+  "notifSettingsQuietStart": "Das",
+  "@notifSettingsQuietStart": {"description": "Rótulo do início do horário de silêncio"},
+  "notifSettingsQuietEnd": "Até",
+  "@notifSettingsQuietEnd": {"description": "Rótulo do fim do horário de silêncio"},
+  "notifSettingsPermissionDeniedTitle": "As notificações estão desativadas",
+  "@notifSettingsPermissionDeniedTitle": {"description": "Título do aviso quando a permissão de notificação é negada"},
+  "notifSettingsPermissionDeniedBody": "Permita as notificações do AGENDA nas configurações do dispositivo para receber lembretes.",
+  "@notifSettingsPermissionDeniedBody": {"description": "Corpo do aviso quando a permissão de notificação é negada"},
+  "notifSettingsAllowButton": "Permitir notificações",
+  "@notifSettingsAllowButton": {"description": "Botão que solicita a permissão de notificação"},
+  "notifSettingsExactTitle": "Horários exatos dos lembretes",
+  "@notifSettingsExactTitle": {"description": "Título do aviso sobre a permissão de alarmes exatos"},
+  "notifSettingsExactBody": "O Android pode atrasar os lembretes se os alarmes exatos não forem permitidos.",
+  "@notifSettingsExactBody": {"description": "Corpo do aviso sobre a permissão de alarmes exatos"},
+  "notifSettingsExactButton": "Permitir alarmes exatos",
+  "@notifSettingsExactButton": {"description": "Botão que abre a tela de permissão de alarmes exatos"},
+  "notifSettingsWaiting": "{count, plural, one{{count} lembrete aguarda um espaço livre} other{{count} lembretes aguardam um espaço livre}}",
+  "@notifSettingsWaiting": {
+    "description": "Quantidade de lembretes adiados pelo limite de agendamento da plataforma",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifSettingsPrivacyNote": "Os lembretes são agendados somente neste dispositivo. Nada é enviado para lugar nenhum.",
+  "@notifSettingsPrivacyNote": {"description": "Nota de privacidade na página de configurações de notificações"},
+  "backupMenuLabel": "Backup e restauração",
+  "@backupMenuLabel": {"description": "Item do menu de configurações que abre a tela de backup"},
+  "backupScreenTitle": "Backup e restauração",
+  "@backupScreenTitle": {"description": "Título da tela de backup"},
+  "backupExportHeader": "Exportar",
+  "@backupExportHeader": {"description": "Cabeçalho da seção de exportação"},
+  "backupExportJson": "Exportar backup completo (JSON)",
+  "@backupExportJson": {"description": "Ação: exportar backup completo em JSON"},
+  "backupExportJsonDesc": "Um arquivo com todas as tarefas, transações, orçamentos, metas, dívidas e pagamentos recorrentes.",
+  "@backupExportJsonDesc": {"description": "Descreve a exportação em JSON"},
+  "backupExportCsv": "Exportar planilhas (CSV)",
+  "@backupExportCsv": {"description": "Ação: exportar arquivos CSV"},
+  "backupExportCsvDesc": "Um arquivo CSV por tipo de dado, legível em qualquer aplicativo de planilhas.",
+  "@backupExportCsvDesc": {"description": "Descreve a exportação em CSV"},
+  "backupExportSaveTitle": "Salvar backup",
+  "@backupExportSaveTitle": {"description": "Título do diálogo de salvar arquivo"},
+  "backupExportDone": "Backup salvo.",
+  "@backupExportDone": {"description": "Mensagem após exportação JSON bem-sucedida"},
+  "backupExportCsvDone": "{count, plural, one{{count} arquivo salvo.} other{{count} arquivos salvos.}}",
+  "@backupExportCsvDone": {
+    "description": "Mensagem após exportação CSV com o número de arquivos",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupExportCancelled": "Exportação cancelada.",
+  "@backupExportCancelled": {"description": "Mensagem quando o usuário cancela o diálogo de salvar"},
+  "backupImportHeader": "Importar",
+  "@backupImportHeader": {"description": "Cabeçalho da seção de importação"},
+  "backupImportAction": "Importar arquivo de backup",
+  "@backupImportAction": {"description": "Ação: escolher um arquivo para importar"},
+  "backupImportDesc": "Escolha um backup JSON ou um ou mais arquivos CSV. Um backup de segurança dos seus dados atuais é criado antes.",
+  "@backupImportDesc": {"description": "Descreve o fluxo de importação"},
+  "backupPrivacyNote": "Os backups não são criptografados. Guarde-os em um local seguro. O AGENDA nunca envia seus dados.",
+  "@backupPrivacyNote": {"description": "Nota de privacidade: backups são arquivos simples"},
+  "backupReinstallNote": "O backup em nuvem do Android está desativado para o AGENDA. Depois de reinstalar, restaure a partir de um arquivo JSON exportado.",
+  "@backupReinstallNote": {"description": "Nota sobre o backup automático do Android desativado"},
+  "backupWorking": "Processando…",
+  "@backupWorking": {"description": "Rótulo de progresso durante exportação ou importação"},
+  "backupConfirmTitle": "Confirmar importação",
+  "@backupConfirmTitle": {"description": "Título da tela de confirmação de importação"},
+  "backupConfirmWarning": "Isto substitui os dados listados abaixo. Um backup de segurança é criado antes.",
+  "@backupConfirmWarning": {"description": "Aviso de que a importação substitui dados"},
+  "backupConfirmPartial": "Somente os tipos de dados presentes nos arquivos são substituídos. O restante é mantido.",
+  "@backupConfirmPartial": {"description": "Explica a substituição parcial (por tipo)"},
+  "backupConfirmDateRange": "Registros de {from} a {to}",
+  "@backupConfirmDateRange": {
+    "description": "Intervalo de datas coberto pelo arquivo, já formatado",
+    "placeholders": {
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "backupConfirmExportedAt": "Exportado em {date}",
+  "@backupConfirmExportedAt": {
+    "description": "Quando o backup foi exportado, já formatado",
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "backupConfirmDeletedIncluded": "{count, plural, one{Inclui {count} registro excluído.} other{Inclui {count} registros excluídos.}}",
+  "@backupConfirmDeletedIncluded": {
+    "description": "Número de registros excluídos (lixeira) no arquivo",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupConfirmWarningsTitle": "Avisos",
+  "@backupConfirmWarningsTitle": {"description": "Cabeçalho da lista de avisos na tela de confirmação"},
+  "backupWarnDanglingLinks": "{count, plural, one{{count} registro aponta para dados que não estão no arquivo.} other{{count} registros apontam para dados que não estão no arquivo.}}",
+  "@backupWarnDanglingLinks": {
+    "description": "Aviso sobre referências a registros ausentes do arquivo",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupConfirmButton": "Substituir meus dados",
+  "@backupConfirmButton": {"description": "Botão destrutivo de confirmação"},
+  "backupCountLine": "{label}: {count}",
+  "@backupCountLine": {
+    "description": "Uma linha do resumo da importação: rótulo e quantidade",
+    "placeholders": {
+      "label": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "backupEntityTasks": "Tarefas",
+  "@backupEntityTasks": {"description": "Rótulo de entidade do backup: tarefas"},
+  "backupEntityTransactions": "Transações",
+  "@backupEntityTransactions": {"description": "Rótulo de entidade do backup: transações"},
+  "backupEntityCategories": "Categorias",
+  "@backupEntityCategories": {"description": "Rótulo de entidade do backup: categorias"},
+  "backupEntityBudgets": "Orçamentos",
+  "@backupEntityBudgets": {"description": "Rótulo de entidade do backup: orçamentos"},
+  "backupEntityGoals": "Metas",
+  "@backupEntityGoals": {"description": "Rótulo de entidade do backup: metas"},
+  "backupEntityDebts": "Dívidas",
+  "@backupEntityDebts": {"description": "Rótulo de entidade do backup: dívidas"},
+  "backupEntityPayments": "Pagamentos recorrentes",
+  "@backupEntityPayments": {"description": "Rótulo de entidade do backup: pagamentos recorrentes"},
+  "backupImportDone": "Importação concluída.",
+  "@backupImportDone": {"description": "Mensagem após importação bem-sucedida"},
+  "backupImportDoneCount": "{count, plural, one{{count} registro importado.} other{{count} registros importados.}}",
+  "@backupImportDoneCount": {
+    "description": "Resultado da importação com o número de registros",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupErrorUnsupported": "Este arquivo não é um backup válido do AGENDA.",
+  "@backupErrorUnsupported": {"description": "Erro de importação: arquivo não reconhecido"},
+  "backupErrorTooLarge": "Este arquivo é grande demais para importar.",
+  "@backupErrorTooLarge": {"description": "Erro de importação: arquivo acima do limite de tamanho"},
+  "backupErrorNewerVersion": "Este backup foi criado por uma versão mais nova do AGENDA.",
+  "@backupErrorNewerVersion": {"description": "Erro de importação: backup de versão mais nova que o app"},
+  "backupErrorMixed": "Escolha um backup JSON ou arquivos CSV, não os dois.",
+  "@backupErrorMixed": {"description": "Erro de importação: JSON e CSV selecionados juntos"},
+  "backupErrorDuplicate": "Dois dos arquivos selecionados contêm o mesmo tipo de dado.",
+  "@backupErrorDuplicate": {"description": "Erro de importação: tipo de dado CSV duplicado"},
+  "backupErrorGeneric": "Algo deu errado. Seus dados não foram alterados.",
+  "@backupErrorGeneric": {"description": "Mensagem genérica de falha"},
+  "backupErrorImportFailed": "A importação falhou. Seus dados não foram alterados. Backup de segurança: {path}",
+  "@backupErrorImportFailed": {
+    "description": "Mensagem de falha na importação com o caminho do backup de segurança",
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  }
 }
