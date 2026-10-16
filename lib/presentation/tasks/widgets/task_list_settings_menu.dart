@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/backup/screens/backup_screen.dart';
 import 'package:agenda/presentation/notifications/screens/notification_settings_screen.dart';
 import 'package:flutter/material.dart';
 
-/// Where the overflow menu can go. Plan 04-16 appends the backup entry.
-enum TaskListSettingsDestination { notifications }
+/// Where the overflow menu can go.
+enum TaskListSettingsDestination { notifications, backup }
 
 /// Temporary AppBar entry point to settings (D-15).
 ///
@@ -15,9 +18,17 @@ class TaskListSettingsMenu extends StatelessWidget {
   void _open(BuildContext context, TaskListSettingsDestination destination) {
     switch (destination) {
       case TaskListSettingsDestination.notifications:
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => const NotificationSettingsScreen(),
+        unawaited(
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const NotificationSettingsScreen(),
+            ),
+          ),
+        );
+      case TaskListSettingsDestination.backup:
+        unawaited(
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const BackupScreen()),
           ),
         );
     }
@@ -38,7 +49,17 @@ class TaskListSettingsMenu extends StatelessWidget {
                 children: [
                   const Icon(Icons.notifications_outlined),
                   const SizedBox(width: 12),
-                  Text(l10n.notifSettingsTitle),
+                  Flexible(child: Text(l10n.notifSettingsTitle)),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              value: TaskListSettingsDestination.backup,
+              child: Row(
+                children: [
+                  const Icon(Icons.backup_outlined),
+                  const SizedBox(width: 12),
+                  Flexible(child: Text(l10n.backupMenuLabel)),
                 ],
               ),
             ),

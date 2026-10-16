@@ -27,7 +27,7 @@ widgets/
 | `slot_section.dart` | 108 | One 1-3-5 slot: header with current-vs-max count, optional over-capacity banner, assigned items with remove buttons |
 | `task_picker_sheet.dart` | 88 | `SlotSize` enum, `WarningBanner`, and `TaskPickerSheet` — picks a task to assign to a planner slot |
 | `add_subtask_sheet.dart` | 90 | Bottom sheet for adding a subtask to a project; owns and disposes its own `TextEditingController` (WR-03) |
-| `task_list_settings_menu.dart` | 48 | `TaskListSettingsDestination` and `TaskListSettingsMenu` — temporary AppBar overflow menu (D-15) that pushes `NotificationSettingsScreen`; Phase 5 replaces it by mounting the page in Settings |
+| `task_list_settings_menu.dart` | 69 | `TaskListSettingsDestination` (`notifications`, `backup`) and `TaskListSettingsMenu` — temporary AppBar overflow menu (D-15) with two entries that push `NotificationSettingsScreen` and `BackupScreen`; Phase 5 replaces it by mounting both pages in Settings |
 | `gtd_chip.dart` | 27 | A single GTD context tag as a selectable `FilterChip` (TASK-09) |
 
 ## Conventions in this slice
