@@ -38,14 +38,14 @@
 - [ ] **NOTF-01**: App sends task reminders when due date/time is approaching
 - [ ] **NOTF-02**: App sends a daily morning briefing with tasks due that day
 - [ ] **NOTF-03**: App sends budget alerts when spending reaches 80% and 100% of a category limit
-- [ ] **NOTF-04**: App sends reminders for recurring tasks before they are due
+- [x] **NOTF-04**: App sends reminders for recurring tasks before they are due
 - [ ] **NOTF-05**: App sends overdue debt reminders when a debt is approaching its due date
 - [ ] **NOTF-06**: App sends goal progress alerts when a savings goal is off track
 - [ ] **NOTF-07**: App sends recurring payment reminders before a bill is due
 - [ ] **NOTF-08**: App sends motivational quote notifications (default OFF; user-configurable frequency and time)
 - [ ] **NOTF-09**: User can toggle each notification type independently in Settings
 - [ ] **NOTF-10**: Notifications respect quiet hours (default 10pm–7am; user-configurable)
-- [ ] **NOTF-11**: All scheduled notifications are rescheduled automatically after device reboot
+- [x] **NOTF-11**: All scheduled notifications are rescheduled automatically after device reboot
 
 ### Data & Privacy
 
@@ -128,14 +128,14 @@
 | NOTF-01 | Phase 4: Notifications + Backup | Pending |
 | NOTF-02 | Phase 4: Notifications + Backup | Pending |
 | NOTF-03 | Phase 4: Notifications + Backup | Pending |
-| NOTF-04 | Phase 4: Notifications + Backup | Pending |
+| NOTF-04 | Phase 4: Notifications + Backup | Complete |
 | NOTF-05 | Phase 4: Notifications + Backup | Pending |
 | NOTF-06 | Phase 4: Notifications + Backup | Pending |
 | NOTF-07 | Phase 4: Notifications + Backup | Pending |
 | NOTF-08 | Phase 4: Notifications + Backup | Pending |
 | NOTF-09 | Phase 4: Notifications + Backup | Pending |
 | NOTF-10 | Phase 4: Notifications + Backup | Pending |
-| NOTF-11 | Phase 4: Notifications + Backup | Pending |
+| NOTF-11 | Phase 4: Notifications + Backup | Complete |
 | DATA-02 | Phase 4: Notifications + Backup | Pending |
 | DATA-03 | Phase 4: Notifications + Backup | Pending |
 | DATA-04 | Phase 4: Notifications + Backup | Pending |
