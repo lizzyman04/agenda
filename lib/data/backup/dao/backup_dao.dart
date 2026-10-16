@@ -63,4 +63,9 @@ class BackupDao {
       ),
     );
   }
+
+  /// Every category row, uncapped. Used while validating a CSV import to
+  /// resolve category names without a write transaction.
+  Future<List<TransactionCategoryModel>> readCategories() =>
+      isarService.db.collection<TransactionCategoryModel>().where().findAll();
 }

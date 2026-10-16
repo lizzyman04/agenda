@@ -1,4 +1,5 @@
 import 'package:agenda/data/backup/import/backup_snapshot.dart';
+import 'package:agenda/data/backup/import/csv_category_resolver.dart';
 import 'package:agenda/data/backup/json/backup_envelope.dart';
 import 'package:agenda/data/database/isar_service.dart';
 import 'package:agenda/data/finance/budget/budget_model.dart';
@@ -8,6 +9,8 @@ import 'package:agenda/data/finance/goal/savings_goal_model.dart';
 import 'package:agenda/data/finance/recurring/recurring_payment_model.dart';
 import 'package:agenda/data/finance/transaction/transaction_model.dart';
 import 'package:agenda/data/tasks/item_model.dart';
+import 'package:agenda/domain/backup/backup_entity.dart';
+import 'package:agenda/domain/backup/import_preview.dart';
 import 'package:isar_community/isar.dart';
 
 /// Replaces database contents with a validated [BackupSnapshot] in ONE write
@@ -17,7 +20,7 @@ import 'package:isar_community/isar.dart';
 /// opens its own write transaction and nesting throws. Exceptions are NOT
 /// caught inside the transaction, so Isar aborts it, restores every
 /// collection cleared earlier in it, and rethrows.
-final class BackupImporter {
+class BackupImporter {
   const BackupImporter(this._service);
 
   final IsarService _service;
@@ -79,11 +82,40 @@ final class BackupImporter {
     });
   }
 
-  // Seam for CSV category resolution (filled in with the resolver): runs
-  // inside the transaction, before the replaced collections are written.
+  // CSV only: resolves each row's category against the categories as they
+  // are NOW (inside the transaction), creates any missing custom categories
+  // and rewrites the rows' categoryId. Runs before the replaced collections
+  // are written. The snapshot is consumed by the commit, so rewriting its
+  // models in place is safe.
   Future<void> _resolveCsvCategories(
     Isar isar,
     BackupSnapshot snapshot,
     DateTime now,
-  ) async {}
+  ) async {
+    if (snapshot.source != ImportSource.csv) return;
+    final existing = await isar.transactionCategoryModels.where().findAll();
+    final resolution = resolveCsvCategories(snapshot, existing, now: now);
+    final ids = await isar.transactionCategoryModels.putAll(
+      resolution.created,
+    );
+    int idOf(CategoryRef ref) => ref.id ?? ids[ref.createdIndex!];
+    final transactions = snapshot.transactions;
+    for (var i = 0; i < resolution.transactions.length; i++) {
+      transactions![i].categoryId = idOf(resolution.transactions[i]);
+    }
+    final budgets = snapshot.budgets;
+    for (var i = 0; i < resolution.budgets.length; i++) {
+      budgets![i].categoryId = idOf(resolution.budgets[i]);
+    }
+    final payments = snapshot.recurringPayments;
+    for (var i = 0; i < resolution.payments.length; i++) {
+      payments![i].categoryId = idOf(resolution.payments[i]);
+    }
+  }
 }
+
+/// [BackupImporter.replace] counts keyed by [BackupEntity].
+Map<BackupEntity, int> countsByEntity(Map<String, int> counts) => {
+  for (final e in BackupEntity.values)
+    if (counts[e.jsonKey] != null) e: counts[e.jsonKey]!,
+};

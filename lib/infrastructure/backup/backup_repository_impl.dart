@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/data/backup/dao/backup_dao.dart';
+import 'package:agenda/data/backup/import/backup_importer.dart';
+import 'package:agenda/data/backup/import/safety_backup_store.dart';
 import 'package:agenda/data/backup/json/backup_envelope.dart';
 import 'package:agenda/data/backup/json/budget_json_codec.dart';
 import 'package:agenda/data/backup/json/category_json_codec.dart';
@@ -14,7 +16,9 @@ import 'package:agenda/data/backup/json/payment_json_codec.dart';
 import 'package:agenda/data/backup/json/transaction_json_codec.dart';
 import 'package:agenda/domain/backup/backup_file.dart';
 import 'package:agenda/domain/backup/backup_repository.dart';
+import 'package:agenda/domain/backup/import_preview.dart';
 import 'package:agenda/infrastructure/backup/csv_export_builder.dart';
+import 'package:agenda/infrastructure/backup/import_session.dart';
 import 'package:injectable/injectable.dart';
 
 /// Concrete implementation of [BackupRepository].
@@ -24,9 +28,16 @@ import 'package:injectable/injectable.dart';
 /// message of an encoding error can quote the offending value (T-04-04-02).
 @LazySingleton(as: BackupRepository)
 class BackupRepositoryImpl implements BackupRepository {
-  const BackupRepositoryImpl(this._dao);
+  BackupRepositoryImpl(this._dao);
 
   final BackupDao _dao;
+
+  late final ImportSession _import = ImportSession(
+    dao: _dao,
+    importer: BackupImporter(_dao.isarService),
+    store: SafetyBackupStore(),
+    exportJson: exportJson,
+  );
 
   @override
   AsyncResult<BackupFile> exportJson({DateTime? now}) async {
@@ -73,6 +84,19 @@ class BackupRepositoryImpl implements BackupRepository {
       return Err(BackupFailure('exportCsv failed: ${e.runtimeType}'));
     }
   }
+
+  @override
+  AsyncResult<ImportPreview> prepareImport(List<BackupFile> files) =>
+      _import.prepare(files);
+
+  @override
+  AsyncResult<ImportResult> commitImport() => _import.commit();
+
+  @override
+  void discardImport() => _import.discard();
+
+  @override
+  String? get lastSafetyBackupPath => _import.lastSafetyBackupPath;
 
   static String _fileName(DateTime d) {
     final y = d.year.toString().padLeft(4, '0');
