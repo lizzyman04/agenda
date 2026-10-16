@@ -4,14 +4,14 @@ milestone: v1.0
 current_phase: 04
 current_phase_name: Notifications + Backup
 status: executing
-stopped_at: Completed 04-10-PLAN.md
-last_updated: "2026-10-16T07:14:24.637Z"
-state_head: 527234da79cb52b9a0f7a8f8fbf6b271e50728cc
+stopped_at: Completed 04-11-PLAN.md
+last_updated: "2026-10-16T07:32:12.591Z"
+state_head: 688f05c92503b92ce0ba6d249bf2b16d2ee2137b
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 59
-  completed_plans: 52
+  completed_plans: 53
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 04 (Notifications + Backup) — EXECUTING
-Plan: 10 of 17
+Plan: 11 of 17
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -205,6 +205,7 @@ Progress: [██████████] 100%
 | Phase 04 P07 | 8min | 3 tasks | 15 files |
 | Phase 04 P08 | 11 min | 3 tasks | 18 files |
 | Phase 04 P10 | 9 min | 3 tasks | 20 files |
+| Phase 04 P11 | 17 min | 3 tasks | 20 files |
 
 ## Accumulated Context
 
@@ -244,6 +245,7 @@ Recent decisions affecting current work:
 - [Phase 04]: CSV import: blank category_id decodes to 0 and the category_name travels in ParsedCsvRow; plan 04-11 resolves categories by name — Hand-edited spreadsheets often drop ids but keep names
 - [Phase 04]: CSV *_cents integer column is authoritative; display amount parsed strictly, no signs accepted — Avoids the legacy parser sign flip (T-04-08-04)
 - [Phase 04]: Phase 4 notification gateway: channel ids agenda_<name>_v1 (one per kind, quotes default importance, rest high), private lock-screen visibility, Darwin request flags all false, every plugin call wrapped into Err(NotificationFailure) with exception type only — Channel importance is immutable after creation so _v1 allows a later _v2; no prompt at init keeps permission in context; type-only errors avoid leaking user text
+- [Phase 04]: 04-11: A4 proven - auto-increment passes imported ids; import state in ImportSession; commit consumes prepared snapshot; CSV categories resolved at prepare (dry run) and inside commit txn
 
 ### Pending Todos
 
@@ -274,8 +276,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-10-16T07:14:24.375Z
-Stopped at: Completed 04-10-PLAN.md
+Last session: 2026-10-16T07:32:12.307Z
+Stopped at: Completed 04-11-PLAN.md
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
 Plans `03-13` and `03-14` executed and merged. Verification: 5/5 roadmap truths hold at
