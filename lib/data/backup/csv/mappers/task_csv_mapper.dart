@@ -43,8 +43,6 @@ final class TaskCsvMapper {
 
   static String _text(String? s) => guardCsvText(s ?? '');
 
-  static String _date(DateTime? d) => d == null ? '' : formatCsvDate(d);
-
   List<Object?> toRow(ItemModel m, CsvContext ctx) {
     final amount = m.moneyInfo?.amount;
     return [
@@ -61,8 +59,8 @@ final class TaskCsvMapper {
       _text(m.gtdContext),
       _text(m.waitingFor),
       m.isCompleted,
-      _date(m.completedAt),
-      _date(m.dueDate),
+      formatCsvDateOrEmpty(m.completedAt),
+      formatCsvDateOrEmpty(m.dueDate),
       m.timeInfo?.dueTimeMinutes,
       _text(m.timeInfo?.recurrenceRule),
       if (amount == null)

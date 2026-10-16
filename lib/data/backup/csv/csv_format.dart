@@ -63,6 +63,9 @@ String formatCsvDate(DateTime d) {
       '${l.millisecond.toString().padLeft(3, '0')}';
 }
 
+/// Null-passthrough variant of [formatCsvDate]; null becomes an empty cell.
+String formatCsvDateOrEmpty(DateTime? d) => d == null ? '' : formatCsvDate(d);
+
 final RegExp _dateShape = RegExp(
   r'^(\d{4})-(\d{2})-(\d{2})'
   r'(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,6})?(?:Z|[+-]\d{2}:?\d{2})?)?$',
