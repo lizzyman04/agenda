@@ -1,5 +1,6 @@
 import 'package:agenda/core/constants/app_constants.dart';
 import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/domain/notifications/alert_state_store.dart';
 import 'package:agenda/domain/notifications/local_notification_gateway.dart';
 import 'package:agenda/domain/notifications/model/planned_notification.dart';
 import 'package:agenda/domain/notifications/model/planner_input.dart';
@@ -13,6 +14,8 @@ import 'package:agenda/domain/notifications/rules/schedule_diff.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/infrastructure/notifications/content/notification_content_builder.dart';
 import 'package:agenda/infrastructure/notifications/gateway/notification_channels.dart';
+import 'package:agenda/infrastructure/notifications/sync/permission_gate.dart';
+import 'package:agenda/infrastructure/notifications/sync/reconcile_apply.dart';
 import 'package:agenda/infrastructure/notifications/sync/reconcile_report.dart';
 import 'package:agenda/infrastructure/notifications/sync/snapshot_loader.dart';
 import 'package:flutter/foundation.dart';
@@ -32,6 +35,8 @@ class ReconcileRunner {
     this._content,
     this._gateway,
     this._permissions,
+    this._gate,
+    this._alerts,
   );
 
   final SnapshotLoader _loader;
@@ -39,6 +44,8 @@ class ReconcileRunner {
   final NotificationContentBuilder _content;
   final LocalNotificationGateway _gateway;
   final NotificationPermissionService _permissions;
+  final PermissionGate _gate;
+  final AlertStateStore _alerts;
 
   Future<ReconcileReport> run({
     required DateTime now,
@@ -66,7 +73,20 @@ class ReconcileRunner {
         if (isPlannerOwnedId(p.id)) p,
     ];
     final diff = diffSchedules(desired: desired, pending: owned);
-    return _apply(diff, truncated: plan.truncated);
+    final disabledAlerts = disabledAlertIds(pendingResult.value, input.prefs);
+    final asks =
+        reason == ReconcileReason.dataChange ||
+        reason == ReconcileReason.prefsChange;
+    if (asks && diff.toSchedule.isNotEmpty) await _gate.ensureAsked();
+    return applyDiff(
+      _gateway,
+      _alerts,
+      ScheduleDiff(
+        cancelIds: [...diff.cancelIds, ...disabledAlerts],
+        toSchedule: diff.toSchedule,
+      ),
+      truncated: plan.truncated,
+    );
   }
 
   ScheduleRequest _toRequest(
@@ -88,35 +108,6 @@ class ReconcileRunner {
         exact: exact,
       ),
       exact: exact,
-    );
-  }
-
-  Future<ReconcileReport> _apply(
-    ScheduleDiff diff, {
-    required int truncated,
-  }) async {
-    var scheduled = 0;
-    var cancelled = 0;
-    var failures = 0;
-    for (final id in diff.cancelIds) {
-      if (await _gateway.cancel(id) is Success<void>) {
-        cancelled++;
-      } else {
-        failures++;
-      }
-    }
-    for (final request in diff.toSchedule) {
-      if (await _gateway.schedule(request) is Success<void>) {
-        scheduled++;
-      } else {
-        failures++;
-      }
-    }
-    return ReconcileReport(
-      scheduled: scheduled,
-      cancelled: cancelled,
-      truncated: truncated,
-      failures: failures,
     );
   }
 }

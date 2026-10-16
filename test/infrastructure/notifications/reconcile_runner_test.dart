@@ -245,7 +245,7 @@ void main() {
           kind: NotificationKind.budgetAlert,
           fireAt: DateTime(2026, 10, 12, 9),
           title: 'Food: 80% of the budget used',
-          body: 'You have used 80% of this month\'s limit.',
+          body: "You have used 80% of this month's limit.",
           payload: encodePayload(
             kind: NotificationKind.budgetAlert,
             entityId: 3,

@@ -97,6 +97,8 @@ import 'package:agenda/infrastructure/notifications/prefs/alert_state_store_impl
     as _i829;
 import 'package:agenda/infrastructure/notifications/prefs/notification_prefs_repository_impl.dart'
     as _i958;
+import 'package:agenda/infrastructure/notifications/sync/permission_gate.dart'
+    as _i478;
 import 'package:agenda/infrastructure/notifications/sync/reconcile_runner.dart'
     as _i154;
 import 'package:agenda/infrastructure/notifications/sync/snapshot_loader.dart'
@@ -275,6 +277,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i44.RecurrenceEngine>(),
       ),
     );
+    gh.lazySingleton<_i478.PermissionGate>(
+      () => _i478.PermissionGate(
+        gh<_i300.NotificationPermissionService>(),
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
     gh.factory<_i1065.TransactionCubit>(
       () => _i1065.TransactionCubit(
         gh<_i585.TransactionRepository>(),
@@ -293,13 +301,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i460.SharedPreferences>(),
       ),
     );
-    gh.factory<_i759.BudgetCubit>(
-      () => _i759.BudgetCubit(
-        gh<_i585.TransactionRepository>(),
-        gh<_i877.BudgetRepository>(),
-        gh<_i200.TransactionCategoryRepository>(),
-      ),
-    );
     gh.lazySingleton<_i154.ReconcileRunner>(
       () => _i154.ReconcileRunner(
         gh<_i61.SnapshotLoader>(),
@@ -307,6 +308,15 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i441.NotificationContentBuilder>(),
         gh<_i114.LocalNotificationGateway>(),
         gh<_i300.NotificationPermissionService>(),
+        gh<_i478.PermissionGate>(),
+        gh<_i183.AlertStateStore>(),
+      ),
+    );
+    gh.factory<_i759.BudgetCubit>(
+      () => _i759.BudgetCubit(
+        gh<_i585.TransactionRepository>(),
+        gh<_i877.BudgetRepository>(),
+        gh<_i200.TransactionCategoryRepository>(),
       ),
     );
     return this;
