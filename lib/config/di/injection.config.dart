@@ -29,6 +29,7 @@ import 'package:agenda/config/di/backup_module.dart' as _i180;
 import 'package:agenda/config/di/core_module.dart' as _i84;
 import 'package:agenda/config/di/finance_module.dart' as _i650;
 import 'package:agenda/config/di/infrastructure_module.dart' as _i728;
+import 'package:agenda/config/di/notifications_module.dart' as _i71;
 import 'package:agenda/config/di/tasks_module.dart' as _i619;
 import 'package:agenda/data/backup/dao/backup_dao.dart' as _i728;
 import 'package:agenda/data/database/isar_service.dart' as _i43;
@@ -68,6 +69,8 @@ import 'package:agenda/domain/notifications/notification_permission_service.dart
     as _i300;
 import 'package:agenda/domain/notifications/notification_prefs_repository.dart'
     as _i944;
+import 'package:agenda/domain/notifications/planner/reminder_planner.dart'
+    as _i363;
 import 'package:agenda/domain/tasks/item_repository.dart' as _i565;
 import 'package:agenda/domain/tasks/recurrence_engine.dart' as _i44;
 import 'package:agenda/infrastructure/backup/backup_repository_impl.dart'
@@ -84,6 +87,8 @@ import 'package:agenda/infrastructure/finance/transaction_category_repository_im
     as _i986;
 import 'package:agenda/infrastructure/finance/transaction_repository_impl.dart'
     as _i47;
+import 'package:agenda/infrastructure/notifications/content/notification_content_builder.dart'
+    as _i441;
 import 'package:agenda/infrastructure/notifications/gateway/flutter_local_notifications_gateway.dart'
     as _i322;
 import 'package:agenda/infrastructure/notifications/gateway/notification_permission_service_impl.dart'
@@ -92,6 +97,10 @@ import 'package:agenda/infrastructure/notifications/prefs/alert_state_store_impl
     as _i829;
 import 'package:agenda/infrastructure/notifications/prefs/notification_prefs_repository_impl.dart'
     as _i958;
+import 'package:agenda/infrastructure/notifications/sync/reconcile_runner.dart'
+    as _i154;
+import 'package:agenda/infrastructure/notifications/sync/snapshot_loader.dart'
+    as _i61;
 import 'package:agenda/infrastructure/tasks/item_repository_impl.dart' as _i215;
 import 'package:agenda/infrastructure/tasks/recurrence_engine_impl.dart'
     as _i317;
@@ -111,6 +120,7 @@ extension GetItInjectableX on _i174.GetIt {
     final coreModule = _$CoreModule();
     final financeModule = _$FinanceModule();
     final infrastructureModule = _$InfrastructureModule();
+    final notificationsModule = _$NotificationsModule();
     final tasksModule = _$TasksModule();
     final backupModule = _$BackupModule();
     gh.factory<_i1073.DayPlannerCubit>(() => _i1073.DayPlannerCubit());
@@ -134,7 +144,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i163.FlutterLocalNotificationsPlugin>(
       () => infrastructureModule.notificationsPlugin,
     );
+    gh.lazySingleton<_i363.ReminderPlanner>(
+      () => notificationsModule.reminderPlanner,
+    );
     gh.lazySingleton<_i546.ItemMapper>(() => tasksModule.itemMapper);
+    gh.lazySingleton<_i441.NotificationContentBuilder>(
+      () => const _i441.NotificationContentBuilder(),
+    );
     gh.lazySingleton<_i728.BackupDao>(
       () => backupModule.backupDao(gh<_i43.IsarService>()),
     );
@@ -265,11 +281,32 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i200.TransactionCategoryRepository>(),
       ),
     );
+    gh.lazySingleton<_i61.SnapshotLoader>(
+      () => _i61.SnapshotLoader(
+        gh<_i565.ItemRepository>(),
+        gh<_i169.DebtRepository>(),
+        gh<_i858.GoalRepository>(),
+        gh<_i385.RecurringPaymentRepository>(),
+        gh<_i585.TransactionRepository>(),
+        gh<_i944.NotificationPrefsRepository>(),
+        gh<_i183.AlertStateStore>(),
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
     gh.factory<_i759.BudgetCubit>(
       () => _i759.BudgetCubit(
         gh<_i585.TransactionRepository>(),
         gh<_i877.BudgetRepository>(),
         gh<_i200.TransactionCategoryRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i154.ReconcileRunner>(
+      () => _i154.ReconcileRunner(
+        gh<_i61.SnapshotLoader>(),
+        gh<_i363.ReminderPlanner>(),
+        gh<_i441.NotificationContentBuilder>(),
+        gh<_i114.LocalNotificationGateway>(),
+        gh<_i300.NotificationPermissionService>(),
       ),
     );
     return this;
@@ -281,6 +318,8 @@ class _$CoreModule extends _i84.CoreModule {}
 class _$FinanceModule extends _i650.FinanceModule {}
 
 class _$InfrastructureModule extends _i728.InfrastructureModule {}
+
+class _$NotificationsModule extends _i71.NotificationsModule {}
 
 class _$TasksModule extends _i619.TasksModule {}
 
