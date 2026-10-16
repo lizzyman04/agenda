@@ -4,14 +4,15 @@ Route-level widgets for the Backup page and the import confirmation.
 
 ## Responsibility
 
-Provide the page-local `BackupCubit`, lay out the export actions and notes,
-and turn each state into a snackbar. Nothing else.
+Provide the page-local `BackupCubit`, lay out the export and import actions and
+notes, open the confirmation screen for a prepared import, and turn each
+finished run into a snackbar. Nothing else.
 
 ## Files
 
 | File | Lines | Role |
 |------|------:|------|
-| `backup_screen.dart` | 106 | `BackupScreen` — `BlocProvider(create: getIt)` around a view with the JSON and CSV `BackupActionCard`s (both disabled while `BackupWorking`, with a progress bar and working text), the privacy and reinstall captions, and a listener that raises the outcome snackbar then calls `acknowledge()`. The CSV card passes `Localizations.localeOf(context).languageCode` so the file dialect follows the app language |
+| `backup_screen.dart` | 129 | `BackupScreen` — `BlocProvider(create: getIt)` around a view with the JSON and CSV export cards and the import card (all disabled while `BackupWorking`, with a progress bar and working text), then the privacy and reinstall captions. The listener pushes `ImportConfirmScreen` (sharing the cubit through `BlocProvider.value`) on `BackupImportPreviewReady` without acknowledging, and otherwise raises the outcome snackbar from `backupOutcomeMessage` then calls `acknowledge()`. The CSV card passes `Localizations.localeOf(context).languageCode` so the file dialect follows the app language |
 | `import_confirm_screen.dart` | 99 | `ImportConfirmScreen(preview)` — reads the `BackupCubit` from context; warning text, the partial-replace note for CSV, `ImportSummaryCard`, a Cancel `TextButton` and an error-coloured confirm `FilledButton` (disabled with a progress bar while `BackupWorking`). Back and Cancel both go through `PopScope`, which calls `cancelImport()` only while the state is `BackupImportPreviewReady`. A listener closes the screen on ImportDone, ImportFailed, Failed or Idle, guarded by `ModalRoute.isCurrent` so the Idle that follows an acknowledge never pops the Backup screen too |
 
 ## Conventions in this slice

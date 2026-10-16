@@ -1,20 +1,22 @@
 # presentation/backup
 
 Presentation slice for **backup and restore**: the page where the user exports
-their data (DATA-02, DATA-03). Plan 04-17 adds the import controls to it.
+and imports their data, and the confirmation step before an import replaces
+anything (DATA-02, DATA-03, DATA-04).
 
 ## Responsibility
 
-Show the export actions, the unencrypted-file and reinstall notes, and the
-outcome of each run. File content, file picking and repository calls never
+Show the export and import actions, the unencrypted-file and reinstall notes,
+the review screen for a prepared import, and the outcome of each run. File content, file picking and repository calls never
 live here: the cubit in `application/backup/` drives them.
 
 ## Layout
 
 ```
 backup/
-├── screens/   BackupScreen (standalone page, owns its cubit)
-└── widgets/   BackupActionCard
+├── screens/   BackupScreen (standalone page, owns its cubit), ImportConfirmScreen
+└── widgets/   BackupActionCard, ImportSummaryCard, backupErrorMessage,
+               backupOutcomeMessage
 ```
 
 ## Conventions in this slice
@@ -23,7 +25,12 @@ backup/
   from `getIt`, so Phase 5 can mount it in Settings unchanged.
 - **Outcomes are snackbars from a `BlocListener`**, hide-current-then-show,
   followed by `acknowledge()`.
-- **Failures show one generic localized message**, never `Failure.message`.
+- **Failures show a localized message chosen by import error code**
+  (`backupErrorMessage`), never `Failure.message`. A failed commit also names
+  the safety backup path (D-12).
+- **Nothing is replaced before the confirmation screen.** The Backup screen
+  only prepares; `ImportConfirmScreen` confirms or cancels, and closes itself
+  once on a result (guarded so it cannot also pop the Backup screen).
 - Each subdirectory carries its own README (architecture guard).
 
 ## Upstream dependencies

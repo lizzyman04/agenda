@@ -2,8 +2,11 @@ import 'package:agenda/application/backup/backup_cubit.dart';
 import 'package:agenda/application/backup/backup_state.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/failures/failure.dart';
+import 'package:agenda/domain/backup/backup_entity.dart';
+import 'package:agenda/domain/backup/import_preview.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/backup/screens/backup_screen.dart';
+import 'package:agenda/presentation/backup/screens/import_confirm_screen.dart';
 import 'package:agenda/presentation/backup/widgets/backup_action_card.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
@@ -48,8 +51,22 @@ void main() {
     await tester.pump();
   }
 
+  const preview = ImportPreview(
+    source: ImportSource.json,
+    counts: {BackupEntity.tasks: 3},
+    softDeletedCount: 0,
+    earliest: null,
+    latest: null,
+    exportedAt: null,
+    danglingLinks: 0,
+    replaced: {BackupEntity.tasks},
+  );
+
   setUp(() {
     cubit = MockBackupCubit();
+    when(
+      () => cubit.pickAndPrepareImport(dialogTitle: any(named: 'dialogTitle')),
+    ).thenAnswer((_) async {});
     when(
       () => cubit.exportJson(dialogTitle: any(named: 'dialogTitle')),
     ).thenAnswer((_) async {});
@@ -66,12 +83,12 @@ void main() {
   tearDown(() async => getIt.reset());
 
   group('BackupScreen', () {
-    testWidgets('renders both cards, the privacy and reinstall notes', (
+    testWidgets('renders the three cards, the privacy and reinstall notes', (
       tester,
     ) async {
       await pumpScreen(tester, const BackupIdle());
 
-      expect(find.byType(BackupActionCard), findsNWidgets(2));
+      expect(find.byType(BackupActionCard), findsNWidgets(3));
       expect(find.text('Exportar backup completo (JSON)'), findsOneWidget);
       final l10n = AppLocalizations.of(
         tester.element(find.byType(BackupScreen)),
@@ -134,7 +151,7 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('Working disables both cards and shows the progress bar', (
+    testWidgets('Working disables every card and shows the progress bar', (
       tester,
     ) async {
       await pumpScreen(tester, const BackupWorking());
@@ -188,6 +205,108 @@ void main() {
 
       expect(find.text(l10n.backupErrorGeneric), findsOneWidget);
       expect(find.text('secret'), findsNothing);
+    });
+
+    testWidgets('the import card calls pickAndPrepareImport', (tester) async {
+      await pumpScreen(tester, const BackupIdle());
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(BackupScreen)),
+      );
+
+      expect(find.text(l10n.backupImportHeader), findsOneWidget);
+      await tester.tap(find.text(l10n.backupImportDesc));
+      await tester.pump();
+
+      verify(
+        () => cubit.pickAndPrepareImport(dialogTitle: l10n.backupImportAction),
+      ).called(1);
+    });
+
+    testWidgets('a prepared import opens the confirmation screen', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const BackupIdle(),
+        stream: Stream.value(const BackupImportPreviewReady(preview)),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.byType(ImportConfirmScreen), findsOneWidget);
+      // The preview is the screen's input, so it is not acknowledged away.
+      verifyNever(() => cubit.acknowledge());
+    });
+
+    testWidgets('ImportDone raises the done snackbar with the count', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const BackupIdle(),
+        stream: Stream.value(
+          const BackupImportDone(
+            ImportResult(
+              counts: {BackupEntity.tasks: 3, BackupEntity.goals: 2},
+              safetyBackupPath: '/s.json',
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(BackupScreen)),
+      );
+
+      expect(
+        find.text('${l10n.backupImportDone} ${l10n.backupImportDoneCount(5)}'),
+        findsOneWidget,
+      );
+      verify(() => cubit.acknowledge()).called(1);
+    });
+
+    testWidgets('ImportFailed shows the safety backup path, not the detail', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const BackupIdle(),
+        stream: Stream.value(
+          const BackupImportFailed(
+            BackupFailure('importFailed: secret'),
+            '/docs/backups/safety.json',
+          ),
+        ),
+      );
+      await tester.pump();
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(BackupScreen)),
+      );
+
+      expect(
+        find.text(l10n.backupErrorImportFailed('/docs/backups/safety.json')),
+        findsOneWidget,
+      );
+      expect(find.textContaining('secret'), findsNothing);
+      verify(() => cubit.acknowledge()).called(1);
+    });
+
+    testWidgets('a validation failure shows its specific message', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const BackupIdle(),
+        stream: Stream.value(
+          const BackupFailed(BackupFailure('newerVersion: 9')),
+        ),
+      );
+      await tester.pump();
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(BackupScreen)),
+      );
+
+      expect(find.text(l10n.backupErrorNewerVersion), findsOneWidget);
     });
   });
 }

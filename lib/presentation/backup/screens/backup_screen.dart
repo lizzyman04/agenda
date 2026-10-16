@@ -1,15 +1,19 @@
+import 'dart:async';
+
 import 'package:agenda/application/backup/backup_cubit.dart';
 import 'package:agenda/application/backup/backup_state.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/backup/screens/import_confirm_screen.dart';
 import 'package:agenda/presentation/backup/widgets/backup_action_card.dart';
+import 'package:agenda/presentation/backup/widgets/backup_outcome_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Backup page: export the data as JSON or CSV (DATA-02, DATA-03).
+/// Backup page: export as JSON or CSV, import a backup (DATA-02..04).
 ///
 /// Self-contained route with its own cubit, so Phase 5 can mount it in
-/// Settings unchanged. Plan 04-17 adds the import controls here.
+/// Settings unchanged. A prepared import opens [ImportConfirmScreen].
 class BackupScreen extends StatelessWidget {
   const BackupScreen({super.key});
 
@@ -25,18 +29,23 @@ class BackupScreen extends StatelessWidget {
 class _BackupView extends StatelessWidget {
   const _BackupView();
 
-  String? _message(AppLocalizations l10n, BackupState state) {
-    return switch (state) {
-      BackupExportDone(csv: false) => l10n.backupExportDone,
-      BackupExportDone(:final fileCount) => l10n.backupExportCsvDone(fileCount),
-      BackupExportCancelled() => l10n.backupExportCancelled,
-      BackupFailed() => l10n.backupErrorGeneric,
-      _ => null,
-    };
-  }
-
   void _onState(BuildContext context, BackupState state) {
-    final message = _message(AppLocalizations.of(context), state);
+    final cubit = context.read<BackupCubit>();
+    if (state is BackupImportPreviewReady) {
+      unawaited(
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder:
+                (_) => BlocProvider.value(
+                  value: cubit,
+                  child: ImportConfirmScreen(preview: state.preview),
+                ),
+          ),
+        ),
+      );
+      return;
+    }
+    final message = backupOutcomeMessage(AppLocalizations.of(context), state);
     if (message == null) return;
     // Hide the current SnackBar first: ScaffoldMessenger queues them FIFO.
     ScaffoldMessenger.of(context)
@@ -44,7 +53,7 @@ class _BackupView extends StatelessWidget {
       ..showSnackBar(
         SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
       );
-    context.read<BackupCubit>().acknowledge();
+    cubit.acknowledge();
   }
 
   @override
@@ -85,6 +94,20 @@ class _BackupView extends StatelessWidget {
                           languageCode:
                               Localizations.localeOf(context).languageCode,
                           dialogTitle: l10n.backupExportSaveTitle,
+                        ),
+              ),
+              const SizedBox(height: 16),
+              Text(l10n.backupImportHeader, style: textTheme.titleMedium),
+              const SizedBox(height: 8),
+              BackupActionCard(
+                icon: Icons.upload_file_outlined,
+                title: l10n.backupImportAction,
+                description: l10n.backupImportDesc,
+                onPressed:
+                    busy
+                        ? null
+                        : () => cubit.pickAndPrepareImport(
+                          dialogTitle: l10n.backupImportAction,
                         ),
               ),
               if (busy) ...[

@@ -12,6 +12,7 @@ The widgets hold no state and call nothing but the callback they are given.
 | File | Lines | Role |
 |------|------:|------|
 | `backup_action_card.dart` | 33 | `BackupActionCard` — a `Card` with a `ListTile` (leading icon, title, description, trailing chevron); a null `onPressed` disables it |
+| `backup_outcome_message.dart` | 21 | `backupOutcomeMessage(l10n, state)` — the SnackBar text for Done, Cancelled, ImportDone (`backupImportDone` plus the total count), ImportFailed (with the safety path) and Failed; null for idle, working and the preview |
 | `import_summary_card.dart` | 74 | `ImportSummaryCard(preview)` — a `Card` with one count line per replaced entity (order: tasks, transactions, categories, budgets, goals, debts, payments), the date range, the export date (JSON), the soft-deleted count and a warnings block when links dangle. Dates use `DateFormat.yMd` in the app locale |
 | `backup_error_text.dart` | 28 | `backupErrorMessage(l10n, failure, {safetyBackupPath})` — maps the import error code to localized text; `importFailed` with a path names the safety backup, anything unknown is generic. Raw `Failure.message` is never shown |
 
