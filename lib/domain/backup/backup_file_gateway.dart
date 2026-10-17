@@ -19,8 +19,10 @@ abstract interface class BackupFileGateway {
 
   /// Shows the system file picker (multi-select) and reads the chosen files.
   ///
-  /// Returns `Success(null)` when the user cancelled. A file above the import
-  /// size cap fails with a `BackupFailure` whose message starts with
-  /// `tooLarge`, before any of its bytes are read.
+  /// Returns `Success(null)` when the user cancelled. A selection of more than
+  /// the file cap, or one that exceeds the per-file or total size cap, fails
+  /// with a `BackupFailure` whose message starts with `tooLarge`, before any
+  /// bytes are read. The plugin's cached copies of the picked files are
+  /// cleared once the bytes have been read.
   AsyncResult<List<BackupFile>?> pickFiles({required String dialogTitle});
 }

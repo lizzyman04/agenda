@@ -121,6 +121,46 @@ void main() {
       expect(maxImportFileBytes, 26214400);
     });
 
+    test('importLimitViolation caps count, per-file and total size', () {
+      expect(importLimitViolation(List.filled(6, 10)), isNull);
+      expect(importLimitViolation(List.filled(7, 10)), isNotNull);
+      expect(importLimitViolation([maxImportFileBytes + 1]), isNotNull);
+      expect(importLimitViolation([maxImportFileBytes]), isNull);
+      expect(
+        importLimitViolation([30, 30], maxEach: 40, maxTotal: 50),
+        isNotNull,
+      );
+      expect(
+        importLimitViolation([20, 20], maxEach: 40, maxTotal: 50),
+        isNull,
+      );
+      expect(maxImportFiles, 6);
+      expect(maxImportTotalBytes, 52428800);
+    });
+
+    test('too many files or too many bytes are tooLarge before decoding', () {
+      // 0xFF is not valid UTF-8: reaching decoding would say "unsupported".
+      BackupFile junk(int n) =>
+          BackupFile(name: 'f$n', bytes: Uint8List(10)..fillRange(0, 10, 0xFF));
+      expect(
+        () => parse(List.generate(7, junk)),
+        failsWith(ImportErrorCode.tooLarge),
+      );
+      expect(
+        () => parseBackupFiles(
+          [junk(0), junk(1), junk(2)],
+          now: seedNow,
+          maxTotalBytes: 25,
+        ),
+        failsWith(ImportErrorCode.tooLarge),
+      );
+      expect(
+        () => parse(List.generate(6, junk)),
+        failsWith(ImportErrorCode.unsupported),
+        reason: 'six files pass the limits and reach decoding',
+      );
+    });
+
     test('no files, JSON plus CSV, and two JSON files', () {
       expect(() => parse([]), failsWith(ImportErrorCode.empty));
       final json = jsonFileOf(seedSnapshot());

@@ -19,25 +19,60 @@ import 'package:agenda/domain/backup/import_preview.dart';
 /// any decoding (T-04-11-02).
 const int maxImportFileBytes = 26214400;
 
+/// Most files accepted in one import: one CSV per entity (tasks, transactions,
+/// budgets, goals, debts, payments), per D-10 and D-14.
+const int maxImportFiles = 6;
+
+/// Largest combined size of a selection (50 MiB). Every file is held in memory
+/// and decoded to a string, so the total matters as much as each file.
+const int maxImportTotalBytes = 52428800;
+
+/// Describes how a selection of files with these byte [sizes] breaks the
+/// import limits, or returns null when it is within them. The detail holds
+/// counts and byte numbers only, never file names.
+String? importLimitViolation(
+  Iterable<int> sizes, {
+  int maxFiles = maxImportFiles,
+  int maxEach = maxImportFileBytes,
+  int maxTotal = maxImportTotalBytes,
+}) {
+  final list = sizes.toList();
+  if (list.length > maxFiles) {
+    return '${list.length} files exceed the limit of $maxFiles';
+  }
+  var total = 0;
+  for (var i = 0; i < list.length; i++) {
+    if (list[i] > maxEach) return 'file $i exceeds $maxEach bytes';
+    total += list[i];
+  }
+  if (total > maxTotal) return 'files total $total bytes, over $maxTotal';
+  return null;
+}
+
 BackupImportException _bad(String code, String detail) =>
     BackupImportException(code, detail);
 
 /// Turns picked files into a [BackupSnapshot] without writing anything.
 ///
-/// Order: empty check, size check on every file, UTF-8 decode, JSON/CSV
+/// Order: empty check, count and size limits ([importLimitViolation]), UTF-8
+/// decode, JSON/CSV
 /// classification, then the format-specific decode. Picked file NAMES are
 /// never used; errors refer to files by position.
 BackupSnapshot parseBackupFiles(
   List<BackupFile> files, {
   required DateTime now,
   int maxBytes = maxImportFileBytes,
+  int maxFiles = maxImportFiles,
+  int maxTotalBytes = maxImportTotalBytes,
 }) {
   if (files.isEmpty) throw _bad(ImportErrorCode.empty, 'no file was chosen');
-  for (var i = 0; i < files.length; i++) {
-    if (files[i].bytes.length > maxBytes) {
-      throw _bad(ImportErrorCode.tooLarge, 'file $i exceeds $maxBytes bytes');
-    }
-  }
+  final violation = importLimitViolation(
+    files.map((f) => f.bytes.length),
+    maxFiles: maxFiles,
+    maxEach: maxBytes,
+    maxTotal: maxTotalBytes,
+  );
+  if (violation != null) throw _bad(ImportErrorCode.tooLarge, violation);
   final texts = <String>[];
   for (var i = 0; i < files.length; i++) {
     try {
