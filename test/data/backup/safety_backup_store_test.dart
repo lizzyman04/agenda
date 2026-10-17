@@ -92,6 +92,25 @@ void main() {
     ]);
   });
 
+  test(
+    'a rotation deletion error never blocks the new backup (WR-05)',
+    () async {
+      var minute = 0;
+      final store = SafetyBackupStore(
+        baseDirectory: base,
+        clock: () => DateTime(2026, 10, 16, 9, minute++),
+        fileDeleter: (_) async => throw const FileSystemException('locked'),
+      );
+      late String last;
+      for (var i = 0; i < 4; i++) {
+        last = await store.write(bytes('v$i'));
+      }
+
+      expect(File(last).existsSync(), isTrue);
+      expect(names(), hasLength(4), reason: 'surplus left in place');
+    },
+  );
+
   test('unrelated files in backups/ are never deleted', () async {
     Directory('${base.path}/backups').createSync(recursive: true);
     File('${base.path}/backups/notes.txt').writeAsStringSync('keep me');

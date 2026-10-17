@@ -1,5 +1,6 @@
 import 'package:agenda/data/backup/import/backup_snapshot.dart';
 import 'package:agenda/data/backup/import/csv_category_resolver.dart';
+import 'package:agenda/data/backup/import/snapshot_id_assigner.dart';
 import 'package:agenda/data/backup/json/backup_envelope.dart';
 import 'package:agenda/data/database/isar_service.dart';
 import 'package:agenda/data/finance/budget/budget_model.dart';
@@ -25,13 +26,14 @@ class BackupImporter {
 
   final IsarService _service;
 
-  /// Clears every collection the snapshot supplies, then writes its rows with
-  /// their explicit ids. Returns the rows written per collection key
-  /// (see [BackupJsonKeys]).
+  /// Gives blank-id rows ids (see [assignMissingIds]), clears every collection
+  /// the snapshot supplies, then writes its rows with their ids. Returns the
+  /// rows written per collection key (see [BackupJsonKeys]).
   Future<Map<String, int>> replace(
     BackupSnapshot snapshot, {
     required DateTime now,
   }) async {
+    assignMissingIds(snapshot);
     final isar = _service.db;
     return isar.writeTxn(() async {
       await _resolveCsvCategories(isar, snapshot, now);
@@ -51,35 +53,59 @@ class BackupImporter {
       if (budgets != null) await isar.budgetModels.clear();
       if (payments != null) await isar.recurringPaymentModels.clear();
       if (categories != null) {
-        await isar.transactionCategoryModels.putAll(categories);
-        counts[BackupJsonKeys.categories] = categories.length;
+        await _put(
+          isar.transactionCategoryModels,
+          categories,
+          counts,
+          BackupJsonKeys.categories,
+        );
       }
       if (goals != null) {
-        await isar.savingsGoalModels.putAll(goals);
-        counts[BackupJsonKeys.goals] = goals.length;
+        await _put(isar.savingsGoalModels, goals, counts, BackupJsonKeys.goals);
       }
       if (debts != null) {
-        await isar.debtModels.putAll(debts);
-        counts[BackupJsonKeys.debts] = debts.length;
+        await _put(isar.debtModels, debts, counts, BackupJsonKeys.debts);
       }
       if (items != null) {
-        await isar.itemModels.putAll(items);
-        counts[BackupJsonKeys.items] = items.length;
+        await _put(isar.itemModels, items, counts, BackupJsonKeys.items);
       }
       if (transactions != null) {
-        await isar.transactionModels.putAll(transactions);
-        counts[BackupJsonKeys.transactions] = transactions.length;
+        await _put(
+          isar.transactionModels,
+          transactions,
+          counts,
+          BackupJsonKeys.transactions,
+        );
       }
       if (budgets != null) {
-        await isar.budgetModels.putAll(budgets);
-        counts[BackupJsonKeys.budgets] = budgets.length;
+        await _put(isar.budgetModels, budgets, counts, BackupJsonKeys.budgets);
       }
       if (payments != null) {
-        await isar.recurringPaymentModels.putAll(payments);
-        counts[BackupJsonKeys.recurringPayments] = payments.length;
+        await _put(
+          isar.recurringPaymentModels,
+          payments,
+          counts,
+          BackupJsonKeys.recurringPayments,
+        );
       }
       return counts;
     });
+  }
+
+  // Writes [rows] into the (already cleared) [collection] and checks that all
+  // of them are stored. A shortfall means rows overwrote each other (WR-01);
+  // throwing here makes Isar abort the transaction and restore the clears.
+  Future<void> _put<T>(
+    IsarCollection<T> collection,
+    List<T> rows,
+    Map<String, int> counts,
+    String key,
+  ) async {
+    await collection.putAll(rows);
+    if (await collection.count() != rows.length) {
+      throw StateError('rows lost while importing $key');
+    }
+    counts[key] = rows.length;
   }
 
   // CSV only: resolves each row's category against the categories as they

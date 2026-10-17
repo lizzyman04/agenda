@@ -188,4 +188,51 @@ void main() {
       }
     });
   });
+
+  group('blank ids', () {
+    ItemModel item(String title, {int? id}) {
+      final m =
+          ItemModel()
+            ..type = ItemType.task
+            ..title = title
+            ..createdAt = seedNow
+            ..updatedAt = seedNow;
+      if (id != null) m.id = id;
+      return m;
+    }
+
+    test('blank and explicit ids together lose no row (WR-01)', () async {
+      final snapshot = BackupSnapshot(
+        source: ImportSource.csv,
+        items: [item('a'), item('b'), item('explicit2', id: 2)],
+      );
+
+      final counts = await importer.replace(snapshot, now: seedNow);
+
+      final stored = (await dao.readAll()).items;
+      expect(stored, hasLength(3));
+      expect(counts['items'], stored.length);
+      final byTitle = {for (final m in stored) m.title: m.id};
+      expect(byTitle['explicit2'], 2);
+      expect(byTitle['a'], greaterThan(2));
+      expect(byTitle['b'], greaterThan(byTitle['a']!));
+    });
+
+    test('a residual duplicate id aborts the import untouched', () async {
+      await seedDatabase(isar, seedSnapshot(idBase: 0, tag: 'A'));
+      final before = rowsJson(await dao.readAll());
+      // Bypasses the validator on purpose: two rows share id 7.
+      final snapshot = BackupSnapshot(
+        source: ImportSource.csv,
+        items: [item('x', id: 7), item('y', id: 7)],
+      );
+
+      await expectLater(
+        importer.replace(snapshot, now: seedNow),
+        throwsA(anything),
+      );
+
+      expect(rowsJson(await dao.readAll()), before);
+    });
+  });
 }

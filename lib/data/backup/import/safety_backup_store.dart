@@ -6,16 +6,20 @@ import 'package:path_provider/path_provider.dart';
 /// Writes the automatic safety backup taken just before an import replaces
 /// data (D-12), keeping only the newest [keep] files.
 ///
-/// Files live in `<app documents>/backups`, a private location that is
-/// excluded from Android Auto Backup (D-13). Names are generated from the
-/// clock and never from anything the user picked (CWE-22, T-04-11-05).
+/// Files live in `<app documents>/backups`. The app documents directory is
+/// excluded from Android Auto Backup (D-13) and from iOS iCloud and iTunes
+/// backup by the launch code in AppDelegate.swift (plan 04-18). Names are
+/// generated from the clock and never from anything the user picked (CWE-22,
+/// T-04-11-05).
 class SafetyBackupStore {
   SafetyBackupStore({
     Directory? baseDirectory,
     DateTime Function()? clock,
     this.keep = 3,
+    @visibleForTesting Future<void> Function(File)? fileDeleter,
   }) : _base = baseDirectory,
-       _clock = clock ?? DateTime.now;
+       _clock = clock ?? DateTime.now,
+       _delete = fileDeleter ?? ((f) async => f.delete());
 
   /// Resolves the base directory when none is injected. Tests replace it.
   @visibleForTesting
@@ -27,6 +31,7 @@ class SafetyBackupStore {
 
   final Directory? _base;
   final DateTime Function() _clock;
+  final Future<void> Function(File) _delete;
 
   static final RegExp _name = RegExp(
     r'^safety-backup-(\d{8}-\d{6})(?:-(\d+))?\.json$',
@@ -53,7 +58,12 @@ class SafetyBackupStore {
       );
     }
     await file.writeAsBytes(bytes, flush: true);
-    await _rotate(dir, file);
+    try {
+      await _rotate(dir, file);
+    } on FileSystemException {
+      // Housekeeping only: the next successful write tidies the surplus, and
+      // the backup just written must not be lost over cleanup (WR-05).
+    }
     return file.absolute.path;
   }
 
@@ -74,7 +84,7 @@ class SafetyBackupStore {
     final survivors = entries.take(keep).map((e) => e.$3.path).toSet();
     for (final (_, _, file) in entries) {
       if (survivors.contains(file.path) || file.path == fresh.path) continue;
-      await file.delete();
+      await _delete(file);
     }
   }
 }
