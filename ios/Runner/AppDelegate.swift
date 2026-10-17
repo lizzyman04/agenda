@@ -30,7 +30,28 @@ import UserNotifications
     try? backups.setResourceValues(values)
   }
 
+  private var systemSettingsChannel: FlutterMethodChannel?
+
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+
+    // Opens the app's page in the system Settings app. No arguments from Dart
+    // reach the URL.
+    let channel = FlutterMethodChannel(
+      name: "agenda/system_settings",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger())
+    channel.setMethodCallHandler { call, result in
+      switch call.method {
+      case "openNotificationSettings":
+        guard let url = URL(string: UIApplication.openSettingsURLString) else {
+          result(false)
+          return
+        }
+        UIApplication.shared.open(url, options: [:]) { opened in result(opened) }
+      default:
+        result(FlutterMethodNotImplemented)
+      }
+    }
+    systemSettingsChannel = channel
   }
 }

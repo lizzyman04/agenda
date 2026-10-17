@@ -196,6 +196,67 @@ void main() {
       expect(loaded().canScheduleExact, isTrue);
     });
 
+    test(
+      'a refused request sets permissionRequested, a grant does not',
+      () async {
+        permissions.grantOnRequest = false;
+        await cubit.start();
+        expect(loaded().permissionRequested, isFalse);
+
+        await cubit.requestPermission();
+        expect(permissions.notificationRequests, 1);
+        expect(permissions.openSettingsCalls, 0);
+        expect(loaded().permission, NotificationPermission.denied);
+        expect(loaded().permissionRequested, isTrue);
+      },
+    );
+
+    test('a granted request leaves permissionRequested false', () async {
+      await cubit.start();
+      await cubit.requestPermission();
+      expect(loaded().permission, NotificationPermission.granted);
+      expect(loaded().permissionRequested, isFalse);
+    });
+
+    test(
+      'after a refusal requestPermission opens the system settings',
+      () async {
+        permissions.grantOnRequest = false;
+        await cubit.start();
+        await cubit.requestPermission();
+
+        await cubit.requestPermission();
+        expect(permissions.notificationRequests, 1);
+        expect(permissions.openSettingsCalls, 1);
+        expect(loaded().permissionRequested, isTrue);
+      },
+    );
+
+    test('enabling a kind that ends denied sets permissionRequested', () async {
+      permissions.grantOnRequest = false;
+      await cubit.start();
+      await cubit.setEnabled(NotificationKind.motivationalQuote, enabled: true);
+      expect(permissions.notificationRequests, 1);
+      expect(loaded().permissionRequested, isTrue);
+    });
+
+    test(
+      'refreshPermissions clears permissionRequested once granted',
+      () async {
+        permissions.grantOnRequest = false;
+        await cubit.start();
+        await cubit.requestPermission();
+        expect(loaded().permissionRequested, isTrue);
+
+        await cubit.refreshPermissions();
+        expect(loaded().permissionRequested, isTrue);
+
+        permissions.permission = NotificationPermission.granted;
+        await cubit.refreshPermissions();
+        expect(loaded().permissionRequested, isFalse);
+      },
+    );
+
     test('methods before start() do nothing', () async {
       await cubit.setEnabled(NotificationKind.taskReminder, enabled: false);
       await cubit.setQuietStart(10);

@@ -1,5 +1,6 @@
 import 'package:agenda/domain/notifications/model/notification_kind.dart';
 import 'package:agenda/domain/notifications/model/planned_notification.dart';
+import 'package:agenda/domain/notifications/notification_permission_service.dart';
 import 'package:agenda/domain/notifications/rules/payload_codec.dart';
 import 'package:agenda/infrastructure/notifications/content/notification_content_builder.dart';
 import 'package:agenda/infrastructure/notifications/prefs/notification_prefs_repository_impl.dart';
@@ -88,6 +89,43 @@ void main() {
     await dispatcher.dispatch(_alert(), now: now);
     expect(permissions.notificationRequests, 1);
     expect(gateway.shown, hasLength(2));
+  });
+
+  test('without prompting, a denied permission raises nothing', () async {
+    final store = await SharedPreferences.getInstance();
+    final result = await dispatcher.dispatch(
+      _alert(),
+      now: DateTime(2026, 10, 16, 12),
+      promptIfNeeded: false,
+    );
+    expect(result, isFalse);
+    expect(gateway.shown, isEmpty);
+    expect(gateway.scheduled, isEmpty);
+    expect(permissions.notificationRequests, 0);
+    expect(PermissionGate(permissions, store).asked, isFalse);
+  });
+
+  test('without prompting, a granted permission shows the alert', () async {
+    permissions.permission = NotificationPermission.granted;
+    final now = DateTime(2026, 10, 16, 12);
+    expect(
+      await dispatcher.dispatch(_alert(), now: now, promptIfNeeded: false),
+      isTrue,
+    );
+    expect(gateway.shown, hasLength(1));
+    expect(permissions.notificationRequests, 0);
+  });
+
+  test('without prompting, a granted permission defers in quiet hours',
+      () async {
+    permissions.permission = NotificationPermission.granted;
+    final now = DateTime(2026, 10, 16, 23);
+    expect(
+      await dispatcher.dispatch(_alert(), now: now, promptIfNeeded: false),
+      isTrue,
+    );
+    expect(gateway.scheduled.values.single.fireAt, DateTime(2026, 10, 17, 7));
+    expect(permissions.notificationRequests, 0);
   });
 
   test('the payload decodes to the budget alert kind', () async {

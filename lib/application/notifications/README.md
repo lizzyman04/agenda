@@ -20,15 +20,18 @@ those.
 | `budget_alert_evaluator.dart` | 149 | `BudgetAlertEvaluator` — `start` prunes stale markers, seeds the month silently and subscribes; `evaluate` dispatches one alert per category per threshold per month; `reseedAfterImport` rebuilds the markers after a restore |
 | `budget_month.dart` | 80 | `loadBudgetMonth` (one month of spend, limits and names; null if any read fails), `crossedThresholds` and `crossedBudgetKeys` |
 | `debounced_single_flight.dart` | 51 | `DebouncedSingleFlight` — 300 ms debounce, at most one run in flight and one queued |
-| `notification_settings_cubit.dart` | 147 | `NotificationSettingsCubit` — loads prefs, permission and exact-alarm capability, follows the waiting count and `prefs.watch()`, and persists every setter (`setEnabled`, quiet hours, briefing and quote controls) before emitting. Never schedules: the coordinator reacts to the prefs stream |
-| `notification_settings_state.dart` | 58 | `NotificationSettingsInitial` and `NotificationSettingsLoaded` (prefs, permission, exact capability, waiting count) |
-| `goal_alert_evaluator.dart` | 122 | `GoalAlertEvaluator` — `evaluateOnOpen` raises at most one off-track alert per goal per week; `reseedAfterImport` marks current off-track goals silently |
+| `notification_settings_cubit.dart` | 150 | `NotificationSettingsCubit` — loads prefs, permission and exact-alarm capability, follows the waiting count and `prefs.watch()`, and persists every setter (`setEnabled`, quiet hours, briefing and quote controls) before emitting. `requestPermission` asks the OS once; after a refusal (`permissionRequested`) it opens the system settings instead. Never schedules: the coordinator reacts to the prefs stream |
+| `notification_settings_state.dart` | 83 | `NotificationSettingsInitial` and `NotificationSettingsLoaded` (prefs, permission, exact capability, waiting count, `permissionRequested`: an OS request ended without the permission) |
+| `goal_alert_evaluator.dart` | 130 | `GoalAlertEvaluator` — `evaluateOnOpen` raises at most one off-track alert per goal per week; `reseedAfterImport` marks current off-track goals silently |
 
 ## Conventions in this slice
 
-- **Evaluators mark state before dispatching and never write a marker while
-  the kind is disabled.** A crash after the marker cannot repeat the alert,
-  and switching the kind back on still yields the alert.
+- **Evaluators mark state before dispatching, roll the marker back when the
+  dispatch reports it raised nothing, and never write a marker while the kind
+  is disabled.** A crash after the marker cannot repeat the alert, a refused
+  or not-yet-asked permission never consumes the week, and switching the kind
+  back on still yields the alert. The on-open path never raises the
+  permission prompt (`promptIfNeeded: false`).
 - **Alerts follow changes.** There is no scheduled job; the evaluator
   subscribes to `watchChanges()` and does not evaluate at start.
 - **Silent seeding.** The first start of a month, and a restore, mark the
@@ -43,7 +46,10 @@ those.
 - **The settings cubit persists, then emits, and stops there.** Minutes are
   clamped to 0..1439; enabling a kind while the OS permission is missing
   raises the system prompt in context first; setters are no-ops until
-  `start()` has produced `Loaded`.
+  `start()` has produced `Loaded`. A refused request flips the denied banner
+  to "Open settings" (`permissionRequested`); the next tap opens the system
+  settings and the resume refresh clears the flag once the permission is
+  granted.
 
 ## Upstream dependencies
 

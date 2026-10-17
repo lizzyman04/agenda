@@ -68,6 +68,8 @@ void main() {
   late AlertStateStoreImpl alerts;
   late GoalAlertEvaluator evaluator;
   late List<PlannedNotification> dispatched;
+  late List<bool> prompts;
+  late bool dispatchResult;
 
   void stubGoals(
     List<SavingsGoal> list, [
@@ -99,13 +101,20 @@ void main() {
     prefs = NotificationPrefsRepositoryImpl(store);
     alerts = AlertStateStoreImpl(store);
     dispatched = [];
+    prompts = [];
+    dispatchResult = true;
     when(
-      () => dispatcher.dispatch(any(), now: any(named: 'now')),
+      () => dispatcher.dispatch(
+        any(),
+        now: any(named: 'now'),
+        promptIfNeeded: any(named: 'promptIfNeeded'),
+      ),
     ).thenAnswer((invocation) async {
       dispatched.add(
         invocation.positionalArguments.first as PlannedNotification,
       );
-      return true;
+      prompts.add(invocation.namedArguments[#promptIfNeeded] as bool);
+      return dispatchResult;
     });
     evaluator = GoalAlertEvaluator(
       goals,
@@ -133,6 +142,38 @@ void main() {
       );
       expect(isPlannerOwnedId(alert.id), isFalse);
       expect(await alerts.contains('gf:1:$_week'), isTrue);
+    });
+
+    test('the on-open dispatch never prompts for the permission', () async {
+      stubGoals([_goal(1)]);
+      await evaluator.evaluateOnOpen(now: _now);
+      expect(prompts, [false]);
+    });
+
+    test('a dispatch that raised nothing keeps the week available', () async {
+      stubGoals([_goal(1)]);
+      dispatchResult = false;
+      await evaluator.evaluateOnOpen(now: _now);
+      expect(await alerts.keys(), isEmpty);
+
+      await evaluator.evaluateOnOpen(now: _now);
+      expect(dispatched, hasLength(2));
+
+      dispatchResult = true;
+      await evaluator.evaluateOnOpen(now: _now);
+      expect(dispatched, hasLength(3));
+      expect(await alerts.contains('gf:1:$_week'), isTrue);
+
+      await evaluator.evaluateOnOpen(now: _now);
+      expect(dispatched, hasLength(3));
+    });
+
+    test('a rollback removes only the failed goal marker', () async {
+      stubGoals([_goal(1), _goal(2)]);
+      dispatchResult = false;
+      await alerts.add('b:2026-10:1:80');
+      await evaluator.evaluateOnOpen(now: _now);
+      expect(await alerts.keys(), {'b:2026-10:1:80'});
     });
 
     test('a new week alerts again', () async {

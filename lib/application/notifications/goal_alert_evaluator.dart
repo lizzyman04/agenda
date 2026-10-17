@@ -20,7 +20,10 @@ import 'package:injectable/injectable.dart';
 /// A week that already has a fired marker (an earlier open) or a scheduled
 /// marker (the planner's weekly one-shot) is left alone, so the user never
 /// gets two alerts for one goal in one week. The marker is written before
-/// dispatching, and none is written while the kind is off (T-04-14-03). The
+/// dispatching (crash safety) and none is written while the kind is off
+/// (T-04-14-03). The marker is rolled back when the alert was not raised, so
+/// a refused or not-yet-asked permission never consumes the week (WR-06).
+/// The on-open evaluation never raises the permission prompt (D-06). The
 /// text is the goal title only (T-04-14-01).
 @lazySingleton
 class GoalAlertEvaluator {
@@ -55,7 +58,12 @@ class GoalAlertEvaluator {
         continue;
       }
       await _alerts.add(fired);
-      await _dispatcher.dispatch(_planned(goal, at), now: at);
+      final raised = await _dispatcher.dispatch(
+        _planned(goal, at),
+        now: at,
+        promptIfNeeded: false,
+      );
+      if (!raised) await _alerts.removeWhere((key) => key == fired);
     }
   }
 

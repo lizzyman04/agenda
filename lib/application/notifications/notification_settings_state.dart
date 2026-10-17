@@ -22,6 +22,7 @@ final class NotificationSettingsLoaded extends NotificationSettingsState {
     required this.permission,
     required this.canScheduleExact,
     required this.waitingCount,
+    this.permissionRequested = false,
   });
 
   /// The stored preferences.
@@ -36,16 +37,39 @@ final class NotificationSettingsLoaded extends NotificationSettingsState {
   /// Reminders left out of the OS schedule by the slot budget.
   final int waitingCount;
 
+  /// True once an OS request ended without the permission, which means the
+  /// system may no longer show its dialog.
+  final bool permissionRequested;
+
   NotificationSettingsLoaded copyWith({
     NotificationPrefs? prefs,
     NotificationPermission? permission,
     bool? canScheduleExact,
     int? waitingCount,
+    bool? permissionRequested,
   }) => NotificationSettingsLoaded(
     prefs: prefs ?? this.prefs,
     permission: permission ?? this.permission,
     canScheduleExact: canScheduleExact ?? this.canScheduleExact,
     waitingCount: waitingCount ?? this.waitingCount,
+    permissionRequested: permissionRequested ?? this.permissionRequested,
+  );
+
+  /// The state after an OS request ended with [result].
+  NotificationSettingsLoaded afterRequest(NotificationPermission result) =>
+      copyWith(
+        permission: result,
+        permissionRequested: result == NotificationPermission.denied,
+      );
+
+  /// The state after re-reading the OS: a grant clears [permissionRequested].
+  NotificationSettingsLoaded afterRefresh(
+    NotificationPermission fresh, {
+    required bool exact,
+  }) => copyWith(
+    permission: fresh,
+    canScheduleExact: exact,
+    permissionRequested: fresh == NotificationPermission.granted ? false : null,
   );
 
   @override
@@ -54,5 +78,6 @@ final class NotificationSettingsLoaded extends NotificationSettingsState {
     permission,
     canScheduleExact,
     waitingCount,
+    permissionRequested,
   ];
 }

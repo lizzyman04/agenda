@@ -24,11 +24,13 @@ NotificationSettingsLoaded loadedState({
   NotificationPermission permission = NotificationPermission.granted,
   bool canScheduleExact = true,
   int waitingCount = 0,
+  bool permissionRequested = false,
 }) => NotificationSettingsLoaded(
   prefs: prefs ?? NotificationPrefs.defaults(),
   permission: permission,
   canScheduleExact: canScheduleExact,
   waitingCount: waitingCount,
+  permissionRequested: permissionRequested,
 );
 
 void main() {
@@ -167,6 +169,22 @@ void main() {
 
         expect(find.byType(PermissionBanner), findsOneWidget);
         await tester.tap(find.text('Permitir notificações'));
+        verify(() => cubit.requestPermission()).called(1);
+      });
+
+      testWidgets('after a refused request the banner offers Open settings', (
+        tester,
+      ) async {
+        await pumpScreen(
+          tester,
+          loadedState(
+            permission: NotificationPermission.denied,
+            permissionRequested: true,
+          ),
+        );
+
+        expect(find.text('Permitir notificações'), findsNothing);
+        await tester.tap(find.text('Abrir configurações'));
         verify(() => cubit.requestPermission()).called(1);
       });
 

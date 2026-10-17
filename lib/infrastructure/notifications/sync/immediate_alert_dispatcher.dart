@@ -16,9 +16,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Raises one alert that depends on an in-app event instead of a timestamp
 /// (budget thresholds, an off-track goal on open).
 ///
-/// It applies the kind toggle, the in-context permission prompt and quiet
-/// hours (D-08): an alert raised inside the window is scheduled for the
-/// window end rather than shown or dropped. Nothing here ever throws.
+/// It applies the kind toggle, the permission and quiet hours (D-08): an
+/// alert raised inside the window is scheduled for the window end rather than
+/// shown or dropped. In-event callers that run in context (budget alerts) may
+/// raise the permission prompt; the app-open path must not (Pitfall 10).
+/// Nothing here ever throws.
 @lazySingleton
 class ImmediateAlertDispatcher {
   ImmediateAlertDispatcher(
@@ -37,13 +39,26 @@ class ImmediateAlertDispatcher {
   final NotificationContentBuilder _content;
   final SharedPreferences _store;
 
-  /// Shows or defers [p]. Returns false when its kind is off or the gateway
-  /// call failed, true when the alert was handed to the operating system.
-  Future<bool> dispatch(PlannedNotification p, {required DateTime now}) async {
+  /// Shows or defers [p]. Returns false when its kind is off, the permission
+  /// is missing or the gateway call failed, true when the alert was handed to
+  /// the operating system. A false return means nothing was raised.
+  ///
+  /// With [promptIfNeeded] false the permission prompt is never raised: the
+  /// alert is dropped unless the permission is already granted.
+  Future<bool> dispatch(
+    PlannedNotification p, {
+    required DateTime now,
+    bool promptIfNeeded = true,
+  }) async {
     try {
       final prefs = _prefs.load();
       if (!prefs.isEnabled(p.kind)) return false;
-      await _gate.ensureAsked();
+      if (promptIfNeeded) {
+        await _gate.ensureAsked();
+      } else if (await _permissions.notificationPermission() !=
+          NotificationPermission.granted) {
+        return false;
+      }
       final fire =
           prefs.quietHoursEnabled
               ? deferOutOfQuietHours(
