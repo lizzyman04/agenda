@@ -217,6 +217,23 @@ void main() {
       }
     });
 
+    test('blank and explicit task ids all survive (WR-01)', () async {
+      const csv =
+          'id,type,title\r\n'
+          ',task,first\r\n'
+          ',task,second\r\n'
+          '2,task,explicit\r\n';
+
+      final preview = ok(await repository.prepareImport([fileOfText(csv)]));
+      final result = ok(await repository.commitImport());
+
+      final stored = (await dao.readAll()).items;
+      expect(preview.counts[BackupEntity.tasks], 3);
+      expect(result.counts[BackupEntity.tasks], 3);
+      expect(stored, hasLength(3));
+      expect(stored.where((m) => m.title == 'explicit').single.id, 2);
+    });
+
     test('a category deleted after prepare fails the commit cleanly', () async {
       await seedDatabase(isar, seedSnapshot());
       const csv =
