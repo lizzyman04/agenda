@@ -152,6 +152,48 @@ void main() {
           expect(l.backupWarnDanglingLinks(n), contains('$n'));
         }
       });
+
+      test('safety backup strings are non-empty', () {
+        final values = <String>[
+          l.backupSafetyHeader,
+          l.backupSafetyDesc,
+          l.backupSafetySaveButton,
+          l.backupSafetyDeleteButton,
+          l.backupSafetyDeleteTitle,
+          l.backupSafetyDeleteBody,
+          l.backupSafetySaved,
+          l.backupSafetyNone,
+          l.backupSafetyDeleted,
+          l.backupSafetyFailed,
+          l.notifSettingsOpenSettingsButton,
+        ];
+        for (final v in values) {
+          expect(v.trim(), isNotEmpty);
+        }
+      });
+
+      test('safety backup count resolves for 0, 1 and N', () {
+        for (final n in [0, 1, 7]) {
+          expect(l.backupSafetyCount(n).trim(), isNotEmpty);
+        }
+        expect(l.backupSafetyCount(1), contains('1'));
+        expect(l.backupSafetyCount(7), contains('7'));
+        expect(
+          l.backupSafetyCount(1),
+          isNot(equals(l.backupSafetyCount(7))),
+        );
+      });
+
+      test('reinstall note names iCloud', () {
+        expect(l.backupReinstallNote, contains('iCloud'));
+      });
+
+      test('open-settings button differs from the allow button', () {
+        expect(
+          l.notifSettingsOpenSettingsButton,
+          isNot(equals(l.notifSettingsAllowButton)),
+        );
+      });
     });
   }
 }
