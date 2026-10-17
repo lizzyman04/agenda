@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:agenda/application/backup/backup_cubit.dart' as _i768;
+import 'package:agenda/application/backup/safety_backups_cubit.dart' as _i309;
 import 'package:agenda/application/finance/budget/budget_cubit.dart' as _i759;
 import 'package:agenda/application/finance/dashboard/home_dashboard_cubit.dart'
     as _i428;
@@ -261,6 +262,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i316.GoalCubit(
         gh<_i858.GoalRepository>(),
         gh<_i585.TransactionRepository>(),
+      ),
+    );
+    gh.factory<_i309.SafetyBackupsCubit>(
+      () => _i309.SafetyBackupsCubit(
+        gh<_i357.BackupRepository>(),
+        gh<_i1027.BackupFileGateway>(),
       ),
     );
     gh.lazySingleton<_i565.ItemRepository>(
