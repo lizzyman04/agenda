@@ -20,4 +20,9 @@ abstract interface class NotificationPermissionService {
   /// Opens the system screen where the user grants exact alarms (Android
   /// 12+). A no-op elsewhere.
   Future<void> requestExactAlarmPermission();
+
+  /// Opens the operating system's notification settings page for this app.
+  /// True when the page was launched, false when the platform cannot. Never
+  /// throws.
+  Future<bool> openNotificationSettings();
 }

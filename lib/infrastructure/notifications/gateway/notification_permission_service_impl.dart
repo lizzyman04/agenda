@@ -1,7 +1,15 @@
 import 'package:agenda/domain/notifications/notification_permission_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
+
+/// Platform channel that opens the system settings; the Kotlin and Swift
+/// handlers must use the same names (pinned by system_settings_channel_test).
+const String systemSettingsChannelName = 'agenda/system_settings';
+
+/// The channel method that opens this app's notification settings page.
+const String openNotificationSettingsMethod = 'openNotificationSettings';
 
 /// [NotificationPermissionService] over the plugin's platform hooks.
 ///
@@ -12,6 +20,10 @@ import 'package:injectable/injectable.dart';
 class NotificationPermissionServiceImpl
     implements NotificationPermissionService {
   NotificationPermissionServiceImpl(this._plugin);
+
+  static const MethodChannel _settingsChannel = MethodChannel(
+    systemSettingsChannelName,
+  );
 
   final FlutterLocalNotificationsPlugin _plugin;
 
@@ -83,6 +95,22 @@ class NotificationPermissionServiceImpl
       await _android?.requestExactAlarmsPermission();
     } on Object {
       // Nothing to recover: the caller re-reads canScheduleExact.
+    }
+  }
+
+  @override
+  Future<bool> openNotificationSettings() async {
+    if (defaultTargetPlatform != TargetPlatform.android &&
+        defaultTargetPlatform != TargetPlatform.iOS) {
+      return false;
+    }
+    try {
+      return await _settingsChannel.invokeMethod<bool>(
+            openNotificationSettingsMethod,
+          ) ??
+          false;
+    } on Object {
+      return false;
     }
   }
 }

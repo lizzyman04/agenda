@@ -97,6 +97,7 @@ class FakeNotificationPermissionService
 
   int notificationRequests = 0;
   int exactAlarmRequests = 0;
+  int openSettingsCalls = 0;
 
   @override
   Future<NotificationPermission> notificationPermission() async => permission;
@@ -114,5 +115,11 @@ class FakeNotificationPermissionService
   @override
   Future<void> requestExactAlarmPermission() async {
     exactAlarmRequests++;
+  }
+
+  @override
+  Future<bool> openNotificationSettings() async {
+    openSettingsCalls++;
+    return true;
   }
 }
