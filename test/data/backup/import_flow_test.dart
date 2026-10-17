@@ -255,6 +255,25 @@ void main() {
   });
 
   test(
+    'a failed import never reports an earlier safety backup (WR-03)',
+    () async {
+      await seedDatabase(isar, seedSnapshot(idBase: 0, tag: 'A'));
+      final file = jsonFileOf(seedSnapshot());
+      ok(await repository.prepareImport([file]));
+      ok(await repository.commitImport());
+      expect(repository.lastSafetyBackupPath, isNotNull);
+
+      final blocker = File('${safetyDir.path}/blocker')..writeAsStringSync('x');
+      SafetyBackupStore.directoryResolver = () async => Directory(blocker.path);
+      ok(await repository.prepareImport([file]));
+      final result = await repository.commitImport();
+
+      expect(errorCode(result), ImportErrorCode.importFailed);
+      expect(repository.lastSafetyBackupPath, isNull);
+    },
+  );
+
+  test(
     'a safety backup that cannot be written aborts before any change',
     () async {
       await seedDatabase(isar, seedSnapshot(idBase: 0, tag: 'A'));

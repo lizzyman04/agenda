@@ -36,7 +36,10 @@ final class ImportSession {
   BackupSnapshot? _pending;
   bool _committing = false;
 
-  /// Path of the newest safety backup, kept after a failed import so the UI
+  /// Path of the safety backup written by THIS import, or null until it
+  /// exists. Reset at the start of every commit, so a failed import never
+  /// names an earlier import's file (D-12: the path shown after a failure
+  /// must belong to the failed import). Kept after a failed replace so the UI
   /// can show where the user's previous data is.
   String? lastSafetyBackupPath;
 
@@ -79,6 +82,7 @@ final class ImportSession {
     }
     _committing = true;
     _pending = null;
+    lastSafetyBackupPath = null;
     try {
       final now = DateTime.now();
       final backup = await _exportJson(now: now);
