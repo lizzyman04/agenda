@@ -10,8 +10,6 @@ import 'package:agenda/domain/notifications/notification_reconciler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-const int _maxMinute = 1439;
-
 /// Drives the notification settings page (NOTF-08, NOTF-09, NOTF-10).
 ///
 /// Every setter persists through [NotificationPrefsRepository] first and only
@@ -64,8 +62,7 @@ class NotificationSettingsCubit extends Cubit<NotificationSettingsState> {
     final current = state;
     if (current is! NotificationSettingsLoaded) return;
     if (enabled && current.permission != NotificationPermission.granted) {
-      final result = await _permissions.requestNotificationPermission();
-      _update((s) => s.copyWith(permission: result));
+      await _request();
     }
     await _save((p) => p.withEnabled(kind, value: enabled));
   }
@@ -93,16 +90,24 @@ class NotificationSettingsCubit extends Cubit<NotificationSettingsState> {
     if (state is! NotificationSettingsLoaded) return;
     final permission = await _permissions.notificationPermission();
     final exact = await _permissions.canScheduleExact();
-    _update(
-      (s) => s.copyWith(permission: permission, canScheduleExact: exact),
-    );
+    _update((s) => s.afterRefresh(permission, exact: exact));
   }
 
-  /// Raises the system notification prompt from the denied banner.
+  /// Banner action. A suppressed dialog looks like a refused one, so the first
+  /// refused tap flips the label and the next opens the system settings.
   Future<void> requestPermission() async {
-    if (state is! NotificationSettingsLoaded) return;
+    final current = state;
+    if (current is! NotificationSettingsLoaded) return;
+    if (current.permissionRequested) {
+      await _permissions.openNotificationSettings();
+    } else {
+      await _request();
+    }
+  }
+
+  Future<void> _request() async {
     final result = await _permissions.requestNotificationPermission();
-    _update((s) => s.copyWith(permission: result));
+    _update((s) => s.afterRequest(result));
   }
 
   /// Opens the system exact-alarm screen, then refreshes the capability.
@@ -112,7 +117,7 @@ class NotificationSettingsCubit extends Cubit<NotificationSettingsState> {
     await refreshPermissions();
   }
 
-  int _clamp(int minutes) => minutes.clamp(0, _maxMinute);
+  int _clamp(int minutes) => minutes.clamp(0, 1439);
 
   Future<void> _save(
     NotificationPrefs Function(NotificationPrefs prefs) change,
@@ -135,8 +140,6 @@ class NotificationSettingsCubit extends Cubit<NotificationSettingsState> {
   Future<void> _cancelSubscriptions() async {
     await _waitingSub?.cancel();
     await _prefsSub?.cancel();
-    _waitingSub = null;
-    _prefsSub = null;
   }
 
   @override

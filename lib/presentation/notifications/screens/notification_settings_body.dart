@@ -52,7 +52,10 @@ class NotificationSettingsBody extends StatelessWidget {
           PermissionBanner(
             title: l10n.notifSettingsPermissionDeniedTitle,
             body: l10n.notifSettingsPermissionDeniedBody,
-            actionLabel: l10n.notifSettingsAllowButton,
+            actionLabel:
+                state.permissionRequested
+                    ? l10n.notifSettingsOpenSettingsButton
+                    : l10n.notifSettingsAllowButton,
             onAction: () => unawaited(cubit.requestPermission()),
           ),
         if (isAndroid && !state.canScheduleExact)
