@@ -22,13 +22,16 @@ those.
 | `debounced_single_flight.dart` | 51 | `DebouncedSingleFlight` — 300 ms debounce, at most one run in flight and one queued |
 | `notification_settings_cubit.dart` | 147 | `NotificationSettingsCubit` — loads prefs, permission and exact-alarm capability, follows the waiting count and `prefs.watch()`, and persists every setter (`setEnabled`, quiet hours, briefing and quote controls) before emitting. Never schedules: the coordinator reacts to the prefs stream |
 | `notification_settings_state.dart` | 58 | `NotificationSettingsInitial` and `NotificationSettingsLoaded` (prefs, permission, exact capability, waiting count) |
-| `goal_alert_evaluator.dart` | 122 | `GoalAlertEvaluator` — `evaluateOnOpen` raises at most one off-track alert per goal per week; `reseedAfterImport` marks current off-track goals silently |
+| `goal_alert_evaluator.dart` | 130 | `GoalAlertEvaluator` — `evaluateOnOpen` raises at most one off-track alert per goal per week; `reseedAfterImport` marks current off-track goals silently |
 
 ## Conventions in this slice
 
-- **Evaluators mark state before dispatching and never write a marker while
-  the kind is disabled.** A crash after the marker cannot repeat the alert,
-  and switching the kind back on still yields the alert.
+- **Evaluators mark state before dispatching, roll the marker back when the
+  dispatch reports it raised nothing, and never write a marker while the kind
+  is disabled.** A crash after the marker cannot repeat the alert, a refused
+  or not-yet-asked permission never consumes the week, and switching the kind
+  back on still yields the alert. The on-open path never raises the
+  permission prompt (`promptIfNeeded: false`).
 - **Alerts follow changes.** There is no scheduled job; the evaluator
   subscribes to `watchChanges()` and does not evaluate at start.
 - **Silent seeding.** The first start of a month, and a restore, mark the
