@@ -42,8 +42,7 @@ class SafetyBackupStore {
   /// Writes [bytes] as a new safety backup, rotates older ones and returns
   /// the absolute path of the new file.
   Future<String> write(Uint8List bytes) async {
-    final base = _base ?? await directoryResolver();
-    final dir = Directory('${base.path}${Platform.pathSeparator}backups');
+    final dir = await _dir();
     await dir.create(recursive: true);
     final t = _clock();
     final stamp =
@@ -67,10 +66,35 @@ class SafetyBackupStore {
     return file.absolute.path;
   }
 
-  // Newest first by (timestamp, collision suffix). The file just written is
-  // always kept, even if the clock moved backwards.
-  Future<void> _rotate(Directory dir, File fresh) async {
+  /// Generated-name safety backups, newest first. Empty when the folder does
+  /// not exist yet. Files with any other name are never listed.
+  Future<List<File>> list() async => [
+    for (final (_, _, file) in await _entries(await _dir())) file,
+  ];
+
+  /// The newest safety backup, or null when there is none.
+  Future<File?> newest() async => (await list()).firstOrNull;
+
+  /// Deletes every generated-name safety backup and returns how many went.
+  /// A [FileSystemException] propagates: a user-requested delete must not
+  /// claim success.
+  Future<int> deleteAll() async {
+    final files = await list();
+    for (final file in files) {
+      await _delete(file);
+    }
+    return files.length;
+  }
+
+  Future<Directory> _dir() async {
+    final base = _base ?? await directoryResolver();
+    return Directory('${base.path}${Platform.pathSeparator}backups');
+  }
+
+  // Newest first by (timestamp, collision suffix).
+  Future<List<(String, int, File)>> _entries(Directory dir) async {
     final entries = <(String, int, File)>[];
+    if (!dir.existsSync()) return entries;
     await for (final entity in dir.list()) {
       if (entity is! File) continue;
       final match = _name.firstMatch(entity.uri.pathSegments.last);
@@ -81,6 +105,12 @@ class SafetyBackupStore {
       final byStamp = b.$1.compareTo(a.$1);
       return byStamp != 0 ? byStamp : b.$2.compareTo(a.$2);
     });
+    return entries;
+  }
+
+  // The file just written is always kept, even if the clock moved backwards.
+  Future<void> _rotate(Directory dir, File fresh) async {
+    final entries = await _entries(dir);
     final survivors = entries.take(keep).map((e) => e.$3.path).toSet();
     for (final (_, _, file) in entries) {
       if (survivors.contains(file.path) || file.path == fresh.path) continue;

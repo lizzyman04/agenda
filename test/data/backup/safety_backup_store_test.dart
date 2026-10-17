@@ -111,6 +111,64 @@ void main() {
     },
   );
 
+  group('list, newest and deleteAll (plan 04-20)', () {
+    SafetyBackupStore storeAt(int Function() minute) => SafetyBackupStore(
+      baseDirectory: base,
+      clock: () => DateTime(2026, 10, 16, 9, minute()),
+    );
+
+    test('are empty when the backups directory does not exist', () async {
+      final store = SafetyBackupStore(baseDirectory: base);
+
+      expect(await store.list(), isEmpty);
+      expect(await store.newest(), isNull);
+      expect(await store.deleteAll(), 0);
+    });
+
+    test('list is newest first and ignores unrelated files', () async {
+      var minute = 0;
+      final store = storeAt(() => minute++);
+      for (var i = 0; i < 3; i++) {
+        await store.write(bytes('v$i'));
+      }
+      File('${base.path}/backups/notes.txt').writeAsStringSync('keep me');
+      File('${base.path}/backups/safety-backup-x.json').writeAsStringSync('x');
+
+      final listed = await store.list();
+
+      expect(listed.map((f) => f.uri.pathSegments.last), [
+        'safety-backup-20261016-090200.json',
+        'safety-backup-20261016-090100.json',
+        'safety-backup-20261016-090000.json',
+      ]);
+      final newest = await store.newest();
+      expect(newest!.readAsBytesSync(), bytes('v2'));
+    });
+
+    test('newest prefers a collision suffix over its base name', () async {
+      final store = storeAt(() => 0);
+      await store.write(bytes('a'));
+      await store.write(bytes('b'));
+
+      final newest = await store.newest();
+
+      expect(newest!.uri.pathSegments.last, endsWith('090000-1.json'));
+    });
+
+    test('deleteAll removes generated names only and counts them', () async {
+      var minute = 0;
+      final store = storeAt(() => minute++);
+      for (var i = 0; i < 3; i++) {
+        await store.write(bytes('v$i'));
+      }
+      File('${base.path}/backups/notes.txt').writeAsStringSync('keep me');
+
+      expect(await store.deleteAll(), 3);
+      expect(names(), ['notes.txt']);
+      expect(await store.deleteAll(), 0);
+    });
+  });
+
   test('unrelated files in backups/ are never deleted', () async {
     Directory('${base.path}/backups').createSync(recursive: true);
     File('${base.path}/backups/notes.txt').writeAsStringSync('keep me');

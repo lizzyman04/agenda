@@ -32,10 +32,12 @@ class BackupRepositoryImpl implements BackupRepository {
 
   final BackupDao _dao;
 
+  final SafetyBackupStore _store = SafetyBackupStore();
+
   late final ImportSession _import = ImportSession(
     dao: _dao,
     importer: BackupImporter(_dao.isarService),
-    store: SafetyBackupStore(),
+    store: _store,
     exportJson: exportJson,
   );
 
@@ -97,6 +99,40 @@ class BackupRepositoryImpl implements BackupRepository {
 
   @override
   String? get lastSafetyBackupPath => _import.lastSafetyBackupPath;
+
+  @override
+  AsyncResult<int> safetyBackupCount() async {
+    try {
+      return Success((await _store.list()).length);
+    } on Object catch (e) {
+      return Err(BackupFailure('safetyBackupCount failed: ${e.runtimeType}'));
+    }
+  }
+
+  @override
+  AsyncResult<BackupFile?> latestSafetyBackup() async {
+    try {
+      final file = await _store.newest();
+      if (file == null) return const Success(null);
+      return Success(
+        BackupFile(
+          name: file.uri.pathSegments.last,
+          bytes: await file.readAsBytes(),
+        ),
+      );
+    } on Object catch (e) {
+      return Err(BackupFailure('latestSafetyBackup failed: ${e.runtimeType}'));
+    }
+  }
+
+  @override
+  AsyncResult<int> deleteSafetyBackups() async {
+    try {
+      return Success(await _store.deleteAll());
+    } on Object catch (e) {
+      return Err(BackupFailure('deleteSafetyBackups failed: ${e.runtimeType}'));
+    }
+  }
 
   static String _fileName(DateTime d) {
     final y = d.year.toString().padLeft(4, '0');

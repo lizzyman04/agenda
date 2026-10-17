@@ -50,4 +50,22 @@ abstract interface class BackupRepository {
 
   /// Path of the newest safety backup written by [commitImport], or null.
   String? get lastSafetyBackupPath;
+
+  /// How many safety backups exist on the device (0 to 3).
+  ///
+  /// Never throws; failures map to `BackupFailure`.
+  AsyncResult<int> safetyBackupCount();
+
+  /// The newest safety backup as an ordinary JSON backup, or `Success(null)`
+  /// when none exists.
+  ///
+  /// The returned name is the generated file name, never a path. Never
+  /// throws; failures map to `BackupFailure`.
+  AsyncResult<BackupFile?> latestSafetyBackup();
+
+  /// Deletes every safety backup and returns how many were removed.
+  ///
+  /// Only files with a generated safety-backup name are touched. Never
+  /// throws; failures map to `BackupFailure`.
+  AsyncResult<int> deleteSafetyBackups();
 }
