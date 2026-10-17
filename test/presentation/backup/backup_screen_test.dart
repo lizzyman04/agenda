@@ -1,5 +1,7 @@
 import 'package:agenda/application/backup/backup_cubit.dart';
 import 'package:agenda/application/backup/backup_state.dart';
+import 'package:agenda/application/backup/safety_backups_cubit.dart';
+import 'package:agenda/application/backup/safety_backups_state.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/domain/backup/backup_entity.dart';
@@ -15,6 +17,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockBackupCubit extends MockCubit<BackupState> implements BackupCubit {}
+
+class MockSafetyBackupsCubit extends MockCubit<SafetyBackupsState>
+    implements SafetyBackupsCubit {}
 
 void main() {
   late MockBackupCubit cubit;
@@ -78,6 +83,14 @@ void main() {
     ).thenAnswer((_) async {});
     when(() => cubit.acknowledge()).thenReturn(null);
     getIt.registerFactory<BackupCubit>(() => cubit);
+    final safety = MockSafetyBackupsCubit();
+    when(safety.load).thenAnswer((_) async {});
+    whenListen(
+      safety,
+      const Stream<SafetyBackupsState>.empty(),
+      initialState: const SafetyBackupsState(count: 2),
+    );
+    getIt.registerFactory<SafetyBackupsCubit>(() => safety);
   });
 
   tearDown(() async => getIt.reset());
@@ -96,6 +109,8 @@ void main() {
       expect(find.text(l10n.backupExportCsv), findsOneWidget);
       expect(find.text(l10n.backupPrivacyNote), findsOneWidget);
       expect(find.text(l10n.backupReinstallNote), findsOneWidget);
+      expect(find.text(l10n.backupSafetyHeader), findsOneWidget);
+      expect(find.text(l10n.backupSafetyCount(2)), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsNothing);
     });
 

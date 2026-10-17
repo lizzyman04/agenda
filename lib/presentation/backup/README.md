@@ -16,7 +16,8 @@ live here: the cubit in `application/backup/` drives them.
 backup/
 ├── screens/   BackupScreen (standalone page, owns its cubit), ImportConfirmScreen
 └── widgets/   BackupActionCard, ImportSummaryCard, backupErrorMessage,
-               backupOutcomeMessage
+               backupOutcomeMessage, SafetyBackupsSection,
+               confirmDeleteSafetyBackups
 ```
 
 ## Conventions in this slice
@@ -31,6 +32,9 @@ backup/
 - **Nothing is replaced before the confirmation screen.** The Backup screen
   only prepares; `ImportConfirmScreen` confirms or cancels, and closes itself
   once on a result (guarded so it cannot also pop the Backup screen).
+- **The safety-backups section owns its cubit and never shows a path;** the
+  import-failed text keeps the path per D-12. Restoring a saved copy is the
+  existing Import action.
 - Each subdirectory carries its own README (architecture guard).
 
 ## Upstream dependencies

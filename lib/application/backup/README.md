@@ -18,6 +18,8 @@ confirms) -> post-import hooks.
 |------|------:|------|
 | `backup_cubit.dart` | 150 | `BackupCubit` — `exportJson` / `exportCsv` as before; `pickAndPrepareImport` picks files and emits `BackupImportPreviewReady` (cancelled picker returns to idle); `confirmImport` (only from the preview state) commits, runs the hooks and emits `BackupImportDone`, or `BackupImportFailed` carrying the repository's safety backup path; `cancelImport` discards the prepared import; `acknowledge` returns to idle |
 | `backup_state.dart` | 78 | `BackupIdle`, `BackupWorking`, `BackupExportDone(fileCount, csv)`, `BackupExportCancelled(savedCount)`, `BackupFailed(failure)`, `BackupImportPreviewReady(preview)`, `BackupImportDone(result)`, `BackupImportFailed(failure, safetyBackupPath)` |
+| `safety_backups_cubit.dart` | 78 | `SafetyBackupsCubit` — `load` (count), `saveLatestCopy` (newest safety backup through `BackupFileGateway.saveFile`; outcomes saved / cancelled / none / failed), `deleteAll` (outcome deleted, or failed with the count re-read), `acknowledge`; a request while busy is ignored |
+| `safety_backups_state.dart` | 35 | `SafetyBackupsState(count, busy, outcome)` and `SafetyBackupsOutcome`; `copyWith` has a `clearOutcome` flag |
 | `post_import_hooks.dart` | 27 | `runPostImportHooks` — budget `reseedAfterImport`, goal `reseedAfterImport`, then `reconcileNow(ReconcileReason.afterImport)`, each in its own try/catch |
 
 ## Conventions in this slice
@@ -35,6 +37,10 @@ confirms) -> post-import hooks.
   `BackupImportDone` regardless.
 - **Nothing is written before confirmation.** `prepareImport` is in-memory;
   `confirmImport` is a no-op unless the state is `BackupImportPreviewReady`.
+
+- **Safety backups have their own cubit** because `backup_cubit.dart` is at
+  the 150-line cap; restore is the existing Import action on a saved copy, and
+  no path or file content is ever read, logged or displayed.
 
 ## Upstream dependencies
 

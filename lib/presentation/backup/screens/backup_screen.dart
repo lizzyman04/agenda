@@ -7,6 +7,7 @@ import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/backup/screens/import_confirm_screen.dart';
 import 'package:agenda/presentation/backup/widgets/backup_action_card.dart';
 import 'package:agenda/presentation/backup/widgets/backup_outcome_message.dart';
+import 'package:agenda/presentation/backup/widgets/safety_backups_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -110,6 +111,7 @@ class _BackupView extends StatelessWidget {
                           dialogTitle: l10n.backupImportAction,
                         ),
               ),
+              const SafetyBackupsSection(),
               if (busy) ...[
                 const SizedBox(height: 8),
                 const LinearProgressIndicator(),
