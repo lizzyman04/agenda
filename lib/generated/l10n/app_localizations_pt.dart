@@ -904,6 +904,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get notifSettingsAllowButton => 'Permitir notificações';
 
   @override
+  String get notifSettingsOpenSettingsButton => 'Abrir configurações';
+
+  @override
   String get notifSettingsExactTitle => 'Horários exatos dos lembretes';
 
   @override
@@ -987,7 +990,52 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get backupReinstallNote =>
-      'O backup em nuvem do Android está desativado para o AGENDA. Depois de reinstalar, restaure a partir de um arquivo JSON exportado.';
+      'O backup em nuvem está desativado para o AGENDA: Backup Automático do Android e backup do iCloud no iOS. Depois de reinstalar, restaure a partir de um arquivo JSON exportado.';
+
+  @override
+  String get backupSafetyHeader => 'Backups de segurança';
+
+  @override
+  String get backupSafetyDesc =>
+      'Antes de cada importação, o AGENDA guarda uma cópia privada dos seus dados atuais (as 3 mais recentes). Salve uma cópia em um local à sua escolha ou apague-as.';
+
+  @override
+  String backupSafetyCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count backups de segurança',
+      one: '$count backup de segurança',
+      zero: 'Nenhum backup de segurança',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupSafetySaveButton => 'Salvar a cópia mais recente';
+
+  @override
+  String get backupSafetyDeleteButton => 'Apagar todos';
+
+  @override
+  String get backupSafetyDeleteTitle => 'Apagar os backups de segurança?';
+
+  @override
+  String get backupSafetyDeleteBody =>
+      'Essas cópias privadas serão removidas definitivamente. Seus dados atuais não são afetados.';
+
+  @override
+  String get backupSafetySaved => 'Backup de segurança salvo.';
+
+  @override
+  String get backupSafetyNone => 'Ainda não há backup de segurança.';
+
+  @override
+  String get backupSafetyDeleted => 'Backups de segurança apagados.';
+
+  @override
+  String get backupSafetyFailed =>
+      'Não foi possível concluir. Seus dados não foram alterados.';
 
   @override
   String get backupWorking => 'Processando…';
@@ -1087,7 +1135,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get backupErrorTooLarge =>
-      'Este arquivo é grande demais para importar.';
+      'Esta seleção é grande demais para importar.';
 
   @override
   String get backupErrorNewerVersion =>
@@ -2011,6 +2059,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get notifSettingsAllowButton => 'Permitir notificações';
 
   @override
+  String get notifSettingsOpenSettingsButton => 'Abrir configurações';
+
+  @override
   String get notifSettingsExactTitle => 'Horários exatos dos lembretes';
 
   @override
@@ -2094,7 +2145,52 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get backupReinstallNote =>
-      'O backup em nuvem do Android está desativado para o AGENDA. Depois de reinstalar, restaure a partir de um arquivo JSON exportado.';
+      'O backup em nuvem está desativado para o AGENDA: Backup Automático do Android e backup do iCloud no iOS. Depois de reinstalar, restaure a partir de um arquivo JSON exportado.';
+
+  @override
+  String get backupSafetyHeader => 'Backups de segurança';
+
+  @override
+  String get backupSafetyDesc =>
+      'Antes de cada importação, o AGENDA guarda uma cópia privada dos seus dados atuais (as 3 mais recentes). Salve uma cópia em um local à sua escolha ou apague-as.';
+
+  @override
+  String backupSafetyCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count backups de segurança',
+      one: '$count backup de segurança',
+      zero: 'Nenhum backup de segurança',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupSafetySaveButton => 'Salvar a cópia mais recente';
+
+  @override
+  String get backupSafetyDeleteButton => 'Apagar todos';
+
+  @override
+  String get backupSafetyDeleteTitle => 'Apagar os backups de segurança?';
+
+  @override
+  String get backupSafetyDeleteBody =>
+      'Essas cópias privadas serão removidas definitivamente. Seus dados atuais não são afetados.';
+
+  @override
+  String get backupSafetySaved => 'Backup de segurança salvo.';
+
+  @override
+  String get backupSafetyNone => 'Ainda não há backup de segurança.';
+
+  @override
+  String get backupSafetyDeleted => 'Backups de segurança apagados.';
+
+  @override
+  String get backupSafetyFailed =>
+      'Não foi possível concluir. Seus dados não foram alterados.';
 
   @override
   String get backupWorking => 'Processando…';
@@ -2194,7 +2290,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get backupErrorTooLarge =>
-      'Este arquivo é grande demais para importar.';
+      'Esta seleção é grande demais para importar.';
 
   @override
   String get backupErrorNewerVersion =>

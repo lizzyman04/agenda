@@ -897,6 +897,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifSettingsAllowButton => 'Allow notifications';
 
   @override
+  String get notifSettingsOpenSettingsButton => 'Open settings';
+
+  @override
   String get notifSettingsExactTitle => 'Exact reminder times';
 
   @override
@@ -980,7 +983,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupReinstallNote =>
-      'Android cloud backup is turned off for AGENDA. After reinstalling, restore from an exported JSON file.';
+      'Cloud backup is turned off for AGENDA: Android Auto Backup and iCloud backup on iOS. After reinstalling, restore from an exported JSON file.';
+
+  @override
+  String get backupSafetyHeader => 'Safety backups';
+
+  @override
+  String get backupSafetyDesc =>
+      'Before each import AGENDA keeps a private copy of your current data (the newest 3). Save a copy to a place you choose, or delete them.';
+
+  @override
+  String backupSafetyCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count safety backups',
+      one: '$count safety backup',
+      zero: 'No safety backups',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupSafetySaveButton => 'Save latest copy';
+
+  @override
+  String get backupSafetyDeleteButton => 'Delete all';
+
+  @override
+  String get backupSafetyDeleteTitle => 'Delete safety backups?';
+
+  @override
+  String get backupSafetyDeleteBody =>
+      'These private copies will be removed for good. Your current data is not affected.';
+
+  @override
+  String get backupSafetySaved => 'Safety backup saved.';
+
+  @override
+  String get backupSafetyNone => 'There is no safety backup yet.';
+
+  @override
+  String get backupSafetyDeleted => 'Safety backups deleted.';
+
+  @override
+  String get backupSafetyFailed =>
+      'Could not finish. Your data was not changed.';
 
   @override
   String get backupWorking => 'Working…';
@@ -1079,7 +1127,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'This file is not a valid AGENDA backup.';
 
   @override
-  String get backupErrorTooLarge => 'This file is too large to import.';
+  String get backupErrorTooLarge => 'This selection is too large to import.';
 
   @override
   String get backupErrorNewerVersion =>

@@ -1785,6 +1785,12 @@ abstract class AppLocalizations {
   /// **'Permitir notificações'**
   String get notifSettingsAllowButton;
 
+  /// Botão que abre as configurações de notificação do sistema para o app
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Abrir configurações'**
+  String get notifSettingsOpenSettingsButton;
+
   /// Título do aviso sobre a permissão de alarmes exatos
   ///
   /// In pt_BR, this message translates to:
@@ -1905,11 +1911,77 @@ abstract class AppLocalizations {
   /// **'Os backups não são criptografados. Guarde-os em um local seguro. O AGENDA nunca envia seus dados.'**
   String get backupPrivacyNote;
 
-  /// Nota sobre o backup automático do Android desativado
+  /// Nota sobre o backup em nuvem desativado no Android e no iOS
   ///
   /// In pt_BR, this message translates to:
-  /// **'O backup em nuvem do Android está desativado para o AGENDA. Depois de reinstalar, restaure a partir de um arquivo JSON exportado.'**
+  /// **'O backup em nuvem está desativado para o AGENDA: Backup Automático do Android e backup do iCloud no iOS. Depois de reinstalar, restaure a partir de um arquivo JSON exportado.'**
   String get backupReinstallNote;
+
+  /// Cabeçalho da seção de backups de segurança
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Backups de segurança'**
+  String get backupSafetyHeader;
+
+  /// Descreve os backups de segurança automáticos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Antes de cada importação, o AGENDA guarda uma cópia privada dos seus dados atuais (as 3 mais recentes). Salve uma cópia em um local à sua escolha ou apague-as.'**
+  String get backupSafetyDesc;
+
+  /// Quantidade de backups de segurança guardados
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{count, plural, =0{Nenhum backup de segurança} one{{count} backup de segurança} other{{count} backups de segurança}}'**
+  String backupSafetyCount(int count);
+
+  /// Botão que salva a cópia de segurança mais recente em um local escolhido
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Salvar a cópia mais recente'**
+  String get backupSafetySaveButton;
+
+  /// Botão que apaga todos os backups de segurança
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Apagar todos'**
+  String get backupSafetyDeleteButton;
+
+  /// Título do diálogo de confirmação para apagar os backups de segurança
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Apagar os backups de segurança?'**
+  String get backupSafetyDeleteTitle;
+
+  /// Corpo do diálogo de confirmação para apagar os backups de segurança
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Essas cópias privadas serão removidas definitivamente. Seus dados atuais não são afetados.'**
+  String get backupSafetyDeleteBody;
+
+  /// Mensagem após salvar um backup de segurança
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Backup de segurança salvo.'**
+  String get backupSafetySaved;
+
+  /// Mensagem quando não existe backup de segurança
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Ainda não há backup de segurança.'**
+  String get backupSafetyNone;
+
+  /// Mensagem após apagar os backups de segurança
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Backups de segurança apagados.'**
+  String get backupSafetyDeleted;
+
+  /// Mensagem de falha ao salvar ou apagar backups de segurança
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não foi possível concluir. Seus dados não foram alterados.'**
+  String get backupSafetyFailed;
 
   /// Rótulo de progresso durante exportação ou importação
   ///
@@ -2037,10 +2109,10 @@ abstract class AppLocalizations {
   /// **'Este arquivo não é um backup válido do AGENDA.'**
   String get backupErrorUnsupported;
 
-  /// Erro de importação: arquivo acima do limite de tamanho
+  /// Erro de importação: a seleção está acima do limite de tamanho
   ///
   /// In pt_BR, this message translates to:
-  /// **'Este arquivo é grande demais para importar.'**
+  /// **'Esta seleção é grande demais para importar.'**
   String get backupErrorTooLarge;
 
   /// Erro de importação: backup de versão mais nova que o app
