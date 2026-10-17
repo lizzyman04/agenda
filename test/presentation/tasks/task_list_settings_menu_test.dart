@@ -1,5 +1,7 @@
 import 'package:agenda/application/backup/backup_cubit.dart';
 import 'package:agenda/application/backup/backup_state.dart';
+import 'package:agenda/application/backup/safety_backups_cubit.dart';
+import 'package:agenda/application/backup/safety_backups_state.dart';
 import 'package:agenda/application/notifications/notification_settings_cubit.dart';
 import 'package:agenda/application/notifications/notification_settings_state.dart';
 import 'package:agenda/config/di/injection.dart';
@@ -17,6 +19,9 @@ class MockSettingsCubit extends MockCubit<NotificationSettingsState>
     implements NotificationSettingsCubit {}
 
 class MockBackupCubit extends MockCubit<BackupState> implements BackupCubit {}
+
+class MockSafetyBackupsCubit extends MockCubit<SafetyBackupsState>
+    implements SafetyBackupsCubit {}
 
 void main() {
   late MockSettingsCubit cubit;
@@ -42,6 +47,15 @@ void main() {
       initialState: const BackupIdle(),
     );
     getIt.registerFactory<BackupCubit>(() => backupCubit);
+
+    final safetyCubit = MockSafetyBackupsCubit();
+    when(safetyCubit.load).thenAnswer((_) async {});
+    whenListen(
+      safetyCubit,
+      const Stream<SafetyBackupsState>.empty(),
+      initialState: const SafetyBackupsState(),
+    );
+    getIt.registerFactory<SafetyBackupsCubit>(() => safetyCubit);
   });
 
   tearDown(() async => getIt.reset());
