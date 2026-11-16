@@ -121,6 +121,43 @@ void main() {
     });
   });
 
+  group('app_privacy channel, Android (plan 05-10)', () {
+    late String kt;
+
+    setUpAll(() {
+      kt = _read(
+        'android/app/src/main/kotlin/com/omeu/space/agenda/MainActivity.kt',
+      );
+    });
+
+    test('MainActivity registers agenda/app_privacy with setSecure', () {
+      expect(kt, contains('"agenda/app_privacy"'));
+      expect(kt, contains('"setSecure"'));
+    });
+
+    test('setSecure adds and clears FLAG_SECURE (D-04, T-05-29)', () {
+      expect(kt, contains('import android.view.WindowManager'));
+      expect(
+        kt,
+        contains('window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)'),
+      );
+      expect(
+        kt,
+        contains('window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)'),
+      );
+    });
+
+    test('a non-Boolean argument is rejected with result.error (T-05-30)', () {
+      expect(kt, contains('call.arguments as? Boolean'));
+      expect(kt, contains('result.error("bad_args", null, null)'));
+    });
+
+    test('the system_settings channel is still registered', () {
+      expect(kt, contains('"agenda/system_settings"'));
+      expect(kt, contains('super.configureFlutterEngine'));
+    });
+  });
+
   group('API smoke', () {
     test('local_auth 3.0.1 surface', () {
       final auth = LocalAuthentication();

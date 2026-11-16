@@ -10,6 +10,7 @@ import 'package:agenda/domain/lock/lock_attempts.dart';
 import 'package:agenda/domain/lock/pin_hasher.dart';
 import 'package:agenda/domain/lock/pin_record.dart';
 import 'package:agenda/domain/lock/pin_store.dart';
+import 'package:agenda/domain/lock/secure_window_gateway.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/infrastructure/lock/pbkdf2_pin_hasher.dart';
 import 'package:agenda/presentation/lock/widgets/lock_gate.dart';
@@ -31,6 +32,8 @@ class MockAppLockCubit extends MockCubit<AppLockState>
     implements AppLockCubit {}
 
 class MockExcursionGuard extends Mock implements ExcursionGuard {}
+
+class MockSecureWindowGateway extends Mock implements SecureWindowGateway {}
 
 /// A well-formed record with fixed bytes, for stubbing.
 final PinRecord fakePinRecord = PinRecord(

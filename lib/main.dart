@@ -24,7 +24,8 @@ import 'package:flutter/material.dart';
 /// 4. startNotifications — sets the local timezone and prepares the
 ///    notification channels. Never prompts and never throws.
 /// 5. startAppLock — wipes stale secure-storage entries on the first launch
-///    of a fresh install (iOS Keychain survives uninstall). Never throws.
+///    of a fresh install (iOS Keychain survives uninstall) and, when a PIN
+///    is configured, turns on the native window shield. Never throws.
 /// 6. runApp — starts the widget tree.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

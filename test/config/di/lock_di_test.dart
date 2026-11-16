@@ -9,9 +9,11 @@ import 'package:agenda/data/database/isar_service.dart';
 import 'package:agenda/domain/lock/excursion_guard.dart';
 import 'package:agenda/domain/lock/pin_hasher.dart';
 import 'package:agenda/domain/lock/pin_store.dart';
+import 'package:agenda/domain/lock/secure_window_gateway.dart';
 import 'package:agenda/infrastructure/lock/excursion_guard_impl.dart';
 import 'package:agenda/infrastructure/lock/pbkdf2_pin_hasher.dart';
 import 'package:agenda/infrastructure/lock/secure_pin_store.dart';
+import 'package:agenda/infrastructure/lock/secure_window_channel.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,6 +57,10 @@ void main() {
 
     test('ExcursionGuard resolves as a single ExcursionGuardImpl', () {
       expectSingleton<ExcursionGuard>(isA<ExcursionGuardImpl>());
+    });
+
+    test('SecureWindowGateway resolves as a single SecureWindowChannel', () {
+      expectSingleton<SecureWindowGateway>(isA<SecureWindowChannel>());
     });
 
     test('AppLockCubit resolves to one app-wide instance', () {

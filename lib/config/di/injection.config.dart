@@ -77,6 +77,7 @@ import 'package:agenda/domain/finance/transaction/transaction_repository.dart'
 import 'package:agenda/domain/lock/excursion_guard.dart' as _i152;
 import 'package:agenda/domain/lock/pin_hasher.dart' as _i275;
 import 'package:agenda/domain/lock/pin_store.dart' as _i875;
+import 'package:agenda/domain/lock/secure_window_gateway.dart' as _i22;
 import 'package:agenda/domain/notifications/alert_state_store.dart' as _i183;
 import 'package:agenda/domain/notifications/local_notification_gateway.dart'
     as _i114;
@@ -109,6 +110,7 @@ import 'package:agenda/infrastructure/finance/transaction_repository_impl.dart'
 import 'package:agenda/infrastructure/lock/excursion_guard_impl.dart' as _i548;
 import 'package:agenda/infrastructure/lock/pbkdf2_pin_hasher.dart' as _i680;
 import 'package:agenda/infrastructure/lock/secure_pin_store.dart' as _i360;
+import 'package:agenda/infrastructure/lock/secure_window_channel.dart' as _i586;
 import 'package:agenda/infrastructure/notifications/content/notification_content_builder.dart'
     as _i441;
 import 'package:agenda/infrastructure/notifications/gateway/flutter_local_notifications_gateway.dart'
@@ -220,6 +222,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i275.PinHasher>(() => _i680.Pbkdf2PinHasher());
     gh.lazySingleton<_i875.PinStore>(
       () => _i360.SecurePinStore(gh<_i558.FlutterSecureStorage>()),
+    );
+    gh.lazySingleton<_i22.SecureWindowGateway>(
+      () => _i586.SecureWindowChannel(),
     );
     gh.lazySingleton<_i368.AppLockCubit>(
       () => _i368.AppLockCubit(
