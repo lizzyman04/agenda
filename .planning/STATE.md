@@ -4,14 +4,14 @@ milestone: v1.0
 current_phase: 5
 current_phase_name: App Lock + Settings + Polish
 status: executing
-stopped_at: Completed 05-11-PLAN.md
-last_updated: "2026-11-16T22:10:47.419Z"
-state_head: 627937a83b09ece5af167cd30e4f2b5f70a7618d
+stopped_at: Completed 05-12-PLAN.md
+last_updated: "2026-11-16T22:37:29.455Z"
+state_head: 606c7f96904af649c0dd02d58c38221d19c973d0
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 77
-  completed_plans: 74
+  completed_plans: 75
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 5 (App Lock + Settings + Polish) — EXECUTING
-Plan: 12 of 14
+Plan: 13 of 14
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -223,6 +223,7 @@ Progress: [██████████] 100%
 | Phase 05 P09 | 21 min | 2 tasks | 14 files |
 | Phase 05 P10 | 45min | 2 tasks | 13 files |
 | Phase 05 P11 | 20min | 2 tasks | 24 files |
+| Phase 05 P12 | 18min | 3 tasks | 23 files |
 
 ## Accumulated Context
 
@@ -302,6 +303,11 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-11: unlisted LocalAuthExceptionCodes (authInProgress, uiUnavailable, deviceError, unknownError, biometricHardwareTemporarilyUnavailable) map to cancelled, a silent keypad fallback; only true is success
 - [Phase 05]: 05-11: biometric success resets D-07 attempts best-effort then unlocks; a failing reset still unlocks because identity is proven
 - [Phase 05]: 05-11: LockScreenCubit kept at 150 lines by extracting LockCountdown (cooldown ticker) and core/utils guarded(); pre-05-11 cubit tests pass pinOnlyDeviceAuth()
+- [Phase 05]: PinSetupPhase gained coolingDown so the setup keypad disables during a D-07 cooldown like the lock screen
+- [Phase 05]: LockCountdown renamed to CooldownTicker (onTick/onDone), shared by LockScreenCubit and PinSetupCubit
+- [Phase 05]: Forgot-PIN branching lives in LockDeviceAuth.confirmForgotPin; LockScreenCubit.confirmForgotPin delegates (150-line cap)
+- [Phase 05]: ForgotPinButton (forgot_pin_button.dart) receives PinSetupScreen(mode: reset) as resetPage from LockScreen, pushed on the lock Navigator
+- [Phase 05]: System back on PinSetupScreen pops false (cancel); reset mode ignores back
 
 ### Pending Todos
 
@@ -332,8 +338,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-11-16T22:10:46.939Z
-Stopped at: Completed 05-11-PLAN.md
+Last session: 2026-11-16T22:37:29.003Z
+Stopped at: Completed 05-12-PLAN.md
 
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
