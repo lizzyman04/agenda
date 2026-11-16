@@ -4,14 +4,14 @@ milestone: v1.0
 current_phase: 5
 current_phase_name: App Lock + Settings + Polish
 status: executing
-stopped_at: Completed 05-05-PLAN.md
-last_updated: "2026-11-16T19:18:53.185Z"
-state_head: 0722980bd9d67d29f465f8af688a278e0914078f
+stopped_at: Completed 05-06-PLAN.md
+last_updated: "2026-11-16T19:55:37.045Z"
+state_head: 7bc880b501efbc263f605f28220535787618a711
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 77
-  completed_plans: 68
+  completed_plans: 69
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 5 (App Lock + Settings + Polish) — EXECUTING
-Plan: 6 of 14
+Plan: 7 of 14
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -217,6 +217,7 @@ Progress: [██████████] 100%
 | Phase 05 P03 | 17 min | 3 tasks | 20 files |
 | Phase 05 P04 | 7min | 2 tasks | 10 files |
 | Phase 05 P05 | 7min | 2 tasks | 13 files |
+| Phase 05 P06 | 30 min | 3 tasks | 24 files |
 
 ## Accumulated Context
 
@@ -279,6 +280,10 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-04: OnboardingGate swaps its own subtree and persists before transitioning; task cubits live inside the gate's child
 - [Phase 05]: 05-05: Cross-slice widgets live in presentation/shared/widgets only when 2+ slices use them; FinanceEmptyState keeps its constructor and delegates to AppEmptyState
 - [Phase 05]: 05-05: TaskListScreen kept at 147 lines via a Dart 3 or-pattern merging Loaded/PendingUndo list arms (no builder extraction, no behaviour change)
+- [Phase 05]: 05-06: lock Navigator wrapped in HeroControllerScope.none (MaterialApp HeroController cannot be shared by two Navigators)
+- [Phase 05]: 05-06: unlock fade is an AnimationController in a stateful lock layer, not AnimatedSwitcher; locking is instant, only unlocking fades (150 ms, zero under disableAnimations)
+- [Phase 05]: 05-06: LockScreenCubit maps a thrown verify to PinCheckFailed (stay locked); only PinVerified unlocks
+- [Phase 05]: 05-06: Android back while locked accepted (Pitfall 12); hidden route pops logically, lock stays
 
 ### Pending Todos
 
@@ -309,8 +314,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-11-16T19:18:52.747Z
-Stopped at: Completed 05-05-PLAN.md
+Last session: 2026-11-16T19:55:36.569Z
+Stopped at: Completed 05-06-PLAN.md
 
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
