@@ -31,8 +31,12 @@ void main() {
     ).thenAnswer((_) async => const Success(LockAttempts.none));
   });
 
-  LockScreenCubit build() =>
-      LockScreenCubit(verifier, appLock, clock: clock.call);
+  LockScreenCubit build() => LockScreenCubit(
+    verifier,
+    appLock,
+    pinOnlyDeviceAuth(),
+    clock: clock.call,
+  );
 
   /// Attempts whose [lockouts]-th cooldown has [left] to run.
   LockAttempts coolingDown(int lockouts, Duration left) => LockAttempts(

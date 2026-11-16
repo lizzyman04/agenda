@@ -42,7 +42,7 @@ void main() {
       () => verifier.loadAttempts(),
     ).thenAnswer((_) async => const Success(LockAttempts.none));
     getIt.registerFactory<LockScreenCubit>(
-      () => LockScreenCubit(verifier, appLock),
+      () => LockScreenCubit(verifier, appLock, pinOnlyDeviceAuth()),
     );
   });
 

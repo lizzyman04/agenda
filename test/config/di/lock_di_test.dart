@@ -2,20 +2,24 @@
 // phase append their checks here.
 
 import 'package:agenda/application/lock/app_lock_cubit.dart';
+import 'package:agenda/application/lock/lock_device_auth.dart';
 import 'package:agenda/application/lock/lock_screen_cubit.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/data/database/isar_service.dart';
+import 'package:agenda/domain/lock/device_auth_gateway.dart';
 import 'package:agenda/domain/lock/excursion_guard.dart';
 import 'package:agenda/domain/lock/pin_hasher.dart';
 import 'package:agenda/domain/lock/pin_store.dart';
 import 'package:agenda/domain/lock/secure_window_gateway.dart';
 import 'package:agenda/infrastructure/lock/excursion_guard_impl.dart';
+import 'package:agenda/infrastructure/lock/local_auth_gateway.dart';
 import 'package:agenda/infrastructure/lock/pbkdf2_pin_hasher.dart';
 import 'package:agenda/infrastructure/lock/secure_pin_store.dart';
 import 'package:agenda/infrastructure/lock/secure_window_channel.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -61,6 +65,18 @@ void main() {
 
     test('SecureWindowGateway resolves as a single SecureWindowChannel', () {
       expectSingleton<SecureWindowGateway>(isA<SecureWindowChannel>());
+    });
+
+    test('DeviceAuthGateway resolves as a single LocalAuthGateway', () {
+      expectSingleton<DeviceAuthGateway>(isA<LocalAuthGateway>());
+    });
+
+    test('LocalAuthentication resolves as a singleton', () {
+      expectSingleton<LocalAuthentication>(isA<LocalAuthentication>());
+    });
+
+    test('LockDeviceAuth resolves', () {
+      expect(getIt<LockDeviceAuth>(), isA<LockDeviceAuth>());
     });
 
     test('AppLockCubit resolves to one app-wide instance', () {

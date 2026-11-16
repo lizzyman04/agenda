@@ -22,6 +22,7 @@ import 'package:agenda/application/finance/recurring/recurring_payment_cubit.dar
 import 'package:agenda/application/finance/transaction/transaction_cubit.dart'
     as _i1065;
 import 'package:agenda/application/lock/app_lock_cubit.dart' as _i368;
+import 'package:agenda/application/lock/lock_device_auth.dart' as _i265;
 import 'package:agenda/application/lock/lock_screen_cubit.dart' as _i384;
 import 'package:agenda/application/lock/pin_verifier.dart' as _i1015;
 import 'package:agenda/application/notifications/budget_alert_evaluator.dart'
@@ -74,6 +75,7 @@ import 'package:agenda/domain/finance/recurring/recurring_payment_repository.dar
     as _i385;
 import 'package:agenda/domain/finance/transaction/transaction_repository.dart'
     as _i585;
+import 'package:agenda/domain/lock/device_auth_gateway.dart' as _i944;
 import 'package:agenda/domain/lock/excursion_guard.dart' as _i152;
 import 'package:agenda/domain/lock/pin_hasher.dart' as _i275;
 import 'package:agenda/domain/lock/pin_store.dart' as _i875;
@@ -108,6 +110,7 @@ import 'package:agenda/infrastructure/finance/transaction_category_repository_im
 import 'package:agenda/infrastructure/finance/transaction_repository_impl.dart'
     as _i47;
 import 'package:agenda/infrastructure/lock/excursion_guard_impl.dart' as _i548;
+import 'package:agenda/infrastructure/lock/local_auth_gateway.dart' as _i673;
 import 'package:agenda/infrastructure/lock/pbkdf2_pin_hasher.dart' as _i680;
 import 'package:agenda/infrastructure/lock/secure_pin_store.dart' as _i360;
 import 'package:agenda/infrastructure/lock/secure_window_channel.dart' as _i586;
@@ -139,6 +142,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart'
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:local_auth/local_auth.dart' as _i152;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -177,6 +181,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => infrastructureModule.secureStorage,
+    );
+    gh.lazySingleton<_i152.LocalAuthentication>(
+      () => infrastructureModule.localAuthentication,
     );
     gh.lazySingleton<_i363.ReminderPlanner>(
       () => notificationsModule.reminderPlanner,
@@ -238,6 +245,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i44.RecurrenceEngine>(
       () => const _i317.RecurrenceEngineImpl(),
+    );
+    gh.lazySingleton<_i944.DeviceAuthGateway>(
+      () => _i673.LocalAuthGateway(
+        gh<_i152.LocalAuthentication>(),
+        gh<_i152.ExcursionGuard>(),
+      ),
     );
     gh.lazySingleton<_i357.BackupRepository>(
       () => _i466.BackupRepositoryImpl(gh<_i728.BackupDao>()),
@@ -316,12 +329,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i233.BudgetMapper>(),
       ),
     );
-    gh.factory<_i384.LockScreenCubit>(
-      () => _i384.LockScreenCubit(
-        gh<_i1015.PinVerifier>(),
-        gh<_i368.AppLockCubit>(),
-      ),
-    );
     gh.factory<_i275.RecurringPaymentCubit>(
       () => _i275.RecurringPaymentCubit(gh<_i385.RecurringPaymentRepository>()),
     );
@@ -345,6 +352,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i478.PermissionGate>(
       () => _i478.PermissionGate(
         gh<_i300.NotificationPermissionService>(),
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
+    gh.factory<_i265.LockDeviceAuth>(
+      () => _i265.LockDeviceAuth(
+        gh<_i944.DeviceAuthGateway>(),
         gh<_i460.SharedPreferences>(),
       ),
     );
@@ -403,6 +416,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i585.TransactionRepository>(),
         gh<_i385.RecurringPaymentRepository>(),
         gh<_i944.NotificationPrefsRepository>(),
+      ),
+    );
+    gh.factory<_i384.LockScreenCubit>(
+      () => _i384.LockScreenCubit(
+        gh<_i1015.PinVerifier>(),
+        gh<_i368.AppLockCubit>(),
+        gh<_i265.LockDeviceAuth>(),
       ),
     );
     gh.lazySingleton<_i708.GoalAlertEvaluator>(

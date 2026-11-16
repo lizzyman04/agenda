@@ -28,8 +28,12 @@ void main() {
     ).thenAnswer((_) async => const Success(LockAttempts.none));
   });
 
-  LockScreenCubit build() =>
-      LockScreenCubit(verifier, appLock, clock: clock.call);
+  LockScreenCubit build() => LockScreenCubit(
+    verifier,
+    appLock,
+    pinOnlyDeviceAuth(),
+    clock: clock.call,
+  );
 
   Future<LockScreenCubit> started() async {
     final cubit = build();

@@ -3,8 +3,10 @@
 
 import 'package:agenda/application/lock/app_lock_cubit.dart';
 import 'package:agenda/application/lock/app_lock_state.dart';
+import 'package:agenda/application/lock/lock_device_auth.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
 import 'package:agenda/core/constants/secure_storage_keys.dart';
+import 'package:agenda/domain/lock/device_auth_gateway.dart';
 import 'package:agenda/domain/lock/excursion_guard.dart';
 import 'package:agenda/domain/lock/lock_attempts.dart';
 import 'package:agenda/domain/lock/pin_hasher.dart';
@@ -20,6 +22,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockPinHasher extends Mock implements PinHasher {}
@@ -35,6 +38,28 @@ class MockExcursionGuard extends Mock implements ExcursionGuard {}
 
 class MockSecureWindowGateway extends Mock implements SecureWindowGateway {}
 
+class MockDeviceAuthGateway extends Mock implements DeviceAuthGateway {}
+
+class MockLocalAuthentication extends Mock implements LocalAuthentication {}
+
+class MockLockDeviceAuth extends Mock implements LockDeviceAuth {}
+
+/// Any prompt, for stubbing and verifying device-auth calls.
+const DeviceAuthPrompt fakeAuthPrompt = DeviceAuthPrompt(
+  reason: 'reason',
+  title: 'title',
+  hint: 'hint',
+  cancelLabel: 'cancel',
+);
+
+/// A [MockLockDeviceAuth] that never offers biometrics: the PIN-only lock
+/// screen of the tests written before 05-11.
+MockLockDeviceAuth pinOnlyDeviceAuth() {
+  final auth = MockLockDeviceAuth();
+  when(auth.biometricOffered).thenAnswer((_) async => false);
+  return auth;
+}
+
 /// A well-formed record with fixed bytes, for stubbing.
 final PinRecord fakePinRecord = PinRecord(
   iterations: 1,
@@ -48,6 +73,7 @@ void registerLockFallbacks() {
   registerFallbackValue(fakePinRecord);
   registerFallbackValue(LockAttempts.none);
   registerFallbackValue(DateTime.utc(2026));
+  registerFallbackValue(fakeAuthPrompt);
 }
 
 /// A localized app frame like `AgendaApp`: [AppLockCubit] provided above

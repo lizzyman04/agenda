@@ -46,7 +46,7 @@ void main() {
       () => verifier.verify('1234', any()),
     ).thenAnswer((_) async => const PinVerified());
     getIt.registerFactory<LockScreenCubit>(
-      () => LockScreenCubit(verifier, appLock),
+      () => LockScreenCubit(verifier, appLock, pinOnlyDeviceAuth()),
     );
   });
 

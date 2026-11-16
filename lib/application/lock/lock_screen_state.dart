@@ -1,3 +1,4 @@
+import 'package:agenda/application/lock/pin_verifier.dart';
 import 'package:equatable/equatable.dart';
 
 /// What the lock-screen keypad accepts right now.
@@ -51,6 +52,13 @@ final class CheckFailedMessage extends LockMessage {
   const CheckFailedMessage();
 }
 
+/// The status-line message after a PIN [outcome] that neither unlocked nor
+/// started a cooldown: a wrong PIN, or a check that failed (fail closed).
+LockMessage rejectionMessage(PinVerifyOutcome outcome) => switch (outcome) {
+  PinRejected(:final remaining) => WrongPinMessage(remaining),
+  _ => const CheckFailedMessage(),
+};
+
 /// Lock-screen keypad state.
 ///
 /// Holds only how MANY digits were entered, never the digits themselves, so
@@ -61,7 +69,17 @@ final class LockScreenState extends Equatable {
     this.digitCount = 0,
     this.message,
     this.errorTick = 0,
+    this.biometricOffered = false,
   });
+
+  /// A state with no digits: after the cubit starts, a PIN check
+  /// that did not unlock, or a cooldown tick.
+  const LockScreenState.entry(
+    this.phase,
+    this.errorTick,
+    this.message, {
+    required this.biometricOffered,
+  }) : digitCount = 0;
 
   /// The state before the attempt state has loaded.
   static const LockScreenState initial = LockScreenState(
@@ -79,6 +97,10 @@ final class LockScreenState extends Equatable {
   /// Increments on every rejected entry; the PIN dots shake when it changes.
   final int errorTick;
 
+  /// Whether the keypad shows the biometric key and the screen auto-prompts
+  /// (DATA-06). Biometrics are an alternative path; the keypad stays.
+  final bool biometricOffered;
+
   /// A copy; [clearMessage] drops [message] (a null [message] keeps it).
   LockScreenState copyWith({
     LockEntryPhase? phase,
@@ -86,13 +108,21 @@ final class LockScreenState extends Equatable {
     LockMessage? message,
     bool clearMessage = false,
     int? errorTick,
+    bool? biometricOffered,
   }) => LockScreenState(
     phase: phase ?? this.phase,
     digitCount: digitCount ?? this.digitCount,
     message: clearMessage ? null : message ?? this.message,
     errorTick: errorTick ?? this.errorTick,
+    biometricOffered: biometricOffered ?? this.biometricOffered,
   );
 
   @override
-  List<Object?> get props => [phase, digitCount, message, errorTick];
+  List<Object?> get props => [
+    phase,
+    digitCount,
+    message,
+    errorTick,
+    biometricOffered,
+  ];
 }

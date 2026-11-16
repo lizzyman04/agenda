@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
+import 'package:local_auth/local_auth.dart';
 
 /// DI registrations for infrastructure services
 /// (notifications, backup, app lock).
@@ -30,4 +31,8 @@ abstract class InfrastructureModule {
       accessibility: KeychainAccessibility.first_unlock_this_device,
     ),
   );
+
+  /// The single `local_auth` entry point, used only by `LocalAuthGateway`.
+  @lazySingleton
+  LocalAuthentication get localAuthentication => LocalAuthentication();
 }

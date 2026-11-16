@@ -1,85 +1,74 @@
 import 'dart:async';
 
 import 'package:agenda/application/lock/app_lock_cubit.dart';
+import 'package:agenda/application/lock/lock_countdown.dart';
+import 'package:agenda/application/lock/lock_device_auth.dart';
 import 'package:agenda/application/lock/lock_screen_state.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
 import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/core/utils/guarded.dart';
+import 'package:agenda/domain/lock/device_auth_gateway.dart';
 import 'package:agenda/domain/lock/lock_attempts.dart';
 import 'package:agenda/domain/lock/pin_hasher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-/// Drives the lock-screen keypad (DATA-05).
+/// Drives the lock-screen keypad (DATA-05) and biometric unlock (DATA-06).
 ///
-/// The entered digits live only in a private field; state carries the count.
-/// The 4th digit auto-submits exactly once. Only [PinVerified] unlocks:
-/// every other outcome, including a check failure, keeps the lock (fail
-/// closed, T-05-20). A D-07 cooldown, from a verify or from the persisted
-/// attempts at [start], blocks input and re-emits the countdown every second
-/// until it ends, so restarting the app cannot skip the wait (T-05-26).
+/// State carries the digit count, never the digits. Only [PinVerified] or a
+/// biometric success unlocks; any other outcome or a throw keeps the lock
+/// (T-05-20, T-05-33). A D-07 cooldown blocks digits, never biometrics.
 @injectable
 class LockScreenCubit extends Cubit<LockScreenState> {
   LockScreenCubit(
     this._verifier,
-    this._appLock, {
+    this._appLock,
+    this._deviceAuth, {
     @ignoreParam DateTime Function()? clock,
   }) : _clock = clock ?? DateTime.now,
        super(LockScreenState.initial);
 
   final PinVerifier _verifier;
   final AppLockCubit _appLock;
+  final LockDeviceAuth _deviceAuth;
   final DateTime Function() _clock;
 
+  late final _countdown = LockCountdown(_clock);
   String _digits = '';
-  Timer? _ticker;
+  bool _offered = false;
+  bool _autoPrompted = false;
+  bool _prompting = false;
 
-  /// Loads the persisted attempt state, then accepts input: a cooldown that
-  /// is still running resumes at once; an unreadable state shows
-  /// [CheckFailedMessage] and leaves the keypad usable for a retry.
+  /// Loads the attempts and the biometric offer. A running cooldown resumes
+  /// at once; an unreadable state shows [CheckFailedMessage] (retry allowed).
   Future<void> start() async {
     if (isClosed) return;
-    _ticker?.cancel();
+    _countdown.cancel();
     if (state != LockScreenState.initial) emit(LockScreenState.initial);
-    Result<LockAttempts>? loaded;
-    try {
-      loaded = await _verifier.loadAttempts();
-    } on Object {
-      loaded = null;
-    }
+    final loaded = await guarded(_verifier.loadAttempts, null);
+    _offered = await guarded(_deviceAuth.biometricOffered, false);
     if (isClosed) return;
     _digits = '';
     switch (loaded) {
       case Success(:final value) when value.isCoolingDown(_clock()):
-        _coolDown(value, state.errorTick);
+        _coolDown(value, 0);
       case Success():
-        emit(const LockScreenState(phase: LockEntryPhase.ready));
+        _show(LockEntryPhase.ready, 0);
       case Err() || null:
-        _show(
-          LockEntryPhase.ready,
-          state.errorTick,
-          const CheckFailedMessage(),
-        );
+        _show(LockEntryPhase.ready, 0, const CheckFailedMessage());
     }
   }
 
-  /// Appends [digit] (0-9). The 4th digit submits.
+  /// Appends [digit] (0-9); the 4th digit submits, exactly once.
   void addDigit(int digit) {
     if (state.phase != LockEntryPhase.ready) return;
     if (_digits.length >= pinLength || digit < 0 || digit > 9) return;
     _digits = '$_digits$digit';
-    if (_digits.length < pinLength) {
-      // Typing again dismisses a wrong-PIN or check-failed message.
-      emit(state.copyWith(digitCount: _digits.length, clearMessage: true));
-      return;
-    }
-    emit(
-      state.copyWith(
-        phase: LockEntryPhase.verifying,
-        digitCount: pinLength,
-        clearMessage: true,
-      ),
-    );
-    unawaited(_submit(_digits));
+    final n = _digits.length;
+    final next = n == pinLength ? LockEntryPhase.verifying : null;
+    // Typing again dismisses a wrong-PIN or check-failed message.
+    emit(state.copyWith(phase: next, digitCount: n, clearMessage: true));
+    if (n == pinLength) unawaited(_submit(_digits));
   }
 
   /// Removes the last digit.
@@ -96,52 +85,66 @@ class LockScreenCubit extends Cubit<LockScreenState> {
     emit(state.copyWith(digitCount: 0));
   }
 
-  Future<void> _submit(String pin) async {
-    PinVerifyOutcome outcome;
-    try {
-      outcome = await _verifier.verify(pin, _clock());
-    } on Object {
-      outcome = const PinCheckFailed();
+  /// Biometric prompt: success resets the D-07 counter and unlocks;
+  /// `unavailable` hides the key; anything else keeps the keypad (D-08).
+  Future<void> requestBiometric(DeviceAuthPrompt prompt) async {
+    if (!_offered || _prompting) return;
+    if (state.phase == LockEntryPhase.verifying) return;
+    _prompting = true;
+    final result = await _deviceAuth.unlockWithBiometrics(prompt);
+    _prompting = false;
+    if (isClosed) return;
+    if (result == DeviceAuthResult.success) {
+      await guarded<void>(_verifier.resetAttempts, null);
+      _appLock.unlock();
+    } else if (result == DeviceAuthResult.unavailable) {
+      _offered = false;
+      emit(state.copyWith(biometricOffered: false));
     }
+  }
+
+  /// The D-08 auto-prompt: at most once per cubit (one per lock episode).
+  Future<void> autoPromptBiometric(DeviceAuthPrompt prompt) async {
+    if (_autoPrompted || !_offered) return;
+    _autoPrompted = true;
+    await requestBiometric(prompt);
+  }
+
+  Future<void> _submit(String pin) async {
+    final outcome = await guarded<PinVerifyOutcome>(
+      () => _verifier.verify(pin, _clock()),
+      const PinCheckFailed(),
+    );
     if (isClosed) return;
     _digits = '';
     final tick = state.errorTick + 1;
     switch (outcome) {
       case PinVerified():
         _appLock.unlock();
-      case PinRejected(:final remaining):
-        _show(LockEntryPhase.ready, tick, WrongPinMessage(remaining));
-      case PinCheckFailed():
-        _show(LockEntryPhase.ready, tick, const CheckFailedMessage());
       case PinCoolingDown(:final attempts):
         _coolDown(attempts, tick);
+      case PinRejected() || PinCheckFailed():
+        _show(LockEntryPhase.ready, tick, rejectionMessage(outcome));
     }
   }
 
-  /// Shows [attempts]' countdown, re-emitted every second, then `ready`.
-  void _coolDown(LockAttempts attempts, int tick) {
-    _ticker?.cancel();
-    void show() {
-      final left = attempts.cooldownRemaining(_clock());
-      if (left > Duration.zero) {
-        return _show(LockEntryPhase.coolingDown, tick, CooldownMessage(left));
-      }
-      _ticker?.cancel();
-      _show(LockEntryPhase.ready, tick);
-    }
-
-    show();
-    if (state.phase != LockEntryPhase.coolingDown) return;
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) => show());
-  }
+  /// Shows [attempts]' countdown every second, then `ready`.
+  void _coolDown(LockAttempts attempts, int tick) => _countdown.start(
+    attempts,
+    (left) =>
+        left > Duration.zero
+            ? _show(LockEntryPhase.coolingDown, tick, CooldownMessage(left))
+            : _show(LockEntryPhase.ready, tick),
+  );
 
   /// Emits [phase] with no digits; the dots shake when [tick] changes.
-  void _show(LockEntryPhase phase, int tick, [LockMessage? message]) =>
-      emit(LockScreenState(phase: phase, message: message, errorTick: tick));
+  void _show(LockEntryPhase phase, int tick, [LockMessage? message]) => emit(
+    LockScreenState.entry(phase, tick, message, biometricOffered: _offered),
+  );
 
   @override
   Future<void> close() {
-    _ticker?.cancel();
+    _countdown.cancel();
     return super.close();
   }
 }
