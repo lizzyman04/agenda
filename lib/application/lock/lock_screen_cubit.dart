@@ -13,11 +13,10 @@ import 'package:agenda/domain/lock/pin_hasher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-/// Drives the lock-screen keypad (DATA-05) and biometric unlock (DATA-06).
-///
-/// State carries the digit count, never the digits. Only [PinVerified] or a
-/// biometric success unlocks; any other outcome or a throw keeps the lock
-/// (T-05-20, T-05-33). A D-07 cooldown blocks digits, never biometrics.
+/// Drives the lock-screen keypad (DATA-05), biometrics (DATA-06) and the
+/// forgot-PIN check (D-06); state holds the digit count, never the digits.
+/// Only [PinVerified] or a biometric success unlocks, a throw never does
+/// (T-05-20, T-05-33). A D-07 cooldown blocks digits, nothing else.
 @injectable
 class LockScreenCubit extends Cubit<LockScreenState> {
   LockScreenCubit(
@@ -32,7 +31,6 @@ class LockScreenCubit extends Cubit<LockScreenState> {
   final AppLockCubit _appLock;
   final LockDeviceAuth _deviceAuth;
   final DateTime Function() _clock;
-
   late final _countdown = CooldownTicker(clock: _clock);
   String _digits = '';
   bool _offered = false;
@@ -52,21 +50,19 @@ class LockScreenCubit extends Cubit<LockScreenState> {
     switch (loaded) {
       case Success(:final value) when value.isCoolingDown(_clock()):
         _coolDown(value, 0);
-      case Success():
-        _show(LockEntryPhase.ready, 0);
-      case Err() || null:
-        _show(LockEntryPhase.ready, 0, const CheckFailedMessage());
+      case _:
+        const failed = CheckFailedMessage();
+        _show(LockEntryPhase.ready, 0, loaded is Success ? null : failed);
     }
   }
 
-  /// Appends [digit] (0-9); the 4th digit submits, exactly once.
+  /// Appends [digit] (0-9), clearing any message; the 4th digit submits once.
   void addDigit(int digit) {
     if (state.phase != LockEntryPhase.ready) return;
     if (_digits.length >= pinLength || digit < 0 || digit > 9) return;
     _digits = '$_digits$digit';
     final n = _digits.length;
     final next = n == pinLength ? LockEntryPhase.verifying : null;
-    // Typing again dismisses a wrong-PIN or check-failed message.
     emit(state.copyWith(phase: next, digitCount: n, clearMessage: true));
     if (n == pinLength) unawaited(_submit(_digits));
   }
@@ -109,6 +105,10 @@ class LockScreenCubit extends Cubit<LockScreenState> {
     _autoPrompted = true;
     await requestBiometric(prompt);
   }
+
+  /// Forgot PIN (D-06), in any phase; see [LockDeviceAuth.confirmForgotPin].
+  Future<DeviceAuthResult> confirmForgotPin(DeviceAuthPrompt prompt) =>
+      _deviceAuth.confirmForgotPin(prompt);
 
   Future<void> _submit(String pin) async {
     final outcome = await guarded<PinVerifyOutcome>(

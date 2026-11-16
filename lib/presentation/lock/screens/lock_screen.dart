@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:agenda/application/lock/lock_screen_cubit.dart';
 import 'package:agenda/application/lock/lock_screen_state.dart';
+import 'package:agenda/application/lock/setup/pin_setup_state.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/domain/lock/device_auth_gateway.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
@@ -9,6 +10,8 @@ import 'package:agenda/presentation/lock/keypad/biometric_key.dart';
 import 'package:agenda/presentation/lock/keypad/lock_status_line.dart';
 import 'package:agenda/presentation/lock/keypad/pin_dots.dart';
 import 'package:agenda/presentation/lock/keypad/pin_keypad.dart';
+import 'package:agenda/presentation/lock/screens/forgot_pin_button.dart';
+import 'package:agenda/presentation/lock/screens/pin_setup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -64,12 +67,7 @@ class _LockScreenState extends State<LockScreen> {
 
   DeviceAuthPrompt _prompt() {
     final l10n = AppLocalizations.of(context);
-    return DeviceAuthPrompt(
-      reason: l10n.lockBiometricReason,
-      title: l10n.lockBiometricSheetTitle,
-      hint: l10n.lockBiometricSheetHint,
-      cancelLabel: l10n.lockUsePin,
-    );
+    return lockAuthPrompt(l10n, l10n.lockBiometricReason);
   }
 
   @override
@@ -131,6 +129,13 @@ class _LockScreenState extends State<LockScreen> {
                               state.biometricOffered
                                   ? BiometricKey(onPressed: _requestBiometric)
                                   : null,
+                        ),
+                        const SizedBox(height: 24),
+                        ForgotPinButton(
+                          onConfirm: _cubit.confirmForgotPin,
+                          resetPage: const PinSetupScreen(
+                            mode: PinSetupMode.reset,
+                          ),
                         ),
                         const SizedBox(height: 32),
                       ],

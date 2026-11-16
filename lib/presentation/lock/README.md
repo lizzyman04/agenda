@@ -15,7 +15,8 @@ is decided in `application/lock/`; nothing here reads storage.
 ```
 lock/
 ├── widgets/   LockGate (MaterialApp.builder layer: app below, lock above)
-├── screens/   LockScreen (title, status line slot, dots, keypad)
+├── screens/   LockScreen (title, status line slot, dots, keypad, forgot PIN),
+│              PinSetupScreen (create / change / verify / reset)
 └── keypad/    PinKeypad, DigitKey, KeypadIconKey, PinDots (shared with PIN setup)
 ```
 

@@ -4,10 +4,11 @@ import 'package:agenda/domain/lock/device_auth_gateway.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Biometric unlock for the lock screen (DATA-06, D-08).
+/// Biometric unlock (DATA-06, D-08) and the forgot-PIN device credential
+/// check (D-06) for the lock screen.
 ///
 /// Biometrics are an alternative to the PIN, never a replacement: the
-/// keypad stays available whatever this answers.
+/// keypad stays available whatever this answers. Nothing here unlocks.
 @injectable
 class LockDeviceAuth {
   LockDeviceAuth(this._gateway, this._prefs);
@@ -37,4 +38,27 @@ class LockDeviceAuth {
         () => _gateway.authenticate(prompt, biometricOnly: true),
         DeviceAuthResult.cancelled,
       );
+
+  /// Whether the device has a screen lock (PIN, pattern or password). A
+  /// failed check counts as none.
+  Future<bool> hasDeviceCredential() =>
+      guarded(_gateway.hasDeviceCredential, false);
+
+  /// The OS prompt that also accepts the device PIN, pattern or password.
+  /// Never throws: an error is [DeviceAuthResult.cancelled].
+  Future<DeviceAuthResult> confirmDeviceCredential(DeviceAuthPrompt prompt) =>
+      guarded(
+        () => _gateway.authenticate(prompt, biometricOnly: false),
+        DeviceAuthResult.cancelled,
+      );
+
+  /// Forgot PIN (D-06): [DeviceAuthResult.noDeviceCredential] when the
+  /// device has no screen lock (no prompt is shown), otherwise the
+  /// [confirmDeviceCredential] result. Only `success` proves identity.
+  Future<DeviceAuthResult> confirmForgotPin(DeviceAuthPrompt prompt) async {
+    if (!await hasDeviceCredential()) {
+      return DeviceAuthResult.noDeviceCredential;
+    }
+    return confirmDeviceCredential(prompt);
+  }
 }
