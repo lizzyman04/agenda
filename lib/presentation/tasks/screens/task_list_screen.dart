@@ -6,11 +6,11 @@ import 'package:agenda/core/constants/app_constants.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/settings/widgets/settings_gear_button.dart';
 import 'package:agenda/presentation/tasks/screens/gtd_filter_screen.dart';
 import 'package:agenda/presentation/tasks/screens/project_screen.dart';
 import 'package:agenda/presentation/tasks/screens/task_detail_screen.dart';
 import 'package:agenda/presentation/tasks/form/screens/task_form_screen.dart';
-import 'package:agenda/presentation/tasks/widgets/task_list_settings_menu.dart';
 import 'package:agenda/presentation/tasks/widgets/task_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -90,7 +90,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             tooltip: l10n.gtdFilterTitle,
             onPressed: _navigateToGtdFilter,
           ),
-          const TaskListSettingsMenu(),
+          const SettingsGearButton(),
         ],
         bottom: TaskSearchBar(
           hintText: l10n.searchTasks,
