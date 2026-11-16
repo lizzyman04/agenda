@@ -125,22 +125,20 @@ class _TaskListScreenState extends State<TaskListScreen> {
         },
         builder: (context, state) {
           return switch (state) {
-            TaskListInitial() || TaskListLoading() => const Center(
-                child: CircularProgressIndicator(),
+            TaskListInitial() || TaskListLoading() =>
+              const Center(child: CircularProgressIndicator()),
+            TaskListError(:final failure) =>
+              Center(child: Text(failure.message)),
+            TaskListLoaded(:final items, :final searchQuery)
+                when items.isEmpty =>
+              TaskListEmptyState(
+                l10n: l10n,
+                searchQuery: searchQuery,
+                onCreate: _navigateToCreate,
               ),
-            TaskListError(:final failure) => Center(
-                child: Text(failure.message),
-              ),
-            TaskListLoaded(:final items) when items.isEmpty =>
-              TaskListEmptyState(l10n: l10n),
-            TaskListLoaded(:final items) => TaskListView(
-                items: items,
-                onEdit: _navigateToItem,
-              ),
-            TaskListWithPendingUndo(:final items) => TaskListView(
-                items: items,
-                onEdit: _navigateToItem,
-              ),
+            TaskListLoaded(:final items) ||
+            TaskListWithPendingUndo(:final items) =>
+              TaskListView(items: items, onEdit: _navigateToItem),
           };
         },
       ),

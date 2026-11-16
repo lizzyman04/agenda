@@ -1,29 +1,35 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/shared/widgets/app_empty_state.dart';
 import 'package:agenda/presentation/tasks/widgets/task_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Empty-state placeholder shown when the task list has no items.
+/// Empty state shown when the task list has no items (UX-04).
+///
+/// With an empty [searchQuery] it prompts the first task through [onCreate]
+/// (the same create flow as the FAB).
 class TaskListEmptyState extends StatelessWidget {
-  const TaskListEmptyState({required this.l10n, super.key});
+  const TaskListEmptyState({
+    required this.l10n,
+    required this.searchQuery,
+    required this.onCreate,
+    super.key,
+  });
+
   final AppLocalizations l10n;
+  final String searchQuery;
+  final VoidCallback onCreate;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.check_box_outline_blank, size: 64),
-          const SizedBox(height: 16),
-          Text(
-            l10n.noTasks,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ],
-      ),
+    return AppEmptyState(
+      icon: Icons.check_box_outline_blank,
+      heading: l10n.noTasks,
+      body: l10n.tasksEmptyBody,
+      ctaLabel: l10n.tasksEmptyCta,
+      onCta: onCreate,
     );
   }
 }

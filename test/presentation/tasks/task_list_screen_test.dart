@@ -1,5 +1,11 @@
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/application/tasks/task_list/task_list_state.dart';
+import 'package:agenda/config/di/injection.dart';
+import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/domain/finance/debt/debt.dart';
+import 'package:agenda/domain/finance/debt/debt_repository.dart';
+import 'package:agenda/domain/finance/goal/goal_repository.dart';
+import 'package:agenda/domain/finance/goal/savings_goal.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
@@ -14,6 +20,21 @@ import 'package:mocktail/mocktail.dart';
 class MockTaskListCubit extends MockCubit<TaskListState>
     implements TaskListCubit {}
 
+// TaskFormScreen (pushed by the empty-state CTA) resolves these via getIt.
+class MockGoalRepository extends Mock implements GoalRepository {}
+
+class MockDebtRepository extends Mock implements DebtRepository {}
+
+/// Records every route pushed so a test can assert navigation happened.
+class _RecordingObserver extends NavigatorObserver {
+  final pushed = <Route<dynamic>>[];
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    pushed.add(route);
+  }
+}
+
 Item _makeItem(int id, {String title = 'Task'}) => Item(
       id: id,
       type: ItemType.task,
@@ -22,8 +43,12 @@ Item _makeItem(int id, {String title = 'Task'}) => Item(
       updatedAt: DateTime(2024),
     );
 
-Widget _buildTestWidget(TaskListCubit cubit) {
+Widget _buildTestWidget(
+  TaskListCubit cubit, {
+  List<NavigatorObserver> observers = const [],
+}) {
   return MaterialApp(
+    navigatorObservers: observers,
     localizationsDelegates: const [
       AppLocalizations.delegate,
       GlobalMaterialLocalizations.delegate,
@@ -66,6 +91,55 @@ void main() {
 
       // Empty state text "No tasks" from l10n.noTasks
       expect(find.text('No tasks'), findsOneWidget);
+    });
+
+    testWidgets('empty state shows the body and an "Add task" CTA',
+        (tester) async {
+      when(() => cubit.state).thenReturn(const TaskListLoaded(items: []));
+      whenListen(
+        cubit,
+        Stream<TaskListState>.fromIterable([const TaskListLoaded(items: [])]),
+        initialState: const TaskListLoaded(items: []),
+      );
+
+      await tester.pumpWidget(_buildTestWidget(cubit));
+      await tester.pump();
+
+      expect(find.byIcon(Icons.check_box_outline_blank), findsOneWidget);
+      expect(find.text('Add your first task or project.'), findsOneWidget);
+      expect(find.widgetWithText(FilledButton, 'Add task'), findsOneWidget);
+    });
+
+    testWidgets('tapping the empty-state CTA pushes the create route',
+        (tester) async {
+      final goalRepo = MockGoalRepository();
+      final debtRepo = MockDebtRepository();
+      when(goalRepo.getActiveGoals)
+          .thenAnswer((_) async => const Success(<SavingsGoal>[]));
+      when(debtRepo.getDebts).thenAnswer((_) async => const Success(<Debt>[]));
+      getIt
+        ..registerSingleton<GoalRepository>(goalRepo)
+        ..registerSingleton<DebtRepository>(debtRepo);
+      addTearDown(getIt.reset);
+
+      when(() => cubit.state).thenReturn(const TaskListLoaded(items: []));
+      whenListen(
+        cubit,
+        Stream<TaskListState>.fromIterable([const TaskListLoaded(items: [])]),
+        initialState: const TaskListLoaded(items: []),
+      );
+      final observer = _RecordingObserver();
+
+      await tester.pumpWidget(
+        _buildTestWidget(cubit, observers: [observer]),
+      );
+      await tester.pump();
+      final before = observer.pushed.length;
+
+      await tester.tap(find.widgetWithText(FilledButton, 'Add task'));
+      await tester.pumpAndSettle();
+
+      expect(observer.pushed.length, before + 1);
     });
 
     testWidgets('shows TaskCard when TaskListLoaded with one item',
