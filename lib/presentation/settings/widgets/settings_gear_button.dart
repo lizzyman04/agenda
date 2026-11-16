@@ -15,11 +15,12 @@ class SettingsGearButton extends StatelessWidget {
     return IconButton(
       icon: const Icon(Icons.settings_outlined),
       tooltip: AppLocalizations.of(context).settingsTitle,
-      onPressed: () => unawaited(
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
-        ),
-      ),
+      onPressed:
+          () => unawaited(
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
+            ),
+          ),
     );
   }
 }

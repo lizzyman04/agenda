@@ -13,7 +13,7 @@ no business rules live here.
 
 | File | Lines | Role |
 |------|------:|------|
-| `task_list_screen.dart` | 147 | Primary entry point. `BlocConsumer` over `TaskListCubit`: rebuilds the list and reacts to `TaskListWithPendingUndo` by showing the 5-second undo `SnackBar`. An empty `TaskListLoaded` renders `TaskListEmptyState` with its `searchQuery` and `onCreate: _navigateToCreate` (the FAB's create flow). The AppBar carries the GTD filter button and the temporary settings menu (`TaskListSettingsMenu`, D-15) |
+| `task_list_screen.dart` | 147 | Primary entry point. `BlocConsumer` over `TaskListCubit`: rebuilds the list and reacts to `TaskListWithPendingUndo` by showing the 5-second undo `SnackBar`. An empty `TaskListLoaded` renders `TaskListEmptyState` with its `searchQuery` and `onCreate: _navigateToCreate` (the FAB's create flow). The AppBar carries the GTD filter button and the Settings gear (`SettingsGearButton`, D-09) |
 | `task_detail_screen.dart` | 107 | One task, read-only, composed from `../widgets/detail/` |
 | `project_screen.dart` | 115 | A project's subtasks with a completion progress bar and an add-subtask FAB; `projectId` comes from the route path parameter |
 | `day_planner_screen.dart` | 121 | 1-3-5 planner: three `SlotSection`s driven by `DayPlannerCubit`, plus the over-capacity warning banner |
