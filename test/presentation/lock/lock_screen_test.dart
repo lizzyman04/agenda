@@ -6,6 +6,7 @@ import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/lock/lock_attempts.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/infrastructure/lock/excursion_guard_impl.dart';
 import 'package:agenda/presentation/lock/keypad/keypad_key.dart';
 import 'package:agenda/presentation/lock/screens/lock_screen.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,10 @@ void main() {
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({'pin_configured': true});
-    appLock = AppLockCubit(await SharedPreferences.getInstance());
+    appLock = AppLockCubit(
+      await SharedPreferences.getInstance(),
+      ExcursionGuardImpl(),
+    );
     verifier = MockPinVerifier();
     when(
       () => verifier.loadAttempts(),

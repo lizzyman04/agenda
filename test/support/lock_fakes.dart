@@ -5,6 +5,7 @@ import 'package:agenda/application/lock/app_lock_cubit.dart';
 import 'package:agenda/application/lock/app_lock_state.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
 import 'package:agenda/core/constants/secure_storage_keys.dart';
+import 'package:agenda/domain/lock/excursion_guard.dart';
 import 'package:agenda/domain/lock/lock_attempts.dart';
 import 'package:agenda/domain/lock/pin_hasher.dart';
 import 'package:agenda/domain/lock/pin_record.dart';
@@ -29,6 +30,8 @@ class MockPinVerifier extends Mock implements PinVerifier {}
 class MockAppLockCubit extends MockCubit<AppLockState>
     implements AppLockCubit {}
 
+class MockExcursionGuard extends Mock implements ExcursionGuard {}
+
 /// A well-formed record with fixed bytes, for stubbing.
 final PinRecord fakePinRecord = PinRecord(
   iterations: 1,
@@ -41,6 +44,7 @@ final PinRecord fakePinRecord = PinRecord(
 void registerLockFallbacks() {
   registerFallbackValue(fakePinRecord);
   registerFallbackValue(LockAttempts.none);
+  registerFallbackValue(DateTime.utc(2026));
 }
 
 /// A localized app frame like `AgendaApp`: [AppLockCubit] provided above

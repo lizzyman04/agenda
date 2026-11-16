@@ -74,6 +74,7 @@ import 'package:agenda/domain/finance/recurring/recurring_payment_repository.dar
     as _i385;
 import 'package:agenda/domain/finance/transaction/transaction_repository.dart'
     as _i585;
+import 'package:agenda/domain/lock/excursion_guard.dart' as _i152;
 import 'package:agenda/domain/lock/pin_hasher.dart' as _i275;
 import 'package:agenda/domain/lock/pin_store.dart' as _i875;
 import 'package:agenda/domain/notifications/alert_state_store.dart' as _i183;
@@ -105,6 +106,7 @@ import 'package:agenda/infrastructure/finance/transaction_category_repository_im
     as _i986;
 import 'package:agenda/infrastructure/finance/transaction_repository_impl.dart'
     as _i47;
+import 'package:agenda/infrastructure/lock/excursion_guard_impl.dart' as _i548;
 import 'package:agenda/infrastructure/lock/pbkdf2_pin_hasher.dart' as _i680;
 import 'package:agenda/infrastructure/lock/secure_pin_store.dart' as _i360;
 import 'package:agenda/infrastructure/notifications/content/notification_content_builder.dart'
@@ -205,6 +207,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i409.ItemDao>(
       () => tasksModule.itemDao(gh<_i43.IsarService>()),
     );
+    gh.lazySingleton<_i152.ExcursionGuard>(() => _i548.ExcursionGuardImpl());
     gh.lazySingleton<_i858.GoalRepository>(
       () => _i904.GoalRepositoryImpl(
         gh<_i514.SavingsGoalDao>(),
@@ -215,11 +218,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i829.AlertStateStoreImpl(gh<_i460.SharedPreferences>()),
     );
     gh.lazySingleton<_i275.PinHasher>(() => _i680.Pbkdf2PinHasher());
-    gh.lazySingleton<_i1027.BackupFileGateway>(
-      () => _i440.FilePickerBackupFileGateway(),
-    );
     gh.lazySingleton<_i875.PinStore>(
       () => _i360.SecurePinStore(gh<_i558.FlutterSecureStorage>()),
+    );
+    gh.lazySingleton<_i368.AppLockCubit>(
+      () => _i368.AppLockCubit(
+        gh<_i460.SharedPreferences>(),
+        gh<_i152.ExcursionGuard>(),
+      ),
     );
     gh.lazySingleton<_i944.NotificationPrefsRepository>(
       () =>
@@ -240,6 +246,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i568.RecurringPaymentMapper>(),
       ),
     );
+    gh.lazySingleton<_i1027.BackupFileGateway>(
+      () => _i440.FilePickerBackupFileGateway(gh<_i152.ExcursionGuard>()),
+    );
     gh.lazySingleton<_i169.DebtRepository>(
       () =>
           _i763.DebtRepositoryImpl(gh<_i731.DebtDao>(), gh<_i539.DebtMapper>()),
@@ -256,6 +265,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i101.LocaleCubit>(
       () => _i101.LocaleCubit(gh<_i460.SharedPreferences>()),
     );
+    gh.lazySingleton<_i300.NotificationPermissionService>(
+      () => _i789.NotificationPermissionServiceImpl(
+        gh<_i163.FlutterLocalNotificationsPlugin>(),
+        gh<_i152.ExcursionGuard>(),
+      ),
+    );
     gh.lazySingleton<_i1015.PinVerifier>(
       () => _i1015.PinVerifier(gh<_i875.PinStore>(), gh<_i275.PinHasher>()),
     );
@@ -263,11 +278,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i47.TransactionRepositoryImpl(
         gh<_i357.TransactionDao>(),
         gh<_i536.TransactionMapper>(),
-      ),
-    );
-    gh.lazySingleton<_i300.NotificationPermissionService>(
-      () => _i789.NotificationPermissionServiceImpl(
-        gh<_i163.FlutterLocalNotificationsPlugin>(),
       ),
     );
     gh.lazySingleton<_i200.TransactionCategoryRepository>(
@@ -294,9 +304,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i546.ItemMapper>(),
         gh<_i44.RecurrenceEngine>(),
       ),
-    );
-    gh.lazySingleton<_i368.AppLockCubit>(
-      () => _i368.AppLockCubit(gh<_i460.SharedPreferences>()),
     );
     gh.lazySingleton<_i877.BudgetRepository>(
       () => _i576.BudgetRepositoryImpl(

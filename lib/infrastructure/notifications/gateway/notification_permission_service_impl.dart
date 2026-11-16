@@ -1,3 +1,4 @@
+import 'package:agenda/domain/lock/excursion_guard.dart';
 import 'package:agenda/domain/notifications/notification_permission_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -16,16 +17,18 @@ const String openNotificationSettingsMethod = 'openNotificationSettings';
 /// Android asks for POST_NOTIFICATIONS (13+) and the exact-alarm screen
 /// (12+); iOS asks for alert and sound, never badge. Every call is guarded
 /// and falls back to the safe answer (denied, or false for exact alarms).
+/// Calls that show OS UI run inside the [ExcursionGuard] (D-03).
 @LazySingleton(as: NotificationPermissionService)
 class NotificationPermissionServiceImpl
     implements NotificationPermissionService {
-  NotificationPermissionServiceImpl(this._plugin);
+  NotificationPermissionServiceImpl(this._plugin, this._guard);
 
   static const MethodChannel _settingsChannel = MethodChannel(
     systemSettingsChannelName,
   );
 
   final FlutterLocalNotificationsPlugin _plugin;
+  final ExcursionGuard _guard;
 
   AndroidFlutterLocalNotificationsPlugin? get _android =>
       _plugin
@@ -65,10 +68,16 @@ class NotificationPermissionServiceImpl
     try {
       switch (defaultTargetPlatform) {
         case TargetPlatform.android:
-          return _from(await _android?.requestNotificationsPermission());
+          return _from(
+            await _guard.run(
+              () async => _android?.requestNotificationsPermission(),
+            ),
+          );
         case TargetPlatform.iOS:
           return _from(
-            await _ios?.requestPermissions(alert: true, sound: true),
+            await _guard.run(
+              () async => _ios?.requestPermissions(alert: true, sound: true),
+            ),
           );
         case _:
           return NotificationPermission.denied;
@@ -92,7 +101,7 @@ class NotificationPermissionServiceImpl
   Future<void> requestExactAlarmPermission() async {
     if (defaultTargetPlatform != TargetPlatform.android) return;
     try {
-      await _android?.requestExactAlarmsPermission();
+      await _guard.run(() async => _android?.requestExactAlarmsPermission());
     } on Object {
       // Nothing to recover: the caller re-reads canScheduleExact.
     }
@@ -105,8 +114,10 @@ class NotificationPermissionServiceImpl
       return false;
     }
     try {
-      return await _settingsChannel.invokeMethod<bool>(
-            openNotificationSettingsMethod,
+      return await _guard.run<bool?>(
+            () => _settingsChannel.invokeMethod<bool>(
+              openNotificationSettingsMethod,
+            ),
           ) ??
           false;
     } on Object {

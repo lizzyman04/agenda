@@ -9,6 +9,7 @@ import 'package:agenda/application/lock/pin_verifier.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/lock/lock_attempts.dart';
+import 'package:agenda/infrastructure/lock/excursion_guard_impl.dart';
 import 'package:agenda/presentation/lock/screens/lock_screen.dart';
 import 'package:agenda/presentation/lock/widgets/privacy_overlay.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ void main() {
     SharedPreferences.setMockInitialValues(prefs);
     appLock = AppLockCubit(
       await SharedPreferences.getInstance(),
+      ExcursionGuardImpl(clock: clock.call),
       clock: clock.call,
     )..unlock();
   }

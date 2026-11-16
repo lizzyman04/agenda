@@ -1,5 +1,6 @@
 import 'package:agenda/application/lock/app_lock_state.dart';
 import 'package:agenda/core/constants/storage_keys.dart';
+import 'package:agenda/domain/lock/excursion_guard.dart';
 import 'package:agenda/domain/lock/lock_policy.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -16,21 +17,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Lifecycle (RESEARCH Pattern 3): `inactive` paints the privacy overlay
 /// while frames still run, `hidden` records when the app left, and
 /// `resumed` decides the lock with the wall clock. Only a trip through
-/// `hidden` can lock.
+/// `hidden` can lock; a trip that began during an app-initiated excursion
+/// ([ExcursionGuard]) locks only past the excursion cap (D-03).
 ///
 /// One instance app-wide: the lifecycle policy and the settings screen reach
 /// the same cubit that `app.dart` provides.
 @lazySingleton
 class AppLockCubit extends Cubit<AppLockState> {
-  AppLockCubit(this._prefs, {@ignoreParam DateTime Function()? clock})
-    : _clock = clock ?? DateTime.now,
-      super(_initialState(_prefs));
+  AppLockCubit(
+    this._prefs,
+    this._guard, {
+    @ignoreParam DateTime Function()? clock,
+  }) : _clock = clock ?? DateTime.now,
+       super(_initialState(_prefs));
 
   final SharedPreferences _prefs;
+  final ExcursionGuard _guard;
   final DateTime Function() _clock;
 
   /// When the app last reached `hidden`; null when it has not left.
   DateTime? _hiddenAt;
+
+  /// Whether the current trip began during an app-initiated excursion.
+  bool _hiddenDuringExcursion = false;
 
   static AppLockState _initialState(SharedPreferences prefs) {
     bool? configured;
@@ -67,7 +76,10 @@ class AppLockCubit extends Cubit<AppLockState> {
   /// `AppLifecycleState.hidden`: the app went to the background. The first
   /// `hidden` of a trip wins; `hidden -> paused -> hidden` keeps it.
   void onHidden() {
-    _hiddenAt ??= _clock();
+    if (_hiddenAt != null) return;
+    final now = _clock();
+    _hiddenAt = now;
+    _hiddenDuringExcursion = _guard.isActive(now);
   }
 
   /// `AppLifecycleState.resumed`: removes the overlay and, in the SAME
@@ -81,9 +93,10 @@ class AppLockCubit extends Cubit<AppLockState> {
           hiddenAt: _hiddenAt,
           now: now,
           timeoutSeconds: LockPolicy.effectiveTimeoutSeconds(_storedTimeout()),
-          hiddenDuringExcursion: false,
+          hiddenDuringExcursion: _hiddenDuringExcursion,
         );
     _hiddenAt = null;
+    _hiddenDuringExcursion = false;
     final next = state.copyWith(obscured: false, locked: state.locked || lock);
     if (next != state) emit(next);
   }

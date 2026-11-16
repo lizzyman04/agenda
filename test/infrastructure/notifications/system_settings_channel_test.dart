@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:agenda/infrastructure/lock/excursion_guard_impl.dart';
 import 'package:agenda/infrastructure/notifications/gateway/notification_permission_service_impl.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +16,7 @@ void main() {
 
   group('openNotificationSettings', () {
     late NotificationPermissionServiceImpl service;
+    late ExcursionGuardImpl guard;
     late List<MethodCall> calls;
 
     void handle(Future<Object?> Function(MethodCall call) handler) {
@@ -28,8 +30,10 @@ void main() {
     setUp(() {
       calls = [];
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      guard = ExcursionGuardImpl();
       service = NotificationPermissionServiceImpl(
         FlutterLocalNotificationsPlugin(),
+        guard,
       );
     });
 
@@ -45,6 +49,17 @@ void main() {
       expect(calls, hasLength(1));
       expect(calls.single.method, openNotificationSettingsMethod);
       expect(calls.single.arguments, isNull);
+    });
+
+    test('the excursion guard is active while the page opens (D-03)', () async {
+      bool? active;
+      handle((_) async {
+        active = guard.isActive(DateTime.now());
+        return true;
+      });
+      expect(guard.isActive(DateTime.now()), isFalse);
+      expect(await service.openNotificationSettings(), isTrue);
+      expect(active, isTrue);
     });
 
     test('false when the platform could not launch it', () async {

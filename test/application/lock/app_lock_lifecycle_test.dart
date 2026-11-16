@@ -6,9 +6,11 @@ import 'package:agenda/application/lock/app_lock_cubit.dart';
 import 'package:agenda/application/lock/app_lock_state.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../support/fake_clock.dart';
+import '../../support/lock_fakes.dart';
 
 const _open = AppLockState(pinEnabled: true, locked: false);
 const _covered = AppLockState(pinEnabled: true, locked: false, obscured: true);
@@ -17,15 +19,22 @@ const _locked = AppLockState(pinEnabled: true, locked: true);
 void main() {
   late FakeClock clock;
   late SharedPreferences prefs;
+  late MockExcursionGuard guard;
+
+  setUpAll(registerLockFallbacks);
 
   Future<void> prefsWith(Map<String, Object> values) async {
     SharedPreferences.setMockInitialValues(values);
     prefs = await SharedPreferences.getInstance();
   }
 
-  setUp(() => clock = FakeClock());
+  setUp(() {
+    clock = FakeClock();
+    guard = MockExcursionGuard();
+    when(() => guard.isActive(any())).thenReturn(false);
+  });
 
-  AppLockCubit build() => AppLockCubit(prefs, clock: clock.call);
+  AppLockCubit build() => AppLockCubit(prefs, guard, clock: clock.call);
 
   /// A real background trip of [away]: inactive, hidden, paused, then back.
   void trip(AppLockCubit cubit, Duration away) {
@@ -178,6 +187,74 @@ void main() {
       build: build,
       act: (cubit) => trip(cubit, const Duration(hours: 1)),
       expect: () => <AppLockState>[],
+    );
+  });
+  group('app-initiated excursions (D-03)', () {
+    void excursion({required bool active}) =>
+        when(() => guard.isActive(any())).thenReturn(active);
+
+    blocTest<AppLockCubit, AppLockState>(
+      'hidden during an excursion, back after 4 min with timeout 0 -> open',
+      setUp: () async {
+        await prefsWith({'pin_configured': true, 'lock_timeout_seconds': 0});
+        excursion(active: true);
+      },
+      build: build,
+      seed: () => _open,
+      act: (cubit) => trip(cubit, const Duration(minutes: 4)),
+      expect: () => [_covered, _open],
+    );
+
+    blocTest<AppLockCubit, AppLockState>(
+      'hidden during an excursion, back after 5 min -> locked (cap)',
+      setUp: () async {
+        await prefsWith({'pin_configured': true, 'lock_timeout_seconds': 0});
+        excursion(active: true);
+      },
+      build: build,
+      seed: () => _open,
+      act: (cubit) => trip(cubit, const Duration(minutes: 5)),
+      expect: () => [_covered, _locked],
+    );
+
+    blocTest<AppLockCubit, AppLockState>(
+      'hidden while the guard is inactive with timeout 0 -> locked',
+      setUp: () async {
+        await prefsWith({'pin_configured': true, 'lock_timeout_seconds': 0});
+        excursion(active: false);
+      },
+      build: build,
+      seed: () => _open,
+      act: (cubit) => trip(cubit, const Duration(seconds: 1)),
+      expect: () => [_covered, _locked],
+    );
+
+    blocTest<AppLockCubit, AppLockState>(
+      'the excursion flag does not leak into the next trip',
+      setUp: () async {
+        await prefsWith({'pin_configured': true, 'lock_timeout_seconds': 0});
+        excursion(active: true);
+      },
+      build: build,
+      seed: () => _open,
+      act: (cubit) {
+        trip(cubit, const Duration(minutes: 1));
+        excursion(active: false);
+        trip(cubit, const Duration(seconds: 1));
+      },
+      expect: () => [_covered, _open, _covered, _locked],
+    );
+
+    blocTest<AppLockCubit, AppLockState>(
+      'the guard is sampled at hidden time with the injected clock',
+      setUp: () => prefsWith({'pin_configured': true}),
+      build: build,
+      seed: () => _open,
+      act: (cubit) => trip(cubit, const Duration(seconds: 1)),
+      verify:
+          (_) => verify(
+            () => guard.isActive(DateTime.utc(2026, 1, 1, 12)),
+          ).called(1),
     );
   });
 }
