@@ -1,7 +1,9 @@
+import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// Four PIN dots: [count] filled in `cs.primary`, the rest as 2 dp
-/// `cs.outline` rings (UI-SPEC "PinKeypad").
+/// `cs.outline` rings (UI-SPEC "PinKeypad"). Screen readers hear one label,
+/// `lockDigitsEntered(count)`, never the individual circles.
 class PinDots extends StatelessWidget {
   const PinDots({required this.count, super.key});
 
@@ -13,14 +15,20 @@ class PinDots extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < _total; i++) ...[
-          if (i > 0) const SizedBox(width: 16),
-          _Dot(filled: i < count, colors: cs),
-        ],
-      ],
+    return Semantics(
+      container: true,
+      label: AppLocalizations.of(context).lockDigitsEntered(count),
+      child: ExcludeSemantics(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < _total; i++) ...[
+              if (i > 0) const SizedBox(width: 16),
+              _Dot(filled: i < count, colors: cs),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }
