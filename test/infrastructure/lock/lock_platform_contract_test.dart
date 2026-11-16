@@ -158,6 +158,54 @@ void main() {
     });
   });
 
+  group('app_privacy channel, iOS (plan 05-10)', () {
+    late String scene;
+    late String app;
+
+    setUpAll(() {
+      scene = _read('ios/Runner/SceneDelegate.swift');
+      app = _read('ios/Runner/AppDelegate.swift');
+    });
+
+    test('SceneDelegate declares PrivacyShield and the cover callbacks', () {
+      expect(scene, contains('enum PrivacyShield'));
+      expect(scene, contains('static var enabled = false'));
+      expect(scene, contains('class SceneDelegate: FlutterSceneDelegate'));
+      for (final callback in [
+        'sceneWillResignActive',
+        'sceneDidEnterBackground',
+        'sceneDidBecomeActive',
+      ]) {
+        expect(scene, contains('func $callback('), reason: callback);
+        expect(scene, contains('super.$callback(scene)'), reason: callback);
+      }
+    });
+
+    test('the cover is opaque, sized to the window and gated (T-05-31)', () {
+      expect(scene, contains('guard PrivacyShield.enabled, cover == nil'));
+      expect(scene, contains('UIView(frame: window.bounds)'));
+      expect(scene, contains('.systemBackground'));
+      expect(scene, contains('[.flexibleWidth, .flexibleHeight]'));
+      expect(scene, contains('removeFromSuperview()'));
+    });
+
+    test('AppDelegate answers setSecure on agenda/app_privacy', () {
+      expect(app, contains('"agenda/app_privacy"'));
+      expect(app, contains('case "setSecure":'));
+      expect(app, contains('PrivacyShield.enabled = secure'));
+      expect(app, contains('appPrivacyChannel = privacy'));
+    });
+
+    test('a non-Bool argument is rejected with FlutterError (T-05-30)', () {
+      expect(app, contains('call.arguments as? Bool'));
+      expect(
+        app,
+        contains('FlutterError(code: "bad_args", message: nil, details: nil)'),
+      );
+      expect(app, contains('FlutterMethodNotImplemented'));
+    });
+  });
+
   group('API smoke', () {
     test('local_auth 3.0.1 surface', () {
       final auth = LocalAuthentication();

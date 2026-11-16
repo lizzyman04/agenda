@@ -31,6 +31,7 @@ import UserNotifications
   }
 
   private var systemSettingsChannel: FlutterMethodChannel?
+  private var appPrivacyChannel: FlutterMethodChannel?
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
@@ -53,5 +54,26 @@ import UserNotifications
       }
     }
     systemSettingsChannel = channel
+
+    // Native privacy shield (D-04): arms the App Switcher cover in
+    // SceneDelegate. Only a Bool argument is accepted; anything else is
+    // rejected, never interpreted.
+    let privacy = FlutterMethodChannel(
+      name: "agenda/app_privacy",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger())
+    privacy.setMethodCallHandler { call, result in
+      switch call.method {
+      case "setSecure":
+        guard let secure = call.arguments as? Bool else {
+          result(FlutterError(code: "bad_args", message: nil, details: nil))
+          return
+        }
+        PrivacyShield.enabled = secure
+        result(true)
+      default:
+        result(FlutterMethodNotImplemented)
+      }
+    }
+    appPrivacyChannel = privacy
   }
 }
