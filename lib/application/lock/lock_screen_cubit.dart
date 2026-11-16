@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:agenda/application/lock/app_lock_cubit.dart';
 import 'package:agenda/application/lock/lock_screen_state.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
+import 'package:agenda/core/failures/result.dart';
+import 'package:agenda/domain/lock/lock_attempts.dart';
 import 'package:agenda/domain/lock/pin_hasher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -12,7 +14,9 @@ import 'package:injectable/injectable.dart';
 /// The entered digits live only in a private field; state carries the count.
 /// The 4th digit auto-submits exactly once. Only [PinVerified] unlocks:
 /// every other outcome, including a check failure, keeps the lock (fail
-/// closed, T-05-20).
+/// closed, T-05-20). A D-07 cooldown, from a verify or from the persisted
+/// attempts at [start], blocks input and re-emits the countdown every second
+/// until it ends, so restarting the app cannot skip the wait (T-05-26).
 @injectable
 class LockScreenCubit extends Cubit<LockScreenState> {
   LockScreenCubit(
@@ -27,20 +31,35 @@ class LockScreenCubit extends Cubit<LockScreenState> {
   final DateTime Function() _clock;
 
   String _digits = '';
+  Timer? _ticker;
 
-  /// Loads the persisted attempt state, then accepts input.
+  /// Loads the persisted attempt state, then accepts input: a cooldown that
+  /// is still running resumes at once; an unreadable state shows
+  /// [CheckFailedMessage] and leaves the keypad usable for a retry.
   Future<void> start() async {
     if (isClosed) return;
+    _ticker?.cancel();
     if (state != LockScreenState.initial) emit(LockScreenState.initial);
+    Result<LockAttempts>? loaded;
     try {
-      await _verifier.loadAttempts();
+      loaded = await _verifier.loadAttempts();
     } on Object {
-      // 05-09 surfaces load failures; entry stays possible (verify fails
-      // closed on its own).
+      loaded = null;
     }
     if (isClosed) return;
     _digits = '';
-    emit(const LockScreenState(phase: LockEntryPhase.ready));
+    switch (loaded) {
+      case Success(:final value) when value.isCoolingDown(_clock()):
+        _coolDown(value, state.errorTick);
+      case Success():
+        emit(const LockScreenState(phase: LockEntryPhase.ready));
+      case Err() || null:
+        _show(
+          LockEntryPhase.ready,
+          state.errorTick,
+          const CheckFailedMessage(),
+        );
+    }
   }
 
   /// Appends [digit] (0-9). The 4th digit submits.
@@ -91,20 +110,38 @@ class LockScreenCubit extends Cubit<LockScreenState> {
       case PinVerified():
         _appLock.unlock();
       case PinRejected(:final remaining):
-        _rejected(WrongPinMessage(remaining), tick);
+        _show(LockEntryPhase.ready, tick, WrongPinMessage(remaining));
       case PinCheckFailed():
-        _rejected(const CheckFailedMessage(), tick);
-      case PinCoolingDown():
-        emit(LockScreenState(phase: LockEntryPhase.ready, errorTick: tick));
+        _show(LockEntryPhase.ready, tick, const CheckFailedMessage());
+      case PinCoolingDown(:final attempts):
+        _coolDown(attempts, tick);
     }
   }
 
-  /// Clears the digits and shows [message]; the dots shake on [tick].
-  void _rejected(LockMessage message, int tick) => emit(
-    LockScreenState(
-      phase: LockEntryPhase.ready,
-      message: message,
-      errorTick: tick,
-    ),
-  );
+  /// Shows [attempts]' countdown, re-emitted every second, then `ready`.
+  void _coolDown(LockAttempts attempts, int tick) {
+    _ticker?.cancel();
+    void show() {
+      final left = attempts.cooldownRemaining(_clock());
+      if (left > Duration.zero) {
+        return _show(LockEntryPhase.coolingDown, tick, CooldownMessage(left));
+      }
+      _ticker?.cancel();
+      _show(LockEntryPhase.ready, tick);
+    }
+
+    show();
+    if (state.phase != LockEntryPhase.coolingDown) return;
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) => show());
+  }
+
+  /// Emits [phase] with no digits; the dots shake when [tick] changes.
+  void _show(LockEntryPhase phase, int tick, [LockMessage? message]) =>
+      emit(LockScreenState(phase: phase, message: message, errorTick: tick));
+
+  @override
+  Future<void> close() {
+    _ticker?.cancel();
+    return super.close();
+  }
 }

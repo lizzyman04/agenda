@@ -233,6 +233,45 @@ void main() {
     expect(errorDots(), findsNothing);
   });
 
+  testWidgets('cooldown: keys disabled, countdown in onSurfaceVariant', (
+    tester,
+  ) async {
+    await pumpLock(tester);
+    when(() => verifier.verify(any(), any())).thenAnswer(
+      (_) async => PinCoolingDown(
+        LockAttempts(
+          failures: 5,
+          lockouts: 1,
+          cooldownUntil: DateTime.now().add(const Duration(seconds: 30)),
+        ),
+      ),
+    );
+    for (final d in ['9', '8', '7', '6']) {
+      await tester.tap(find.text(d));
+    }
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    final status = find.byKey(const ValueKey('lock-status-text'));
+    final text = tester.widget<Text>(status);
+    expect(text.data, startsWith('Muitas tentativas. Tente de novo em 0:'));
+    final theme = Theme.of(tester.element(status));
+    expect(text.style?.color, theme.colorScheme.onSurfaceVariant);
+
+    expect(
+      tester.widgetList<DigitKey>(find.byType(DigitKey)).map((k) => k.enabled),
+      everyElement(isFalse),
+    );
+    await tester.tap(find.text('1'));
+    await tester.pump();
+    expect(filled(), findsNothing);
+    expect(backspace(tester).onTap, isNull);
+    verify(() => verifier.verify(any(), any())).called(1);
+
+    // Dispose the screen so its cubit cancels the countdown ticker.
+    await tester.pumpWidget(const SizedBox());
+  });
+
   test('formatCooldown renders m:ss with seconds rounded up', () {
     expect(formatCooldown(const Duration(milliseconds: 29200)), '0:30');
     expect(formatCooldown(const Duration(seconds: 61)), '1:01');

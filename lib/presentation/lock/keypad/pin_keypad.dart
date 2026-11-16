@@ -25,7 +25,8 @@ class PinKeypad extends StatelessWidget {
   final VoidCallback onBackspace;
   final VoidCallback onClear;
 
-  /// False disables every digit key and backspace (cooldown, plan 05-09).
+  /// False disables every digit key and backspace (D-07 cooldown). The
+  /// [leading] key is untouched: biometrics are not guessable.
   final bool enabled;
 
   /// Bottom-left key (biometrics); an empty 72 dp slot when null.

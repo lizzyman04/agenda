@@ -77,6 +77,9 @@ class _LockScreenState extends State<LockScreen> {
                         const SizedBox(height: 48),
                         PinKeypad(
                           digitCount: state.digitCount,
+                          // Disabled while loading, verifying and during a
+                          // D-07 cooldown (the countdown is in the status).
+                          enabled: state.phase == LockEntryPhase.ready,
                           onDigit: _cubit.addDigit,
                           onBackspace: _cubit.removeDigit,
                           onClear: _cubit.clearDigits,

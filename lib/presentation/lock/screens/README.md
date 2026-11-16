@@ -11,7 +11,7 @@ Render the UI-SPEC lock-screen column and forward keypad input to its own
 
 | File | Lines | Role |
 |------|------:|------|
-| `lock_screen.dart` | 91 | `LockScreen` — owns `getIt<LockScreenCubit>()` (`start` in `initState`, `close` in `dispose`). `PopScope(canPop: false)` → `Scaffold(cs.surface)` → `SafeArea` → `Center` → `SingleChildScrollView` (no overflow at 200% text) → column: 48 gap, `lock_outline` 48, `lockEnterPinTitle`, fixed 40 dp status-line slot (filled by 05-09), `PinDots`, `PinKeypad`, 32 bottom |
+| `lock_screen.dart` | 97 | `LockScreen` — owns `getIt<LockScreenCubit>()` (`start` in `initState`, `close` in `dispose`). `PopScope(canPop: false)` → `Scaffold(cs.surface)` → `SafeArea` → `Center` → `SingleChildScrollView` (no overflow at 200% text) → column: 48 gap, `lock_outline` 48, `lockEnterPinTitle`, `LockStatusLine(message: state.message)` in the fixed 40 dp slot, `PinDots(count, errorTick)`, `PinKeypad(enabled: phase == ready)` (disabled while loading, verifying and during a cooldown), 32 bottom |
 
 ## Conventions in this slice
 
