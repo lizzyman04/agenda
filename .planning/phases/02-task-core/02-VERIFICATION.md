@@ -1,7 +1,7 @@
 ---
 phase: 02-task-core
 verified: 2026-04-15T00:00:00Z
-status: pass
+status: passed
 human_verification_approved: 2026-06-15
 human_verification_note: "All 5 on-device UAT items were exercised on a device when Phase 02 was originally completed; user confirmed pass on 2026-06-15."
 score: 5/5 must-haves verified
