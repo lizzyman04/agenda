@@ -15,6 +15,7 @@ import 'package:agenda/presentation/lock/screens/pin_setup_screen.dart';
 import 'package:agenda/presentation/settings/security/security_section.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -70,8 +71,13 @@ void main() {
     await getIt.reset();
   });
 
-  Future<void> pump(WidgetTester tester, {Locale? locale}) async {
-    await cubit.start();
+  Future<void> pump(
+    WidgetTester tester, {
+    Locale? locale,
+    bool start = true,
+    double textScale = 1,
+  }) async {
+    if (start) await cubit.start();
     await tester.pumpWidget(
       MaterialApp(
         locale: locale ?? const Locale('pt', 'BR'),
@@ -82,6 +88,13 @@ void main() {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
+        builder:
+            (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(textScale)),
+              child: child!,
+            ),
         home: Scaffold(
           body: BlocProvider<SecuritySettingsCubit>.value(
             value: cubit,
@@ -92,6 +105,12 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  /// Rows in the section: every SwitchListTile builds exactly one ListTile.
+  Finder rows() => find.descendant(
+    of: find.byType(SecuritySection),
+    matching: find.byType(ListTile),
+  );
 
   bool switchValue(WidgetTester tester) =>
       tester
@@ -220,5 +239,257 @@ void main() {
       expect(switchValue(tester), isFalse);
       expect(find.text(pt.pinDisabledSnack), findsOneWidget);
     });
+  });
+
+  group('rows by state (UI Considerations)', () {
+    testWidgets('PIN off: only the PIN switch', (tester) async {
+      await setUpWith({});
+      await pump(tester);
+
+      expect(rows(), findsOneWidget);
+      expect(find.text(pt.lockChangePin), findsNothing);
+      expect(find.text(pt.lockBiometricToggle), findsNothing);
+      expect(find.text(pt.lockTimeoutLabel), findsNothing);
+    });
+
+    testWidgets('PIN on + enrolled: four rows', (tester) async {
+      await setUpWith({StorageKeys.pinConfigured: true});
+      await pump(tester);
+
+      expect(rows(), findsNWidgets(4));
+      expect(find.text(pt.lockChangePin), findsOneWidget);
+      expect(find.text(pt.lockBiometricToggle), findsOneWidget);
+      expect(find.text(pt.lockTimeoutLabel), findsOneWidget);
+      expect(find.text(pt.lockTimeout1m), findsOneWidget);
+      final bio = tester.widget<SwitchListTile>(
+        find.widgetWithText(SwitchListTile, pt.lockBiometricToggle),
+      );
+      expect(bio.value, isTrue); // D-08 default when nothing is stored
+      expect(bio.onChanged, isNotNull);
+    });
+
+    testWidgets('PIN on + not enrolled: biometrics disabled with hint', (
+      tester,
+    ) async {
+      when(
+        gateway.biometricAvailability,
+      ).thenAnswer((_) async => BiometricAvailability.notEnrolled);
+      await setUpWith({StorageKeys.pinConfigured: true});
+      await pump(tester);
+
+      expect(rows(), findsNWidgets(4));
+      final bio = tester.widget<SwitchListTile>(
+        find.widgetWithText(SwitchListTile, pt.lockBiometricToggle),
+      );
+      expect(bio.onChanged, isNull);
+      expect(find.text(pt.lockBiometricNotEnrolled), findsOneWidget);
+    });
+
+    testWidgets('PIN on + no hardware: three rows', (tester) async {
+      when(
+        gateway.biometricAvailability,
+      ).thenAnswer((_) async => BiometricAvailability.noHardware);
+      await setUpWith({StorageKeys.pinConfigured: true});
+      await pump(tester);
+
+      expect(rows(), findsNWidgets(3));
+      expect(find.text(pt.lockBiometricToggle), findsNothing);
+    });
+
+    testWidgets('availability unresolved: biometrics absent', (tester) async {
+      await setUpWith({StorageKeys.pinConfigured: true});
+      await pump(tester, start: false);
+
+      expect(cubit.state.availability, isNull);
+      expect(rows(), findsNWidgets(3));
+      expect(find.text(pt.lockBiometricToggle), findsNothing);
+    });
+
+    testWidgets('toggling biometrics persists false', (tester) async {
+      await setUpWith({StorageKeys.pinConfigured: true});
+      await pump(tester);
+
+      await tester.tap(find.text(pt.lockBiometricToggle));
+      await tester.pumpAndSettle();
+
+      expect(prefs.getBool(StorageKeys.biometricUnlockEnabled), isFalse);
+      final bio = tester.widget<SwitchListTile>(
+        find.widgetWithText(SwitchListTile, pt.lockBiometricToggle),
+      );
+      expect(bio.value, isFalse);
+    });
+
+    testWidgets('Alterar PIN opens change mode and confirms', (tester) async {
+      await setUpWith({StorageKeys.pinConfigured: true});
+      await pump(tester);
+
+      await tester.tap(find.text(pt.lockChangePin));
+      await tester.pumpAndSettle();
+      expect(started, [PinSetupMode.change]);
+
+      await finishSetup(tester, result: true);
+      expect(find.text(pt.pinChangedSnack), findsOneWidget);
+      expect(switchValue(tester), isTrue);
+    });
+  });
+
+  group('lock timeout (D-02)', () {
+    testWidgets('five options in order; 5 minutos persists 300', (
+      tester,
+    ) async {
+      await setUpWith({StorageKeys.pinConfigured: true});
+      await pump(tester);
+
+      await tester.tap(find.text(pt.lockTimeoutLabel));
+      await tester.pumpAndSettle();
+
+      expect(find.text(pt.lockTimeoutDialogTitle), findsOneWidget);
+      final radios =
+          tester
+              .widgetList<RadioListTile<int>>(find.byType(RadioListTile<int>))
+              .map((r) => r.value)
+              .toList();
+      expect(radios, [0, 30, 60, 300, 900]);
+      final labels = [
+        pt.lockTimeoutImmediate,
+        pt.lockTimeout30s,
+        pt.lockTimeout1m,
+        pt.lockTimeout5m,
+        pt.lockTimeout15m,
+      ];
+      final dialog = find.byType(AlertDialog);
+      for (var i = 1; i < labels.length; i++) {
+        final above = find.descendant(
+          of: dialog,
+          matching: find.text(labels[i - 1]),
+        );
+        final below = find.descendant(
+          of: dialog,
+          matching: find.text(labels[i]),
+        );
+        expect(
+          tester.getTopLeft(above).dy,
+          lessThan(tester.getTopLeft(below).dy),
+        );
+      }
+
+      await tester.tap(find.text(pt.lockTimeout5m));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(prefs.getInt(StorageKeys.lockTimeoutSeconds), 300);
+      expect(find.text(pt.lockTimeout5m), findsOneWidget); // row subtitle
+    });
+
+    testWidgets('Cancel closes without changing the timeout', (tester) async {
+      await setUpWith({StorageKeys.pinConfigured: true});
+      await pump(tester);
+
+      await tester.tap(find.text(pt.lockTimeoutLabel));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(pt.cancelButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(prefs.getInt(StorageKeys.lockTimeoutSeconds), isNull);
+      expect(cubit.state.timeoutSeconds, 60);
+    });
+
+    testWidgets('at 200% text the dialog scrolls to the last option', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await setUpWith({StorageKeys.pinConfigured: true});
+      await pump(tester, textScale: 2);
+
+      await tester.ensureVisible(find.text(pt.lockTimeoutLabel));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(pt.lockTimeoutLabel));
+      await tester.pumpAndSettle();
+      final last = find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.text(pt.lockTimeout15m),
+      );
+      await tester.scrollUntilVisible(
+        last,
+        50,
+        scrollable: find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.byType(Scrollable),
+        ),
+      );
+      await tester.tap(last);
+      await tester.pumpAndSettle();
+
+      expect(prefs.getInt(StorageKeys.lockTimeoutSeconds), 900);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('no device screen lock', () {
+    setUp(() {
+      when(gateway.hasDeviceCredential).thenAnswer((_) async => false);
+    });
+
+    testWidgets('Cancel on the warning pushes nothing; switch stays OFF', (
+      tester,
+    ) async {
+      await setUpWith({});
+      await pump(tester);
+
+      await tester.tap(find.text(pt.lockPinToggle));
+      await tester.pumpAndSettle();
+      expect(find.text(pt.pinNoDeviceLockTitle), findsOneWidget);
+      expect(find.text(pt.pinNoDeviceLockBody), findsOneWidget);
+
+      await tester.tap(find.text(pt.cancelButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(PinSetupScreen), findsNothing);
+      expect(started, isEmpty);
+      expect(switchValue(tester), isFalse);
+    });
+
+    testWidgets('"Criar PIN mesmo assim" opens create', (tester) async {
+      await setUpWith({});
+      await pump(tester);
+
+      await tester.tap(find.text(pt.lockPinToggle));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(pt.pinNoDeviceLockContinue));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(PinSetupScreen), findsOneWidget);
+      expect(started, [PinSetupMode.create]);
+    });
+  });
+
+  group('long text', () {
+    for (final locale in const [Locale('pt', 'BR'), Locale('en')]) {
+      testWidgets('pinDisableBody wraps, no ellipsis ($locale)', (
+        tester,
+      ) async {
+        tester.view.physicalSize = const Size(320, 568);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        final l10n = lookupAppLocalizations(locale);
+        await setUpWith({StorageKeys.pinConfigured: true});
+        await pump(tester, locale: locale);
+
+        await tester.tap(find.text(l10n.lockPinToggle));
+        await tester.pumpAndSettle();
+
+        final body = find.text(l10n.pinDisableBody);
+        final text = tester.widget<Text>(body);
+        expect(text.maxLines, isNull);
+        expect(text.overflow, isNot(TextOverflow.ellipsis));
+        final paragraph = tester.renderObject<RenderParagraph>(body);
+        expect(paragraph.didExceedMaxLines, isFalse);
+        final fontSize = paragraph.text.style?.fontSize ?? 14;
+        expect(paragraph.size.height, greaterThan(fontSize * 2)); // wrapped
+      });
+    }
   });
 }

@@ -25,7 +25,8 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen>
+    with WidgetsBindingObserver {
   late final SecuritySettingsCubit _security;
 
   @override
@@ -33,12 +34,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     _security = getIt<SecuritySettingsCubit>();
     unawaited(_security.start());
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(_security.close());
     super.dispose();
+  }
+
+  /// Enrolling a fingerprint in device settings shows up on return (D-08).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_security.refreshAvailability());
+    }
   }
 
   @override

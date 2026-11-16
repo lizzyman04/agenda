@@ -166,7 +166,7 @@ void main() {
   });
 
   group('Sections (D-10)', () {
-    testWidgets('headers run General, Notifications, Data, About', (
+    testWidgets('headers run General, Security, Notifications, Data, About', (
       tester,
     ) async {
       tester.view.physicalSize = const Size(800, 1600);
@@ -179,10 +179,59 @@ void main() {
               .getTopLeft(find.widgetWithText(SettingsSectionHeader, title))
               .dy;
 
-      expect(top('Geral'), lessThan(top('Notificações')));
+      expect(top('Geral'), lessThan(top('Segurança')));
+      expect(top('Segurança'), lessThan(top('Notificações')));
       expect(top('Notificações'), lessThan(top('Dados')));
       expect(top('Dados'), lessThan(top('Sobre')));
       expect(find.byType(Divider), findsNothing);
+    });
+
+    testWidgets('a resumed lifecycle event refreshes biometric availability', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_app(localeCubit, const SettingsScreen()));
+      await tester.pumpAndSettle();
+      verify(gateway.biometricAvailability).called(1);
+
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+
+      verify(gateway.biometricAvailability).called(1);
+    });
+
+    testWidgets('at 200% text the language dialog scrolls to every option', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        _app(localeCubit, const SettingsScreen(), textScale: 2),
+      );
+
+      await tester.tap(find.text('Idioma'));
+      await tester.pumpAndSettle();
+      final english = find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.text('English'),
+      );
+      await tester.scrollUntilVisible(
+        english,
+        50,
+        scrollable:
+            find
+                .descendant(
+                  of: find.byType(AlertDialog),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+      );
+      await tester.tap(english);
+      await tester.pumpAndSettle();
+
+      expect(localeCubit.state.locale, const Locale('en'));
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('the version row shows AppConfig.version and has no action', (

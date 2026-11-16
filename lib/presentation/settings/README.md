@@ -6,14 +6,17 @@ scrollable list reached from the gear in the Tasks AppBar.
 ## Responsibility
 
 Group every user-facing preference in one place, in the D-10 order: General
-(language), Security (PIN lock, added by 05-13), Notifications, Data and
-About. Feature pages are mounted here, not rebuilt.
+(language), Security (PIN lock, Change PIN, biometrics, lock timeout),
+Notifications, Data and About. Feature pages are mounted here, not rebuilt.
 
 ## Layout
 
 ```
 settings/
-├── screens/   SettingsScreen (the list, its link rows and the About rows)
+├── screens/   SettingsScreen (the list, its link rows and the About rows;
+│              owns SecuritySettingsCubit and refreshes it on resume)
+├── security/  SecuritySection, BiometricTile and the PIN-disable, timeout
+│              and no-device-lock dialogs
 └── widgets/   SettingsGearButton (AppBar entry point), SettingsSectionHeader,
                LanguageTile + showLanguageDialog
 ```
@@ -24,8 +27,9 @@ settings/
   push `NotificationSettingsScreen` and `BackupScreen` exactly as Phase 4
   built them; each owns its own cubit. About pushes
   `PrivacyStatementScreen(readOnly: true)` (D-14).
-- **Settings owns no feature state**, except the Security section (05-13).
-  The language row reads and writes the app-wide `LocaleCubit`.
+- **Settings owns no feature state**, except the Security section's
+  `SecuritySettingsCubit`. The language row reads and writes the app-wide
+  `LocaleCubit`. PIN changes always go through `PinSetupScreen`.
 - **One entry point.** Only the Tasks AppBar carries the gear; Settings is
   not a shell tab (D-09).
 - **Exactly two languages** (D-11): PT-BR and English, shown as endonyms.
@@ -36,6 +40,8 @@ settings/
 
 ## Upstream dependencies
 
-`application/shared/locale/` (`LocaleCubit`) · `core/config/` (`AppConfig`)
+`application/shared/locale/` (`LocaleCubit`) · `application/settings/`
+(`SecuritySettingsCubit`) · `presentation/lock/screens/` (`PinSetupScreen`) ·
+`core/config/` (`AppConfig`)
 · `presentation/notifications/` · `presentation/backup/` ·
 `presentation/onboarding/` · `generated/l10n/`.
