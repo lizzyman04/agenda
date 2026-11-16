@@ -50,7 +50,7 @@ Widget lockTestApp({
   required AppLockCubit appLock,
   Widget? home,
   Locale locale = const Locale('pt', 'BR'),
-  MediaQueryData? mediaQuery,
+  bool disableAnimations = false,
 }) {
   return BlocProvider<AppLockCubit>.value(
     value: appLock,
@@ -65,8 +65,11 @@ Widget lockTestApp({
       ],
       builder: (context, child) {
         final gate = LockGate(child: child!);
-        if (mediaQuery == null) return gate;
-        return MediaQuery(data: mediaQuery, child: gate);
+        if (!disableAnimations) return gate;
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: gate,
+        );
       },
       home: home ?? const LockTestHome(),
     ),

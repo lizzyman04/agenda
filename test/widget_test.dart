@@ -22,8 +22,10 @@ import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_repository.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/lock/screens/lock_screen.dart';
 import 'package:agenda/presentation/shell/shell_navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -364,6 +366,22 @@ void main() {
       await tester.pumpWidget(const AgendaApp());
       expect(find.byType(NavigationBar), findsOneWidget);
       expect(find.text(l10n.privacyStatement), findsNothing);
+    });
+  });
+
+  group('Cold start with a PIN (SC-1, DATA-05)', () {
+    testWidgets('the first frame is the lock screen, not the shell', (
+      tester,
+    ) async {
+      // Same seed as {'privacy_statement_shown': true, 'pin_configured':
+      // true}; AppLockCubit is lazy, so it reads the flag on first use.
+      await getIt<SharedPreferences>().setBool('pin_configured', true);
+      FlutterSecureStorage.setMockInitialValues({});
+
+      await tester.pumpWidget(const AgendaApp());
+
+      expect(find.byType(LockScreen), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
     });
   });
 }

@@ -1,6 +1,8 @@
 // DI graph for the app-lock services (phase 05). Later DI plans in this
 // phase append their checks here.
 
+import 'package:agenda/application/lock/app_lock_cubit.dart';
+import 'package:agenda/application/lock/lock_screen_cubit.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/data/database/isar_service.dart';
@@ -47,6 +49,18 @@ void main() {
 
     test('FlutterSecureStorage resolves as a singleton', () {
       expectSingleton<FlutterSecureStorage>(isA<FlutterSecureStorage>());
+    });
+
+    test('AppLockCubit resolves to one app-wide instance', () {
+      expectSingleton<AppLockCubit>(isA<AppLockCubit>());
+    });
+
+    test('LockScreenCubit resolves to a new instance each time', () async {
+      final a = getIt<LockScreenCubit>();
+      final b = getIt<LockScreenCubit>();
+      expect(identical(a, b), isFalse);
+      await a.close();
+      await b.close();
     });
   });
 }
