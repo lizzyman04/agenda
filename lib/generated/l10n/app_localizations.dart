@@ -120,7 +120,7 @@ abstract class AppLocalizations {
   /// Declaração de privacidade exibida no primeiro lançamento (UX-03)
   ///
   /// In pt_BR, this message translates to:
-  /// **'Os seus dados nunca saem deste dispositivo.'**
+  /// **'Seus dados nunca saem deste aparelho'**
   String get privacyStatement;
 
   /// Título genérico para estados vazios (UX-04)
@@ -2144,6 +2144,396 @@ abstract class AppLocalizations {
   /// In pt_BR, this message translates to:
   /// **'A importação falhou. Seus dados não foram alterados. Backup de segurança: {path}'**
   String backupErrorImportFailed(String path);
+
+  /// Botão principal da declaração de privacidade no primeiro lançamento (UX-03)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Começar'**
+  String get privacyGetStarted;
+
+  /// Título e botão principal da criação do PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Criar PIN'**
+  String get pinSetupTitle;
+
+  /// Introdução da declaração de privacidade (D-13)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'O AGENDA guarda suas tarefas e finanças somente aqui, no seu aparelho.'**
+  String get privacyIntro;
+
+  /// Item da declaração de privacidade: funciona offline e sem conta (D-13)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Funciona sem internet e sem criar conta.'**
+  String get privacyBulletOffline;
+
+  /// Item da declaração de privacidade: sem análises nem relatórios de erro (D-13)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Sem análises de uso e sem relatórios de erro enviados a ninguém.'**
+  String get privacyBulletNoTracking;
+
+  /// Item da declaração de privacidade: sem backup na nuvem, exportar JSON (D-13)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não há backup na nuvem. Exporte um backup JSON em Configurações > Dados para manter seus dados seguros.'**
+  String get privacyBulletBackup;
+
+  /// Item da declaração de privacidade: PIN opcional (D-13)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Proteja o app com um PIN opcional em Configurações > Segurança.'**
+  String get privacyBulletPin;
+
+  /// Cabeçalho da seção Geral nas configurações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Geral'**
+  String get settingsSectionGeneral;
+
+  /// Cabeçalho da seção Segurança nas configurações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Segurança'**
+  String get settingsSectionSecurity;
+
+  /// Cabeçalho da seção Notificações nas configurações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Notificações'**
+  String get settingsSectionNotifications;
+
+  /// Cabeçalho da seção Dados nas configurações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Dados'**
+  String get settingsSectionData;
+
+  /// Cabeçalho da seção Sobre nas configurações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Sobre'**
+  String get settingsSectionAbout;
+
+  /// Título do diálogo de escolha de idioma
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Escolher idioma'**
+  String get settingsLanguageDialogTitle;
+
+  /// Nome do idioma português do Brasil (endônimo, nunca traduzido)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Português (Brasil)'**
+  String get languageNamePtBr;
+
+  /// Nome do idioma inglês (endônimo, nunca traduzido)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'English'**
+  String get languageNameEn;
+
+  /// Interruptor que ativa o bloqueio com PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Bloqueio com PIN'**
+  String get lockPinToggle;
+
+  /// Descrição do interruptor de bloqueio com PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Pedir um PIN de 4 dígitos ao abrir o AGENDA'**
+  String get lockPinToggleDesc;
+
+  /// Item das configurações para alterar o PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Alterar PIN'**
+  String get lockChangePin;
+
+  /// Interruptor que ativa o desbloqueio por biometria
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Desbloquear com biometria'**
+  String get lockBiometricToggle;
+
+  /// Descrição do interruptor de biometria
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Usar digital ou rosto em vez do PIN'**
+  String get lockBiometricToggleDesc;
+
+  /// Aviso quando não há biometria cadastrada no aparelho
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Cadastre uma digital ou rosto nas configurações do aparelho'**
+  String get lockBiometricNotEnrolled;
+
+  /// Rótulo do item de tempo de bloqueio
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Bloquear após'**
+  String get lockTimeoutLabel;
+
+  /// Título do diálogo de tempo de bloqueio
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Bloquear depois de sair do app'**
+  String get lockTimeoutDialogTitle;
+
+  /// Opção de tempo de bloqueio: imediatamente
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Imediatamente'**
+  String get lockTimeoutImmediate;
+
+  /// Opção de tempo de bloqueio: 30 segundos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'30 segundos'**
+  String get lockTimeout30s;
+
+  /// Opção de tempo de bloqueio: 1 minuto
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'1 minuto'**
+  String get lockTimeout1m;
+
+  /// Opção de tempo de bloqueio: 5 minutos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'5 minutos'**
+  String get lockTimeout5m;
+
+  /// Opção de tempo de bloqueio: 15 minutos
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'15 minutos'**
+  String get lockTimeout15m;
+
+  /// Descrição do item de notificações nas configurações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Tipos, horários e horário de silêncio'**
+  String get settingsNotificationsDesc;
+
+  /// Descrição do item de backup nas configurações
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Exportar ou importar seus dados'**
+  String get settingsDataDesc;
+
+  /// Item da seção Sobre que reabre a declaração de privacidade
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Privacidade'**
+  String get settingsPrivacyLabel;
+
+  /// Item da seção Sobre com a versão do app
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Versão'**
+  String get settingsVersionLabel;
+
+  /// Título da tela de bloqueio
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Digite seu PIN'**
+  String get lockEnterPinTitle;
+
+  /// Instrução da etapa de criação do PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Crie um PIN de 4 dígitos'**
+  String get pinCreatePrompt;
+
+  /// Instrução da etapa de confirmação do PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Digite o PIN de novo para confirmar'**
+  String get pinConfirmPrompt;
+
+  /// Instrução para digitar o PIN atual
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Digite o PIN atual'**
+  String get pinCurrentPrompt;
+
+  /// Botão de esqueci meu PIN na tela de bloqueio
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Esqueci meu PIN'**
+  String get lockForgotPin;
+
+  /// Motivo exibido na folha de biometria do sistema
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Desbloqueie o AGENDA'**
+  String get lockBiometricReason;
+
+  /// Motivo exibido na verificação do sistema ao redefinir o PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Confirme que é você para criar um novo PIN'**
+  String get lockForgotReason;
+
+  /// Dica do botão de apagar no teclado do PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Apagar dígito'**
+  String get lockDeleteDigit;
+
+  /// Semântica dos pontos do PIN com a quantidade de dígitos digitados
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{count} de 4 dígitos digitados'**
+  String lockDigitsEntered(int count);
+
+  /// Mensagem após ativar o bloqueio com PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Bloqueio com PIN ativado'**
+  String get pinEnabledSnack;
+
+  /// Mensagem após alterar o PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'PIN alterado'**
+  String get pinChangedSnack;
+
+  /// Mensagem após desativar o bloqueio com PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Bloqueio com PIN desativado'**
+  String get pinDisabledSnack;
+
+  /// Corpo do estado vazio da lista de tarefas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Adicione sua primeira tarefa ou projeto.'**
+  String get tasksEmptyBody;
+
+  /// Botão do estado vazio da lista de tarefas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Adicionar tarefa'**
+  String get tasksEmptyCta;
+
+  /// Título do estado vazio da busca de tarefas
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Nenhum resultado'**
+  String get tasksSearchEmptyTitle;
+
+  /// Corpo do estado vazio da busca de tarefas com o termo buscado
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Nenhuma tarefa corresponde a \"{query}\".'**
+  String tasksSearchEmptyBody(String query);
+
+  /// Corpo do estado vazio da visão GTD por contexto
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Adicione contextos como @casa ou @trabalho ao criar ou editar uma tarefa.'**
+  String get gtdEmptyBody;
+
+  /// Erro de PIN incorreto com as tentativas restantes antes da espera
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'{remaining, plural, one{PIN incorreto. Resta {remaining} tentativa.} other{PIN incorreto. Restam {remaining} tentativas.}}'**
+  String lockWrongPin(int remaining);
+
+  /// Erro de espera após muitas tentativas; time já vem formatado como m:ss
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Muitas tentativas. Tente de novo em {time}.'**
+  String lockCooldown(String time);
+
+  /// Erro quando a confirmação do PIN não coincide
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Os PINs não coincidem. Crie o PIN de novo.'**
+  String get pinMismatch;
+
+  /// Erro genérico ao verificar o PIN (falha do armazenamento seguro)
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não foi possível verificar o PIN. Tente de novo.'**
+  String get lockErrorGeneric;
+
+  /// Título do diálogo quando não é possível redefinir o PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Não é possível redefinir o PIN'**
+  String get lockForgotUnavailableTitle;
+
+  /// Corpo do diálogo quando não é possível redefinir o PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Este aparelho não tem bloqueio de tela, então o AGENDA não consegue confirmar que é você. Se não lembrar o PIN, reinstale o AGENDA e restaure um backup JSON.'**
+  String get lockForgotUnavailableBody;
+
+  /// Botão de confirmação de diálogos informativos do bloqueio
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Entendi'**
+  String get lockGotIt;
+
+  /// Título do aviso de aparelho sem bloqueio de tela ao criar o PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Guarde um backup'**
+  String get pinNoDeviceLockTitle;
+
+  /// Corpo do aviso de aparelho sem bloqueio de tela ao criar o PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Este aparelho não tem bloqueio de tela. Se esquecer o PIN, não será possível redefini-lo. Exporte um backup JSON depois de criar o PIN.'**
+  String get pinNoDeviceLockBody;
+
+  /// Botão para continuar a criação do PIN sem bloqueio de tela no aparelho
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Criar PIN mesmo assim'**
+  String get pinNoDeviceLockContinue;
+
+  /// Título da confirmação para desativar o bloqueio com PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Desativar o bloqueio com PIN?'**
+  String get pinDisableTitle;
+
+  /// Corpo da confirmação para desativar o bloqueio com PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Qualquer pessoa com este aparelho poderá abrir o AGENDA e ver suas tarefas e finanças.'**
+  String get pinDisableBody;
+
+  /// Botão destrutivo que desativa o bloqueio com PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Desativar'**
+  String get pinDisableConfirm;
+
+  /// Título da folha de biometria do Android
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Desbloquear o AGENDA'**
+  String get lockBiometricSheetTitle;
+
+  /// Dica da folha de biometria do Android
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Use sua digital ou rosto'**
+  String get lockBiometricSheetHint;
+
+  /// Botão da folha de biometria do Android que volta ao teclado do PIN
+  ///
+  /// In pt_BR, this message translates to:
+  /// **'Usar PIN'**
+  String get lockUsePin;
 }
 
 class _AppLocalizationsDelegate

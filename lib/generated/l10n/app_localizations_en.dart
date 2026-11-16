@@ -18,7 +18,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageLabel => 'Language';
 
   @override
-  String get privacyStatement => 'Your data never leaves this device.';
+  String get privacyStatement => 'Your data never leaves this device';
 
   @override
   String get emptyStateTitle => 'Nothing here yet';
@@ -1149,4 +1149,224 @@ class AppLocalizationsEn extends AppLocalizations {
   String backupErrorImportFailed(String path) {
     return 'Import failed. Your data is unchanged. Safety backup: $path';
   }
+
+  @override
+  String get privacyGetStarted => 'Get started';
+
+  @override
+  String get pinSetupTitle => 'Create PIN';
+
+  @override
+  String get privacyIntro =>
+      'AGENDA keeps your tasks and finances only here, on your device.';
+
+  @override
+  String get privacyBulletOffline =>
+      'Works offline, with no account to create.';
+
+  @override
+  String get privacyBulletNoTracking =>
+      'No usage analytics and no crash reports sent anywhere.';
+
+  @override
+  String get privacyBulletBackup =>
+      'There is no cloud backup. Export a JSON backup in Settings > Data to keep your data safe.';
+
+  @override
+  String get privacyBulletPin =>
+      'Protect the app with an optional PIN in Settings > Security.';
+
+  @override
+  String get settingsSectionGeneral => 'General';
+
+  @override
+  String get settingsSectionSecurity => 'Security';
+
+  @override
+  String get settingsSectionNotifications => 'Notifications';
+
+  @override
+  String get settingsSectionData => 'Data';
+
+  @override
+  String get settingsSectionAbout => 'About';
+
+  @override
+  String get settingsLanguageDialogTitle => 'Choose language';
+
+  @override
+  String get languageNamePtBr => 'Português (Brasil)';
+
+  @override
+  String get languageNameEn => 'English';
+
+  @override
+  String get lockPinToggle => 'PIN lock';
+
+  @override
+  String get lockPinToggleDesc => 'Ask for a 4-digit PIN when opening AGENDA';
+
+  @override
+  String get lockChangePin => 'Change PIN';
+
+  @override
+  String get lockBiometricToggle => 'Unlock with biometrics';
+
+  @override
+  String get lockBiometricToggleDesc =>
+      'Use fingerprint or face instead of the PIN';
+
+  @override
+  String get lockBiometricNotEnrolled =>
+      'Add a fingerprint or face in your device settings';
+
+  @override
+  String get lockTimeoutLabel => 'Lock after';
+
+  @override
+  String get lockTimeoutDialogTitle => 'Lock after leaving the app';
+
+  @override
+  String get lockTimeoutImmediate => 'Immediately';
+
+  @override
+  String get lockTimeout30s => '30 seconds';
+
+  @override
+  String get lockTimeout1m => '1 minute';
+
+  @override
+  String get lockTimeout5m => '5 minutes';
+
+  @override
+  String get lockTimeout15m => '15 minutes';
+
+  @override
+  String get settingsNotificationsDesc => 'Types, times and quiet hours';
+
+  @override
+  String get settingsDataDesc => 'Export or import your data';
+
+  @override
+  String get settingsPrivacyLabel => 'Privacy';
+
+  @override
+  String get settingsVersionLabel => 'Version';
+
+  @override
+  String get lockEnterPinTitle => 'Enter your PIN';
+
+  @override
+  String get pinCreatePrompt => 'Create a 4-digit PIN';
+
+  @override
+  String get pinConfirmPrompt => 'Enter the PIN again to confirm';
+
+  @override
+  String get pinCurrentPrompt => 'Enter your current PIN';
+
+  @override
+  String get lockForgotPin => 'Forgot PIN';
+
+  @override
+  String get lockBiometricReason => 'Unlock AGENDA';
+
+  @override
+  String get lockForgotReason => 'Confirm it\'s you to create a new PIN';
+
+  @override
+  String get lockDeleteDigit => 'Delete digit';
+
+  @override
+  String lockDigitsEntered(int count) {
+    return '$count of 4 digits entered';
+  }
+
+  @override
+  String get pinEnabledSnack => 'PIN lock turned on';
+
+  @override
+  String get pinChangedSnack => 'PIN changed';
+
+  @override
+  String get pinDisabledSnack => 'PIN lock turned off';
+
+  @override
+  String get tasksEmptyBody => 'Add your first task or project.';
+
+  @override
+  String get tasksEmptyCta => 'Add task';
+
+  @override
+  String get tasksSearchEmptyTitle => 'No results';
+
+  @override
+  String tasksSearchEmptyBody(String query) {
+    return 'No tasks match \"$query\".';
+  }
+
+  @override
+  String get gtdEmptyBody =>
+      'Add contexts like @home or @work when you create or edit a task.';
+
+  @override
+  String lockWrongPin(int remaining) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other: 'Wrong PIN. $remaining attempts left.',
+      one: 'Wrong PIN. $remaining attempt left.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lockCooldown(String time) {
+    return 'Too many attempts. Try again in $time.';
+  }
+
+  @override
+  String get pinMismatch => 'The PINs don\'t match. Create the PIN again.';
+
+  @override
+  String get lockErrorGeneric => 'Couldn\'t check the PIN. Try again.';
+
+  @override
+  String get lockForgotUnavailableTitle => 'Can\'t reset the PIN';
+
+  @override
+  String get lockForgotUnavailableBody =>
+      'This device has no screen lock, so AGENDA can\'t confirm it\'s you. If you can\'t remember the PIN, reinstall AGENDA and restore a JSON backup.';
+
+  @override
+  String get lockGotIt => 'Got it';
+
+  @override
+  String get pinNoDeviceLockTitle => 'Keep a backup';
+
+  @override
+  String get pinNoDeviceLockBody =>
+      'This device has no screen lock. If you forget the PIN, it can\'t be reset. Export a JSON backup after you create the PIN.';
+
+  @override
+  String get pinNoDeviceLockContinue => 'Create PIN anyway';
+
+  @override
+  String get pinDisableTitle => 'Turn off PIN lock?';
+
+  @override
+  String get pinDisableBody =>
+      'Anyone with this device will be able to open AGENDA and see your tasks and finances.';
+
+  @override
+  String get pinDisableConfirm => 'Turn off';
+
+  @override
+  String get lockBiometricSheetTitle => 'Unlock AGENDA';
+
+  @override
+  String get lockBiometricSheetHint => 'Use your fingerprint or face';
+
+  @override
+  String get lockUsePin => 'Use PIN';
 }

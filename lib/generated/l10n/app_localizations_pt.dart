@@ -18,7 +18,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get languageLabel => 'Idioma';
 
   @override
-  String get privacyStatement => 'Os seus dados nunca saem deste dispositivo.';
+  String get privacyStatement => 'Seus dados nunca saem deste aparelho';
 
   @override
   String get emptyStateTitle => 'Nenhum item ainda';
@@ -1157,6 +1157,226 @@ class AppLocalizationsPt extends AppLocalizations {
   String backupErrorImportFailed(String path) {
     return 'A importação falhou. Seus dados não foram alterados. Backup de segurança: $path';
   }
+
+  @override
+  String get privacyGetStarted => 'Começar';
+
+  @override
+  String get pinSetupTitle => 'Criar PIN';
+
+  @override
+  String get privacyIntro =>
+      'O AGENDA guarda suas tarefas e finanças somente aqui, no seu aparelho.';
+
+  @override
+  String get privacyBulletOffline => 'Funciona sem internet e sem criar conta.';
+
+  @override
+  String get privacyBulletNoTracking =>
+      'Sem análises de uso e sem relatórios de erro enviados a ninguém.';
+
+  @override
+  String get privacyBulletBackup =>
+      'Não há backup na nuvem. Exporte um backup JSON em Configurações > Dados para manter seus dados seguros.';
+
+  @override
+  String get privacyBulletPin =>
+      'Proteja o app com um PIN opcional em Configurações > Segurança.';
+
+  @override
+  String get settingsSectionGeneral => 'Geral';
+
+  @override
+  String get settingsSectionSecurity => 'Segurança';
+
+  @override
+  String get settingsSectionNotifications => 'Notificações';
+
+  @override
+  String get settingsSectionData => 'Dados';
+
+  @override
+  String get settingsSectionAbout => 'Sobre';
+
+  @override
+  String get settingsLanguageDialogTitle => 'Escolher idioma';
+
+  @override
+  String get languageNamePtBr => 'Português (Brasil)';
+
+  @override
+  String get languageNameEn => 'English';
+
+  @override
+  String get lockPinToggle => 'Bloqueio com PIN';
+
+  @override
+  String get lockPinToggleDesc => 'Pedir um PIN de 4 dígitos ao abrir o AGENDA';
+
+  @override
+  String get lockChangePin => 'Alterar PIN';
+
+  @override
+  String get lockBiometricToggle => 'Desbloquear com biometria';
+
+  @override
+  String get lockBiometricToggleDesc => 'Usar digital ou rosto em vez do PIN';
+
+  @override
+  String get lockBiometricNotEnrolled =>
+      'Cadastre uma digital ou rosto nas configurações do aparelho';
+
+  @override
+  String get lockTimeoutLabel => 'Bloquear após';
+
+  @override
+  String get lockTimeoutDialogTitle => 'Bloquear depois de sair do app';
+
+  @override
+  String get lockTimeoutImmediate => 'Imediatamente';
+
+  @override
+  String get lockTimeout30s => '30 segundos';
+
+  @override
+  String get lockTimeout1m => '1 minuto';
+
+  @override
+  String get lockTimeout5m => '5 minutos';
+
+  @override
+  String get lockTimeout15m => '15 minutos';
+
+  @override
+  String get settingsNotificationsDesc =>
+      'Tipos, horários e horário de silêncio';
+
+  @override
+  String get settingsDataDesc => 'Exportar ou importar seus dados';
+
+  @override
+  String get settingsPrivacyLabel => 'Privacidade';
+
+  @override
+  String get settingsVersionLabel => 'Versão';
+
+  @override
+  String get lockEnterPinTitle => 'Digite seu PIN';
+
+  @override
+  String get pinCreatePrompt => 'Crie um PIN de 4 dígitos';
+
+  @override
+  String get pinConfirmPrompt => 'Digite o PIN de novo para confirmar';
+
+  @override
+  String get pinCurrentPrompt => 'Digite o PIN atual';
+
+  @override
+  String get lockForgotPin => 'Esqueci meu PIN';
+
+  @override
+  String get lockBiometricReason => 'Desbloqueie o AGENDA';
+
+  @override
+  String get lockForgotReason => 'Confirme que é você para criar um novo PIN';
+
+  @override
+  String get lockDeleteDigit => 'Apagar dígito';
+
+  @override
+  String lockDigitsEntered(int count) {
+    return '$count de 4 dígitos digitados';
+  }
+
+  @override
+  String get pinEnabledSnack => 'Bloqueio com PIN ativado';
+
+  @override
+  String get pinChangedSnack => 'PIN alterado';
+
+  @override
+  String get pinDisabledSnack => 'Bloqueio com PIN desativado';
+
+  @override
+  String get tasksEmptyBody => 'Adicione sua primeira tarefa ou projeto.';
+
+  @override
+  String get tasksEmptyCta => 'Adicionar tarefa';
+
+  @override
+  String get tasksSearchEmptyTitle => 'Nenhum resultado';
+
+  @override
+  String tasksSearchEmptyBody(String query) {
+    return 'Nenhuma tarefa corresponde a \"$query\".';
+  }
+
+  @override
+  String get gtdEmptyBody =>
+      'Adicione contextos como @casa ou @trabalho ao criar ou editar uma tarefa.';
+
+  @override
+  String lockWrongPin(int remaining) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other: 'PIN incorreto. Restam $remaining tentativas.',
+      one: 'PIN incorreto. Resta $remaining tentativa.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lockCooldown(String time) {
+    return 'Muitas tentativas. Tente de novo em $time.';
+  }
+
+  @override
+  String get pinMismatch => 'Os PINs não coincidem. Crie o PIN de novo.';
+
+  @override
+  String get lockErrorGeneric =>
+      'Não foi possível verificar o PIN. Tente de novo.';
+
+  @override
+  String get lockForgotUnavailableTitle => 'Não é possível redefinir o PIN';
+
+  @override
+  String get lockForgotUnavailableBody =>
+      'Este aparelho não tem bloqueio de tela, então o AGENDA não consegue confirmar que é você. Se não lembrar o PIN, reinstale o AGENDA e restaure um backup JSON.';
+
+  @override
+  String get lockGotIt => 'Entendi';
+
+  @override
+  String get pinNoDeviceLockTitle => 'Guarde um backup';
+
+  @override
+  String get pinNoDeviceLockBody =>
+      'Este aparelho não tem bloqueio de tela. Se esquecer o PIN, não será possível redefini-lo. Exporte um backup JSON depois de criar o PIN.';
+
+  @override
+  String get pinNoDeviceLockContinue => 'Criar PIN mesmo assim';
+
+  @override
+  String get pinDisableTitle => 'Desativar o bloqueio com PIN?';
+
+  @override
+  String get pinDisableBody =>
+      'Qualquer pessoa com este aparelho poderá abrir o AGENDA e ver suas tarefas e finanças.';
+
+  @override
+  String get pinDisableConfirm => 'Desativar';
+
+  @override
+  String get lockBiometricSheetTitle => 'Desbloquear o AGENDA';
+
+  @override
+  String get lockBiometricSheetHint => 'Use sua digital ou rosto';
+
+  @override
+  String get lockUsePin => 'Usar PIN';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -1173,7 +1393,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get languageLabel => 'Idioma';
 
   @override
-  String get privacyStatement => 'Os seus dados nunca saem deste dispositivo.';
+  String get privacyStatement => 'Seus dados nunca saem deste aparelho';
 
   @override
   String get emptyStateTitle => 'Nenhum item ainda';
@@ -2312,4 +2532,224 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String backupErrorImportFailed(String path) {
     return 'A importação falhou. Seus dados não foram alterados. Backup de segurança: $path';
   }
+
+  @override
+  String get privacyGetStarted => 'Começar';
+
+  @override
+  String get pinSetupTitle => 'Criar PIN';
+
+  @override
+  String get privacyIntro =>
+      'O AGENDA guarda suas tarefas e finanças somente aqui, no seu aparelho.';
+
+  @override
+  String get privacyBulletOffline => 'Funciona sem internet e sem criar conta.';
+
+  @override
+  String get privacyBulletNoTracking =>
+      'Sem análises de uso e sem relatórios de erro enviados a ninguém.';
+
+  @override
+  String get privacyBulletBackup =>
+      'Não há backup na nuvem. Exporte um backup JSON em Configurações > Dados para manter seus dados seguros.';
+
+  @override
+  String get privacyBulletPin =>
+      'Proteja o app com um PIN opcional em Configurações > Segurança.';
+
+  @override
+  String get settingsSectionGeneral => 'Geral';
+
+  @override
+  String get settingsSectionSecurity => 'Segurança';
+
+  @override
+  String get settingsSectionNotifications => 'Notificações';
+
+  @override
+  String get settingsSectionData => 'Dados';
+
+  @override
+  String get settingsSectionAbout => 'Sobre';
+
+  @override
+  String get settingsLanguageDialogTitle => 'Escolher idioma';
+
+  @override
+  String get languageNamePtBr => 'Português (Brasil)';
+
+  @override
+  String get languageNameEn => 'English';
+
+  @override
+  String get lockPinToggle => 'Bloqueio com PIN';
+
+  @override
+  String get lockPinToggleDesc => 'Pedir um PIN de 4 dígitos ao abrir o AGENDA';
+
+  @override
+  String get lockChangePin => 'Alterar PIN';
+
+  @override
+  String get lockBiometricToggle => 'Desbloquear com biometria';
+
+  @override
+  String get lockBiometricToggleDesc => 'Usar digital ou rosto em vez do PIN';
+
+  @override
+  String get lockBiometricNotEnrolled =>
+      'Cadastre uma digital ou rosto nas configurações do aparelho';
+
+  @override
+  String get lockTimeoutLabel => 'Bloquear após';
+
+  @override
+  String get lockTimeoutDialogTitle => 'Bloquear depois de sair do app';
+
+  @override
+  String get lockTimeoutImmediate => 'Imediatamente';
+
+  @override
+  String get lockTimeout30s => '30 segundos';
+
+  @override
+  String get lockTimeout1m => '1 minuto';
+
+  @override
+  String get lockTimeout5m => '5 minutos';
+
+  @override
+  String get lockTimeout15m => '15 minutos';
+
+  @override
+  String get settingsNotificationsDesc =>
+      'Tipos, horários e horário de silêncio';
+
+  @override
+  String get settingsDataDesc => 'Exportar ou importar seus dados';
+
+  @override
+  String get settingsPrivacyLabel => 'Privacidade';
+
+  @override
+  String get settingsVersionLabel => 'Versão';
+
+  @override
+  String get lockEnterPinTitle => 'Digite seu PIN';
+
+  @override
+  String get pinCreatePrompt => 'Crie um PIN de 4 dígitos';
+
+  @override
+  String get pinConfirmPrompt => 'Digite o PIN de novo para confirmar';
+
+  @override
+  String get pinCurrentPrompt => 'Digite o PIN atual';
+
+  @override
+  String get lockForgotPin => 'Esqueci meu PIN';
+
+  @override
+  String get lockBiometricReason => 'Desbloqueie o AGENDA';
+
+  @override
+  String get lockForgotReason => 'Confirme que é você para criar um novo PIN';
+
+  @override
+  String get lockDeleteDigit => 'Apagar dígito';
+
+  @override
+  String lockDigitsEntered(int count) {
+    return '$count de 4 dígitos digitados';
+  }
+
+  @override
+  String get pinEnabledSnack => 'Bloqueio com PIN ativado';
+
+  @override
+  String get pinChangedSnack => 'PIN alterado';
+
+  @override
+  String get pinDisabledSnack => 'Bloqueio com PIN desativado';
+
+  @override
+  String get tasksEmptyBody => 'Adicione sua primeira tarefa ou projeto.';
+
+  @override
+  String get tasksEmptyCta => 'Adicionar tarefa';
+
+  @override
+  String get tasksSearchEmptyTitle => 'Nenhum resultado';
+
+  @override
+  String tasksSearchEmptyBody(String query) {
+    return 'Nenhuma tarefa corresponde a \"$query\".';
+  }
+
+  @override
+  String get gtdEmptyBody =>
+      'Adicione contextos como @casa ou @trabalho ao criar ou editar uma tarefa.';
+
+  @override
+  String lockWrongPin(int remaining) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other: 'PIN incorreto. Restam $remaining tentativas.',
+      one: 'PIN incorreto. Resta $remaining tentativa.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lockCooldown(String time) {
+    return 'Muitas tentativas. Tente de novo em $time.';
+  }
+
+  @override
+  String get pinMismatch => 'Os PINs não coincidem. Crie o PIN de novo.';
+
+  @override
+  String get lockErrorGeneric =>
+      'Não foi possível verificar o PIN. Tente de novo.';
+
+  @override
+  String get lockForgotUnavailableTitle => 'Não é possível redefinir o PIN';
+
+  @override
+  String get lockForgotUnavailableBody =>
+      'Este aparelho não tem bloqueio de tela, então o AGENDA não consegue confirmar que é você. Se não lembrar o PIN, reinstale o AGENDA e restaure um backup JSON.';
+
+  @override
+  String get lockGotIt => 'Entendi';
+
+  @override
+  String get pinNoDeviceLockTitle => 'Guarde um backup';
+
+  @override
+  String get pinNoDeviceLockBody =>
+      'Este aparelho não tem bloqueio de tela. Se esquecer o PIN, não será possível redefini-lo. Exporte um backup JSON depois de criar o PIN.';
+
+  @override
+  String get pinNoDeviceLockContinue => 'Criar PIN mesmo assim';
+
+  @override
+  String get pinDisableTitle => 'Desativar o bloqueio com PIN?';
+
+  @override
+  String get pinDisableBody =>
+      'Qualquer pessoa com este aparelho poderá abrir o AGENDA e ver suas tarefas e finanças.';
+
+  @override
+  String get pinDisableConfirm => 'Desativar';
+
+  @override
+  String get lockBiometricSheetTitle => 'Desbloquear o AGENDA';
+
+  @override
+  String get lockBiometricSheetHint => 'Use sua digital ou rosto';
+
+  @override
+  String get lockUsePin => 'Usar PIN';
 }
