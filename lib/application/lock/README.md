@@ -19,7 +19,7 @@ lock layer lives in `presentation/lock/`.
 | File | Lines | Role |
 |------|------:|------|
 | `app_lock_state.dart` | 32 | `AppLockState(pinEnabled, locked, obscured)` with `copyWith` |
-| `app_lock_cubit.dart` | 45 | `AppLockCubit` (`@lazySingleton`, one app-wide instance) — seeds `pinEnabled`/`locked` synchronously in the constructor from `StorageKeys.pinConfigured` (a non-bool value locks: fail closed); `unlock()`; `pinEnabledChanged(enabled:)` always leaves it unlocked |
+| `app_lock_cubit.dart` | 100 | `AppLockCubit` (`@lazySingleton`, one app-wide instance; `{@ignoreParam clock}`) — seeds `pinEnabled`/`locked` synchronously in the constructor from `StorageKeys.pinConfigured` (a non-bool value locks: fail closed); `unlock()`; `pinEnabledChanged(enabled:)` always leaves it unlocked; lifecycle: `onInactive()` sets `obscured` when a PIN is on, `onHidden()` records the first hidden time of a trip, `onResumed()` reads `StorageKeys.lockTimeoutSeconds` (default 60), asks `shouldLockOnResume` and emits ONE state (`obscured: false`, `locked` if due) |
 | `lock_screen_state.dart` | 40 | `LockEntryPhase` (`loading`, `ready`, `verifying`) and `LockScreenState(phase, digitCount)` — the digit COUNT only, never the digits |
 | `lock_screen_cubit.dart` | 93 | `LockScreenCubit` (`@injectable`, one per lock screen) — keeps the digits in a private field; `start()` loads attempts then accepts input; `addDigit` auto-submits the 4th digit once to `PinVerifier.verify(digits, clock())`; only `PinVerified` calls `AppLockCubit.unlock()`, any other outcome or exception clears to `ready`; `removeDigit` / `clearDigits` act only in `ready` |
 | `pin_verifier.dart` | 102 | `PinVerifyOutcome` (`PinVerified`, `PinRejected(remaining)`, `PinCoolingDown(attempts)`, `PinCheckFailed`) and `PinVerifier` — `verify(pin, now)` checks format, cooldown, record and hash, and persists the new attempt state before answering; `loadAttempts`; `resetAttempts` |
@@ -33,6 +33,9 @@ lock layer lives in `presentation/lock/`.
 - **Fail closed.** A malformed PIN, a missing or malformed record, or any
   storage `Err` yields `PinCheckFailed`, never `PinVerified`. Recovery is the
   forgot-PIN flow, not an open lock.
+- **Lock only after `hidden`.** `inactive` alone (notification shade,
+  biometric sheet) never locks; background time uses the injected wall
+  clock and a clock moved back locks.
 - **Never log PIN material.** No PIN, record, salt or hash appears in a log,
   exception or failure message; failures carry the exception type only.
 

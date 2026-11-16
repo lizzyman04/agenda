@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:agenda/application/lock/app_lock_cubit.dart';
 import 'package:agenda/application/lock/app_lock_state.dart';
 import 'package:agenda/presentation/lock/screens/lock_screen.dart';
+import 'package:agenda/presentation/lock/widgets/privacy_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,27 +11,43 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 const Key lockFadeKey = ValueKey('lock-fade');
 
 /// Covers the whole app with the lock screen while [AppLockState.locked]
-/// (DATA-05, RESEARCH Pattern 1).
+/// and with [PrivacyOverlay] while [AppLockState.obscured] (DATA-05,
+/// RESEARCH Patterns 1 and 3).
 ///
-/// Mounted from `MaterialApp.builder`, so it sits above the app Navigator
-/// and no route, dialog or sheet can draw over the lock. Layer order is
-/// fixed: app below, lock above. The lock layer has its own Navigator,
-/// which gives it an Overlay for tooltips and dialogs.
-///
-/// While locked the app is [Offstage] (not painted, not hit-testable, no
-/// semantics) with tickers off, and keeps its navigation state. On unlock
-/// the app is onstage in the same frame and only the lock layer fades out
-/// over 150 ms, instantly when animations are disabled. Locking is always
-/// instant.
-///
-/// System back while locked (RESEARCH Pitfall 12, accepted): the event goes
-/// to the app Navigator, which may pop a hidden route or leave the app. The
-/// lock layer is not a route, so it stays.
-class LockGate extends StatelessWidget {
+/// Mounted from `MaterialApp.builder`, above the app Navigator. Layer
+/// order: app, lock layer (own Navigator), overlay. Forwards `inactive`,
+/// `hidden` and `resumed` to [AppLockCubit]. While locked the app is
+/// [Offstage] with tickers off and keeps its navigation state. Locking is
+/// instant; unlock fades the lock layer over 150 ms. System back while
+/// locked goes to the app Navigator (RESEARCH Pitfall 12, accepted).
+class LockGate extends StatefulWidget {
   const LockGate({required this.child, super.key});
 
   /// The app Navigator from `MaterialApp.builder`.
   final Widget child;
+
+  @override
+  State<LockGate> createState() => _LockGateState();
+}
+
+class _LockGateState extends State<LockGate> {
+  late final AppLifecycleListener _lifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycle = AppLifecycleListener(
+      onInactive: () => context.read<AppLockCubit>().onInactive(),
+      onHide: () => context.read<AppLockCubit>().onHidden(),
+      onResume: () => context.read<AppLockCubit>().onResumed(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +58,10 @@ class LockGate extends StatelessWidget {
             children: [
               Offstage(
                 offstage: state.locked,
-                child: TickerMode(enabled: !state.locked, child: child),
+                child: TickerMode(enabled: !state.locked, child: widget.child),
               ),
               _LockLayer(locked: state.locked),
+              if (state.obscured) const PrivacyOverlay(),
             ],
           ),
     );
