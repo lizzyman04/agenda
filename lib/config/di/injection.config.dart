@@ -21,6 +21,7 @@ import 'package:agenda/application/finance/recurring/recurring_payment_cubit.dar
     as _i275;
 import 'package:agenda/application/finance/transaction/transaction_cubit.dart'
     as _i1065;
+import 'package:agenda/application/lock/pin_verifier.dart' as _i1015;
 import 'package:agenda/application/notifications/budget_alert_evaluator.dart'
     as _i892;
 import 'package:agenda/application/notifications/goal_alert_evaluator.dart'
@@ -71,6 +72,8 @@ import 'package:agenda/domain/finance/recurring/recurring_payment_repository.dar
     as _i385;
 import 'package:agenda/domain/finance/transaction/transaction_repository.dart'
     as _i585;
+import 'package:agenda/domain/lock/pin_hasher.dart' as _i275;
+import 'package:agenda/domain/lock/pin_store.dart' as _i875;
 import 'package:agenda/domain/notifications/alert_state_store.dart' as _i183;
 import 'package:agenda/domain/notifications/local_notification_gateway.dart'
     as _i114;
@@ -100,6 +103,8 @@ import 'package:agenda/infrastructure/finance/transaction_category_repository_im
     as _i986;
 import 'package:agenda/infrastructure/finance/transaction_repository_impl.dart'
     as _i47;
+import 'package:agenda/infrastructure/lock/pbkdf2_pin_hasher.dart' as _i680;
+import 'package:agenda/infrastructure/lock/secure_pin_store.dart' as _i360;
 import 'package:agenda/infrastructure/notifications/content/notification_content_builder.dart'
     as _i441;
 import 'package:agenda/infrastructure/notifications/gateway/flutter_local_notifications_gateway.dart'
@@ -125,6 +130,7 @@ import 'package:agenda/infrastructure/tasks/recurrence_engine_impl.dart'
     as _i317;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as _i163;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
@@ -162,6 +168,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i163.FlutterLocalNotificationsPlugin>(
       () => infrastructureModule.notificationsPlugin,
+    );
+    gh.lazySingleton<_i558.FlutterSecureStorage>(
+      () => infrastructureModule.secureStorage,
     );
     gh.lazySingleton<_i363.ReminderPlanner>(
       () => notificationsModule.reminderPlanner,
@@ -203,8 +212,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i183.AlertStateStore>(
       () => _i829.AlertStateStoreImpl(gh<_i460.SharedPreferences>()),
     );
+    gh.lazySingleton<_i275.PinHasher>(() => _i680.Pbkdf2PinHasher());
     gh.lazySingleton<_i1027.BackupFileGateway>(
       () => _i440.FilePickerBackupFileGateway(),
+    );
+    gh.lazySingleton<_i875.PinStore>(
+      () => _i360.SecurePinStore(gh<_i558.FlutterSecureStorage>()),
     );
     gh.lazySingleton<_i944.NotificationPrefsRepository>(
       () =>
@@ -240,6 +253,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i101.LocaleCubit>(
       () => _i101.LocaleCubit(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i1015.PinVerifier>(
+      () => _i1015.PinVerifier(gh<_i875.PinStore>(), gh<_i275.PinHasher>()),
     );
     gh.lazySingleton<_i585.TransactionRepository>(
       () => _i47.TransactionRepositoryImpl(

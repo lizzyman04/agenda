@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
 
 /// DI registrations for infrastructure services
@@ -15,4 +16,18 @@ abstract class InfrastructureModule {
   @lazySingleton
   FlutterLocalNotificationsPlugin get notificationsPlugin =>
       FlutterLocalNotificationsPlugin();
+
+  /// The secure storage holding the PIN record and attempt state (D-05).
+  ///
+  /// iOS uses `first_unlock_this_device`, which keeps the record out of
+  /// device-to-device migration and backups (RESEARCH A4). Android keeps the
+  /// default `AndroidOptions` (passing them is flagged as redundant), whose
+  /// `resetOnError` is true: a Keystore fault wipes every entry, which
+  /// `PinVerifier` treats as a missing record and fails closed.
+  @lazySingleton
+  FlutterSecureStorage get secureStorage => const FlutterSecureStorage(
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock_this_device,
+    ),
+  );
 }
