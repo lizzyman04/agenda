@@ -9,7 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// Empty state shown when the task list has no items (UX-04).
 ///
 /// With an empty [searchQuery] it prompts the first task through [onCreate]
-/// (the same create flow as the FAB).
+/// (the same create flow as the FAB); with a non-empty one it reports that
+/// nothing matched the query, with no CTA.
 class TaskListEmptyState extends StatelessWidget {
   const TaskListEmptyState({
     required this.l10n,
@@ -24,6 +25,13 @@ class TaskListEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (searchQuery.isNotEmpty) {
+      return AppEmptyState(
+        icon: Icons.search_off,
+        heading: l10n.tasksSearchEmptyTitle,
+        body: l10n.tasksSearchEmptyBody(searchQuery),
+      );
+    }
     return AppEmptyState(
       icon: Icons.check_box_outline_blank,
       heading: l10n.noTasks,

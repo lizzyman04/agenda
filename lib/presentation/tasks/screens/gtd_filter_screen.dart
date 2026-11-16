@@ -5,6 +5,7 @@ import 'package:agenda/application/tasks/task_list/task_list_filter.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/tasks/item_repository.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/shared/widgets/app_empty_state.dart';
 import 'package:agenda/presentation/tasks/widgets/gtd_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -89,7 +90,11 @@ class _GtdFilterScreenState extends State<GtdFilterScreen> {
               children: [
                 Expanded(
                   child: _contexts.isEmpty
-                      ? Center(child: Text(l10n.noGtdContexts))
+                      ? AppEmptyState(
+                          icon: Icons.label_outline,
+                          heading: l10n.noGtdContexts,
+                          body: l10n.gtdEmptyBody,
+                        )
                       : Padding(
                           padding: const EdgeInsets.all(16),
                           child: Wrap(

@@ -4,6 +4,7 @@ import 'package:agenda/application/tasks/task_list/task_list_state.dart';
 import 'package:agenda/core/failures/result.dart';
 import 'package:agenda/domain/tasks/item_repository.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/shared/widgets/app_empty_state.dart';
 import 'package:agenda/presentation/tasks/screens/gtd_filter_screen.dart';
 import 'package:agenda/presentation/tasks/widgets/gtd_chip.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -191,6 +192,21 @@ void main() {
 
       // l10n.noGtdContexts = "No GTD contexts found"
       expect(find.text('No GTD contexts found'), findsOneWidget);
+      // l10n.gtdEmptyBody, rendered through the shared AppEmptyState
+      expect(
+        find.text(
+          'Add contexts like @home or @work when you create or edit a task.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.label_outline), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(AppEmptyState),
+          matching: find.byType(FilledButton),
+        ),
+        findsNothing,
+      );
     });
   });
 }

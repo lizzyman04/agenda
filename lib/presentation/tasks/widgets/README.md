@@ -22,7 +22,7 @@ widgets/
 | File | Lines | Role |
 |------|------:|------|
 | `task_card.dart` | 122 | Reusable card for one `Item`: title, priority chip, due date, quadrant label, completion checkbox, delete button |
-| `task_list_view.dart` | 86 | `TaskListEmptyState`, `TaskSearchBar` (an `AppBar`-sized search field), and `TaskListView` — the list of `TaskCard`s wired to `TaskListCubit` |
+| `task_list_view.dart` | 100 | `TaskListEmptyState` (UX-04, rendered through the shared `AppEmptyState`: no tasks shows the `tasksEmptyBody` body and an "Adicionar tarefa" CTA calling `onCreate`; a non-empty `searchQuery` with no match shows `search_off` and the query, no CTA), `TaskSearchBar` (an `AppBar`-sized search field), and `TaskListView` — the list of `TaskCard`s wired to `TaskListCubit` |
 | `quadrant_card.dart` | 80 | One Eisenhower quadrant: coloured header plus a scrollable list of title chips, with an empty label when the quadrant has none |
 | `slot_section.dart` | 108 | One 1-3-5 slot: header with current-vs-max count, optional over-capacity banner, assigned items with remove buttons |
 | `task_picker_sheet.dart` | 88 | `SlotSize` enum, `WarningBanner`, and `TaskPickerSheet` — picks a task to assign to a planner slot |
@@ -44,5 +44,6 @@ widgets/
 
 ## Upstream dependencies
 
+`presentation/shared/widgets/` (`AppEmptyState`) ·
 `application/tasks/task_list/` (`TaskListCubit`) · `domain/tasks/`
 (`Item`, `ItemType`, `EisenhowerQuadrant`) · `generated/l10n/`.

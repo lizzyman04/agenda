@@ -1,9 +1,14 @@
+import 'package:agenda/presentation/shared/widgets/app_empty_state.dart';
 import 'package:flutter/material.dart';
 
 /// Reusable empty state widget for all finance list screens.
 ///
 /// Extends the Phase 2 empty state pattern (UX-04) by adding a body text
 /// and a CTA [FilledButton] to guide the user to their first action.
+///
+/// Delegates to the shared [AppEmptyState] so finance and task empty
+/// states render from one layout; this wrapper keeps the required-CTA
+/// constructor every finance list already calls.
 ///
 /// Pure presentation widget — no BLoC imports.
 class FinanceEmptyState extends StatelessWidget {
@@ -33,38 +38,12 @@ class FinanceEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 72, color: cs.onSurfaceVariant),
-            const SizedBox(height: 16),
-            Text(
-              heading,
-              style: theme.textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              body,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: cs.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: onCta,
-              child: Text(ctaLabel),
-            ),
-          ],
-        ),
-      ),
+    return AppEmptyState(
+      icon: icon,
+      heading: heading,
+      body: body,
+      ctaLabel: ctaLabel,
+      onCta: onCta,
     );
   }
 }

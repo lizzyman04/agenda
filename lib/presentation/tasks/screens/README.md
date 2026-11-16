@@ -13,12 +13,12 @@ no business rules live here.
 
 | File | Lines | Role |
 |------|------:|------|
-| `task_list_screen.dart` | 149 | Primary entry point. `BlocConsumer` over `TaskListCubit`: rebuilds the list and reacts to `TaskListWithPendingUndo` by showing the 5-second undo `SnackBar`. The AppBar carries the GTD filter button and the temporary settings menu (`TaskListSettingsMenu`, D-15) |
+| `task_list_screen.dart` | 147 | Primary entry point. `BlocConsumer` over `TaskListCubit`: rebuilds the list and reacts to `TaskListWithPendingUndo` by showing the 5-second undo `SnackBar`. An empty `TaskListLoaded` renders `TaskListEmptyState` with its `searchQuery` and `onCreate: _navigateToCreate` (the FAB's create flow). The AppBar carries the GTD filter button and the temporary settings menu (`TaskListSettingsMenu`, D-15) |
 | `task_detail_screen.dart` | 107 | One task, read-only, composed from `../widgets/detail/` |
 | `project_screen.dart` | 115 | A project's subtasks with a completion progress bar and an add-subtask FAB; `projectId` comes from the route path parameter |
 | `day_planner_screen.dart` | 121 | 1-3-5 planner: three `SlotSection`s driven by `DayPlannerCubit`, plus the over-capacity warning banner |
 | `eisenhower_screen.dart` | 93 | 2x2 matrix board; partitions `TaskListCubit`'s items by `Item.eisenhowerQuadrant` |
-| `gtd_filter_screen.dart` | 139 | Lists the distinct GTD context tags from `ItemRepository` and filters the task list by one (TASK-09) |
+| `gtd_filter_screen.dart` | 144 | Lists the distinct GTD context tags from `ItemRepository` and filters the task list by one (TASK-09). With no contexts it renders the shared `AppEmptyState` (`label_outline`, `noGtdContexts`, `gtdEmptyBody`, no CTA) |
 
 ## Conventions in this slice
 
@@ -36,4 +36,5 @@ no business rules live here.
 `application/tasks/` (all three cubits and their states) ·
 `domain/tasks/` (`Item`, `ItemType`, `EisenhowerQuadrant`,
 `ItemRepository`) · `../widgets/` · `../form/` (navigation target) ·
-`generated/l10n/` · `config/di/injection.dart`.
+`presentation/shared/widgets/` (`AppEmptyState`) · `generated/l10n/` ·
+`config/di/injection.dart`.

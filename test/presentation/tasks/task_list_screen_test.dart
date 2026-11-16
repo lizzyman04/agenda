@@ -110,6 +110,26 @@ void main() {
       expect(find.widgetWithText(FilledButton, 'Add task'), findsOneWidget);
     });
 
+    testWidgets('search with no match shows the no-results state, no CTA',
+        (tester) async {
+      const state = TaskListLoaded(items: [], searchQuery: 'xyz');
+      when(() => cubit.state).thenReturn(state);
+      whenListen(
+        cubit,
+        Stream<TaskListState>.fromIterable([state]),
+        initialState: state,
+      );
+
+      await tester.pumpWidget(_buildTestWidget(cubit));
+      await tester.pump();
+
+      expect(find.byIcon(Icons.search_off), findsOneWidget);
+      expect(find.text('No results'), findsOneWidget);
+      expect(find.textContaining('xyz'), findsOneWidget);
+      expect(find.byType(FilledButton), findsNothing);
+      expect(find.text('No tasks'), findsNothing);
+    });
+
     testWidgets('tapping the empty-state CTA pushes the create route',
         (tester) async {
       final goalRepo = MockGoalRepository();

@@ -29,7 +29,7 @@ widgets/
 |------|------:|------|
 | `finance_form_primitives.dart` | 63 | `FormCard`, `FieldRow`, `FieldDivider` — the layout atoms shared by all four finance forms |
 | `category_picker_sheet.dart` | 97 | `CategoryPickerSheet` — one picker shared by the transaction and recurring payment forms, replacing the near-identical `_pickCategory()` sheets each used to have |
-| `finance_empty_state.dart` | 70 | Empty state for every finance list — body text plus a CTA `FilledButton` (extends the Phase 2 UX-04 pattern) |
+| `finance_empty_state.dart` | 49 | Empty state for every finance list — body text plus a required CTA `FilledButton`. Keeps its constructor but its `build` returns the shared `presentation/shared/widgets/AppEmptyState`, so finance and task empty states render from one layout |
 | `transaction_card.dart` | 116 | One transaction row. Layout contract: the title is the category name, the subtitle is the date, and the note appears exactly once as a chip. Swipe-to-delete via `Dismissible`, tap to edit, income/expense colours from `FinanceColors` |
 | `budget_progress_bar.dart` | 114 | Spend-vs-limit bar for one category, with a three-state colour ramp |
 | `dashboard_summary_card.dart` | 84 | The Resumo anchor: lifetime balance (D-07) in `displaySmall`, net worth (D-08) below |
@@ -55,4 +55,5 @@ widgets/
 
 `domain/finance/` (`Transaction`, `TransactionCategory`,
 `TransactionType`) · `core/constants/finance_colors.dart` ·
-`core/utils/amount_formatter.dart` · `fl_chart` · `generated/l10n/`.
+`core/utils/amount_formatter.dart` · `presentation/shared/widgets/`
+(`AppEmptyState`) · `fl_chart` · `generated/l10n/`.
