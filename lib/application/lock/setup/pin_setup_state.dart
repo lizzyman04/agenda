@@ -51,6 +51,16 @@ final class PinSetupState extends Equatable {
     this.errorTick = 0,
   });
 
+  /// The first step of [mode]: the current PIN for change and verify,
+  /// otherwise the new PIN.
+  factory PinSetupState.initial(PinSetupMode mode) => PinSetupState(
+    mode: mode,
+    step: switch (mode) {
+      PinSetupMode.change || PinSetupMode.verify => PinSetupStep.current,
+      PinSetupMode.create || PinSetupMode.reset => PinSetupStep.create,
+    },
+  );
+
   final PinSetupMode mode;
   final PinSetupStep step;
   final PinSetupPhase phase;
@@ -91,6 +101,15 @@ final class PinSetupState extends Equatable {
     step: step,
     message: message,
     errorTick: bump ? errorTick + 1 : errorTick,
+  );
+
+  /// The current-PIN step during a D-07 cooldown with [left] to wait.
+  PinSetupState cooling(Duration left, int tick) => PinSetupState(
+    mode: mode,
+    step: PinSetupStep.current,
+    phase: PinSetupPhase.coolingDown,
+    message: CooldownMessage(left),
+    errorTick: tick,
   );
 
   /// Four digits entered, now [phase]; the message is cleared.

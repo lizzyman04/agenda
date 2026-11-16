@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:agenda/application/lock/app_lock_cubit.dart';
 import 'package:agenda/application/lock/setup/pin_setup_cubit.dart';
 import 'package:agenda/application/lock/setup/pin_setup_state.dart';
 import 'package:agenda/config/di/injection.dart';
@@ -42,8 +43,19 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     super.dispose();
   }
 
+  /// Pops true; in reset mode unlocks instead and confirms over the app
+  /// (the caller of the other modes shows its own SnackBar).
   void _onDone(BuildContext context, PinSetupState state) {
-    Navigator.of(context).pop(true);
+    if (!_reset) {
+      Navigator.of(context).pop(true);
+      return;
+    }
+    final messenger = ScaffoldMessenger.of(context);
+    final text = AppLocalizations.of(context).pinChangedSnack;
+    context.read<AppLockCubit>().unlock();
+    messenger.showSnackBar(
+      SnackBar(content: Text(text), behavior: SnackBarBehavior.floating),
+    );
   }
 
   String? _appBarTitle(AppLocalizations l10n) => switch (widget.mode) {

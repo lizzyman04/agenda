@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:agenda/application/lock/cooldown_ticker.dart';
 import 'package:agenda/application/lock/lock_screen_state.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
 import 'package:agenda/application/lock/setup/pin_lifecycle.dart';
 import 'package:agenda/application/lock/setup/pin_setup_state.dart';
 import 'package:agenda/core/utils/guarded.dart';
+import 'package:agenda/domain/lock/lock_attempts.dart';
 import 'package:agenda/domain/lock/pin_hasher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -22,33 +24,23 @@ class PinSetupCubit extends Cubit<PinSetupState> {
     this._verifier, {
     @ignoreParam DateTime Function()? clock,
   }) : _clock = clock ?? DateTime.now,
-       super(
-         const PinSetupState(
-           mode: PinSetupMode.create,
-           step: PinSetupStep.create,
-         ),
-       );
+       super(PinSetupState.initial(PinSetupMode.create));
 
   final PinLifecycle _lifecycle;
   final PinVerifier _verifier;
   final DateTime Function() _clock;
 
+  late final _ticker = CooldownTicker(clock: _clock);
   String _digits = '';
   String _first = '';
 
   /// Starts [mode]: the current PIN first for change and verify, otherwise
   /// the new PIN.
   void start(PinSetupMode mode) {
+    _ticker.cancel();
     _digits = '';
     _first = '';
-    final asksCurrent =
-        mode == PinSetupMode.change || mode == PinSetupMode.verify;
-    emit(
-      PinSetupState(
-        mode: mode,
-        step: asksCurrent ? PinSetupStep.current : PinSetupStep.create,
-      ),
-    );
+    emit(PinSetupState.initial(mode));
   }
 
   /// Appends [digit] (0-9); the 4th digit completes the step, exactly once.
@@ -101,22 +93,27 @@ class PinSetupCubit extends Cubit<PinSetupState> {
       const PinCheckFailed(),
     );
     if (isClosed) return;
-    final message = switch (outcome) {
-      PinCoolingDown(:final attempts) => CooldownMessage(
-        attempts.cooldownRemaining(_clock()),
-      ),
-      _ => rejectionMessage(outcome),
-    };
+    final tick = state.errorTick + 1;
     switch (outcome) {
       case PinVerified() when state.mode == PinSetupMode.verify:
         emit(state.busy(PinSetupPhase.saving));
         _finish(await guarded(_lifecycle.disable, false), PinSetupStep.current);
       case PinVerified():
         emit(state.ask(PinSetupStep.create));
-      case PinCoolingDown() || PinRejected() || PinCheckFailed():
+      case PinCoolingDown(:final attempts):
+        _coolDown(attempts, tick);
+      case PinRejected() || PinCheckFailed():
+        final message = rejectionMessage(outcome);
         emit(state.ask(PinSetupStep.current, message: message, bump: true));
     }
   }
+
+  /// Ignores input until [attempts]' cooldown ends, counting down.
+  void _coolDown(LockAttempts attempts, int tick) => _ticker.start(
+    attempts,
+    onTick: (left) => emit(state.cooling(left, tick)),
+    onDone: () => emit(state.ask(PinSetupStep.current)),
+  );
 
   Future<void> _save(String pin) async {
     final ok = await guarded(
@@ -141,5 +138,11 @@ class PinSetupCubit extends Cubit<PinSetupState> {
           ? state.copyWith(phase: PinSetupPhase.done)
           : state.ask(retry, message: failed, bump: true),
     );
+  }
+
+  @override
+  Future<void> close() {
+    _ticker.cancel();
+    return super.close();
   }
 }

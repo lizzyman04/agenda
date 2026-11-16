@@ -14,6 +14,8 @@ import 'package:agenda/infrastructure/lock/pbkdf2_pin_hasher.dart';
 import 'package:agenda/infrastructure/lock/secure_pin_store.dart';
 import 'package:agenda/presentation/lock/screens/pin_setup_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -148,5 +150,108 @@ void main() {
 
     expect(results, [false]);
     expect(prefs.getBool('pin_configured'), isNull);
+  });
+
+  testWidgets('verify mode: AppBar lockPinToggle, current PIN only', (
+    tester,
+  ) async {
+    await open(tester, PinSetupMode.verify);
+
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.text(l10n.lockPinToggle),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text(l10n.pinCurrentPrompt), findsOneWidget);
+    expect(find.byTooltip(l10n.cancelButton), findsOneWidget);
+  });
+
+  testWidgets('change mode: AppBar lockChangePin', (tester) async {
+    await open(tester, PinSetupMode.change);
+
+    expect(find.text(l10n.lockChangePin), findsOneWidget);
+    expect(find.text(l10n.pinCurrentPrompt), findsOneWidget);
+  });
+
+  group('reset mode', () {
+    late AppLockCubit locked;
+
+    setUp(() async {
+      await prefs.setBool('pin_configured', true);
+      locked = AppLockCubit(prefs, ExcursionGuardImpl());
+    });
+
+    tearDown(() => locked.close());
+
+    /// A plain app (no LockGate) whose home pushes the reset screen, with
+    /// a [locked] AppLockCubit above it.
+    Future<void> openReset(WidgetTester tester) async {
+      await tester.pumpWidget(
+        BlocProvider<AppLockCubit>.value(
+          value: locked,
+          child: MaterialApp(
+            locale: const Locale('pt', 'BR'),
+            supportedLocales: const [Locale('pt', 'BR'), Locale('en')],
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: Builder(
+              builder:
+                  (context) => Scaffold(
+                    body: TextButton(
+                      onPressed:
+                          () => Navigator.of(context).push<bool>(
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => const PinSetupScreen(
+                                    mode: PinSetupMode.reset,
+                                  ),
+                            ),
+                          ),
+                      child: const Text('OPEN'),
+                    ),
+                  ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('OPEN'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('no AppBar, and back does not leave it', (tester) async {
+      await openReset(tester);
+      expect(locked.state.locked, isTrue);
+      expect(find.byType(AppBar), findsNothing);
+      expect(find.text(l10n.pinCreatePrompt), findsOneWidget);
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(PinSetupScreen), findsOneWidget);
+    });
+
+    testWidgets('done unlocks and shows pinChangedSnack', (tester) async {
+      await openReset(tester);
+
+      await tapPin(tester, '8642');
+      await tapPin(tester, '8642');
+      await settleRealAsync(tester, () => !locked.state.locked);
+      await tester.pump();
+
+      expect(locked.state.locked, isFalse);
+      expect(find.text(l10n.pinChangedSnack), findsOneWidget);
+      final snack = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect(snack.behavior, SnackBarBehavior.floating);
+      final record = await tester.runAsync(
+        () => storage.read(key: SecureStorageKeys.pinRecord),
+      );
+      expect(record, isNotNull);
+    });
   });
 }

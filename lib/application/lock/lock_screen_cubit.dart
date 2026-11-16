@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:agenda/application/lock/app_lock_cubit.dart';
-import 'package:agenda/application/lock/lock_countdown.dart';
+import 'package:agenda/application/lock/cooldown_ticker.dart';
 import 'package:agenda/application/lock/lock_device_auth.dart';
 import 'package:agenda/application/lock/lock_screen_state.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
@@ -33,7 +33,7 @@ class LockScreenCubit extends Cubit<LockScreenState> {
   final LockDeviceAuth _deviceAuth;
   final DateTime Function() _clock;
 
-  late final _countdown = LockCountdown(_clock);
+  late final _countdown = CooldownTicker(clock: _clock);
   String _digits = '';
   bool _offered = false;
   bool _autoPrompted = false;
@@ -131,10 +131,10 @@ class LockScreenCubit extends Cubit<LockScreenState> {
   /// Shows [attempts]' countdown every second, then `ready`.
   void _coolDown(LockAttempts attempts, int tick) => _countdown.start(
     attempts,
-    (left) =>
-        left > Duration.zero
-            ? _show(LockEntryPhase.coolingDown, tick, CooldownMessage(left))
-            : _show(LockEntryPhase.ready, tick),
+    onTick:
+        (left) =>
+            _show(LockEntryPhase.coolingDown, tick, CooldownMessage(left)),
+    onDone: () => _show(LockEntryPhase.ready, tick),
   );
 
   /// Emits [phase] with no digits; the dots shake when [tick] changes.
