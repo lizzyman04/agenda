@@ -1,20 +1,45 @@
 import 'dart:async';
 
+import 'package:agenda/application/settings/security_settings_cubit.dart';
+import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/config/app_config.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/backup/screens/backup_screen.dart';
 import 'package:agenda/presentation/notifications/screens/notification_settings_screen.dart';
 import 'package:agenda/presentation/onboarding/screens/privacy_statement_screen.dart';
+import 'package:agenda/presentation/settings/security/security_section.dart';
 import 'package:agenda/presentation/settings/widgets/language_dialog.dart';
 import 'package:agenda/presentation/settings/widgets/settings_section_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// One scrollable Settings list (D-10), opened from the Tasks AppBar gear.
 ///
-/// Sections, top to bottom: General, (Security, 05-13), Notifications, Data,
-/// About. Feature pages are mounted unchanged; this screen owns no state.
-class SettingsScreen extends StatelessWidget {
+/// Sections, top to bottom: General, Security, Notifications, Data, About.
+/// Feature pages are mounted unchanged; the screen owns only the
+/// [SecuritySettingsCubit] of the Security section.
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  late final SecuritySettingsCubit _security;
+
+  @override
+  void initState() {
+    super.initState();
+    _security = getIt<SecuritySettingsCubit>();
+    unawaited(_security.start());
+  }
+
+  @override
+  void dispose() {
+    unawaited(_security.close());
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +50,10 @@ class SettingsScreen extends StatelessWidget {
         children: [
           SettingsSectionHeader(l10n.settingsSectionGeneral),
           const LanguageTile(),
-          // 05-13 inserts the Security section here (D-10).
+          BlocProvider<SecuritySettingsCubit>.value(
+            value: _security,
+            child: const SecuritySection(),
+          ),
           SettingsSectionHeader(l10n.settingsSectionNotifications),
           _LinkTile(
             icon: Icons.notifications_outlined,

@@ -7,6 +7,7 @@ import 'package:agenda/application/lock/lock_screen_cubit.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
 import 'package:agenda/application/lock/setup/pin_lifecycle.dart';
 import 'package:agenda/application/lock/setup/pin_setup_cubit.dart';
+import 'package:agenda/application/settings/security_settings_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/data/database/isar_service.dart';
 import 'package:agenda/domain/lock/device_auth_gateway.dart';
@@ -96,6 +97,17 @@ void main() {
       await a.close();
       await b.close();
     });
+
+    test(
+      'SecuritySettingsCubit resolves to a new instance each time',
+      () async {
+        final a = getIt<SecuritySettingsCubit>();
+        final b = getIt<SecuritySettingsCubit>();
+        expect(identical(a, b), isFalse);
+        await a.close();
+        await b.close();
+      },
+    );
 
     test('LockScreenCubit resolves to a new instance each time', () async {
       final a = getIt<LockScreenCubit>();

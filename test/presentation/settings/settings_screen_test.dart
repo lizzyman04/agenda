@@ -1,9 +1,14 @@
+import 'package:agenda/application/lock/app_lock_cubit.dart';
+import 'package:agenda/application/settings/security_settings_cubit.dart';
 import 'package:agenda/application/shared/locale/locale_cubit.dart';
 import 'package:agenda/application/shared/locale/locale_state.dart';
 import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/application/tasks/task_list/task_list_state.dart';
+import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/config/app_config.dart';
+import 'package:agenda/domain/lock/device_auth_gateway.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/infrastructure/lock/excursion_guard_impl.dart';
 import 'package:agenda/presentation/backup/screens/backup_screen.dart';
 import 'package:agenda/presentation/notifications/screens/notification_settings_screen.dart';
 import 'package:agenda/presentation/onboarding/screens/privacy_statement_screen.dart';
@@ -17,6 +22,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../support/lock_fakes.dart';
 
 class MockTaskListCubit extends MockCubit<TaskListState>
     implements TaskListCubit {}
@@ -67,13 +74,28 @@ Widget _app(
 
 void main() {
   late LocaleCubit localeCubit;
+  late AppLockCubit appLock;
+  late MockDeviceAuthGateway gateway;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
-    localeCubit = LocaleCubit(await SharedPreferences.getInstance());
+    final prefs = await SharedPreferences.getInstance();
+    localeCubit = LocaleCubit(prefs);
+    appLock = AppLockCubit(prefs, ExcursionGuardImpl());
+    gateway = MockDeviceAuthGateway();
+    when(
+      gateway.biometricAvailability,
+    ).thenAnswer((_) async => BiometricAvailability.enrolled);
+    getIt.registerFactory<SecuritySettingsCubit>(
+      () => SecuritySettingsCubit(prefs, appLock, gateway),
+    );
   });
 
-  tearDown(() async => localeCubit.close());
+  tearDown(() async {
+    await localeCubit.close();
+    await appLock.close();
+    await getIt.reset();
+  });
 
   group('Settings entry point (D-09)', () {
     testWidgets('the Tasks AppBar gear opens Settings', (tester) async {

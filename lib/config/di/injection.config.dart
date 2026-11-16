@@ -33,6 +33,8 @@ import 'package:agenda/application/notifications/goal_alert_evaluator.dart'
     as _i708;
 import 'package:agenda/application/notifications/notification_settings_cubit.dart'
     as _i290;
+import 'package:agenda/application/settings/security_settings_cubit.dart'
+    as _i459;
 import 'package:agenda/application/shared/locale/locale_cubit.dart' as _i101;
 import 'package:agenda/application/tasks/day_planner/day_planner_cubit.dart'
     as _i1073;
@@ -277,6 +279,13 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i322.FlutterLocalNotificationsGateway(
         gh<_i163.FlutterLocalNotificationsPlugin>(),
         gh<_i460.SharedPreferences>(),
+      ),
+    );
+    gh.factory<_i459.SecuritySettingsCubit>(
+      () => _i459.SecuritySettingsCubit(
+        gh<_i460.SharedPreferences>(),
+        gh<_i368.AppLockCubit>(),
+        gh<_i944.DeviceAuthGateway>(),
       ),
     );
     gh.factory<_i710.DebtCubit>(
