@@ -1,17 +1,17 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 05
+current_phase: 5
 current_phase_name: App Lock + Settings + Polish
 status: executing
-stopped_at: Completed 04-17-PLAN.md
-last_updated: "2026-11-16T11:03:56.819Z"
-state_head: 98f061161127b0931cddf42d3ae3acf61b9c5abc
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-11-16T18:29:10.511Z"
+state_head: d928528fda4edddfd3e6f84e69f0b179e5471b64
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 77
-  completed_plans: 63
+  completed_plans: 64
 milestone_name: milestone
 ---
 
@@ -22,12 +22,12 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Open AGENDA at any moment and immediately see what needs doing and where the money stands — no internet connection ever required.
-**Current focus:** Phase 04 — Notifications + Backup
+**Current focus:** Phase 5 — App Lock + Settings + Polish
 
 ## Current Position
 
-Phase: 05 (App Lock + Settings + Polish) — READY TO EXECUTE
-Plan: 1 of 21
+Phase: 5 (App Lock + Settings + Polish) — EXECUTING
+Plan: 2 of 14
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -212,6 +212,7 @@ Progress: [██████████] 100%
 | Phase 04 P15 | 11 min | 3 tasks | 22 files |
 | Phase 04 P16 | 14 min | 3 tasks | 16 files |
 | Phase 04 P17 | 9 min | 3 tasks | 17 files |
+| Phase 05 P01 | 153min | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -262,6 +263,9 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-16: file_picker isolated behind BackupFileGateway; pickFiles size-checks against maxImportFileBytes before reading from the plugin cache path — T-04-16-02/03: no picker data loading, no paths built from picked names
 - [Phase 04]: 04-17: Import cancel is a single path (Cancel/back via PopScope calls cancelImport only from the preview state); confirm screen pops only while ModalRoute.isCurrent so acknowledge's Idle cannot pop the Backup screen — Avoids double pop and double discard
 - [Phase 04]: 04-17: Post-import hooks (budget reseed, goal reseed, afterImport reconcile) run in runPostImportHooks, each isolated by try/catch so a hook failure never masks a successful import — T-04-17-04; keeps backup_cubit.dart at the 150-line cap
+- [Phase 05]: Phase 5 deps pinned exactly: crypto 3.0.7, flutter_secure_storage 10.0.0, local_auth 3.0.1, local_auth_android 2.0.8 (Flutter 3.41.4 caps local_auth_android at 2.0.8)
+- [Phase 05]: LaunchTheme/NormalTheme inherit Theme.AppCompat (Light.NoActionBar in values/, NoActionBar in values-night/) for BiometricPrompt on Android 7-8
+- [Phase 05]: lockWrongPin ICU 'one' branch interpolates {remaining}; flutter_secure_storage 10.0.0 AndroidOptions.resetOnError defaults to true
 
 ### Pending Todos
 
@@ -292,8 +296,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-11-16T05:56:31.559Z
-Stopped at: Completed 04-17-PLAN.md
+Last session: 2026-11-16T18:29:09.916Z
+Stopped at: Completed 05-01-PLAN.md
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
 Plans `03-13` and `03-14` executed and merged. Verification: 5/5 roadmap truths hold at
@@ -530,4 +534,4 @@ defects, then the on-device re-test of UAT test 3 — both halves (auto-dismiss 
 and queueing from `03-07`) are verified host-side only and still need the Infinix X6831
 reattached. After that, Phase 04.
 
-Resume file: .planning/phases/05-app-lock-settings-polish/05-UI-SPEC.md
+Resume file: None

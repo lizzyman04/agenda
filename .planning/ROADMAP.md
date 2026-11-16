@@ -182,12 +182,12 @@ Plans:
   3. A settings screen lets the user toggle app language (EN / PT-BR), enable or disable individual notification types, configure quiet hours, and manage the app lock PIN
   4. On first launch, the app displays a one-screen privacy statement ("Your data never leaves this device") before showing the main UI; the statement is not shown on subsequent launches
 
-**Plans**: 14 plans in 9 waves (planned 2026-11-16 — expanded from the 4-plan sketch; see rationale below)
+**Plans**: 1/14 plans executed in 9 waves (planned 2026-11-16 — expanded from the 4-plan sketch; see rationale below)
 **UI hint**: yes
 
 Plans:
 **Wave 1**
-- [ ] 05-01-PLAN.md — Dependencies, Android biometric setup, Face ID string and every Phase 5 string: local_auth/local_auth_android/flutter_secure_storage/crypto pins, AppCompat theme, USE_BIOMETRIC, 65 ARB keys, API smoke + first release build *(wave 1)*
+- [x] 05-01-PLAN.md — Dependencies, Android biometric setup, Face ID string and every Phase 5 string: local_auth/local_auth_android/flutter_secure_storage/crypto pins, AppCompat theme, USE_BIOMETRIC, 65 ARB keys, API smoke + first release build *(wave 1)*
 - [ ] 05-02-PLAN.md — Lock rules, test first: D-07 attempt ladder and the D-01/D-02/D-03 resume-lock rule as pure domain functions *(wave 1)*
 
 **Wave 2** *(blocked on Wave 1 completion)*
@@ -284,5 +284,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 14/14 | Complete    | 2026-10-03 |
 | 4. Notifications + Backup | 17/17 | In Progress|  |
-| 5. App Lock + Settings + Polish | 0/14 | Planned | - |
+| 5. App Lock + Settings + Polish | 1/14 | In Progress | - |
 | 6. Architecture Compliance | 18/18 | ✅ Complete | 2026-08-12 |
