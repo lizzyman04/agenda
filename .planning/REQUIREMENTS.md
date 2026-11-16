@@ -53,8 +53,8 @@
 - [x] **DATA-02**: User can export all data as a JSON backup file
 - [x] **DATA-03**: User can export all data as a CSV backup file
 - [x] **DATA-04**: User can import data from a JSON or CSV backup file (with pre-import safety backup and atomic transaction)
-- [ ] **DATA-05**: User can set an optional PIN to lock access to the app on cold start
-- [ ] **DATA-06**: User can unlock the app using biometrics (Face ID or fingerprint) when PIN is enabled
+- [x] **DATA-05**: User can set an optional PIN to lock access to the app on cold start
+- [x] **DATA-06**: User can unlock the app using biometrics (Face ID or fingerprint) when PIN is enabled
 
 ### Experience
 
@@ -139,8 +139,8 @@
 | DATA-02 | Phase 4: Notifications + Backup | Complete |
 | DATA-03 | Phase 4: Notifications + Backup | Complete |
 | DATA-04 | Phase 4: Notifications + Backup | Complete |
-| DATA-05 | Phase 5: App Lock + Settings + Polish | Pending |
-| DATA-06 | Phase 5: App Lock + Settings + Polish | Pending |
+| DATA-05 | Phase 5: App Lock + Settings + Polish | Complete |
+| DATA-06 | Phase 5: App Lock + Settings + Polish | Complete |
 | UX-01 | Phase 5: App Lock + Settings + Polish | Pending |
 | UX-03 | Phase 5: App Lock + Settings + Polish | Complete |
 

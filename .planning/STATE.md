@@ -4,14 +4,14 @@ milestone: v1.0
 current_phase: 5
 current_phase_name: App Lock + Settings + Polish
 status: executing
-stopped_at: Completed 05-09-PLAN.md
-last_updated: "2026-11-16T21:09:49.935Z"
-state_head: 487ef11e0641cafba33be97e9f0db931994901c7
+stopped_at: Completed 05-10-PLAN.md
+last_updated: "2026-11-16T21:43:42.776Z"
+state_head: 887ceb756a232f5b5be6577df978facdfee1eb4e
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 77
-  completed_plans: 72
+  completed_plans: 73
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 5 (App Lock + Settings + Polish) — EXECUTING
-Plan: 10 of 14
+Plan: 11 of 14
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -221,6 +221,7 @@ Progress: [██████████] 100%
 | Phase 05 P07 | 7min | 2 tasks | 13 files |
 | Phase 05 P08 | 31min | 2 tasks | 19 files |
 | Phase 05 P09 | 21 min | 2 tasks | 14 files |
+| Phase 05 P10 | 45min | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -294,6 +295,8 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-09: The lock-screen cooldown countdown is recomputed from persisted LockAttempts on every 1 s tick, and LockScreenCubit.start() enters coolingDown before accepting input, so an app kill cannot reset or shorten a cooldown (T-05-26)
 - [Phase 05]: 05-09: An unreadable attempt state shows CheckFailedMessage (lockErrorGeneric) in ready, so the keypad stays retryable while verify still fails closed
 - [Phase 05]: 05-09: Text-fit tests load Roboto from test/support/fonts with FontLoader, because the FlutterTest font draws every glyph 1 em wide
+- [Phase 05]: 05-10: startAppLock wipe moved into its own guarded helper so the marker early-return and wipe faults never skip the boot-time setSecure(true) when a PIN is configured
+- [Phase 05]: 05-10: native shield on its own channel agenda/app_privacy (setSecure, bool); Kotlin as? Boolean / Swift as? Bool reject anything else with bad_args
 
 ### Pending Todos
 
@@ -324,8 +327,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-11-16T21:09:49.463Z
-Stopped at: Completed 05-09-PLAN.md
+Last session: 2026-11-16T21:43:42.309Z
+Stopped at: Completed 05-10-PLAN.md
 
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 

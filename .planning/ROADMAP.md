@@ -182,7 +182,7 @@ Plans:
   3. A settings screen lets the user toggle app language (EN / PT-BR), enable or disable individual notification types, configure quiet hours, and manage the app lock PIN
   4. On first launch, the app displays a one-screen privacy statement ("Your data never leaves this device") before showing the main UI; the statement is not shown on subsequent launches
 
-**Plans**: 9/14 plans executed in 9 waves (planned 2026-11-16 — expanded from the 4-plan sketch; see rationale below)
+**Plans**: 10/14 plans executed in 9 waves (planned 2026-11-16 — expanded from the 4-plan sketch; see rationale below)
 **UI hint**: yes
 
 Plans:
@@ -204,7 +204,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [x] 05-09-PLAN.md — Wrong PIN and cooldown UX: remaining attempts, shake, live countdown that survives a kill, storage-error retry (D-07) *(wave 5)*
-- [ ] 05-10-PLAN.md — Native window privacy: agenda/app_privacy channel, Android FLAG_SECURE, iOS App Switcher cover, boot apply (D-04, SC-2) *(wave 5)*
+- [x] 05-10-PLAN.md — Native window privacy: agenda/app_privacy channel, Android FLAG_SECURE, iOS App Switcher cover, boot apply (D-04, SC-2) *(wave 5)*
 
 **Wave 6** *(blocked on Wave 5 completion)*
 - [ ] 05-11-PLAN.md — Biometric unlock: local_auth gateway, auto-prompt once per lock episode, biometric key (DATA-06, D-08) *(wave 6)*
@@ -284,5 +284,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 14/14 | Complete    | 2026-10-03 |
 | 4. Notifications + Backup | 17/17 | In Progress|  |
-| 5. App Lock + Settings + Polish | 9/14 | In Progress | - |
+| 5. App Lock + Settings + Polish | 10/14 | In Progress | - |
 | 6. Architecture Compliance | 18/18 | ✅ Complete | 2026-08-12 |
