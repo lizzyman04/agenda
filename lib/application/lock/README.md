@@ -1,7 +1,7 @@
 # application/lock
 
-App-lock state, the lock-screen keypad logic and **PIN verification**
-(DATA-05, D-05, D-07).
+App-lock state, the lock-screen keypad logic, **PIN verification** and
+**biometric unlock** (DATA-05, DATA-06, D-05, D-07, D-08).
 
 ## Responsibility
 
@@ -20,8 +20,10 @@ lock layer lives in `presentation/lock/`.
 |------|------:|------|
 | `app_lock_state.dart` | 32 | `AppLockState(pinEnabled, locked, obscured)` with `copyWith` |
 | `app_lock_cubit.dart` | 113 | `AppLockCubit(prefs, ExcursionGuard, {@ignoreParam clock})` (`@lazySingleton`, one app-wide instance) — seeds `pinEnabled`/`locked` synchronously in the constructor from `StorageKeys.pinConfigured` (a non-bool value locks: fail closed); `unlock()`; `pinEnabledChanged(enabled:)` always leaves it unlocked; lifecycle: `onInactive()` sets `obscured` when a PIN is on, `onHidden()` records the first hidden time of a trip and whether `ExcursionGuard.isActive` then (D-03), `onResumed()` reads `StorageKeys.lockTimeoutSeconds` (default 60), asks `shouldLockOnResume` and emits ONE state (`obscured: false`, `locked` if due) |
-| `lock_screen_state.dart` | 98 | `LockEntryPhase` (`loading`, `ready`, `verifying`, `coolingDown`); the status-line model `LockMessage` (`WrongPinMessage(remaining)`, `CooldownMessage(remaining)`, `CheckFailedMessage`); `LockScreenState(phase, digitCount, message, errorTick)` — the digit COUNT only, never the digits; `errorTick` increments on every rejected entry (the dots shake on change) |
-| `lock_screen_cubit.dart` | 147 | `LockScreenCubit` (`@injectable`, one per lock screen) — keeps the digits in a private field; `start()` loads attempts: a running cooldown enters `coolingDown` at once, an `Err` or throw shows `CheckFailedMessage` in `ready`; `addDigit` clears any message and auto-submits the 4th digit once to `PinVerifier.verify(digits, clock())`; only `PinVerified` calls `AppLockCubit.unlock()`. `PinRejected(n)` → `WrongPinMessage(n)`, `PinCheckFailed` or an exception → `CheckFailedMessage`, `PinCoolingDown` → `coolingDown` with a `Timer.periodic(1 s)` countdown that ends in `ready`; each bumps `errorTick`. Input acts only in `ready`; `close()` cancels the ticker |
+| `lock_screen_state.dart` | 128 | `LockEntryPhase` (`loading`, `ready`, `verifying`, `coolingDown`); the status-line model `LockMessage` (`WrongPinMessage(remaining)`, `CooldownMessage(remaining)`, `CheckFailedMessage`) and `rejectionMessage(PinVerifyOutcome)`; `LockScreenState(phase, digitCount, message, errorTick, biometricOffered)` and `LockScreenState.entry(...)` (no digits) — the digit COUNT only, never the digits; `errorTick` increments on every rejected entry (the dots shake on change) |
+| `lock_screen_cubit.dart` | 150 | `LockScreenCubit(PinVerifier, AppLockCubit, LockDeviceAuth, {clock})` (`@injectable`, one per lock screen) — keeps the digits in a private field; `start()` loads attempts and `biometricOffered`: a running cooldown enters `coolingDown` at once, an `Err` or throw shows `CheckFailedMessage` in `ready`; `addDigit` clears any message and auto-submits the 4th digit once to `PinVerifier.verify(digits, clock())`; only `PinVerified` or a biometric success calls `AppLockCubit.unlock()`. `PinRejected(n)` → `WrongPinMessage(n)`, `PinCheckFailed` or an exception → `CheckFailedMessage`, `PinCoolingDown` → `coolingDown` with a `LockCountdown` that ends in `ready`; each bumps `errorTick`. Digit input acts only in `ready`. `requestBiometric(prompt)` (any phase but `verifying`, including `coolingDown`): success → `resetAttempts()` then `unlock()`, `unavailable` → `biometricOffered: false`, anything else → no change. `autoPromptBiometric(prompt)` runs it at most once per cubit |
+| `lock_countdown.dart` | 41 | `LockCountdown(clock)` — recomputes the cooldown left from the persisted `LockAttempts` every second (`Timer.periodic`), calls back with the time left and finally `Duration.zero`, then stops; `cancel()` |
+| `lock_device_auth.dart` | 40 | `LockDeviceAuth(DeviceAuthGateway, prefs)` (`@injectable`) — `biometricOffered()` = (`StorageKeys.biometricUnlockEnabled` ?? true, a throw counting as absent) && `biometricAvailability() == enrolled`; `unlockWithBiometrics(prompt)` = `authenticate(prompt, biometricOnly: true)`, never throws (an error is `cancelled`) |
 | `pin_verifier.dart` | 102 | `PinVerifyOutcome` (`PinVerified`, `PinRejected(remaining)`, `PinCoolingDown(attempts)`, `PinCheckFailed`) and `PinVerifier` — `verify(pin, now)` checks format, cooldown, record and hash, and persists the new attempt state before answering; `loadAttempts`; `resetAttempts` |
 
 ## Conventions in this slice
@@ -40,10 +42,15 @@ lock layer lives in `presentation/lock/`.
   from the persisted `LockAttempts.cooldownRemaining(clock())` on every
   tick, and `start()` resumes a running cooldown before accepting input, so
   killing the app cannot reset or shorten the wait (T-05-26).
+- **Biometrics are an alternative path; the keypad is always available.**
+  Only `DeviceAuthResult.success` unlocks; cancel, failure, lockout and
+  every error keep the lock with no extra message. A biometric success
+  resets the D-07 counter like a correct PIN.
 - **Never log PIN material.** No PIN, record, salt or hash appears in a log,
   exception or failure message; failures carry the exception type only.
 
 ## Upstream dependencies
 
-`domain/lock/` (`LockAttempts`, `PinHasher`, `isValidPin`, `PinStore`) ·
+`domain/lock/` (`LockAttempts`, `PinHasher`, `isValidPin`, `PinStore`,
+`DeviceAuthGateway`) · `core/utils/guarded.dart` ·
 `core/failures/` (`Result`) · `domain/lock/lock_policy.dart` (`shouldLockOnResume`) · `domain/lock/excursion_guard.dart`.

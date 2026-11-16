@@ -5,6 +5,7 @@ import 'package:agenda/application/lock/lock_screen_state.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/domain/lock/device_auth_gateway.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/lock/keypad/biometric_key.dart';
 import 'package:agenda/presentation/lock/keypad/lock_status_line.dart';
 import 'package:agenda/presentation/lock/keypad/pin_dots.dart';
 import 'package:agenda/presentation/lock/keypad/pin_keypad.dart';
@@ -58,6 +59,8 @@ class _LockScreenState extends State<LockScreen> {
       );
     }
   }
+
+  void _requestBiometric() => unawaited(_cubit.requestBiometric(_prompt()));
 
   DeviceAuthPrompt _prompt() {
     final l10n = AppLocalizations.of(context);
@@ -122,6 +125,12 @@ class _LockScreenState extends State<LockScreen> {
                           onDigit: _cubit.addDigit,
                           onBackspace: _cubit.removeDigit,
                           onClear: _cubit.clearDigits,
+                          // Null keeps the empty 72 dp slot, so 0 stays
+                          // centred. A cancelled prompt shows no message.
+                          leading:
+                              state.biometricOffered
+                                  ? BiometricKey(onPressed: _requestBiometric)
+                                  : null,
                         ),
                         const SizedBox(height: 32),
                       ],
