@@ -643,7 +643,7 @@ expect(find.byType(NavigationBar), findsNothing); // offstage → skipped by fin
 
 | # | Claim | Section | Risk if Wrong |
 |---|-------|---------|---------------|
-| A1 | Promoting `crypto` 3.0.7 to a direct dependency is acceptable (not in CLAUDE.md's decided list, though already transitive) | Standard Stack | Low. The alternative is the heavier `cryptography` package. Needs user OK. |
+| A1 | Promoting `crypto` 3.0.7 to a direct dependency is acceptable (not in CLAUDE.md's decided list, though already transitive) | Standard Stack | Low. The alternative is the heavier `cryptography` package. RESOLVED: user approved 2026-11-16. |
 | A2 | 10,000 PBKDF2 iterations is the right cost/latency balance on the Infinix X6831 | Pattern 5 | Unlock feels slow (raise or lower after an on-device measurement) |
 | A3 | Excursion cap 5 min and post-excursion grace 2 s | Pattern 4 | Too short: relock after a long file pick. Too long: unattended unlocked window. |
 | A4 | `KeychainAccessibility.first_unlock_this_device` for the PIN record | Code Examples | Low; `unlocked_this_device` is also valid |
@@ -652,23 +652,27 @@ expect(find.byType(NavigationBar), findsNothing); // offstage → skipped by fin
 | A7 | Dart `Stopwatch` does not advance during Android deep sleep | Pitfall 7 | None if wall clock is used as recommended |
 | A8 | iOS cold-start frame 1 can precede scene activation, so LAContext may fail if called immediately | Pitfall 10 | None if gated on `resumed` |
 | A9 | FLAG_SECURE blanks Flutter's surface in screenshots and the Recents thumbnail on the test device | Pattern 7 | Must be confirmed in manual UAT |
-| A10 | Fail-closed when `pinConfigured` is set but the hash is missing | Pitfall 5 | User decision (Open Question 1) |
+| A10 | Fail-closed when `pinConfigured` is set but the hash is missing | Pitfall 5 | RESOLVED: fail closed (user, 2026-11-16) |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Lost PIN material (Keystore reset) on a device without a screen lock.**
    - What we know: `resetOnError=true` can wipe the hash. Forgot-PIN needs a device credential.
    - What's unclear: whether to fail closed (reinstall + JSON backup, per the existing `lockForgotUnavailableBody` copy) or fail open (disable the lock and notify).
    - Recommendation: fail closed. It matches the UI-SPEC copy and the privacy posture. Confirm with the user.
+   - RESOLVED (user, 2026-11-16): fail closed — app stays locked; recovery is reinstall + JSON backup restore.
 2. **Extra ARB keys for the Android biometric sheet.**
    - The UI-SPEC copy table has `lockBiometricReason` but no sheet title or cancel label. The Android defaults are English.
    - Recommendation: add `lockBiometricSheetTitle` and `lockUsePin` (plus optional `lockBiometricSheetHint`) to all three ARB files in the first plan.
+   - RESOLVED (2026-11-16): add `lockBiometricSheetTitle` and `lockUsePin` in 05-01.
 3. **iOS work cannot be built or tested here.**
    - What we know: no Xcode on this Linux host. The iOS cover, channel, Info.plist and Face ID can only be checked on a Mac with a device.
    - Recommendation: implement the iOS code paths, mark SC-2's "iOS App Switcher" part as `human_needed` UAT, and keep the Face ID string in English in `Info.plist` until a Mac session can add `InfoPlist.strings`.
+   - RESOLVED (2026-11-16): iOS paths implemented; iOS App Switcher cover and Face ID recorded as `human_needed` UAT (05-14).
 4. **Overlay during app-initiated system dialogs (Android).**
    - Per D-04, the overlay shows on every `inactive`, so the notification-permission dialog and BiometricPrompt appear over a blank AGENDA cover instead of the app.
    - Recommendation: keep the spec as written (simplest, safe). Optionally suppress the overlay while `ExcursionGuard.isActive`. This is a UX refinement for UAT to decide, not a blocker.
+   - RESOLVED (2026-11-16): keep D-04 as written — overlay on every `inactive`, no excursion suppression.
 
 ## Environment Availability
 

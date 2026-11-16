@@ -182,15 +182,43 @@ Plans:
   3. A settings screen lets the user toggle app language (EN / PT-BR), enable or disable individual notification types, configure quiet hours, and manage the app lock PIN
   4. On first launch, the app displays a one-screen privacy statement ("Your data never leaves this device") before showing the main UI; the statement is not shown on subsequent launches
 
-**Plans**: TBD
+**Plans**: 14 plans in 9 waves (planned 2026-11-16 — expanded from the 4-plan sketch; see rationale below)
 **UI hint**: yes
 
 Plans:
+**Wave 1**
+- [ ] 05-01-PLAN.md — Dependencies, Android biometric setup, Face ID string and every Phase 5 string: local_auth/local_auth_android/flutter_secure_storage/crypto pins, AppCompat theme, USE_BIOMETRIC, 65 ARB keys, API smoke + first release build *(wave 1)*
+- [ ] 05-02-PLAN.md — Lock rules, test first: D-07 attempt ladder and the D-01/D-02/D-03 resume-lock rule as pure domain functions *(wave 1)*
 
-- [ ] 05-01: App lock infrastructure — FlutterFragmentActivity migration, flutter_secure_storage PIN, flutter_screen_lock integration, GoRouter PIN guard
-- [ ] 05-02: Biometric unlock + lifecycle observer — local_auth integration, AppLifecycleState.inactive privacy overlay, cold-start lock persistence
-- [ ] 05-03: Settings screen — SettingsCubit (SharedPreferences), language toggle (UX-01), notification prefs, lock config
-- [ ] 05-04: Onboarding + final polish — first-launch privacy statement, remaining empty states, end-to-end smoke test, release build validation
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 05-03-PLAN.md — PIN security core: PBKDF2 hasher, secure-storage PIN store, PinVerifier that persists attempts before answering, fresh-install wipe at startup *(wave 2)*
+- [ ] 05-04-PLAN.md — First-launch privacy statement: OnboardingGate, statement screen with language switch, read-only mode for Settings (UX-03) *(wave 2)*
+- [ ] 05-05-PLAN.md — Empty states: shared AppEmptyState, task list CTA, search-no-match, GTD (05-04 polish, UX-04 completion) *(wave 2)*
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 05-06-PLAN.md — Cold-start lock: AppLockCubit sync seed, LockGate in MaterialApp.builder with its own Navigator, LockScreen + PinKeypad, correct PIN unlocks (SC-1) *(wave 3)*
+- [ ] 05-07-PLAN.md — Settings shell: gear replaces the Phase 4 menu, language dialog (UX-01), Notifications/Data/About sections *(wave 3)*
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 05-08-PLAN.md — Resume lock after timeout, privacy overlay on inactive, ExcursionGuard around file picker and OS permission/settings calls (D-01..D-04) *(wave 4)*
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 05-09-PLAN.md — Wrong PIN and cooldown UX: remaining attempts, shake, live countdown that survives a kill, storage-error retry (D-07) *(wave 5)*
+- [ ] 05-10-PLAN.md — Native window privacy: agenda/app_privacy channel, Android FLAG_SECURE, iOS App Switcher cover, boot apply (D-04, SC-2) *(wave 5)*
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 05-11-PLAN.md — Biometric unlock: local_auth gateway, auto-prompt once per lock episode, biometric key (DATA-06, D-08) *(wave 6)*
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [ ] 05-12-PLAN.md — PIN setup flows (create/change/verify/reset) with safe write order, and "Esqueci meu PIN" via device credential (D-05, D-06) *(wave 7)*
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [ ] 05-13-PLAN.md — Settings Security section: PIN switch, change PIN, biometrics toggle, lock timeout, no-device-lock warning (SC-3) *(wave 8)*
+
+**Wave 9** *(blocked on Wave 8 completion)*
+- [ ] 05-14-PLAN.md — Full-app smoke, release build, layer READMEs, Android device UAT checkpoint (iOS items human_needed) *(wave 9)*
+
+**Planner deviation from the 4-plan sketch**: 14 plans. Research made two draft tasks obsolete ("FlutterFragmentActivity migration" is done; there is no GoRouter, so the lock is a MaterialApp.builder layer, not a route guard), and the UI-SPEC replaced flutter_screen_lock with a custom keypad. The remaining work spans ~40 source files under a 150-line / 10-file cap. Wave order is driven by `lib/config/di/injection.config.dart`: the seven plans that add injectables (03, 06, 08, 10, 11, 12, 13) never share a wave, and `lib/app.dart` is touched only by 04 then 06. All dependency, manifest, Info.plist and ARB edits are front-loaded into 05-01.
 
 ---
 
@@ -256,5 +284,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 14/14 | Complete    | 2026-10-03 |
 | 4. Notifications + Backup | 17/17 | In Progress|  |
-| 5. App Lock + Settings + Polish | 0/4 | Not started | - |
+| 5. App Lock + Settings + Polish | 0/14 | Planned | - |
 | 6. Architecture Compliance | 18/18 | ✅ Complete | 2026-08-12 |
