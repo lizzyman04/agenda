@@ -4,6 +4,7 @@ import 'package:agenda/application/lock/lock_screen_cubit.dart';
 import 'package:agenda/application/lock/lock_screen_state.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/lock/keypad/lock_status_line.dart';
 import 'package:agenda/presentation/lock/keypad/pin_dots.dart';
 import 'package:agenda/presentation/lock/keypad/pin_keypad.dart';
 import 'package:flutter/material.dart';
@@ -67,10 +68,12 @@ class _LockScreenState extends State<LockScreen> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
-                        // Status line (wrong PIN, cooldown): filled by 05-09.
-                        const SizedBox(height: 40),
+                        LockStatusLine(message: state.message),
                         const SizedBox(height: 24),
-                        PinDots(count: state.digitCount),
+                        PinDots(
+                          count: state.digitCount,
+                          errorTick: state.errorTick,
+                        ),
                         const SizedBox(height: 48),
                         PinKeypad(
                           digitCount: state.digitCount,

@@ -89,12 +89,67 @@ void main() {
         final cubit = await started();
         enter(cubit, [9, 9, 9, 9]);
         await pumpEventQueue();
-        expect(cubit.state, ready);
+        expect(cubit.state.phase, LockEntryPhase.ready);
+        expect(cubit.state.digitCount, 0);
+        expect(cubit.state.errorTick, 1);
         verifyNever(() => appLock.unlock());
         await cubit.close();
       },
     );
   }
+
+  test('PinRejected(3) shows WrongPinMessage(3) and bumps errorTick', () async {
+    when(
+      () => verifier.verify(any(), any()),
+    ).thenAnswer((_) async => const PinRejected(3));
+    final cubit = await started();
+    enter(cubit, [1, 1, 1, 1]);
+    await pumpEventQueue();
+    expect(
+      cubit.state,
+      const LockScreenState(
+        phase: LockEntryPhase.ready,
+        message: WrongPinMessage(3),
+        errorTick: 1,
+      ),
+    );
+    enter(cubit, [2, 2, 2, 2]);
+    await pumpEventQueue();
+    expect(cubit.state.errorTick, 2);
+    await cubit.close();
+  });
+
+  test('PinCheckFailed shows CheckFailedMessage', () async {
+    when(
+      () => verifier.verify(any(), any()),
+    ).thenAnswer((_) async => const PinCheckFailed());
+    final cubit = await started();
+    enter(cubit, [1, 2, 3, 4]);
+    await pumpEventQueue();
+    expect(cubit.state.message, const CheckFailedMessage());
+    expect(cubit.state.errorTick, 1);
+    await cubit.close();
+  });
+
+  test('typing a digit clears the message but keeps errorTick', () async {
+    when(
+      () => verifier.verify(any(), any()),
+    ).thenAnswer((_) async => const PinRejected(2));
+    final cubit = await started();
+    enter(cubit, [1, 2, 3, 4]);
+    await pumpEventQueue();
+    expect(cubit.state.message, const WrongPinMessage(2));
+    cubit.addDigit(5);
+    expect(
+      cubit.state,
+      const LockScreenState(
+        phase: LockEntryPhase.ready,
+        digitCount: 1,
+        errorTick: 1,
+      ),
+    );
+    await cubit.close();
+  });
 
   test('a verifier exception keeps the lock (fail closed)', () async {
     when(
@@ -103,7 +158,14 @@ void main() {
     final cubit = await started();
     enter(cubit, [1, 2, 3, 4]);
     await pumpEventQueue();
-    expect(cubit.state, ready);
+    expect(
+      cubit.state,
+      const LockScreenState(
+        phase: LockEntryPhase.ready,
+        message: CheckFailedMessage(),
+        errorTick: 1,
+      ),
+    );
     verifyNever(() => appLock.unlock());
     await cubit.close();
   });
@@ -135,7 +197,8 @@ void main() {
     verify(() => verifier.verify('1234', any())).called(1);
     pending.complete(const PinRejected(4));
     await pumpEventQueue();
-    expect(cubit.state, ready);
+    expect(cubit.state.phase, LockEntryPhase.ready);
+    expect(cubit.state.digitCount, 0);
     await cubit.close();
   });
 

@@ -49,13 +49,15 @@ class LockScreenCubit extends Cubit<LockScreenState> {
     if (_digits.length >= pinLength || digit < 0 || digit > 9) return;
     _digits = '$_digits$digit';
     if (_digits.length < pinLength) {
-      emit(state.copyWith(digitCount: _digits.length));
+      // Typing again dismisses a wrong-PIN or check-failed message.
+      emit(state.copyWith(digitCount: _digits.length, clearMessage: true));
       return;
     }
     emit(
-      const LockScreenState(
+      state.copyWith(
         phase: LockEntryPhase.verifying,
         digitCount: pinLength,
+        clearMessage: true,
       ),
     );
     unawaited(_submit(_digits));
@@ -84,10 +86,25 @@ class LockScreenCubit extends Cubit<LockScreenState> {
     }
     if (isClosed) return;
     _digits = '';
-    if (outcome is PinVerified) {
-      _appLock.unlock();
-      return;
+    final tick = state.errorTick + 1;
+    switch (outcome) {
+      case PinVerified():
+        _appLock.unlock();
+      case PinRejected(:final remaining):
+        _rejected(WrongPinMessage(remaining), tick);
+      case PinCheckFailed():
+        _rejected(const CheckFailedMessage(), tick);
+      case PinCoolingDown():
+        emit(LockScreenState(phase: LockEntryPhase.ready, errorTick: tick));
     }
-    emit(const LockScreenState(phase: LockEntryPhase.ready));
   }
+
+  /// Clears the digits and shows [message]; the dots shake on [tick].
+  void _rejected(LockMessage message, int tick) => emit(
+    LockScreenState(
+      phase: LockEntryPhase.ready,
+      message: message,
+      errorTick: tick,
+    ),
+  );
 }
