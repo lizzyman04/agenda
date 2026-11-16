@@ -13,7 +13,18 @@ abstract final class StorageKeys {
   static const String privacyStatementShown = 'privacy_statement_shown';
 
   /// Whether app lock PIN is configured (DATA-05).
+  ///
+  /// A non-secret flag only: the PIN record itself lives in secure storage
+  /// under `SecureStorageKeys` and never here (D-05).
   static const String pinConfigured = 'pin_configured';
+
+  /// Whether biometric unlock is switched on (D-08). Absent means the D-08
+  /// default, which the settings reader resolves (plan 05-11).
+  static const String biometricUnlockEnabled = 'biometric_unlock_enabled';
+
+  /// First-run marker: true once stale secure-storage entries from a
+  /// previous install were wiped (iOS Keychain survives uninstall).
+  static const String secureStorageInitialized = 'secure_storage_initialized';
 
   /// App lock timeout in seconds (0 = lock immediately on background).
   static const String lockTimeoutSeconds = 'lock_timeout_seconds';

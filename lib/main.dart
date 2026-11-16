@@ -1,5 +1,6 @@
 import 'package:agenda/app.dart';
 import 'package:agenda/config/di/injection.dart';
+import 'package:agenda/config/startup/app_lock_startup.dart';
 import 'package:agenda/config/startup/notification_startup.dart';
 import 'package:agenda/data/database/isar_service.dart';
 import 'package:agenda/data/finance/budget/budget_model.dart';
@@ -22,7 +23,9 @@ import 'package:flutter/material.dart';
 /// 3. IsarService.open — opens the Isar database with all Phase 2+3 schemas.
 /// 4. startNotifications — sets the local timezone and prepares the
 ///    notification channels. Never prompts and never throws.
-/// 5. runApp — starts the widget tree.
+/// 5. startAppLock — wipes stale secure-storage entries on the first launch
+///    of a fresh install (iOS Keychain survives uninstall). Never throws.
+/// 6. runApp — starts the widget tree.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
@@ -36,5 +39,6 @@ Future<void> main() async {
     RecurringPaymentModelSchema,
   ]);
   await startNotifications();
+  await startAppLock();
   runApp(const AgendaApp());
 }
