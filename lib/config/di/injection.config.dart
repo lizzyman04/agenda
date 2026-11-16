@@ -21,6 +21,8 @@ import 'package:agenda/application/finance/recurring/recurring_payment_cubit.dar
     as _i275;
 import 'package:agenda/application/finance/transaction/transaction_cubit.dart'
     as _i1065;
+import 'package:agenda/application/lock/app_lock_cubit.dart' as _i368;
+import 'package:agenda/application/lock/lock_screen_cubit.dart' as _i384;
 import 'package:agenda/application/lock/pin_verifier.dart' as _i1015;
 import 'package:agenda/application/notifications/budget_alert_evaluator.dart'
     as _i892;
@@ -293,10 +295,19 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i44.RecurrenceEngine>(),
       ),
     );
+    gh.lazySingleton<_i368.AppLockCubit>(
+      () => _i368.AppLockCubit(gh<_i460.SharedPreferences>()),
+    );
     gh.lazySingleton<_i877.BudgetRepository>(
       () => _i576.BudgetRepositoryImpl(
         gh<_i1035.BudgetDao>(),
         gh<_i233.BudgetMapper>(),
+      ),
+    );
+    gh.factory<_i384.LockScreenCubit>(
+      () => _i384.LockScreenCubit(
+        gh<_i1015.PinVerifier>(),
+        gh<_i368.AppLockCubit>(),
       ),
     );
     gh.factory<_i275.RecurringPaymentCubit>(

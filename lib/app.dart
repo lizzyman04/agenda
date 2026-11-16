@@ -4,6 +4,7 @@ import 'package:agenda/application/finance/debt/debt_cubit.dart';
 import 'package:agenda/application/finance/goal/goal_list_cubit.dart';
 import 'package:agenda/application/finance/recurring/recurring_payment_cubit.dart';
 import 'package:agenda/application/finance/transaction/transaction_cubit.dart';
+import 'package:agenda/application/lock/app_lock_cubit.dart';
 import 'package:agenda/application/shared/locale/locale_cubit.dart';
 import 'package:agenda/application/shared/locale/locale_state.dart';
 import 'package:agenda/application/tasks/day_planner/day_planner_cubit.dart';
@@ -11,6 +12,7 @@ import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/domain/notifications/notification_reconciler.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/lock/widgets/lock_gate.dart';
 import 'package:agenda/presentation/onboarding/widgets/onboarding_gate.dart';
 import 'package:agenda/presentation/shell/app_shell.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +34,10 @@ class AgendaApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LocaleCubit>(create: (_) => getIt<LocaleCubit>()),
+        // `.value`: the app-wide lock singleton must never be closed by a
+        // provider. Its state is seeded synchronously, so the first frame
+        // already knows whether to lock (SC-1).
+        BlocProvider<AppLockCubit>.value(value: getIt<AppLockCubit>()),
         BlocProvider<TransactionCubit>(
           create: (_) => getIt<TransactionCubit>(),
         ),
@@ -68,6 +74,9 @@ class AgendaApp extends StatelessWidget {
                 colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
                 useMaterial3: true,
               ),
+              // The lock layer sits above the app Navigator, so no route,
+              // dialog or sheet can draw over it (DATA-05).
+              builder: (context, child) => LockGate(child: child!),
               // The task cubits are created only after the privacy
               // statement is accepted (UX-03), so no Isar-backed cubit
               // starts under the first-launch screen.
