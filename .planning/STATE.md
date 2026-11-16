@@ -4,14 +4,14 @@ milestone: v1.0
 current_phase: 5
 current_phase_name: App Lock + Settings + Polish
 status: executing
-stopped_at: Completed 05-07-PLAN.md
-last_updated: "2026-11-16T20:05:13.848Z"
-state_head: c0bee612d7219d7370586bac16b546e0d91fe1e5
+stopped_at: Completed 05-08-PLAN.md
+last_updated: "2026-11-16T20:41:36.140Z"
+state_head: ea00f5c41b1128c6284ff0b90d65b35a2af7fb98
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 77
-  completed_plans: 70
+  completed_plans: 71
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 5 (App Lock + Settings + Polish) — EXECUTING
-Plan: 8 of 14
+Plan: 9 of 14
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -219,6 +219,7 @@ Progress: [██████████] 100%
 | Phase 05 P05 | 7min | 2 tasks | 13 files |
 | Phase 05 P06 | 30 min | 3 tasks | 24 files |
 | Phase 05 P07 | 7min | 2 tasks | 13 files |
+| Phase 05 P08 | 31min | 2 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -287,6 +288,8 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-06: Android back while locked accepted (Pitfall 12); hidden route pops logically, lock stays
 - [Phase 05]: 05-07: Language dialog reads LocaleCubit.supportedLocales for its two options so dialog and cubit accept-list cannot drift
 - [Phase 05]: 05-07: Radios use a RadioGroup<T> ancestor (Flutter 3.41 deprecates RadioListTile groupValue/onChanged)
+- [Phase 05]: 05-08: AppLockCubit decides the resume lock only after hidden, samples ExcursionGuard.isActive at the first hidden of a trip, and emits ONE state on resume (overlay off + lock) so no content frame paints
+- [Phase 05]: 05-08: Every call that launches UI outside the app (file picker, notification/exact-alarm permission, settings channel; local_auth next) runs inside ExcursionGuard.run (2 s grace, 5 min cap)
 
 ### Pending Todos
 
@@ -317,8 +320,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-11-16T20:05:13.409Z
-Stopped at: Completed 05-07-PLAN.md
+Last session: 2026-11-16T20:41:35.679Z
+Stopped at: Completed 05-08-PLAN.md
 
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
