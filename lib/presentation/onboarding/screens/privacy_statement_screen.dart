@@ -1,12 +1,14 @@
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/onboarding/widgets/privacy_bullet.dart';
+import 'package:agenda/presentation/onboarding/widgets/privacy_language_switch.dart';
 import 'package:flutter/material.dart';
 
 /// The one-screen privacy statement (UX-03, D-12, D-13).
 ///
 /// First launch (`readOnly` false): the root screen until "Começar" is
 /// tapped; [onGetStarted] persists the shown flag and the gate then swaps
-/// in the shell.
+/// in the shell. Read-only (Settings > About, D-14): an AppBar with a back
+/// arrow, no language switch and no button; the content is identical.
 class PrivacyStatementScreen extends StatelessWidget {
   const PrivacyStatementScreen({
     this.readOnly = false,
@@ -24,22 +26,30 @@ class PrivacyStatementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
+      appBar: readOnly ? AppBar(title: Text(l10n.settingsPrivacyLabel)) : null,
       body: SafeArea(
         child: Column(
           children: [
-            const Expanded(
+            Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: _StatementContent(),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (!readOnly) const PrivacyLanguageSwitch(),
+                    const _StatementContent(),
+                  ],
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-              child: _GetStartedButton(
-                label: l10n.privacyGetStarted,
-                onPressed: onGetStarted,
+            if (!readOnly)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                child: _GetStartedButton(
+                  label: l10n.privacyGetStarted,
+                  onPressed: onGetStarted,
+                ),
               ),
-            ),
           ],
         ),
       ),
