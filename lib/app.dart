@@ -11,6 +11,7 @@ import 'package:agenda/application/tasks/task_list/task_list_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/domain/notifications/notification_reconciler.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
+import 'package:agenda/presentation/onboarding/widgets/onboarding_gate.dart';
 import 'package:agenda/presentation/shell/app_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,16 +68,21 @@ class AgendaApp extends StatelessWidget {
                 colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
                 useMaterial3: true,
               ),
-              home: MultiBlocProvider(
-                providers: [
-                  BlocProvider<TaskListCubit>(
-                    create: (_) => getIt<TaskListCubit>(),
-                  ),
-                  BlocProvider<DayPlannerCubit>(
-                    create: (_) => getIt<DayPlannerCubit>(),
-                  ),
-                ],
-                child: const AppShell(),
+              // The task cubits are created only after the privacy
+              // statement is accepted (UX-03), so no Isar-backed cubit
+              // starts under the first-launch screen.
+              home: OnboardingGate(
+                child: MultiBlocProvider(
+                  providers: [
+                    BlocProvider<TaskListCubit>(
+                      create: (_) => getIt<TaskListCubit>(),
+                    ),
+                    BlocProvider<DayPlannerCubit>(
+                      create: (_) => getIt<DayPlannerCubit>(),
+                    ),
+                  ],
+                  child: const AppShell(),
+                ),
               ),
             );
           },

@@ -21,6 +21,7 @@ import 'package:agenda/domain/tasks/eisenhower_quadrant.dart';
 import 'package:agenda/domain/tasks/item.dart';
 import 'package:agenda/domain/tasks/item_repository.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
+import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/shell/shell_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -272,7 +273,9 @@ class _StubTransactionCategoryRepository
 void main() {
   setUp(() async {
     appTabIndex.value = 0;
-    SharedPreferences.setMockInitialValues({});
+    // The privacy statement was already accepted, so the shell is the
+    // first frame (Pitfall 1). First-launch tests clear this flag.
+    SharedPreferences.setMockInitialValues({'privacy_statement_shown': true});
     await configureDependencies();
     // The home shell mounts every tab eagerly (IndexedStack), including the
     // finance dashboard and its sub-tabs, so each cubit resolves its repo on
@@ -331,5 +334,36 @@ void main() {
     );
     expect(controller.index, 4);
     expect(financeSubTabRequest.value, isNull);
+  });
+
+  group('First launch (UX-03)', () {
+    final l10n = lookupAppLocalizations(const Locale('pt', 'BR'));
+
+    testWidgets('shows the privacy statement, then the shell on Começar', (
+      tester,
+    ) async {
+      // Override the setUp seed: a fresh install has no stored flag.
+      await getIt<SharedPreferences>().clear();
+
+      await tester.pumpWidget(const AgendaApp());
+      expect(find.text(l10n.privacyStatement), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
+
+      await tester.tap(find.text(l10n.privacyGetStarted));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.text(l10n.privacyStatement), findsNothing);
+      expect(
+        getIt<SharedPreferences>().getBool('privacy_statement_shown'),
+        isTrue,
+      );
+    });
+
+    testWidgets('a later launch skips the statement', (tester) async {
+      await tester.pumpWidget(const AgendaApp());
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.text(l10n.privacyStatement), findsNothing);
+    });
   });
 }
