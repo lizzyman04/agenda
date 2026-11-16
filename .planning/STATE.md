@@ -5,13 +5,13 @@ current_phase: 5
 current_phase_name: App Lock + Settings + Polish
 status: executing
 stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-11-16T18:29:10.511Z"
-state_head: d928528fda4edddfd3e6f84e69f0b179e5471b64
+last_updated: "2026-11-16T18:34:06.798Z"
+state_head: c0cdfbafd5b88b039df2e05cbff29a91d9462172
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 77
-  completed_plans: 64
+  completed_plans: 65
 milestone_name: milestone
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 5 (App Lock + Settings + Polish) — EXECUTING
-Plan: 2 of 14
+Plan: 3 of 14
 Status: Ready to execute
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
@@ -213,6 +213,7 @@ Progress: [██████████] 100%
 | Phase 04 P16 | 14 min | 3 tasks | 16 files |
 | Phase 04 P17 | 9 min | 3 tasks | 17 files |
 | Phase 05 P01 | 153min | 2 tasks | 13 files |
+| Phase 05 P02 | 3min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -266,6 +267,8 @@ Recent decisions affecting current work:
 - [Phase 05]: Phase 5 deps pinned exactly: crypto 3.0.7, flutter_secure_storage 10.0.0, local_auth 3.0.1, local_auth_android 2.0.8 (Flutter 3.41.4 caps local_auth_android at 2.0.8)
 - [Phase 05]: LaunchTheme/NormalTheme inherit Theme.AppCompat (Light.NoActionBar in values/, NoActionBar in values-night/) for BiometricPrompt on Android 7-8
 - [Phase 05]: lockWrongPin ICU 'one' branch interpolates {remaining}; flutter_secure_storage 10.0.0 AndroidOptions.resetOnError defaults to true
+- [Phase 05]: 05-02: shouldLockOnResume uses >= for normal and excursion limits; elapsed == limit locks
+- [Phase 05]: 05-02: LockAttempts.cooldownRemaining is clamped to the active ladder step (anti clock-rollback) and is zero when lockouts == 0
 
 ### Pending Todos
 
@@ -296,7 +299,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-11-16T18:29:09.916Z
+Last session: 2026-11-16T18:34:06.221Z
 Stopped at: Completed 05-01-PLAN.md
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
