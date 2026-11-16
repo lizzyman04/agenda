@@ -90,6 +90,8 @@ void main() {
   });
 
   test('none equals a default instance and differs after any failure', () {
+    // The default constructor is the subject here: value equality with none.
+    // ignore: use_named_constants
     expect(LockAttempts.none, const LockAttempts());
     expect(LockAttempts.none.failures, 0);
     expect(LockAttempts.none.lockouts, 0);
