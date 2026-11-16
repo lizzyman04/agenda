@@ -52,6 +52,11 @@ final class CheckFailedMessage extends LockMessage {
   const CheckFailedMessage();
 }
 
+/// PIN setup: the confirmation did not match the new PIN.
+final class MismatchMessage extends LockMessage {
+  const MismatchMessage();
+}
+
 /// The status-line message after a PIN [outcome] that neither unlocked nor
 /// started a cooldown: a wrong PIN, or a check that failed (fail closed).
 LockMessage rejectionMessage(PinVerifyOutcome outcome) => switch (outcome) {

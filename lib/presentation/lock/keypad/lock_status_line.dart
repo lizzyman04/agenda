@@ -16,8 +16,8 @@ String formatCooldown(Duration remaining) {
   return '$minutes:${(seconds % 60).toString().padLeft(2, '0')}';
 }
 
-/// The lock-screen status line (UI-SPEC "Lock screen" row 6): wrong PIN and
-/// storage failure in `cs.error`, the cooldown countdown in
+/// The lock-screen status line (UI-SPEC "Lock screen" row 6): wrong PIN,
+/// storage failure and a PIN-setup mismatch in `cs.error`, the countdown in
 /// `cs.onSurfaceVariant` (a wait, not a failure), empty when [message] is
 /// null. A live region, so screen readers announce every change.
 class LockStatusLine extends StatelessWidget {
@@ -40,6 +40,7 @@ class LockStatusLine extends StatelessWidget {
         cs.onSurfaceVariant,
       ),
       CheckFailedMessage() => (l10n.lockErrorGeneric, cs.error),
+      MismatchMessage() => (l10n.pinMismatch, cs.error),
       null => ('', cs.onSurfaceVariant),
     };
     return SizedBox(

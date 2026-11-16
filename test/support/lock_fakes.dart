@@ -5,6 +5,7 @@ import 'package:agenda/application/lock/app_lock_cubit.dart';
 import 'package:agenda/application/lock/app_lock_state.dart';
 import 'package:agenda/application/lock/lock_device_auth.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
+import 'package:agenda/application/lock/setup/pin_lifecycle.dart';
 import 'package:agenda/core/constants/secure_storage_keys.dart';
 import 'package:agenda/domain/lock/device_auth_gateway.dart';
 import 'package:agenda/domain/lock/excursion_guard.dart';
@@ -43,6 +44,8 @@ class MockDeviceAuthGateway extends Mock implements DeviceAuthGateway {}
 class MockLocalAuthentication extends Mock implements LocalAuthentication {}
 
 class MockLockDeviceAuth extends Mock implements LockDeviceAuth {}
+
+class MockPinLifecycle extends Mock implements PinLifecycle {}
 
 /// Any prompt, for stubbing and verifying device-auth calls.
 const DeviceAuthPrompt fakeAuthPrompt = DeviceAuthPrompt(

@@ -5,6 +5,8 @@ import 'package:agenda/application/lock/app_lock_cubit.dart';
 import 'package:agenda/application/lock/lock_device_auth.dart';
 import 'package:agenda/application/lock/lock_screen_cubit.dart';
 import 'package:agenda/application/lock/pin_verifier.dart';
+import 'package:agenda/application/lock/setup/pin_lifecycle.dart';
+import 'package:agenda/application/lock/setup/pin_setup_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/data/database/isar_service.dart';
 import 'package:agenda/domain/lock/device_auth_gateway.dart';
@@ -81,6 +83,18 @@ void main() {
 
     test('AppLockCubit resolves to one app-wide instance', () {
       expectSingleton<AppLockCubit>(isA<AppLockCubit>());
+    });
+
+    test('PinLifecycle resolves as a singleton', () {
+      expectSingleton<PinLifecycle>(isA<PinLifecycle>());
+    });
+
+    test('PinSetupCubit resolves to a new instance each time', () async {
+      final a = getIt<PinSetupCubit>();
+      final b = getIt<PinSetupCubit>();
+      expect(identical(a, b), isFalse);
+      await a.close();
+      await b.close();
     });
 
     test('LockScreenCubit resolves to a new instance each time', () async {

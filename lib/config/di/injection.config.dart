@@ -25,6 +25,8 @@ import 'package:agenda/application/lock/app_lock_cubit.dart' as _i368;
 import 'package:agenda/application/lock/lock_device_auth.dart' as _i265;
 import 'package:agenda/application/lock/lock_screen_cubit.dart' as _i384;
 import 'package:agenda/application/lock/pin_verifier.dart' as _i1015;
+import 'package:agenda/application/lock/setup/pin_lifecycle.dart' as _i785;
+import 'package:agenda/application/lock/setup/pin_setup_cubit.dart' as _i144;
 import 'package:agenda/application/notifications/budget_alert_evaluator.dart'
     as _i892;
 import 'package:agenda/application/notifications/goal_alert_evaluator.dart'
@@ -298,6 +300,15 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i536.TransactionMapper>(),
       ),
     );
+    gh.lazySingleton<_i785.PinLifecycle>(
+      () => _i785.PinLifecycle(
+        gh<_i875.PinStore>(),
+        gh<_i275.PinHasher>(),
+        gh<_i460.SharedPreferences>(),
+        gh<_i22.SecureWindowGateway>(),
+        gh<_i368.AppLockCubit>(),
+      ),
+    );
     gh.lazySingleton<_i200.TransactionCategoryRepository>(
       () => _i986.TransactionCategoryRepositoryImpl(
         gh<_i404.TransactionCategoryDao>(),
@@ -327,6 +338,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i576.BudgetRepositoryImpl(
         gh<_i1035.BudgetDao>(),
         gh<_i233.BudgetMapper>(),
+      ),
+    );
+    gh.factory<_i144.PinSetupCubit>(
+      () => _i144.PinSetupCubit(
+        gh<_i785.PinLifecycle>(),
+        gh<_i1015.PinVerifier>(),
       ),
     );
     gh.factory<_i275.RecurringPaymentCubit>(
