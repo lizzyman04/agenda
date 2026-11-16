@@ -14,12 +14,30 @@ form-logic helper.
 
 ```
 presentation/
-├── tasks/    the productivity half: list, detail, planner, matrix, form
-└── finance/  the money half: dashboard, transactions, budgets, debts,
-              recurring payments, savings goals
+├── tasks/          the productivity half: list, detail, planner, matrix, form
+├── finance/        the money half: dashboard, transactions, budgets, debts,
+│                   recurring payments, savings goals
+├── backup/         export and import of a backup file, and the import review
+├── notifications/  notification-tap routing and the notification settings page
+├── shell/          the bottom-navigation frame holding the five tabs
+├── lock/           the app-lock layer: lock screen, PIN setup, keypad and
+│                   the privacy overlay
+├── settings/       the one Settings list (General, Security, Notifications,
+│                   Data, About) reached from the Tasks AppBar gear
+├── onboarding/     the first-launch privacy statement and its gate
+└── shared/         widgets two or more slices render (no cubit imports)
 ```
 
-Both slices are documented by their own READMEs, one per directory.
+Every slice is documented by its own README, one per directory.
+
+## The lock layer
+
+The lock screen and the privacy overlay are not routes. `LockGate` is
+installed in `MaterialApp.builder`, above the app `Navigator`, so while the
+app is locked or obscured it covers every route, dialog and sheet, and no
+pushed page can draw over it (DATA-05). Nothing under `lock/` reads
+storage: whether the app is locked, and whether a PIN is right, is decided
+in `application/lock/`.
 
 ## Conventions across the layer
 

@@ -1,4 +1,5 @@
 import 'package:agenda/app.dart';
+import 'package:agenda/application/lock/app_lock_cubit.dart';
 import 'package:agenda/config/di/injection.dart';
 import 'package:agenda/core/failures/failure.dart';
 import 'package:agenda/core/failures/result.dart';
@@ -23,6 +24,7 @@ import 'package:agenda/domain/tasks/item_repository.dart';
 import 'package:agenda/domain/tasks/item_type.dart';
 import 'package:agenda/generated/l10n/app_localizations.dart';
 import 'package:agenda/presentation/lock/screens/lock_screen.dart';
+import 'package:agenda/presentation/settings/widgets/settings_section_header.dart';
 import 'package:agenda/presentation/shell/shell_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -30,6 +32,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'infrastructure/notifications/fake_notification_gateway.dart';
+import 'support/lock_fakes.dart';
 
 /// Stub repository that never touches Isar.
 ///
@@ -382,6 +385,87 @@ void main() {
 
       expect(find.byType(LockScreen), findsOneWidget);
       expect(find.byType(NavigationBar), findsNothing);
+    });
+  });
+
+  // Phase 5 end-to-end smoke (05-14): the real AgendaApp tree, no stand-ins
+  // for the gate, the lock or Settings.
+  group('Phase 5 full-app smoke', () {
+    final l10n = lookupAppLocalizations(const Locale('pt', 'BR'));
+
+    testWidgets('first launch: statement -> Começar -> shell -> Settings', (
+      tester,
+    ) async {
+      // A fresh install: no stored flag, nothing in secure storage.
+      await getIt<SharedPreferences>().clear();
+      FlutterSecureStorage.setMockInitialValues({});
+
+      await tester.pumpWidget(const AgendaApp());
+      expect(find.text(l10n.privacyStatement), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
+
+      await tester.tap(find.text(l10n.privacyGetStarted));
+      await tester.pumpAndSettle();
+      expect(find.byType(NavigationBar), findsOneWidget);
+
+      // Settings reads biometric availability through local_auth, which has
+      // no plugin here: it must resolve to unavailable, not throw.
+      await tester.tap(find.byIcon(Icons.settings_outlined));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.widgetWithText(AppBar, l10n.settingsTitle),
+        findsOneWidget,
+      );
+      final headers =
+          tester
+              .widgetList<SettingsSectionHeader>(
+                find.byType(SettingsSectionHeader, skipOffstage: false),
+              )
+              .map((h) => h.title)
+              .toList();
+      expect(headers, [
+        l10n.settingsSectionGeneral,
+        l10n.settingsSectionSecurity,
+        l10n.settingsSectionNotifications,
+        l10n.settingsSectionData,
+        l10n.settingsSectionAbout,
+      ]);
+
+      // PIN off: Security holds the switch and nothing else.
+      expect(find.byType(SwitchListTile), findsOneWidget);
+      expect(find.text(l10n.lockPinToggle), findsOneWidget);
+      expect(find.text(l10n.lockChangePin), findsNothing);
+      expect(find.text(l10n.lockTimeoutLabel), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('cold start with a real PIN record: 1234 reveals the shell', (
+      tester,
+    ) async {
+      // {'privacy_statement_shown': true, 'pin_configured': true} plus a
+      // real PBKDF2 record for 1234 (hashing runs in an isolate).
+      await getIt<SharedPreferences>().setBool('pin_configured', true);
+      await tester.runAsync(() => seedPinRecord('1234'));
+
+      await tester.pumpWidget(const AgendaApp());
+      expect(find.byType(LockScreen), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
+
+      // Let the attempt state load, type the PIN, then let the verification
+      // isolate finish.
+      await settleRealAsync(tester, () => false, maxRounds: 3);
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.text(d));
+        await tester.pump();
+      }
+      final appLock = getIt<AppLockCubit>();
+      await settleRealAsync(tester, () => !appLock.state.locked);
+      await tester.pumpAndSettle();
+
+      expect(appLock.state.locked, isFalse);
+      expect(find.byType(LockScreen), findsNothing);
+      expect(find.byType(NavigationBar), findsOneWidget);
     });
   });
 }

@@ -16,6 +16,12 @@ application/
 ├── tasks/    task-side cubits (list, project, day planner)
 ├── finance/  finance-side cubits (transaction, budget, goal, debt,
 │             recurring, dashboard)
+├── backup/   the Backup screen state: export and import flows
+├── notifications/  event-driven alerts and the notification settings cubit
+├── lock/     app-lock state, the lock-screen keypad, PIN verification and
+│   │         biometric unlock
+│   └── setup/  PIN create, change, disable and reset (the PIN lifecycle)
+├── settings/ the Settings sections that own preferences (Security)
 └── shared/   cubits that belong to no single feature (locale)
 ```
 
