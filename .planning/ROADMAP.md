@@ -182,7 +182,7 @@ Plans:
   3. A settings screen lets the user toggle app language (EN / PT-BR), enable or disable individual notification types, configure quiet hours, and manage the app lock PIN
   4. On first launch, the app displays a one-screen privacy statement ("Your data never leaves this device") before showing the main UI; the statement is not shown on subsequent launches
 
-**Plans**: 13/14 plans executed in 9 waves (planned 2026-11-16 — expanded from the 4-plan sketch; see rationale below)
+**Plans**: 14/14 plans executed in 9 waves (planned 2026-11-16 — expanded from the 4-plan sketch; see rationale below)
 **UI hint**: yes
 
 Plans:
@@ -216,7 +216,7 @@ Plans:
 - [x] 05-13-PLAN.md — Settings Security section: PIN switch, change PIN, biometrics toggle, lock timeout, no-device-lock warning (SC-3) *(wave 8)*
 
 **Wave 9** *(blocked on Wave 8 completion)*
-- [ ] 05-14-PLAN.md — Full-app smoke, release build, layer READMEs, Android device UAT checkpoint (iOS items human_needed) *(wave 9)*
+- [x] 05-14-PLAN.md — Full-app smoke, release build, layer READMEs, Android device UAT checkpoint (iOS items human_needed) *(wave 9)*
 
 **Planner deviation from the 4-plan sketch**: 14 plans. Research made two draft tasks obsolete ("FlutterFragmentActivity migration" is done; there is no GoRouter, so the lock is a MaterialApp.builder layer, not a route guard), and the UI-SPEC replaced flutter_screen_lock with a custom keypad. The remaining work spans ~40 source files under a 150-line / 10-file cap. Wave order is driven by `lib/config/di/injection.config.dart`: the seven plans that add injectables (03, 06, 08, 10, 11, 12, 13) never share a wave, and `lib/app.dart` is touched only by 04 then 06. All dependency, manifest, Info.plist and ARB edits are front-loaded into 05-01.
 
@@ -284,5 +284,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5
 | 2. Task Core | 5/5 | ✅ Complete | 2026-04-21 |
 | 3. Finance Core | 14/14 | Complete    | 2026-10-03 |
 | 4. Notifications + Backup | 17/17 | In Progress|  |
-| 5. App Lock + Settings + Polish | 13/14 | In Progress | - |
+| 5. App Lock + Settings + Polish | 14/14 | In Progress | - |
 | 6. Architecture Compliance | 18/18 | ✅ Complete | 2026-08-12 |

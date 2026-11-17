@@ -58,7 +58,7 @@
 
 ### Experience
 
-- [ ] **UX-01**: App supports English and Portuguese (user-toggled in Settings)
+- [x] **UX-01**: App supports English and Portuguese (user-toggled in Settings)
 - [x] **UX-02**: App is fully functional offline — no feature requires internet access
 - [x] **UX-03**: App displays a privacy statement on first launch ("Your data never leaves this device")
 - [x] **UX-04**: All screens display meaningful empty states with action prompts when no data exists
@@ -141,7 +141,7 @@
 | DATA-04 | Phase 4: Notifications + Backup | Complete |
 | DATA-05 | Phase 5: App Lock + Settings + Polish | Complete |
 | DATA-06 | Phase 5: App Lock + Settings + Polish | Complete |
-| UX-01 | Phase 5: App Lock + Settings + Polish | Pending |
+| UX-01 | Phase 5: App Lock + Settings + Polish | Complete |
 | UX-03 | Phase 5: App Lock + Settings + Polish | Complete |
 
 **Coverage:**

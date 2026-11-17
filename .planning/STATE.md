@@ -3,15 +3,15 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 5
 current_phase_name: App Lock + Settings + Polish
-status: executing
-stopped_at: Completed 05-13-PLAN.md
-last_updated: "2026-11-16T23:02:34.474Z"
-state_head: 23e9e7caf852cd3c3ac6342636b6ed1924b9df7e
+status: verifying
+stopped_at: Completed 05-14-PLAN.md
+last_updated: "2026-11-17T02:18:55.446Z"
+state_head: 866a0faa30378a8fb773645f5739d826de53f7ab
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 77
-  completed_plans: 76
+  completed_plans: 77
 milestone_name: milestone
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 
 Phase: 5 (App Lock + Settings + Polish) — EXECUTING
 Plan: 14 of 14
-Status: Ready to execute
+Status: Phase complete — ready for verification
 current HEAD closes `03-HUMAN-UAT.md` and the verifier reruns as `passed`.
 
 Note: the Phase 06 section further down records that phase's own on-device UAT, which PASSED
@@ -225,6 +225,7 @@ Progress: [██████████] 100%
 | Phase 05 P11 | 20min | 2 tasks | 24 files |
 | Phase 05 P12 | 18min | 3 tasks | 23 files |
 | Phase 05 P13 | 18 min | 2 tasks | 17 files |
+| Phase 05 P14 | 189min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -313,6 +314,9 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-13: SecuritySettingsCubit re-reads biometric_unlock_enabled when pinEnabled flips, since PinLifecycle.disable removes it
 - [Phase 05]: 05-13: setBiometricEnabled uses a named bool (very_good_analysis avoid_positional_boolean_parameters)
 - [Phase 05]: 05-13: Timeout dialog uses AlertDialog(scrollable: true); title+actions overflowed at 200% text on 320x568
+- [Phase 05]: 05-14: Device UAT item 7 run stricter (timeout Imediatamente) to prove file-picker and permission excursions are exempt from the lock
+- [Phase 05]: 05-14: Back on the forced PIN-reset screen backgrounds the app; accepted as fail-safe (reopen returns to the reset screen), recorded as a note
+- [Phase 05]: 05-14: iOS checks (Runner compile, Face ID prompt, App Switcher cover) recorded as human_needed - no Mac available
 
 ### Pending Todos
 
@@ -343,8 +347,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-11-16T23:02:34.009Z
-Stopped at: Completed 05-13-PLAN.md
+Last session: 2026-11-17T02:18:54.805Z
+Stopped at: Completed 05-14-PLAN.md
 
 `human_needed`. It is NOT marked complete — one human item is outstanding.**
 
