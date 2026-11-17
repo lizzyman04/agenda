@@ -53,14 +53,14 @@
 - [x] **DATA-02**: User can export all data as a JSON backup file
 - [x] **DATA-03**: User can export all data as a CSV backup file
 - [x] **DATA-04**: User can import data from a JSON or CSV backup file (with pre-import safety backup and atomic transaction)
-- [x] **DATA-05**: User can set an optional PIN to lock access to the app on cold start
-- [x] **DATA-06**: User can unlock the app using biometrics (Face ID or fingerprint) when PIN is enabled
+- [ ] **DATA-05**: User can set an optional PIN to lock access to the app on cold start
+- [ ] **DATA-06**: User can unlock the app using biometrics (Face ID or fingerprint) when PIN is enabled
 
 ### Experience
 
-- [x] **UX-01**: App supports English and Portuguese (user-toggled in Settings)
+- [ ] **UX-01**: App supports English and Portuguese (user-toggled in Settings)
 - [x] **UX-02**: App is fully functional offline — no feature requires internet access
-- [x] **UX-03**: App displays a privacy statement on first launch ("Your data never leaves this device")
+- [ ] **UX-03**: App displays a privacy statement on first launch ("Your data never leaves this device")
 - [x] **UX-04**: All screens display meaningful empty states with action prompts when no data exists
 
 ## v2 Requirements
@@ -139,10 +139,10 @@
 | DATA-02 | Phase 4: Notifications + Backup | Complete |
 | DATA-03 | Phase 4: Notifications + Backup | Complete |
 | DATA-04 | Phase 4: Notifications + Backup | Complete |
-| DATA-05 | Phase 5: App Lock + Settings + Polish | Complete |
-| DATA-06 | Phase 5: App Lock + Settings + Polish | Complete |
-| UX-01 | Phase 5: App Lock + Settings + Polish | Complete |
-| UX-03 | Phase 5: App Lock + Settings + Polish | Complete |
+| DATA-05 | Phase 5: App Lock + Settings + Polish | Gaps Found |
+| DATA-06 | Phase 5: App Lock + Settings + Polish | Gaps Found |
+| UX-01 | Phase 5: App Lock + Settings + Polish | Gaps Found |
+| UX-03 | Phase 5: App Lock + Settings + Polish | Gaps Found |
 
 **Coverage:**
 
